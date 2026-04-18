@@ -67,6 +67,7 @@ Maintainer: Miguel Luis and Gregory Cristian
 #endif
 
 #include "hw.h"
+#include "dendrometer.h"
 
 /* Includes ------------------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
@@ -98,6 +99,10 @@ typedef struct{
 	uint16_t distance_signal_strengh;
 	
 	int32_t Weight;
+
+    /* MOD=3 ratiometric dendrometer result (see dendrometer.h). Only the
+     * MOD=3 code path reads this; other modes leave it zero-initialized. */
+    dendrometer_result_t dendro;
 
   /**more may be added*/
 } sensor_t;
