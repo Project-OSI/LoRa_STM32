@@ -299,43 +299,56 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
 			sensor_data->distance_signal_strengh = 65535;			
 		}			 
 	} 
-	else if((mode==3)||(mode==8))
-	{	
+	else if(mode==3)
+	{
+		 /* Ratiometric dendrometer: 50 paired PA0/PA1 samples, raw averages.
+		  * See inc/dendrometer.h and the Claude-authored design spec. */
+		 dendrometer_measure(&sensor_data->dendro);
+		 if(message==1)
+		 {
+			 PPRINTF("DENDRO sig:%u ref:%u flags:0x%02X\r\n",
+			         (unsigned)sensor_data->dendro.adc_signal_avg_raw,
+			         (unsigned)sensor_data->dendro.adc_reference_avg_raw,
+			         (unsigned)sensor_data->dendro.flags);
+		 }
+	}
+	else if(mode==8)
+	{
 		 BSP_oil_float_Init();
 		 for(uint8_t w=0;w<6;w++)
 		 {
-			 adcdata[0][w] = HW_AdcReadChannel( ADC_Channel_Oil );//PA0			 
-			 HAL_Delay(10);				 
+			 adcdata[0][w] = HW_AdcReadChannel( ADC_Channel_Oil );//PA0
+			 HAL_Delay(10);
 		 }
-     AD_code1=ADC_Average(adcdata[0]);		 
-	   sensor_data->oil=AD_code1*batteryLevel_mV/4095;				 
-		 
-		 HAL_Delay(50);	
+     AD_code1=ADC_Average(adcdata[0]);
+	   sensor_data->oil=AD_code1*batteryLevel_mV/4095;
+
+		 HAL_Delay(50);
 		 for(uint8_t y=0;y<6;y++)
 		 {
 			 adcdata[1][y] = HW_AdcReadChannel( ADC_Channel_IN1 );//PA1
-			 HAL_Delay(10);				 
+			 HAL_Delay(10);
 		 }
-     AD_code2=ADC_Average(adcdata[1]);		 
-	   sensor_data->ADC_1=AD_code2*batteryLevel_mV/4095;		 
-		 
-		 HAL_Delay(50);	
+     AD_code2=ADC_Average(adcdata[1]);
+	   sensor_data->ADC_1=AD_code2*batteryLevel_mV/4095;
+
+		 HAL_Delay(50);
 		 for(uint8_t z=0;z<6;z++)
 		 {
-			 adcdata[2][z] = HW_AdcReadChannel( ADC_Channel_IN4 );//PA4	
-			 HAL_Delay(10);				 
-		 }		 
-		 AD_code3=ADC_Average(adcdata[2]);		 
-	   sensor_data->ADC_2=AD_code3*batteryLevel_mV/4095;  
-		 HAL_GPIO_WritePin(OIL_CONTROL_PORT,OIL_CONTROL_PIN,GPIO_PIN_SET); 	
+			 adcdata[2][z] = HW_AdcReadChannel( ADC_Channel_IN4 );//PA4
+			 HAL_Delay(10);
+		 }
+		 AD_code3=ADC_Average(adcdata[2]);
+	   sensor_data->ADC_2=AD_code3*batteryLevel_mV/4095;
+		 HAL_GPIO_WritePin(OIL_CONTROL_PORT,OIL_CONTROL_PIN,GPIO_PIN_SET);
 
 		 if(message==1)
-		 {	
+		 {
 			 PPRINTF("ADC_PA0:%.3f V\r\n",(sensor_data->oil/1000.0));
 			 PPRINTF("ADC_PA1:%.3f V\r\n",(sensor_data->ADC_1/1000.0));
 			 PPRINTF("ADC_PA4:%.3f V\r\n",(sensor_data->ADC_2/1000.0));
 		 }
-	}	 
+	}
 	else if(mode==5)
   {
 		WEIGHT_SCK_Init();
