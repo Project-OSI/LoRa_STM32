@@ -5,7 +5,8 @@ CC      ?= gcc
 CFLAGS  ?= -std=c99 -Wall -Wextra -Werror -O0 -g -I../STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN\(AT\)/inc
 OBJDIR  := build
 
-TESTS := harness_smoke dendrometer
+# Task 3 adds "dendrometer" back once src/dendrometer.c exists.
+TESTS := harness_smoke
 
 .PHONY: all test clean
 all: test
