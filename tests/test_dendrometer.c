@@ -160,6 +160,48 @@ static void test_settle_delay_happens(void) {
     puts("  PASS settle_delay_happens");
 }
 
+static void test_pack_known_result(void) {
+    dendrometer_result_t m = {
+        .adc_signal_avg_raw    = 0x0A0B,
+        .adc_reference_avg_raw = 0x0C0D,
+        .flags                 = DENDRO_FLAG_VALID,
+    };
+    uint8_t dst[8] = {0};
+    uint8_t n = dendrometer_pack_payload(&m, 0x0C80, 0x8A, dst);
+
+    ASSERT_EQ_U32(n, 8, "pack size");
+    ASSERT_EQ_U32(dst[0], 0x0C, "battery HI"); /* 3200 = 0x0C80 */
+    ASSERT_EQ_U32(dst[1], 0x80, "battery LO");
+    ASSERT_EQ_U32(dst[2], 0x0A, "sig HI");
+    ASSERT_EQ_U32(dst[3], 0x0B, "sig LO");
+    ASSERT_EQ_U32(dst[4], 0x0C, "ref HI");
+    ASSERT_EQ_U32(dst[5], 0x0D, "ref LO");
+    ASSERT_EQ_U32(dst[6], 0x8A, "status preserved");
+    ASSERT_EQ_U32(dst[7], 0x01, "flags VALID");
+    puts("  PASS pack_known_result");
+}
+
+static void test_pack_combined_flags(void) {
+    dendrometer_result_t m = {
+        .adc_signal_avg_raw    = 0,
+        .adc_reference_avg_raw = 0,
+        .flags = DENDRO_FLAG_REF_LOW | DENDRO_FLAG_ADC_FAIL,
+    };
+    uint8_t dst[8] = {0};
+    (void)dendrometer_pack_payload(&m, 0, 0x08, dst);
+    ASSERT_EQ_U32(dst[7], 0x0A, "REF_LOW|ADC_FAIL == 0x0A");
+    puts("  PASS pack_combined_flags");
+}
+
+static void test_pack_battery_max(void) {
+    dendrometer_result_t m = { 0, 0, DENDRO_FLAG_VALID };
+    uint8_t dst[8] = {0};
+    (void)dendrometer_pack_payload(&m, 0xFFFF, 0x08, dst);
+    ASSERT_EQ_U32(dst[0], 0xFF, "battery HI max");
+    ASSERT_EQ_U32(dst[1], 0xFF, "battery LO max");
+    puts("  PASS pack_battery_max");
+}
+
 int main(void) {
     test_average_of_constant();
     test_reference_low();
@@ -170,6 +212,9 @@ int main(void) {
     test_power_sequence_ref_low();
     test_power_sequence_adc_fail();
     test_settle_delay_happens();
+    test_pack_known_result();
+    test_pack_combined_flags();
+    test_pack_battery_max();
     puts("PASS dendrometer");
     return 0;
 }
