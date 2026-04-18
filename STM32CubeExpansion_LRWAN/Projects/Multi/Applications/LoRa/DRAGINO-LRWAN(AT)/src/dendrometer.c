@@ -4,51 +4,43 @@
  */
 #include "dendrometer.h"
 
-void dendrometer_measure(dendrometer_result_t *out) {
-    out->adc_signal_avg_raw    = 0;
-    out->adc_reference_avg_raw = 0;
-    out->flags                 = 0;
+/* Sampling cadence mirrors stock Dragino firmware (bsp.c MOD=3/8 loop):
+ *   - 10 ms between samples = half a 50 Hz mains period. Consecutive samples
+ *     land on opposite phases of any 50 Hz pickup and cancel in pairs.
+ *   - Sample count MUST stay even so every sample has a pair partner; odd
+ *     counts leak residual mains hum into the average.
+ *   - 20 samples × 10 ms = 200 ms = 10 full 50 Hz cycles → perfect rejection
+ *     of 50 Hz mains and +5.4 dB random-noise averaging vs stock's 6 samples.
+ */
+#define DENDRO_SAMPLE_COUNT        20U   /* must be even (see comment above) */
+#define DENDRO_SAMPLE_SPACING_MS   10U   /* half of 50 Hz mains period */
+#define DENDRO_SETTLE_MS           50U
+
+/* Board primitives (implemented in bsp.c for ARM; tests/mock_board.c for host). */
+extern void     dendro_board_5v_on(void);
+extern void     dendro_board_5v_off(void);
+extern uint16_t dendro_board_adc_read_signal(void);     /* PA0 */
+extern uint16_t dendro_board_adc_read_reference(void);  /* PA1 */
+extern void     dendro_board_delay_ms(uint32_t ms);
+
+void dendrometer_measure(dendrometer_result_t *result) {
+    if (result == 0) { return; }
+    result->signal_raw    = 0;
+    result->reference_raw = 0;
 
     dendro_board_5v_on();
     dendro_board_delay_ms(DENDRO_SETTLE_MS);
 
-    uint32_t sum1 = 0, sum2 = 0;
-    uint16_t zeros1 = 0, zeros2 = 0;
-    for (uint16_t i = 0; i < DENDRO_SAMPLE_COUNT; ++i) {
-        uint16_t s1 = dendro_board_adc_read_signal();
-        uint16_t s2 = dendro_board_adc_read_reference();
-        sum1 += s1; if (s1 == 0) ++zeros1;
-        sum2 += s2; if (s2 == 0) ++zeros2;
-        dendro_board_delay_ms(DENDRO_INTER_SAMPLE_MS);
+    uint32_t sig_sum = 0;
+    uint32_t ref_sum = 0;
+    for (uint32_t i = 0; i < DENDRO_SAMPLE_COUNT; i++) {
+        sig_sum += dendro_board_adc_read_signal();
+        ref_sum += dendro_board_adc_read_reference();
+        dendro_board_delay_ms(DENDRO_SAMPLE_SPACING_MS);
     }
-
-    out->adc_signal_avg_raw    = (uint16_t)(sum1 / DENDRO_SAMPLE_COUNT);
-    out->adc_reference_avg_raw = (uint16_t)(sum2 / DENDRO_SAMPLE_COUNT);
 
     dendro_board_5v_off();
 
-    if (zeros1 == DENDRO_SAMPLE_COUNT || zeros2 == DENDRO_SAMPLE_COUNT) {
-        out->flags |= DENDRO_FLAG_ADC_FAIL;
-    } else if (out->adc_reference_avg_raw < DENDRO_REF_MIN_RAW) {
-        out->flags |= DENDRO_FLAG_REF_LOW;
-    } else if (out->adc_reference_avg_raw > DENDRO_REF_MAX_RAW) {
-        out->flags |= DENDRO_FLAG_REF_HIGH;
-    } else {
-        out->flags |= DENDRO_FLAG_VALID;
-    }
-}
-
-uint8_t dendrometer_pack_payload(const dendrometer_result_t *m,
-                                  uint16_t battery_mv,
-                                  uint8_t  status_byte,
-                                  uint8_t *dst) {
-    dst[0] = (uint8_t)(battery_mv >> 8);
-    dst[1] = (uint8_t)(battery_mv & 0xFF);
-    dst[2] = (uint8_t)(m->adc_signal_avg_raw >> 8);
-    dst[3] = (uint8_t)(m->adc_signal_avg_raw & 0xFF);
-    dst[4] = (uint8_t)(m->adc_reference_avg_raw >> 8);
-    dst[5] = (uint8_t)(m->adc_reference_avg_raw & 0xFF);
-    dst[6] = status_byte;
-    dst[7] = m->flags;
-    return 8;
+    result->signal_raw    = (uint16_t)(sig_sum / DENDRO_SAMPLE_COUNT);
+    result->reference_raw = (uint16_t)(ref_sum / DENDRO_SAMPLE_COUNT);
 }
