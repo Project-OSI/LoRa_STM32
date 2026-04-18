@@ -2,11 +2,19 @@
 # Uses native gcc; no ARM, no HAL, no cross-compilation.
 
 CC      ?= gcc
-CFLAGS  ?= -std=c99 -Wall -Wextra -Werror -O0 -g -I../STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN\(AT\)/inc
+
+# Directory containing DRAGINO-LRWAN(AT) has literal parens in its name.
+# GNU Make can't match a file prerequisite whose name contains unescaped parens
+# via the \( escape in prerequisite lists, so we build the path from parts.
+LPAREN  := (
+RPAREN  := )
+PROJ_BASE := ../STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN$(LPAREN)AT$(RPAREN)
+
+CFLAGS  ?= -std=c99 -Wall -Wextra -Werror -O0 -g
+
 OBJDIR  := build
 
-# Task 3 adds "dendrometer" back once src/dendrometer.c exists.
-TESTS := harness_smoke
+TESTS := harness_smoke dendrometer
 
 .PHONY: all test clean
 all: test
@@ -19,13 +27,13 @@ test: $(addprefix $(OBJDIR)/test_,$(TESTS))
 	@echo "all host tests passed"
 
 $(OBJDIR)/test_harness_smoke: test_harness_smoke.c | $(OBJDIR)
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) "-I$(PROJ_BASE)/inc" -o $@ $<
 
 $(OBJDIR)/test_dendrometer: test_dendrometer.c mock_board.c \
-		../STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN\(AT\)/src/dendrometer.c \
+		$(PROJ_BASE)/src/dendrometer.c \
 		| $(OBJDIR)
-	$(CC) $(CFLAGS) -o $@ test_dendrometer.c mock_board.c \
-		../STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN\(AT\)/src/dendrometer.c
+	$(CC) $(CFLAGS) "-I$(PROJ_BASE)/inc" -o $@ \
+		test_dendrometer.c mock_board.c "$(PROJ_BASE)/src/dendrometer.c"
 
 $(OBJDIR):
 	mkdir -p $@
