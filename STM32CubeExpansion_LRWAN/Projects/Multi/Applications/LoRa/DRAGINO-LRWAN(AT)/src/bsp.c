@@ -615,7 +615,40 @@ void  BSP_sensor_Init( void  )
 	
 	GPIO_EXTI14_IoInit(inmode);
 	GPIO_INPUT_IoInit();
-	
+
 	#endif
+}
+
+/* ========================================================================
+ *  Dendrometer board primitives (see inc/dendrometer.h)
+ *
+ *  Kept in bsp.c so all HAL-adjacent code lives in one translation unit.
+ *  The dendrometer module itself never includes any HAL header.
+ * ====================================================================== */
+
+#include "dendrometer.h"
+
+void dendro_board_5v_on(void) {
+    /* PWR_OUT uses inverted logic: RESET enables the 5V boost. */
+    HAL_GPIO_WritePin(PWR_OUT_PORT, PWR_OUT_PIN, GPIO_PIN_RESET);
+}
+
+void dendro_board_5v_off(void) {
+    HAL_GPIO_WritePin(PWR_OUT_PORT, PWR_OUT_PIN, GPIO_PIN_SET);
+}
+
+uint16_t dendro_board_adc_read_signal(void) {
+    /* PA0 — same channel constant the stock MOD=3 read used for the first
+     * 6-sample sweep ("oil" channel in stock nomenclature). */
+    return HW_AdcReadChannel(ADC_Channel_Oil);
+}
+
+uint16_t dendro_board_adc_read_reference(void) {
+    /* PA1 — stock ADC_Channel_IN1. */
+    return HW_AdcReadChannel(ADC_Channel_IN1);
+}
+
+void dendro_board_delay_ms(uint32_t ms) {
+    HAL_Delay(ms);
 }
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
