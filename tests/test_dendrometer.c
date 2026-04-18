@@ -96,12 +96,80 @@ static void test_adc_fail_reference_zero(void) {
     puts("  PASS adc_fail_reference_zero");
 }
 
+static int last_event_is(mock_event_kind_t kind) {
+    size_t n = mock_board_event_count();
+    if (n == 0) return 0;
+    return mock_board_events()[n - 1].kind == kind;
+}
+
+static int first_event_is(mock_event_kind_t kind) {
+    if (mock_board_event_count() == 0) return 0;
+    return mock_board_events()[0].kind == kind;
+}
+
+static void test_power_sequence_happy_path(void) {
+    mock_board_reset();
+    mock_board_set_signal_constant(2048);
+    mock_board_set_reference_constant(2048);
+
+    dendrometer_result_t r;
+    dendrometer_measure(&r);
+
+    ASSERT_TRUE(first_event_is(MOCK_EVT_5V_ON), "first event is 5V_ON");
+    ASSERT_TRUE(last_event_is(MOCK_EVT_5V_OFF), "last event is 5V_OFF");
+    puts("  PASS power_sequence_happy_path");
+}
+
+static void test_power_sequence_ref_low(void) {
+    mock_board_reset();
+    mock_board_set_signal_constant(1024);
+    mock_board_set_reference_constant(10);
+
+    dendrometer_result_t r;
+    dendrometer_measure(&r);
+
+    ASSERT_TRUE(last_event_is(MOCK_EVT_5V_OFF), "5V_OFF still fires on REF_LOW");
+    puts("  PASS power_sequence_ref_low");
+}
+
+static void test_power_sequence_adc_fail(void) {
+    mock_board_reset();
+    mock_board_set_signal_constant(0);
+    mock_board_set_reference_constant(2048);
+
+    dendrometer_result_t r;
+    dendrometer_measure(&r);
+
+    ASSERT_TRUE(last_event_is(MOCK_EVT_5V_OFF), "5V_OFF still fires on ADC_FAIL");
+    puts("  PASS power_sequence_adc_fail");
+}
+
+static void test_settle_delay_happens(void) {
+    mock_board_reset();
+    mock_board_set_signal_constant(2048);
+    mock_board_set_reference_constant(2048);
+
+    dendrometer_result_t r;
+    dendrometer_measure(&r);
+
+    /* Second event must be the settle DELAY(50). */
+    ASSERT_TRUE(mock_board_event_count() >= 2, "enough events recorded");
+    const mock_event_t *evts = mock_board_events();
+    ASSERT_TRUE(evts[1].kind == MOCK_EVT_DELAY,      "second event is DELAY");
+    ASSERT_EQ_U32(evts[1].value, DENDRO_SETTLE_MS,   "settle delay value");
+    puts("  PASS settle_delay_happens");
+}
+
 int main(void) {
     test_average_of_constant();
     test_reference_low();
     test_reference_high();
     test_adc_fail_signal_zero();
     test_adc_fail_reference_zero();
+    test_power_sequence_happy_path();
+    test_power_sequence_ref_low();
+    test_power_sequence_adc_fail();
+    test_settle_delay_happens();
     puts("PASS dendrometer");
     return 0;
 }
