@@ -640,21 +640,38 @@ static void Send( void )
 	
 	else if(mode==3)
 	{
-		/* Ratiometric dendrometer payload — 8 bytes, see dendrometer.h.
-		 * Status byte preserves the legacy switch / in1 / mode-nibble layout
-		 * so osi-dendro-helper's detectLsn50ModeCode() still returns 3. */
+		AppData.Buff[i++] =(int)(sensor_data.oil)>>8;          //oil float
+		AppData.Buff[i++] =(int)sensor_data.oil;
+
+		AppData.Buff[i++] =(int)(sensor_data.ADC_1)>>8;
+		AppData.Buff[i++] =(int)(sensor_data.ADC_1);
+		AppData.Buff[i++] =(int)(sensor_data.ADC_2)>>8;
+		AppData.Buff[i++] =(int)(sensor_data.ADC_2);
+
 		if(exit_temp==0)
 		{
 			switch_status=HAL_GPIO_ReadPin(GPIO_EXTI14_PORT,GPIO_EXTI14_PIN);
 		}
-		uint8_t status_byte = (switch_status<<7)
-		                    | (sensor_data.in1<<1)
-		                    | 0x08
-		                    | (exit_temp & 0x01);
-		i += dendrometer_pack_payload(&sensor_data.dendro,
-		                              batteryLevel_mV,
-		                              status_byte,
-		                              &AppData.Buff[i]);
+		AppData.Buff[i++]=(switch_status<<7)|(sensor_data.in1<<1)|0x08|(exit_temp&0x01);
+
+		#if defined USE_SHT
+		if(bh1750flags==1)
+		{
+			AppData.Buff[i++] =(sensor_data.illuminance)>>8;
+			AppData.Buff[i++] =(sensor_data.illuminance);
+			AppData.Buff[i++] = 0x00;
+			AppData.Buff[i++] = 0x00;
+		}
+		else
+		{
+			AppData.Buff[i++] =(int)(sensor_data.temp_sht*10)>>8;
+			AppData.Buff[i++] =(int)(sensor_data.temp_sht*10);
+			AppData.Buff[i++] =(int)(sensor_data.hum_sht*10)>>8;
+			AppData.Buff[i++] =(int)(sensor_data.hum_sht*10);
+		}
+		#endif
+
+		AppData.Buff[i++] =(int)(batteryLevel_mV/100);
 	}
 	
   else if(mode==4)
