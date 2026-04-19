@@ -68,6 +68,7 @@
 #include "iwdg.h"
 #include "bh1750.h"
 #include "tfsensor.h"
+#include "dendrometer.h"
 #endif
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -643,8 +644,6 @@ void  BSP_sensor_Init( void  )
  *  Kept in bsp.c so all HAL-adjacent code lives in one translation unit.
  *  The dendrometer module itself never includes any HAL header.
  * ====================================================================== */
-
-#include "dendrometer.h"
 
 void dendro_board_5v_on(void) {
     /* PWR_OUT uses inverted logic: RESET enables the 5V boost. */
