@@ -301,18 +301,23 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
 	} 
 	else if(mode==3)
 	{
-		 /* Ratiometric dendrometer: 50 paired PA0/PA1 samples, raw averages.
-		  * See inc/dendrometer.h and the Claude-authored design spec. */
-		 dendrometer_measure(&sensor_data->dendro);
-		 if(message==1)
-		 {
-			 PPRINTF("DENDRO sig:%u ref:%u flags:0x%02X\r\n",
-			         (unsigned)sensor_data->dendro.adc_signal_avg_raw,
-			         (unsigned)sensor_data->dendro.adc_reference_avg_raw,
-			         (unsigned)sensor_data->dendro.flags);
-		 }
+		/* Ratiometric dendrometer: 20 paired PA0/PA1 samples at 10 ms cadence
+		 * for 50 Hz mains rejection. Converted to stock MOD=8-shape mV so the
+		 * MOD=3 uplink reuses the stock 12-byte wire layout. PA4 is not wired
+		 * for the dendrometer: sensor_data->ADC_2 is left at 0. */
+		dendrometer_result_t dendro;
+		dendrometer_measure(&dendro);
+		sensor_data->oil   = (uint16_t)((uint32_t)dendro.signal_raw    * batteryLevel_mV / 4095U);
+		sensor_data->ADC_1 = (uint16_t)((uint32_t)dendro.reference_raw * batteryLevel_mV / 4095U);
+		sensor_data->ADC_2 = 0;
+		if(message==1)
+		{
+			PPRINTF("ADC_PA0:%.3f V\r\n",(sensor_data->oil/1000.0));
+			PPRINTF("ADC_PA1:%.3f V\r\n",(sensor_data->ADC_1/1000.0));
+			PPRINTF("ADC_PA4:%.3f V\r\n",(sensor_data->ADC_2/1000.0));
+		}
 	}
-	else if(mode==8)
+	else if((mode==3)||(mode==8))
 	{
 		 BSP_oil_float_Init();
 		 for(uint8_t w=0;w<6;w++)
