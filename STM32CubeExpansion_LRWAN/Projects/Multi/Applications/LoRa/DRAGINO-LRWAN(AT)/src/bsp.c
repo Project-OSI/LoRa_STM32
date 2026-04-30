@@ -68,7 +68,6 @@
 #include "iwdg.h"
 #include "bh1750.h"
 #include "tfsensor.h"
-#include "dendrometer.h"
 #endif
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -300,24 +299,6 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
 			sensor_data->distance_signal_strengh = 65535;			
 		}			 
 	} 
-	else if(mode==3)
-	{
-		/* Ratiometric dendrometer: 20 paired PA0/PA1 samples at 10 ms cadence
-		 * for 50 Hz mains rejection. Converted to stock MOD=8-shape mV so the
-		 * MOD=3 uplink reuses the stock 12-byte wire layout. PA4 is not wired
-		 * for the dendrometer: sensor_data->ADC_2 is left at 0. */
-		dendrometer_result_t dendro;
-		dendrometer_measure(&dendro);
-		sensor_data->oil   = (uint16_t)((uint32_t)dendro.signal_raw    * batteryLevel_mV / 4095U);
-		sensor_data->ADC_1 = (uint16_t)((uint32_t)dendro.reference_raw * batteryLevel_mV / 4095U);
-		sensor_data->ADC_2 = 0;
-		if(message==1)
-		{
-			PPRINTF("ADC_PA0:%.3f V\r\n",(sensor_data->oil/1000.0));
-			PPRINTF("ADC_PA1:%.3f V\r\n",(sensor_data->ADC_1/1000.0));
-			PPRINTF("ADC_PA4:%.3f V\r\n",(sensor_data->ADC_2/1000.0));
-		}
-	}
 	else if((mode==3)||(mode==8))
 	{
 		 BSP_oil_float_Init();
@@ -638,34 +619,4 @@ void  BSP_sensor_Init( void  )
 	#endif
 }
 
-/* ========================================================================
- *  Dendrometer board primitives (see inc/dendrometer.h)
- *
- *  Kept in bsp.c so all HAL-adjacent code lives in one translation unit.
- *  The dendrometer module itself never includes any HAL header.
- * ====================================================================== */
-
-void dendro_board_5v_on(void) {
-    /* PWR_OUT uses inverted logic: RESET enables the 5V boost. */
-    HAL_GPIO_WritePin(PWR_OUT_PORT, PWR_OUT_PIN, GPIO_PIN_RESET);
-}
-
-void dendro_board_5v_off(void) {
-    HAL_GPIO_WritePin(PWR_OUT_PORT, PWR_OUT_PIN, GPIO_PIN_SET);
-}
-
-uint16_t dendro_board_adc_read_signal(void) {
-    /* PA0 — same channel constant the stock MOD=3 read used for the first
-     * 6-sample sweep ("oil" channel in stock nomenclature). */
-    return HW_AdcReadChannel(ADC_Channel_Oil);
-}
-
-uint16_t dendro_board_adc_read_reference(void) {
-    /* PA1 — stock ADC_Channel_IN1. */
-    return HW_AdcReadChannel(ADC_Channel_IN1);
-}
-
-void dendro_board_delay_ms(uint32_t ms) {
-    HAL_Delay(ms);
-}
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

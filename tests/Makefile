@@ -1,4 +1,4 @@
-# Host-side tests for LSN50V2 dendrometer firmware.
+# Host-side tests for LSN50V2 firmware.
 # Uses native gcc; no ARM, no HAL, no cross-compilation.
 
 CC      ?= gcc
@@ -14,7 +14,7 @@ CFLAGS  ?= -std=c99 -Wall -Wextra -Werror -O0 -g
 
 OBJDIR  := build
 
-TESTS := harness_smoke dendrometer
+TESTS := harness_smoke
 
 .PHONY: all test clean
 all: test
@@ -28,12 +28,6 @@ test: $(addprefix $(OBJDIR)/test_,$(TESTS))
 
 $(OBJDIR)/test_harness_smoke: test_harness_smoke.c | $(OBJDIR)
 	$(CC) $(CFLAGS) "-I$(PROJ_BASE)/inc" -o $@ $<
-
-$(OBJDIR)/test_dendrometer: test_dendrometer.c mock_board.c \
-		$(PROJ_BASE)/src/dendrometer.c \
-		| $(OBJDIR)
-	$(CC) $(CFLAGS) "-I$(PROJ_BASE)/inc" -o $@ \
-		test_dendrometer.c mock_board.c "$(PROJ_BASE)/src/dendrometer.c"
 
 $(OBJDIR):
 	mkdir -p $@
