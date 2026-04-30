@@ -137,6 +137,22 @@ int via_chameleon_read_sample(chameleon_sample_t *sample) {
 }
 
 int via_chameleon_acquire(chameleon_sample_t *sample, uint16_t timeout_ms) {
+#ifdef CHAMELEON_DUMMY
+    if (sample == 0) return 0;
+    static const uint8_t dummy_id[8] = {0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF};
+    sample->soil_temp_c_x100 = 2000;
+    sample->r1_ohm_comp      = 1600U;
+    sample->r2_ohm_comp      = 100000U;
+    sample->r3_ohm_comp      = 1600000U;
+    sample->r1_ohm_raw       = 1600U;
+    sample->r2_ohm_raw       = 100000U;
+    sample->r3_ohm_raw       = 1600000U;
+    for (int i = 0; i < 8; i++) sample->array_id[i] = dummy_id[i];
+    sample->battery_mv       = chameleon_board_battery_mv();
+    sample->status_flags     = 0;
+    (void)timeout_ms;
+    return 1;
+#endif
     if (sample == 0) return 0;
     memset(sample, 0, sizeof(*sample));
 
