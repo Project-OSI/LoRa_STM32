@@ -175,7 +175,9 @@ int via_chameleon_acquire(chameleon_sample_t *sample, uint16_t timeout_ms) {
         return 1;
     }
 
-    via_chameleon_read_sample(sample);
+    if (!via_chameleon_read_sample(sample)) {
+        sample->status_flags |= CHAMELEON_FLAG_I2C_MISSING;
+    }
     sample->battery_mv = chameleon_board_battery_mv();
     return 1;
 }

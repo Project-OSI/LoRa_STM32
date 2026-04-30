@@ -69,6 +69,15 @@ static void test_status_timeout(void) {
     ASSERT_TRUE(s.status_flags & CHAMELEON_FLAG_TIMEOUT, "timeout flag");
 }
 
+static void test_register_read_failure_sets_fault_flag(void) {
+    mock_chameleon_reset();
+    mock_chameleon_fail_command(CHAMELEON_CMD_RES_RAW2);
+    chameleon_sample_t s;
+    int ok = via_chameleon_acquire(&s, CHAMELEON_DEFAULT_TIMEOUT_MS);
+    ASSERT_EQ_U32(ok, 1, "device present, partial read failure ok");
+    ASSERT_TRUE(s.status_flags & CHAMELEON_FLAG_I2C_MISSING, "read failure flag");
+}
+
 static void test_sentinel_temperature(void) {
     mock_chameleon_reset();
     mock_chameleon_set_temp_x100(CHAMELEON_TEMP_SENTINEL_X100);
@@ -102,6 +111,7 @@ int main(void) {
     test_device_missing();
     test_status_polled_until_ready();
     test_status_timeout();
+    test_register_read_failure_sets_fault_flag();
     test_sentinel_temperature();
     test_sentinel_id();
     test_sentinel_open_channel();
