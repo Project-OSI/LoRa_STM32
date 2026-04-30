@@ -67,6 +67,9 @@ Maintainer: Miguel Luis and Gregory Cristian
 #endif
 
 #include "hw.h"
+#ifdef USE_CHAMELEON
+#include "via_chameleon.h"
+#endif
 
 /* Includes ------------------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
@@ -133,6 +136,10 @@ void  BSP_sensor_Init( void  );
 void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message);
 
 void Device_status( device_t *device_data);
+
+#ifdef USE_CHAMELEON
+const chameleon_sample_t *bsp_chameleon_last_sample(void);
+#endif
 
 #ifdef __cplusplus
 }

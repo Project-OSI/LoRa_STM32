@@ -58,6 +58,11 @@
 #include "gpio_exti.h"
 #include "weight.h"
 #include "iwdg.h"
+#ifdef USE_CHAMELEON
+#include "via_chameleon.h"
+#include "chameleon_payload.h"
+#include "bsp.h"
+#endif
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -640,6 +645,22 @@ static void Send( void )
 	
 	else if(mode==3)
 	{
+#ifdef USE_CHAMELEON
+		chameleon_sample_t cs = *bsp_chameleon_last_sample();
+		uint8_t mod3_status;
+		if(exit_temp==0)
+		{
+			switch_status=HAL_GPIO_ReadPin(GPIO_EXTI14_PORT,GPIO_EXTI14_PIN);
+		}
+		mod3_status = (switch_status<<7)|(sensor_data.in1<<1)|0x08|(exit_temp&0x01);
+
+		cs.adc_pa0_mv  = (uint16_t)sensor_data.oil;
+		cs.adc_pa1_mv  = (uint16_t)sensor_data.ADC_1;
+		cs.adc_pa4_mv  = (uint16_t)sensor_data.ADC_2;
+		cs.mod3_status = mod3_status;
+
+		i = chameleon_payload_encode_v1(AppData.Buff, LORAWAN_APP_DATA_BUFF_SIZE, &cs);
+#else
 		AppData.Buff[i++] =(int)(sensor_data.oil)>>8;          //oil float
 		AppData.Buff[i++] =(int)sensor_data.oil;
 
@@ -672,6 +693,7 @@ static void Send( void )
 		#endif
 
 		AppData.Buff[i++] =(int)(batteryLevel_mV/100);
+#endif /* USE_CHAMELEON */
 	}
 	
   else if(mode==4)

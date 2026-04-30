@@ -69,6 +69,9 @@
 #include "bh1750.h"
 #include "tfsensor.h"
 #endif
+#ifdef USE_CHAMELEON
+#include "via_chameleon.h"
+#endif
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
@@ -93,8 +96,20 @@ extern uint16_t fire_version;
 extern float sht31_tem,sht31_hum;
 extern I2C_HandleTypeDef I2cHandle1;
 extern I2C_HandleTypeDef I2cHandle2;
+#endif
 extern I2C_HandleTypeDef I2cHandle3;
 tfsensor_reading_t reading_t;
+
+#ifdef USE_CHAMELEON
+I2C_HandleTypeDef I2cHandle1;
+static uint8_t g_chameleon_i2c_ready;
+static chameleon_sample_t g_chameleon_last_sample;
+#define CHAMELEON_I2C_TIMING_400KHZ  0x00B1112EU
+static int chameleon_i2c1_init_400khz(void);
+const chameleon_sample_t *bsp_chameleon_last_sample(void)
+{
+    return &g_chameleon_last_sample;
+}
 #endif
 
 extern uint8_t mode;
@@ -151,7 +166,11 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
 		}
 	}
 	
+#ifdef USE_CHAMELEON
+  if(mode==1)
+#else
   if((mode==1)||(mode==3))
+#endif
   {		
 		#ifdef USE_SHT
 		if(flags==0)
@@ -327,6 +346,27 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
 		 }
 		 AD_code3=ADC_Average(adcdata[2]);
 	   sensor_data->ADC_2=AD_code3*batteryLevel_mV/4095;
+#ifdef USE_CHAMELEON
+    if(mode==3)
+    {
+        /* Keep stock MOD=3 ADC values in sensor_data, then append the
+         * Chameleon I2C sample for main.c to encode in the same uplink. */
+        (void)via_chameleon_acquire(&g_chameleon_last_sample,
+                                    CHAMELEON_DEFAULT_TIMEOUT_MS);
+        if(message==1)
+        {
+            PPRINTF("Chameleon flags:0x%02x temp:%d comp:%lu/%lu/%lu raw:%lu/%lu/%lu\r\n",
+                    g_chameleon_last_sample.status_flags,
+                    (int)g_chameleon_last_sample.soil_temp_c_x100,
+                    (unsigned long)g_chameleon_last_sample.r1_ohm_comp,
+                    (unsigned long)g_chameleon_last_sample.r2_ohm_comp,
+                    (unsigned long)g_chameleon_last_sample.r3_ohm_comp,
+                    (unsigned long)g_chameleon_last_sample.r1_ohm_raw,
+                    (unsigned long)g_chameleon_last_sample.r2_ohm_raw,
+                    (unsigned long)g_chameleon_last_sample.r3_ohm_raw);
+        }
+    }
+#endif
 		 HAL_GPIO_WritePin(OIL_CONTROL_PORT,OIL_CONTROL_PIN,GPIO_PIN_SET);
 
 		 if(message==1)
@@ -485,7 +525,11 @@ void  BSP_sensor_Init( void  )
 	
 	 pwr_control_IoInit();		
 	
+#ifdef USE_CHAMELEON
+	if(mode==1)
+#else
 	if((mode==1)||(mode==3))
+#endif
 	{	 
 	 #ifdef USE_SHT
 	 uint8_t txdata1[1]={0xE7},txdata2[2]={0xF3,0x2D};
@@ -548,6 +592,18 @@ void  BSP_sensor_Init( void  )
 	 }
 	 #endif
    }
+#ifdef USE_CHAMELEON
+	else if(mode==3)
+	{
+		if (!chameleon_i2c1_init_400khz()) {
+			PRINTF("\r\nChameleon I2C disabled; uplinks will set I2C missing\r\n");
+		} else if (via_chameleon_probe()) {
+			PRINTF("\r\nChameleon detected at 0x08\r\n");
+		} else {
+			PRINTF("\r\nChameleon NOT detected at 0x08\r\n");
+		}
+	}
+#endif
 	 
 	else if(mode==2)
 	{	
@@ -618,5 +674,59 @@ void  BSP_sensor_Init( void  )
 
 	#endif
 }
+
+#ifdef USE_CHAMELEON
+static int chameleon_i2c1_init_400khz(void) {
+    g_chameleon_i2c_ready = 0;
+    I2cHandle1.Instance              = I2Cx;
+    I2cHandle1.Init.Timing           = CHAMELEON_I2C_TIMING_400KHZ;
+    I2cHandle1.Init.AddressingMode   = I2C_ADDRESSINGMODE_7BIT;
+    I2cHandle1.Init.DualAddressMode  = I2C_DUALADDRESS_DISABLE;
+    I2cHandle1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+    I2cHandle1.Init.GeneralCallMode  = I2C_GENERALCALL_DISABLE;
+    I2cHandle1.Init.NoStretchMode    = I2C_NOSTRETCH_DISABLE;
+    I2cHandle1.Init.OwnAddress1      = 0xF0;
+    I2cHandle1.Init.OwnAddress2      = 0xFE;
+
+    if (HAL_I2C_Init(&I2cHandle1) != HAL_OK) {
+        PRINTF("\r\nChameleon I2C init failed\r\n");
+        return 0;
+    }
+    g_chameleon_i2c_ready = 1;
+    return 1;
+}
+
+chameleon_i2c_status_t chameleon_board_i2c_write(uint8_t addr7, const uint8_t *data, size_t len) {
+    uint16_t addr8 = (uint16_t)addr7 << 1;
+    HAL_StatusTypeDef hs;
+    if (!g_chameleon_i2c_ready) { return CHAMELEON_I2C_ERR_NACK; }
+    if (len == 0) {
+        hs = HAL_I2C_IsDeviceReady(&I2cHandle1, addr8, 1, 1000);
+    } else {
+        hs = HAL_I2C_Master_Transmit(&I2cHandle1, addr8, (uint8_t *)data, (uint16_t)len, 1000);
+    }
+    if (hs == HAL_OK)      return CHAMELEON_I2C_OK;
+    if (hs == HAL_TIMEOUT) return CHAMELEON_I2C_ERR_TIMEOUT;
+    return CHAMELEON_I2C_ERR_NACK;
+}
+
+chameleon_i2c_status_t chameleon_board_i2c_write_read(uint8_t addr7,
+                                                      const uint8_t *wdata, size_t wlen,
+                                                      uint8_t *rdata, size_t rlen) {
+    if (!g_chameleon_i2c_ready) { return CHAMELEON_I2C_ERR_NACK; }
+    if (wlen != 1) { return CHAMELEON_I2C_ERR_BUS; }
+
+    HAL_StatusTypeDef hs = HAL_I2C_Mem_Read(&I2cHandle1, (uint16_t)addr7 << 1,
+                                            wdata[0], I2C_MEMADD_SIZE_8BIT,
+                                            rdata, (uint16_t)rlen, 1000);
+    if (hs == HAL_OK)      return CHAMELEON_I2C_OK;
+    if (hs == HAL_TIMEOUT) return CHAMELEON_I2C_ERR_TIMEOUT;
+    return CHAMELEON_I2C_ERR_NACK;
+}
+
+void chameleon_board_delay_ms(uint32_t ms) { HAL_Delay(ms); }
+
+uint16_t chameleon_board_battery_mv(void) { return batteryLevel_mV; }
+#endif /* USE_CHAMELEON */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
