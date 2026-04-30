@@ -14,7 +14,7 @@ CFLAGS  ?= -std=c99 -Wall -Wextra -Werror -O0 -g
 
 OBJDIR  := build
 
-TESTS := harness_smoke
+TESTS := harness_smoke chameleon_payload
 
 .PHONY: all test clean
 all: test
@@ -28,6 +28,12 @@ test: $(addprefix $(OBJDIR)/test_,$(TESTS))
 
 $(OBJDIR)/test_harness_smoke: test_harness_smoke.c | $(OBJDIR)
 	$(CC) $(CFLAGS) "-I$(PROJ_BASE)/inc" -o $@ $<
+
+$(OBJDIR)/test_chameleon_payload: test_chameleon_payload.c \
+		$(PROJ_BASE)/src/chameleon_payload.c \
+		| $(OBJDIR)
+	$(CC) $(CFLAGS) "-I$(PROJ_BASE)/inc" -o $@ \
+		test_chameleon_payload.c "$(PROJ_BASE)/src/chameleon_payload.c"
 
 $(OBJDIR):
 	mkdir -p $@
