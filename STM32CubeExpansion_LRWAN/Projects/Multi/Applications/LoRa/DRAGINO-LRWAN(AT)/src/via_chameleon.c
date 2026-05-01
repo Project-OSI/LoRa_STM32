@@ -39,17 +39,6 @@ int via_chameleon_wait_ready(uint16_t timeout_ms) {
     return 0;
 }
 
-static void zero_measurements(chameleon_sample_t *s) {
-    s->soil_temp_c_x100 = 0;
-    s->r1_ohm_comp      = 0;
-    s->r2_ohm_comp      = 0;
-    s->r3_ohm_comp      = 0;
-    s->r1_ohm_raw       = 0;
-    s->r2_ohm_raw       = 0;
-    s->r3_ohm_raw       = 0;
-    memset(s->array_id, 0, 8);
-}
-
 int via_chameleon_read_sample(chameleon_sample_t *sample) {
     if (sample == 0) return 0;
 
@@ -170,7 +159,6 @@ int via_chameleon_acquire(chameleon_sample_t *sample, uint16_t timeout_ms) {
 
     if (!via_chameleon_wait_ready(timeout_ms)) {
         sample->status_flags |= CHAMELEON_FLAG_TIMEOUT;
-        zero_measurements(sample);
         sample->battery_mv = chameleon_board_battery_mv();
         return 1;
     }

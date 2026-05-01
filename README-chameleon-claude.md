@@ -91,6 +91,8 @@ firmware version.
    `DE AD BE EF DE AD BE EF` ID.
 2. Build `chameleon`, flash it, and leave the reader disconnected. Expect
    `status_flags & 0x01` set at offset 9 for I2C missing.
+   The same flag is expected if the STM32 I2C peripheral fails to initialise;
+   the firmware does not hard-hang on that fault.
 3. Connect the reader without soil probes. Expect `0x70` at offset 9 for
    R1/R2/R3 open.
 4. Connect a real probe set. Expect realistic resistances and clean flags. If

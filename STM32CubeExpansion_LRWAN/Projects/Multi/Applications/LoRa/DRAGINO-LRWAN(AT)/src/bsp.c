@@ -690,6 +690,8 @@ static int chameleon_i2c1_init_400khz(void) {
 
     if (HAL_I2C_Init(&I2cHandle1) != HAL_OK) {
         PRINTF("\r\nChameleon I2C init failed\r\n");
+        /* Leave the ready flag clear so later acquisitions uplink I2C_MISSING
+         * instead of hard-hanging the node during bring-up or field faults. */
         return 0;
     }
     g_chameleon_i2c_ready = 1;
