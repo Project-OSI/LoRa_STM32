@@ -14,7 +14,7 @@ CFLAGS  ?= -std=c99 -Wall -Wextra -Werror -O0 -g
 
 OBJDIR  := build
 
-TESTS := harness_smoke chameleon_payload chameleon_driver
+TESTS := harness_smoke chameleon_payload chameleon_driver battery_level_typo
 
 .PHONY: all test clean
 all: test
@@ -43,6 +43,9 @@ $(OBJDIR)/test_chameleon_driver: test_chameleon_driver.c mock_chameleon_i2c.c \
 		test_chameleon_driver.c mock_chameleon_i2c.c \
 		"$(PROJ_BASE)/src/via_chameleon.c" \
 		"$(PROJ_BASE)/src/chameleon_payload.c"
+
+$(OBJDIR)/test_battery_level_typo: test_battery_level_typo.c | $(OBJDIR)
+	$(CC) $(CFLAGS) -o $@ $<
 
 $(OBJDIR):
 	mkdir -p $@
