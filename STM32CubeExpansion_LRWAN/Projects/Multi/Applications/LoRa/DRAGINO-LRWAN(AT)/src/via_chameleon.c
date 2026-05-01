@@ -126,8 +126,10 @@ int via_chameleon_read_sample(chameleon_sample_t *sample) {
 }
 
 int via_chameleon_acquire(chameleon_sample_t *sample, uint16_t timeout_ms) {
-#ifdef CHAMELEON_DUMMY
     if (sample == 0) return 0;
+    memset(sample, 0, sizeof(*sample));
+
+#ifdef CHAMELEON_DUMMY
     static const uint8_t dummy_id[8] = {0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF};
     sample->soil_temp_c_x100 = 2000;
     sample->r1_ohm_comp      = 1600U;
@@ -142,8 +144,6 @@ int via_chameleon_acquire(chameleon_sample_t *sample, uint16_t timeout_ms) {
     (void)timeout_ms;
     return 1;
 #endif
-    if (sample == 0) return 0;
-    memset(sample, 0, sizeof(*sample));
 
     if (!via_chameleon_probe()) {
         sample->status_flags |= CHAMELEON_FLAG_I2C_MISSING;

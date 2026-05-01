@@ -61,6 +61,10 @@ Status flag bits: `0` = I2C missing, `1` = timeout, `2` = temp fault
 (-127 C), `3` = ID fault (`0xFF` x 8), `4..6` = R1..R3 open
 (compensated or raw 10 Mohm sentinel), `7` reserved.
 
+Decoder rule: inspect byte 9 before trusting bytes 10-43. If bit 0 or bit 1 is
+set, the Chameleon measurement fields are zero-filled placeholders and the
+frame is kept at 44 bytes only so the uplink shape stays fixed.
+
 On Chameleon-only deployments with nothing wired to PA0/PA1/PA4, bytes 0-5
 are floating ADC noise and should be ignored downstream. They remain in the
 payload only to preserve stock MOD=3 layout.
@@ -88,7 +92,8 @@ firmware version.
    FPort frame in ChirpStack or gateway logs. The first 8 bytes are live stock
    MOD=3 ADC/status/battery fields. The Chameleon extension bytes match the
    canned values: compensated and raw both 1.6 kohm / 100 kohm / 1.6 Mohm,
-   `DE AD BE EF DE AD BE EF` ID.
+   `DE AD BE EF DE AD BE EF` ID. That dummy ID is synthetic and intentionally
+   does not look like a real DS18B20 ROM code.
 2. Build `chameleon`, flash it, and leave the reader disconnected. Expect
    `status_flags & 0x01` set at offset 9 for I2C missing.
    The same flag is expected if the STM32 I2C peripheral fails to initialise;

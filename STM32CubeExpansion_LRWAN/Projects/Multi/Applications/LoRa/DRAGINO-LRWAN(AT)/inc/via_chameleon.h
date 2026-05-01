@@ -47,6 +47,9 @@ int  via_chameleon_probe(void);
 int  via_chameleon_trigger(void);
 int  via_chameleon_wait_ready(uint16_t timeout_ms);
 int  via_chameleon_read_sample(chameleon_sample_t *sample);
+/* Returns 0 only when no Chameleon device is present or sample is NULL.
+ * Returns 1 when a fixed-shape sample is populated; callers must inspect
+ * sample->status_flags before trusting trailing Chameleon measurement fields. */
 int  via_chameleon_acquire(chameleon_sample_t *sample, uint16_t timeout_ms);
 
 #endif /* VIA_CHAMELEON_H */
