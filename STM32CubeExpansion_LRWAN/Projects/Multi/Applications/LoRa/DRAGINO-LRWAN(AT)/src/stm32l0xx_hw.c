@@ -327,7 +327,6 @@ uint8_t HW_GetBatteryLevel( void )
 {
   uint8_t batteryLevel = 0;
   uint16_t measuredLevel = 0;
-  uint32_t batteryLevelmV;
 
   measuredLevel = HW_AdcReadChannel( ADC_CHANNEL_VREFINT ); 
 
@@ -344,13 +343,13 @@ uint8_t HW_GetBatteryLevel( void )
   {
     batteryLevel = LORAWAN_MAX_BAT;
   }
-  else if (batteryLevelmV < VDD_MIN)
+  else if (batteryLevel_mV < VDD_MIN)
   {
     batteryLevel = 1;
   }
   else
   {
-    batteryLevel = (( (uint32_t) (batteryLevelmV - VDD_MIN)*LORAWAN_MAX_BAT) /(VDD_BAT-VDD_MIN) ); 
+    batteryLevel = (( (uint32_t) (batteryLevel_mV - VDD_MIN)*LORAWAN_MAX_BAT) /(VDD_BAT-VDD_MIN) ); 
   }
   return batteryLevel;
 }
@@ -532,4 +531,3 @@ void LPM_EnterSleepMode( void)
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-

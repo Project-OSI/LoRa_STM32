@@ -14,7 +14,7 @@ CFLAGS  ?= -std=c99 -Wall -Wextra -Werror -O0 -g
 
 OBJDIR  := build
 
-TESTS := harness_smoke dendrometer
+TESTS := harness_smoke dendrometer battery_level_typo
 
 .PHONY: all test clean
 all: test
@@ -34,6 +34,9 @@ $(OBJDIR)/test_dendrometer: test_dendrometer.c mock_board.c \
 		| $(OBJDIR)
 	$(CC) $(CFLAGS) "-I$(PROJ_BASE)/inc" -o $@ \
 		test_dendrometer.c mock_board.c "$(PROJ_BASE)/src/dendrometer.c"
+
+$(OBJDIR)/test_battery_level_typo: test_battery_level_typo.c | $(OBJDIR)
+	$(CC) $(CFLAGS) -o $@ $<
 
 $(OBJDIR):
 	mkdir -p $@
