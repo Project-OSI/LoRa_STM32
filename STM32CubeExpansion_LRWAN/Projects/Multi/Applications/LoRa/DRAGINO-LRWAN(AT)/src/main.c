@@ -659,7 +659,7 @@ static void Send( void )
 		cs.adc_pa4_mv  = (uint16_t)sensor_data.ADC_2;
 		cs.mod3_status = mod3_status;
 
-		i = chameleon_payload_encode_v1(AppData.Buff, LORAWAN_APP_DATA_BUFF_SIZE, &cs);
+		i = chameleon_payload_encode_v2(AppData.Buff, LORAWAN_APP_DATA_BUFF_SIZE, &cs);
 #else
 		AppData.Buff[i++] =(int)(sensor_data.oil)>>8;          //oil float
 		AppData.Buff[i++] =(int)sensor_data.oil;

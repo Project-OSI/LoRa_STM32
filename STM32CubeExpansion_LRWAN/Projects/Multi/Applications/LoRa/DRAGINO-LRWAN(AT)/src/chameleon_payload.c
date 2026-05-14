@@ -12,6 +12,20 @@ static void put_u32_be(uint8_t *p, uint32_t v) {
     p[3] = (uint8_t)(v & 0xFFU);
 }
 
+static uint8_t chameleon_payload_status_v2(uint8_t v1_flags) {
+    uint8_t out = 0;
+    if (v1_flags & (CHAMELEON_FLAG_I2C_MISSING | CHAMELEON_FLAG_TIMEOUT)) {
+        out |= CHAMELEON_V2_FLAG_DATA_INVALID;
+    }
+    if (v1_flags & CHAMELEON_FLAG_TEMP_FAULT) {
+        out |= CHAMELEON_V2_FLAG_TEMP_FAULT;
+    }
+    if (v1_flags & CHAMELEON_FLAG_ID_FAULT) {
+        out |= CHAMELEON_V2_FLAG_ID_FAULT;
+    }
+    return out;
+}
+
 size_t chameleon_payload_encode_v1(uint8_t *buf, size_t buf_len,
                                    const chameleon_sample_t *sample) {
     if (buf == 0 || sample == 0) { return 0; }
@@ -33,4 +47,24 @@ size_t chameleon_payload_encode_v1(uint8_t *buf, size_t buf_len,
     put_u32_be(&buf[32], sample->r3_ohm_raw);
     for (size_t i = 0; i < 8; i++) { buf[36 + i] = sample->array_id[i]; }
     return CHAMELEON_PAYLOAD_LEN_V1;
+}
+
+size_t chameleon_payload_encode_v2(uint8_t *buf, size_t buf_len,
+                                   const chameleon_sample_t *sample) {
+    if (buf == 0 || sample == 0) { return 0; }
+    if (buf_len < CHAMELEON_PAYLOAD_LEN_V2) { return 0; }
+
+    put_u16_be(&buf[0], sample->adc_pa0_mv);
+    put_u16_be(&buf[2], sample->adc_pa1_mv);
+    put_u16_be(&buf[4], sample->adc_pa4_mv);
+    buf[6] = sample->mod3_status;
+    buf[7] = (uint8_t)(sample->battery_mv / 100U);
+    buf[8] = CHAMELEON_PAYLOAD_VERSION_V2;
+    buf[9] = chameleon_payload_status_v2(sample->status_flags);
+    put_u16_be(&buf[10], (uint16_t)sample->soil_temp_c_x100);
+    put_u32_be(&buf[12], sample->r1_ohm_comp);
+    put_u32_be(&buf[16], sample->r2_ohm_comp);
+    put_u32_be(&buf[20], sample->r3_ohm_comp);
+    for (size_t i = 0; i < 8; i++) { buf[24 + i] = sample->array_id[i]; }
+    return CHAMELEON_PAYLOAD_LEN_V2;
 }

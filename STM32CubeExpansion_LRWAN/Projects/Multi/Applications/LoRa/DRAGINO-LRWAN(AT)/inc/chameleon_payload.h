@@ -7,6 +7,13 @@
 #define CHAMELEON_PAYLOAD_VERSION_V1   0x01
 #define CHAMELEON_PAYLOAD_LEN_V1       44U
 
+#define CHAMELEON_PAYLOAD_VERSION_V2   0x02
+#define CHAMELEON_PAYLOAD_LEN_V2       32U
+
+#define CHAMELEON_V2_FLAG_DATA_INVALID (1U << 0)
+#define CHAMELEON_V2_FLAG_TEMP_FAULT   (1U << 1)
+#define CHAMELEON_V2_FLAG_ID_FAULT     (1U << 2)
+
 #define CHAMELEON_FLAG_I2C_MISSING     (1U << 0)
 #define CHAMELEON_FLAG_TIMEOUT         (1U << 1)
 #define CHAMELEON_FLAG_TEMP_FAULT      (1U << 2)
@@ -36,6 +43,11 @@ typedef struct {
  * Returns the number of bytes written (always 44 for v1) on success, 0 if buf
  * is NULL, sample is NULL, or buf_len < 44. */
 size_t chameleon_payload_encode_v1(uint8_t *buf, size_t buf_len,
+                                   const chameleon_sample_t *sample);
+
+/* Encode the compact 32-byte V2 frame. V2 keeps the stock MOD=3 prefix and
+ * omits raw resistance fields; raw diagnostics remain available through V1. */
+size_t chameleon_payload_encode_v2(uint8_t *buf, size_t buf_len,
                                    const chameleon_sample_t *sample);
 
 #endif /* CHAMELEON_PAYLOAD_H */
