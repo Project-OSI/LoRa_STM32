@@ -87,7 +87,11 @@ uint8_t RX2DR_setting_status;
 uint16_t fire_version=0;
 uint16_t fire_frequcy=0;
 uint32_t Automatic_join_network[1]={0x11};
+#ifdef USE_CHAMELEON
+uint8_t mode=3;
+#else
 uint8_t mode;
+#endif
 uint8_t decrypt_flag=0;
 uint8_t inmode,inmode2,inmode3;
 bool down_check=0;
@@ -547,7 +551,11 @@ void fdr_config(void)
 			LoRaMacMibSetRequestConfirm( &mibReq );
 	#endif	
 				
-	mode=1;			
+#ifdef USE_CHAMELEON
+	mode=3;
+#else
+	mode=1;
+#endif
 	inmode=2;		
 	inmode2=2;		
 	inmode3=2;					
@@ -1326,6 +1334,11 @@ void EEPROM_Read_Config(void)
 	LinkADR_NbTrans_uplink_counter_retransmission_increment_switch=r_config[18]&0xFF;
 	
 	unconfirmed_uplink_change_to_confirmed_uplink_timeout=r_config[19]&0xFFFF;
+
+	/* Chameleon firmware is MOD3-only; ignore stale EEPROM modes from older LSN50 images. */
+#ifdef USE_CHAMELEON
+	mode=3;
+#endif
 }
 
 uint16_t string_touint(void)

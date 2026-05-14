@@ -1130,7 +1130,11 @@ static void LORA_RxData( lora_AppData_t *AppData )
 			{	
 				if((AppData->Buff[1]>=0x01)&&(AppData->Buff[1]<=0x09))    //---->AT+MOD
 				{
+#ifdef USE_CHAMELEON
+					mode=0x03;
+#else
 					mode=AppData->Buff[1];
+#endif
 					EEPROM_Store_Config();
 					atz_flags=1;						
 					rxpr_flags=1;	
