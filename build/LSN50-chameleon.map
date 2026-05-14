@@ -3010,7 +3010,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtn.o
                 0x08000000                g_pfnVectors
                 0x080000c0                        . = ALIGN (0x4)
 
-.text           0x080000c0    0x15084
+.text           0x080000c0    0x15080
                 0x080000c0                        . = ALIGN (0x4)
  *(.text)
  .text          0x080000c0       0x14 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_thumb1_case_uqi.o)
@@ -3873,1508 +3873,1508 @@ LOAD /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtn.o
  .text.OnDownlinkDetectTimeoutEvent
                 0x08007d04       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
  .text.LORA_RxData
-                0x08007d24      0x638 /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
+                0x08007d24      0x634 /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
  .text.OnTxTimerEvent
-                0x0800835c       0x44 /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
+                0x08008358       0x44 /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
  .text.OnTxTimerEvent2
-                0x080083a0       0xdc /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
+                0x0800839c       0xdc /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
  .text.LORA_HasJoined
-                0x0800847c       0x8c /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
+                0x08008478       0x8c /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
  .text.startup.main
-                0x08008508      0xd00 /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
-                0x08008508                main
+                0x08008504      0xd00 /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
+                0x08008504                main
  .text.HAL_InitTick
-                0x08009208        0x4 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hal_msp_59407185.o
-                0x08009208                HAL_InitTick
+                0x08009204        0x4 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hal_msp_59407185.o
+                0x08009204                HAL_InitTick
  .text.HAL_Delay
-                0x0800920c        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hal_msp_59407185.o
-                0x0800920c                HAL_Delay
+                0x08009208        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hal_msp_59407185.o
+                0x08009208                HAL_Delay
  .text.HAL_MspInit
-                0x08009218       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hal_msp_59407185.o
-                0x08009218                HAL_MspInit
+                0x08009214       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hal_msp_59407185.o
+                0x08009214                HAL_MspInit
  .text.HAL_RTC_MspInit
-                0x08009248       0x5c /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hal_msp_59407185.o
-                0x08009248                HAL_RTC_MspInit
+                0x08009244       0x5c /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hal_msp_59407185.o
+                0x08009244                HAL_RTC_MspInit
  .text.HAL_RTC_AlarmAEventCallback
-                0x080092a4        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hal_msp_59407185.o
-                0x080092a4                HAL_RTC_AlarmAEventCallback
+                0x080092a0        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hal_msp_59407185.o
+                0x080092a0                HAL_RTC_AlarmAEventCallback
  .text.HAL_GPIO_EXTI_Callback
-                0x080092ac        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hal_msp_59407185.o
-                0x080092ac                HAL_GPIO_EXTI_Callback
+                0x080092a8        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hal_msp_59407185.o
+                0x080092a8                HAL_GPIO_EXTI_Callback
  .text.HAL_TIM_IC_MspInit
-                0x080092b4       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hal_msp_59407185.o
-                0x080092b4                HAL_TIM_IC_MspInit
+                0x080092b0       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hal_msp_59407185.o
+                0x080092b0                HAL_TIM_IC_MspInit
  .text.MSP_GetIRQn
-                0x080092d4       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hal_msp_59407185.o
-                0x080092d4                MSP_GetIRQn
+                0x080092d0       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hal_msp_59407185.o
+                0x080092d0                MSP_GetIRQn
  .text.SystemClock_Config
-                0x080092f4       0x98 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
-                0x080092f4                SystemClock_Config
+                0x080092f0       0x98 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
+                0x080092f0                SystemClock_Config
  .text.HW_GetRandomSeed
-                0x0800938c       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
-                0x0800938c                HW_GetRandomSeed
+                0x08009388       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
+                0x08009388                HW_GetRandomSeed
  .text.HW_GetUniqueId
-                0x080093ac       0x54 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
-                0x080093ac                HW_GetUniqueId
+                0x080093a8       0x54 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
+                0x080093a8                HW_GetUniqueId
  .text.HW_AdcInit
-                0x08009400       0x5c /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
-                0x08009400                HW_AdcInit
- .text.HW_Init  0x0800945c       0x38 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
-                0x0800945c                HW_Init
+                0x080093fc       0x5c /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
+                0x080093fc                HW_AdcInit
+ .text.HW_Init  0x08009458       0x38 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
+                0x08009458                HW_Init
  .text.HW_AdcReadChannel
-                0x08009494       0x9c /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
-                0x08009494                HW_AdcReadChannel
+                0x08009490       0x9c /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
+                0x08009490                HW_AdcReadChannel
  .text.HW_GetTemperatureLevel
-                0x08009530       0x64 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
-                0x08009530                HW_GetTemperatureLevel
+                0x0800952c       0x64 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
+                0x0800952c                HW_GetTemperatureLevel
  .text.HW_GetBatteryLevel
-                0x08009594       0x64 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
-                0x08009594                HW_GetBatteryLevel
+                0x08009590       0x64 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
+                0x08009590                HW_GetBatteryLevel
  .text.LPM_EnterStopMode
-                0x080095f8       0x38 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
-                0x080095f8                LPM_EnterStopMode
+                0x080095f4       0x38 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
+                0x080095f4                LPM_EnterStopMode
  .text.LPM_ExitStopMode
-                0x08009630       0x5c /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
-                0x08009630                LPM_ExitStopMode
+                0x0800962c       0x5c /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
+                0x0800962c                LPM_ExitStopMode
  .text.LPM_EnterSleepMode
-                0x0800968c        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
-                0x0800968c                LPM_EnterSleepMode
+                0x08009688        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_hw_492d4781.o
+                0x08009688                LPM_EnterSleepMode
  .text.NMI_Handler
-                0x08009698        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
-                0x08009698                NMI_Handler
+                0x08009694        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
+                0x08009694                NMI_Handler
  .text.HardFault_Handler
-                0x0800969a        0x4 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
-                0x0800969a                HardFault_Handler
+                0x08009696        0x4 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
+                0x08009696                HardFault_Handler
  .text.SVC_Handler
-                0x0800969e        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
-                0x0800969e                SVC_Handler
+                0x0800969a        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
+                0x0800969a                SVC_Handler
  .text.PendSV_Handler
-                0x080096a0        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
-                0x080096a0                PendSV_Handler
+                0x0800969c        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
+                0x0800969c                PendSV_Handler
  .text.SysTick_Handler
-                0x080096a2        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
-                0x080096a2                SysTick_Handler
+                0x0800969e        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
+                0x0800969e                SysTick_Handler
  .text.USART1_IRQHandler
-                0x080096aa        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
-                0x080096aa                USART1_IRQHandler
+                0x080096a6        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
+                0x080096a6                USART1_IRQHandler
  .text.RNG_LPUART1_IRQHandler
-                0x080096b2        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
-                0x080096b2                RNG_LPUART1_IRQHandler
+                0x080096ae        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
+                0x080096ae                RNG_LPUART1_IRQHandler
  .text.DMA1_Channel4_5_6_7_IRQHandler
-                0x080096ba        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
-                0x080096ba                DMA1_Channel4_5_6_7_IRQHandler
+                0x080096b6        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
+                0x080096b6                DMA1_Channel4_5_6_7_IRQHandler
  .text.RTC_IRQHandler
-                0x080096c2        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
-                0x080096c2                RTC_IRQHandler
+                0x080096be        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
+                0x080096be                RTC_IRQHandler
  .text.EXTI0_1_IRQHandler
-                0x080096ca       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
-                0x080096ca                EXTI0_1_IRQHandler
+                0x080096c6       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
+                0x080096c6                EXTI0_1_IRQHandler
  .text.EXTI2_3_IRQHandler
-                0x080096da       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
-                0x080096da                EXTI2_3_IRQHandler
- *fill*         0x080096ea        0x2 
+                0x080096d6       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
+                0x080096d6                EXTI2_3_IRQHandler
+ *fill*         0x080096e6        0x2 
  .text.EXTI4_15_IRQHandler
-                0x080096ec      0x170 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
-                0x080096ec                EXTI4_15_IRQHandler
+                0x080096e8      0x170 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
+                0x080096e8                EXTI4_15_IRQHandler
  .text.TIM21_IRQHandler
-                0x0800985c        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
-                0x0800985c                TIM21_IRQHandler
+                0x08009858        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
+                0x08009858                TIM21_IRQHandler
  .text.TIM3_IRQHandler
-                0x08009864       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
-                0x08009864                TIM3_IRQHandler
+                0x08009860       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/stm32l0xx_it_b362cb1e.o
+                0x08009860                TIM3_IRQHandler
  .text.vcom_Init
-                0x08009874       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
-                0x08009874                vcom_Init
+                0x08009870       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
+                0x08009870                vcom_Init
  .text.vcom_Trace
-                0x080098b0       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
-                0x080098b0                vcom_Trace
+                0x080098ac       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
+                0x080098ac                vcom_Trace
  .text.HAL_UART_TxCpltCallback
-                0x080098c4       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
-                0x080098c4                HAL_UART_TxCpltCallback
+                0x080098c0       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
+                0x080098c0                HAL_UART_TxCpltCallback
  .text.vcom_ReceiveInit
-                0x080098d8       0x34 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
-                0x080098d8                vcom_ReceiveInit
+                0x080098d4       0x34 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
+                0x080098d4                vcom_ReceiveInit
  .text.HAL_UART_RxCpltCallback
-                0x0800990c       0xc4 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
-                0x0800990c                HAL_UART_RxCpltCallback
+                0x08009908       0xc4 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
+                0x08009908                HAL_UART_RxCpltCallback
  .text.vcom_DMA_TX_IRQHandler
-                0x080099d0       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
-                0x080099d0                vcom_DMA_TX_IRQHandler
+                0x080099cc       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
+                0x080099cc                vcom_DMA_TX_IRQHandler
  .text.vcom_IRQHandler
-                0x080099e0       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
-                0x080099e0                vcom_IRQHandler
+                0x080099dc       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
+                0x080099dc                vcom_IRQHandler
  .text.tfmini_uart_IRQHandler
-                0x080099f0       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
-                0x080099f0                tfmini_uart_IRQHandler
+                0x080099ec       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
+                0x080099ec                tfmini_uart_IRQHandler
  .text.vcom_IoInit
-                0x08009a00       0x5c /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
-                0x08009a00                vcom_IoInit
+                0x080099fc       0x5c /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
+                0x080099fc                vcom_IoInit
  .text.uart1_init_uart1
-                0x08009a5c       0x34 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
-                0x08009a5c                uart1_init_uart1
+                0x08009a58       0x34 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
+                0x08009a58                uart1_init_uart1
  .text.uart1_IoInit
-                0x08009a90       0x54 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
-                0x08009a90                uart1_IoInit
+                0x08009a8c       0x54 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
+                0x08009a8c                uart1_IoInit
  .text.uart1_IoDeInit
-                0x08009ae4       0x4c /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
-                0x08009ae4                uart1_IoDeInit
+                0x08009ae0       0x4c /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
+                0x08009ae0                uart1_IoDeInit
  .text.HAL_UART_MspInit
-                0x08009b30       0xe8 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
-                0x08009b30                HAL_UART_MspInit
+                0x08009b2c       0xe8 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
+                0x08009b2c                HAL_UART_MspInit
  .text.at_tfmini_data_receive
-                0x08009c18       0xd0 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
-                0x08009c18                at_tfmini_data_receive
+                0x08009c14       0xd0 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
+                0x08009c14                at_tfmini_data_receive
  .text.translate_status
-                0x08009ce8       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08009ce4       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .text.print_8_02x
-                0x08009cfc       0x34 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08009cf8       0x34 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .text.print_16_02x
-                0x08009d30       0x54 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
- .text.print_d  0x08009d84       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
- .text.print_u  0x08009d9c       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08009d2c       0x54 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+ .text.print_d  0x08009d80       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+ .text.print_u  0x08009d98       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .text.changeform
-                0x08009db4       0x8c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08009db0       0x8c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .text.sscanf_uint32_as_hhx.part.0
-                0x08009e40       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08009e3c       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .text.sscanf_16_hhx.constprop.0
-                0x08009e68       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08009e64       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .text.sscanf_16_hhx.part.0.isra.0
-                0x08009e88       0x50 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08009e84       0x50 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .text.set_at_receive
-                0x08009ed8       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x08009ed8                set_at_receive
+                0x08009ed4       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08009ed4                set_at_receive
  .text.at_return_error
-                0x08009efc        0x4 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x08009efc                at_return_error
+                0x08009ef8        0x4 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08009ef8                at_return_error
  .text.at_reset
-                0x08009f00       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x08009f00                at_reset
+                0x08009efc       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08009efc                at_reset
  .text.at_DEBUG_run
-                0x08009f1c       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x08009f1c                at_DEBUG_run
- .text.at_FDR   0x08009f3c       0x40 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x08009f3c                at_FDR
+                0x08009f18       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08009f18                at_DEBUG_run
+ .text.at_FDR   0x08009f38       0x40 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08009f38                at_FDR
  .text.at_DevEUI_get
-                0x08009f7c        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x08009f7c                at_DevEUI_get
- *fill*         0x08009f8a        0x2 
+                0x08009f78        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08009f78                at_DevEUI_get
+ *fill*         0x08009f86        0x2 
  .text.at_DevEUI_set
-                0x08009f8c       0x64 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x08009f8c                at_DevEUI_set
+                0x08009f88       0x64 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08009f88                at_DevEUI_set
  .text.at_AppEUI_get
-                0x08009ff0        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x08009ff0                at_AppEUI_get
- *fill*         0x08009ffe        0x2 
+                0x08009fec        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08009fec                at_AppEUI_get
+ *fill*         0x08009ffa        0x2 
  .text.at_AppEUI_set
-                0x0800a000       0x64 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a000                at_AppEUI_set
+                0x08009ffc       0x64 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08009ffc                at_AppEUI_set
  .text.at_DevAddr_set
-                0x0800a064       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a064                at_DevAddr_set
+                0x0800a060       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a060                at_DevAddr_set
  .text.at_DevAddr_get
-                0x0800a0a0        0xa /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a0a0                at_DevAddr_get
+                0x0800a09c        0xa /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a09c                at_DevAddr_get
  .text.at_AppKey_get
-                0x0800a0aa        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a0aa                at_AppKey_get
+                0x0800a0a6        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a0a6                at_AppKey_get
  .text.at_AppKey_set
-                0x0800a0b8       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a0b8                at_AppKey_set
+                0x0800a0b4       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a0b4                at_AppKey_set
  .text.at_NwkSKey_get
-                0x0800a0da        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a0da                at_NwkSKey_get
+                0x0800a0d6        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a0d6                at_NwkSKey_get
  .text.at_NwkSKey_set
-                0x0800a0e8       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a0e8                at_NwkSKey_set
+                0x0800a0e4       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a0e4                at_NwkSKey_set
  .text.at_AppSKey_get
-                0x0800a10a        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a10a                at_AppSKey_get
+                0x0800a106        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a106                at_AppSKey_get
  .text.at_AppSKey_set
-                0x0800a118       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a118                at_AppSKey_set
+                0x0800a114       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a114                at_AppSKey_set
  .text.at_ADR_get
-                0x0800a13a       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a13a                at_ADR_get
+                0x0800a136       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a136                at_ADR_get
  .text.at_ADR_set
-                0x0800a15e       0x26 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a15e                at_ADR_set
+                0x0800a15a       0x26 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a15a                at_ADR_set
  .text.at_TransmitPower_get
-                0x0800a184       0x26 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a184                at_TransmitPower_get
- *fill*         0x0800a1aa        0x2 
+                0x0800a180       0x26 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a180                at_TransmitPower_get
+ *fill*         0x0800a1a6        0x2 
  .text.at_TransmitPower_set
-                0x0800a1ac       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a1ac                at_TransmitPower_set
+                0x0800a1a8       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a1a8                at_TransmitPower_set
  .text.at_DataRate_get
-                0x0800a1e8       0x26 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a1e8                at_DataRate_get
- *fill*         0x0800a20e        0x2 
+                0x0800a1e4       0x26 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a1e4                at_DataRate_get
+ *fill*         0x0800a20a        0x2 
  .text.at_DataRate_set
-                0x0800a210       0x38 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a210                at_DataRate_set
+                0x0800a20c       0x38 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a20c                at_DataRate_set
  .text.at_DutyCycle_set
-                0x0800a248       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a248                at_DutyCycle_set
+                0x0800a244       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a244                at_DutyCycle_set
  .text.at_DutyCycle_get
-                0x0800a264       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a264                at_DutyCycle_get
+                0x0800a260       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a260                at_DutyCycle_get
  .text.at_PublicNetwork_get
-                0x0800a290       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a290                at_PublicNetwork_get
+                0x0800a28c       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a28c                at_PublicNetwork_get
  .text.at_PublicNetwork_set
-                0x0800a2b4       0x26 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a2b4                at_PublicNetwork_set
+                0x0800a2b0       0x26 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a2b0                at_PublicNetwork_set
  .text.at_Rx2Frequency_get
-                0x0800a2da       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a2da                at_Rx2Frequency_get
- *fill*         0x0800a2fe        0x2 
+                0x0800a2d6       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a2d6                at_Rx2Frequency_get
+ *fill*         0x0800a2fa        0x2 
  .text.at_Rx2Frequency_set
-                0x0800a300       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a300                at_Rx2Frequency_set
+                0x0800a2fc       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a2fc                at_Rx2Frequency_set
  .text.at_Rx2DataRate_get
-                0x0800a33c       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a33c                at_Rx2DataRate_get
+                0x0800a338       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a338                at_Rx2DataRate_get
  .text.at_Rx2DataRate_set
-                0x0800a360       0x44 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a360                at_Rx2DataRate_set
+                0x0800a35c       0x44 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a35c                at_Rx2DataRate_set
  .text.at_Rx1Delay_get
-                0x0800a3a4       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a3a4                at_Rx1Delay_get
+                0x0800a3a0       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a3a0                at_Rx1Delay_get
  .text.at_Rx1Delay_set
-                0x0800a3c8       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a3c8                at_Rx1Delay_set
+                0x0800a3c4       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a3c4                at_Rx1Delay_set
  .text.at_Rx2Delay_get
-                0x0800a3f4       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a3f4                at_Rx2Delay_get
+                0x0800a3f0       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a3f0                at_Rx2Delay_get
  .text.at_Rx2Delay_set
-                0x0800a418       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a418                at_Rx2Delay_set
+                0x0800a414       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a414                at_Rx2Delay_set
  .text.at_JoinAcceptDelay1_get
-                0x0800a444       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a444                at_JoinAcceptDelay1_get
+                0x0800a440       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a440                at_JoinAcceptDelay1_get
  .text.at_JoinAcceptDelay1_set
-                0x0800a468       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a468                at_JoinAcceptDelay1_set
+                0x0800a464       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a464                at_JoinAcceptDelay1_set
  .text.at_JoinAcceptDelay2_get
-                0x0800a4a4       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a4a4                at_JoinAcceptDelay2_get
+                0x0800a4a0       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a4a0                at_JoinAcceptDelay2_get
  .text.at_JoinAcceptDelay2_set
-                0x0800a4c8       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a4c8                at_JoinAcceptDelay2_set
+                0x0800a4c4       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a4c4                at_JoinAcceptDelay2_set
  .text.at_NetworkJoinMode_get
-                0x0800a504       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a504                at_NetworkJoinMode_get
+                0x0800a500       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a500                at_NetworkJoinMode_get
  .text.at_NetworkJoinMode_set
-                0x0800a518       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a518                at_NetworkJoinMode_set
+                0x0800a514       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a514                at_NetworkJoinMode_set
  .text.at_NetworkID_get
-                0x0800a540       0x40 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a540                at_NetworkID_get
+                0x0800a53c       0x40 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a53c                at_NetworkID_get
  .text.at_NetworkID_set
-                0x0800a580       0x44 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a580                at_NetworkID_set
+                0x0800a57c       0x44 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a57c                at_NetworkID_set
  .text.at_UplinkCounter_get
-                0x0800a5c4       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a5c4                at_UplinkCounter_get
+                0x0800a5c0       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a5c0                at_UplinkCounter_get
  .text.at_UplinkCounter_set
-                0x0800a5e8       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a5e8                at_UplinkCounter_set
+                0x0800a5e4       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a5e4                at_UplinkCounter_set
  .text.at_DownlinkCounter_get
-                0x0800a614       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a614                at_DownlinkCounter_get
+                0x0800a610       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a610                at_DownlinkCounter_get
  .text.at_DownlinkCounter_set
-                0x0800a638       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a638                at_DownlinkCounter_set
+                0x0800a634       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a634                at_DownlinkCounter_set
  .text.at_DeviceClass_get
-                0x0800a664       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a664                at_DeviceClass_get
+                0x0800a660       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a660                at_DeviceClass_get
  .text.at_DeviceClass_set
-                0x0800a694       0x38 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a694                at_DeviceClass_set
- .text.at_Join  0x0800a6cc        0xa /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a6cc                at_Join
+                0x0800a690       0x38 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a690                at_DeviceClass_set
+ .text.at_Join  0x0800a6c8        0xa /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a6c8                at_Join
  .text.at_NetworkJoinStatus
-                0x0800a6d6       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a6d6                at_NetworkJoinStatus
+                0x0800a6d2       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a6d2                at_NetworkJoinStatus
  .text.at_SendBinary
-                0x0800a6f8       0xa0 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a6f8                at_SendBinary
- .text.at_Send  0x0800a798       0x78 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a798                at_Send
+                0x0800a6f4       0xa0 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a6f4                at_SendBinary
+ .text.at_Send  0x0800a794       0x78 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a794                at_Send
  .text.at_ReceiveBinary
-                0x0800a810       0x50 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a810                at_ReceiveBinary
+                0x0800a80c       0x50 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a80c                at_ReceiveBinary
  .text.at_Receive
-                0x0800a860       0x4c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a860                at_Receive
+                0x0800a85c       0x4c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a85c                at_Receive
  .text.at_RJTDC_set
-                0x0800a8ac       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a8ac                at_RJTDC_set
+                0x0800a8a8       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a8a8                at_RJTDC_set
  .text.at_RJTDC_get
-                0x0800a8e8       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a8e8                at_RJTDC_get
+                0x0800a8e4       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a8e4                at_RJTDC_get
  .text.at_RPL_set
-                0x0800a8fc       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a8fc                at_RPL_set
+                0x0800a8f8       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a8f8                at_RPL_set
  .text.at_RPL_get
-                0x0800a938       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a938                at_RPL_get
+                0x0800a934       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a934                at_RPL_get
  .text.at_version_get
-                0x0800a94c       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a94c                at_version_get
+                0x0800a948       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a948                at_version_get
  .text.at_ack_set
-                0x0800a964       0x90 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a964                at_ack_set
+                0x0800a960       0x90 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a960                at_ack_set
  .text.at_ack_get
-                0x0800a9f4       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800a9f4                at_ack_get
+                0x0800a9f0       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800a9f0                at_ack_get
  .text.at_isack_get
-                0x0800aa20       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800aa20                at_isack_get
+                0x0800aa1c       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800aa1c                at_isack_get
  .text.at_snr_get
-                0x0800aa34        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800aa34                at_snr_get
+                0x0800aa30        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800aa30                at_snr_get
  .text.at_rssi_get
-                0x0800aa42        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800aa42                at_rssi_get
+                0x0800aa3e        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800aa3e                at_rssi_get
  .text.at_CFG_run
-                0x0800aa50       0xd0 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800aa50                at_CFG_run
+                0x0800aa4c       0xd0 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800aa4c                at_CFG_run
  .text.at_TDC_set
-                0x0800ab20       0x40 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800ab20                at_TDC_set
+                0x0800ab1c       0x40 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800ab1c                at_TDC_set
  .text.at_TDC_get
-                0x0800ab60       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800ab60                at_TDC_get
+                0x0800ab5c       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800ab5c                at_TDC_get
  .text.at_application_port_set
-                0x0800ab74       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800ab74                at_application_port_set
+                0x0800ab70       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800ab70                at_application_port_set
  .text.at_application_port_get
-                0x0800ab9c        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800ab9c                at_application_port_get
- *fill*         0x0800abaa        0x2 
+                0x0800ab98        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800ab98                at_application_port_get
+ *fill*         0x0800aba6        0x2 
  .text.at_CHS_set
-                0x0800abac       0x38 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800abac                at_CHS_set
+                0x0800aba8       0x38 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800aba8                at_CHS_set
  .text.at_CHS_get
-                0x0800abe4        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800abe4                at_CHS_get
- *fill*         0x0800abf2        0x2 
+                0x0800abe0        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800abe0                at_CHS_get
+ *fill*         0x0800abee        0x2 
  .text.at_symbtimeout1LSB_get
-                0x0800abf4       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800abf4                at_symbtimeout1LSB_get
+                0x0800abf0       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800abf0                at_symbtimeout1LSB_get
  .text.at_symbtimeout1LSB_set
-                0x0800ac08       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800ac08                at_symbtimeout1LSB_set
+                0x0800ac04       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800ac04                at_symbtimeout1LSB_set
  .text.at_symbtimeout2LSB_get
-                0x0800ac38       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800ac38                at_symbtimeout2LSB_get
+                0x0800ac34       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800ac34                at_symbtimeout2LSB_get
  .text.at_symbtimeout2LSB_set
-                0x0800ac4c       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800ac4c                at_symbtimeout2LSB_set
+                0x0800ac48       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800ac48                at_symbtimeout2LSB_set
  .text.at_decrypt_set
-                0x0800ac7c       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800ac7c                at_decrypt_set
+                0x0800ac78       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800ac78                at_decrypt_set
  .text.at_decrypt_get
-                0x0800aca8       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800aca8                at_decrypt_get
+                0x0800aca4       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800aca4                at_decrypt_get
  .text.at_MOD_set
-                0x0800acc4       0x48 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800acc4                at_MOD_set
+                0x0800acc0       0x48 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800acc0                at_MOD_set
  .text.at_MOD_get
-                0x0800ad0c       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800ad0c                at_MOD_get
+                0x0800ad08       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800ad08                at_MOD_get
  .text.at_INTMOD1_set
-                0x0800ad20       0x40 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800ad20                at_INTMOD1_set
+                0x0800ad1c       0x40 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800ad1c                at_INTMOD1_set
  .text.at_INTMOD1_get
-                0x0800ad60       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800ad60                at_INTMOD1_get
+                0x0800ad5c       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800ad5c                at_INTMOD1_get
  .text.at_INTMOD2_set
-                0x0800ad74       0x40 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800ad74                at_INTMOD2_set
+                0x0800ad70       0x40 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800ad70                at_INTMOD2_set
  .text.at_INTMOD2_get
-                0x0800adb4       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800adb4                at_INTMOD2_get
+                0x0800adb0       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800adb0                at_INTMOD2_get
  .text.at_INTMOD3_set
-                0x0800adc8       0x40 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800adc8                at_INTMOD3_set
+                0x0800adc4       0x40 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800adc4                at_INTMOD3_set
  .text.at_INTMOD3_get
-                0x0800ae08       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800ae08                at_INTMOD3_get
+                0x0800ae04       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800ae04                at_INTMOD3_get
  .text.at_weight_GapValue_set
-                0x0800ae1c       0x68 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800ae1c                at_weight_GapValue_set
+                0x0800ae18       0x68 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800ae18                at_weight_GapValue_set
  .text.at_weight_GapValue_get
-                0x0800ae84       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800ae84                at_weight_GapValue_get
+                0x0800ae80       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800ae80                at_weight_GapValue_get
  .text.at_5Vtime_set
-                0x0800aea8       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800aea8                at_5Vtime_set
+                0x0800aea4       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800aea4                at_5Vtime_set
  .text.at_5Vtime_get
-                0x0800aed0       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800aed0                at_5Vtime_get
+                0x0800aecc       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800aecc                at_5Vtime_get
  .text.at_SETCNT_set
-                0x0800aee4       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800aee4                at_SETCNT_set
+                0x0800aee0       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800aee0                at_SETCNT_set
  .text.at_getsensorvaule_set
-                0x0800af20       0x54 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800af20                at_getsensorvaule_set
+                0x0800af1c       0x54 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800af1c                at_getsensorvaule_set
  .text.at_downlink_detect_set
-                0x0800af74       0x70 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800af74                at_downlink_detect_set
+                0x0800af70       0x70 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800af70                at_downlink_detect_set
  .text.at_downlink_detect_get
-                0x0800afe4       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800afe4                at_downlink_detect_get
+                0x0800afe0       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800afe0                at_downlink_detect_get
  .text.at_setmaxnbtrans_set
-                0x0800b010       0x44 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800b010                at_setmaxnbtrans_set
+                0x0800b00c       0x44 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800b00c                at_setmaxnbtrans_set
  .text.at_setmaxnbtrans_get
-                0x0800b054       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800b054                at_setmaxnbtrans_get
+                0x0800b050       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800b050                at_setmaxnbtrans_get
  .text.at_disdownlinkcheck_set
-                0x0800b078       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800b078                at_disdownlinkcheck_set
+                0x0800b074       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800b074                at_disdownlinkcheck_set
  .text.at_disdownlinkcheck_get
-                0x0800b0a8       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800b0a8                at_disdownlinkcheck_get
+                0x0800b0a4       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800b0a4                at_disdownlinkcheck_get
  .text.at_dismac_answer_set
-                0x0800b0c4       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800b0c4                at_dismac_answer_set
+                0x0800b0c0       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800b0c0                at_dismac_answer_set
  .text.at_dismac_answer_get
-                0x0800b0f4       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800b0f4                at_dismac_answer_get
+                0x0800b0f0       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800b0f0                at_dismac_answer_get
  .text.at_rxdata_test
-                0x0800b110       0x64 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800b110                at_rxdata_test
+                0x0800b10c       0x64 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800b10c                at_rxdata_test
  .text.weightreset
-                0x0800b174       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800b174                weightreset
+                0x0800b170       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800b170                weightreset
  .text.at_weightreset
-                0x0800b1b0        0xa /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
-                0x0800b1b0                at_weightreset
- *fill*         0x0800b1ba        0x2 
+                0x0800b1ac        0xa /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x0800b1ac                at_weightreset
+ *fill*         0x0800b1b6        0x2 
  .text.CMD_GetChar
-                0x0800b1bc       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
+                0x0800b1b8       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
  .text.com_error
-                0x0800b1dc       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
+                0x0800b1d8       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
  .text.CMD_Init
-                0x0800b200       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
-                0x0800b200                CMD_Init
+                0x0800b1fc       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
+                0x0800b1fc                CMD_Init
  .text.CMD_Process
-                0x0800b218      0x1f8 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
-                0x0800b218                CMD_Process
+                0x0800b214      0x1f8 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
+                0x0800b214                CMD_Process
  .text.printf_all_config
-                0x0800b410       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
-                0x0800b410                printf_all_config
+                0x0800b40c       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
+                0x0800b40c                printf_all_config
  .text.McpsConfirm
-                0x0800b44c        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
- *fill*         0x0800b44e        0x2 
+                0x0800b448        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+ *fill*         0x0800b44a        0x2 
  .text.MlmeConfirm
-                0x0800b450       0x48 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b44c       0x48 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
  .text.McpsIndication
-                0x0800b498       0xa0 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b494       0xa0 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
  .text.customize_freq1_get
-                0x0800b538        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b538                customize_freq1_get
+                0x0800b534        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b534                customize_freq1_get
  .text.customize_freq1_set
-                0x0800b544        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b544                customize_freq1_set
+                0x0800b540        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b540                customize_freq1_set
  .text.region_printf
-                0x0800b550       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b550                region_printf
+                0x0800b54c       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b54c                region_printf
  .text.key_printf
-                0x0800b564       0x38 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b564                key_printf
+                0x0800b560       0x38 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b560                key_printf
  .text.LORA_Join
-                0x0800b59c       0xb8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b59c                LORA_Join
+                0x0800b598       0xb8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b598                LORA_Join
  .text.LORA_JoinStatus
-                0x0800b654       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b654                LORA_JoinStatus
+                0x0800b650       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b650                LORA_JoinStatus
  .text.LORA_send
-                0x0800b668       0x90 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b668                LORA_send
+                0x0800b664       0x90 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b664                LORA_send
  .text.LORA_RequestClass
-                0x0800b6f8       0x68 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b6f8                LORA_RequestClass
+                0x0800b6f4       0x68 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b6f4                LORA_RequestClass
  .text.lora_config_otaa_set
-                0x0800b760        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b760                lora_config_otaa_set
+                0x0800b75c        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b75c                lora_config_otaa_set
  .text.lora_config_otaa_get
-                0x0800b76c        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b76c                lora_config_otaa_get
+                0x0800b768        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b768                lora_config_otaa_get
  .text.lora_config_duty_cycle_set
-                0x0800b778       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b778                lora_config_duty_cycle_set
+                0x0800b774       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b774                lora_config_duty_cycle_set
  .text.lora_config_duty_cycle_get
-                0x0800b790        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b790                lora_config_duty_cycle_get
+                0x0800b78c        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b78c                lora_config_duty_cycle_get
  .text.lora_config_deveui_get
-                0x0800b79c        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b79c                lora_config_deveui_get
+                0x0800b798        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b798                lora_config_deveui_get
  .text.lora_config_deveui_set
-                0x0800b7a4       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b7a4                lora_config_deveui_set
+                0x0800b7a0       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b7a0                lora_config_deveui_set
  .text.lora_config_devaddr_set
-                0x0800b7b8        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b7b8                lora_config_devaddr_set
+                0x0800b7b4        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b7b4                lora_config_devaddr_set
  .text.lora_config_devaddr_get
-                0x0800b7c4       0x38 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b7c4                lora_config_devaddr_get
+                0x0800b7c0       0x38 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b7c0                lora_config_devaddr_get
  .text.lora_config_nwkskey_set
-                0x0800b7fc       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b7fc                lora_config_nwkskey_set
+                0x0800b7f8       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b7f8                lora_config_nwkskey_set
  .text.lora_config_nwkskey_get
-                0x0800b810        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b810                lora_config_nwkskey_get
+                0x0800b80c        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b80c                lora_config_nwkskey_get
  .text.lora_config_appskey_set
-                0x0800b818       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b818                lora_config_appskey_set
+                0x0800b814       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b814                lora_config_appskey_set
  .text.lora_config_appskey_get
-                0x0800b82c        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b82c                lora_config_appskey_get
+                0x0800b828        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b828                lora_config_appskey_get
  .text.lora_config_appeui_get
-                0x0800b834        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b834                lora_config_appeui_get
+                0x0800b830        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b830                lora_config_appeui_get
  .text.lora_config_appeui_set
-                0x0800b83c       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b83c                lora_config_appeui_set
+                0x0800b838       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b838                lora_config_appeui_set
  .text.lora_config_appkey_get
-                0x0800b850        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b850                lora_config_appkey_get
+                0x0800b84c        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b84c                lora_config_appkey_get
  .text.lora_config_appkey_set
-                0x0800b858       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b858                lora_config_appkey_set
+                0x0800b854       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b854                lora_config_appkey_set
  .text.lora_config_reqack_set
-                0x0800b86c        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b86c                lora_config_reqack_set
+                0x0800b868        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b868                lora_config_reqack_set
  .text.lora_config_reqack_get
-                0x0800b878        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b878                lora_config_reqack_get
+                0x0800b874        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b874                lora_config_reqack_get
  .text.lora_config_snr_get
-                0x0800b884        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b884                lora_config_snr_get
+                0x0800b880        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b880                lora_config_snr_get
  .text.lora_config_application_port_set
-                0x0800b890        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b890                lora_config_application_port_set
+                0x0800b88c        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b88c                lora_config_application_port_set
  .text.lora_config_application_port_get
-                0x0800b89c        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b89c                lora_config_application_port_get
+                0x0800b898        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b898                lora_config_application_port_get
  .text.lora_config_rssi_get
-                0x0800b8a8        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b8a8                lora_config_rssi_get
+                0x0800b8a4        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b8a4                lora_config_rssi_get
  .text.lora_config_tx_datarate_set
-                0x0800b8b4        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b8b4                lora_config_tx_datarate_set
+                0x0800b8b0        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b8b0                lora_config_tx_datarate_set
  .text.lora_config_tx_datarate_get
-                0x0800b8c0        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b8c0                lora_config_tx_datarate_get
+                0x0800b8bc        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b8bc                lora_config_tx_datarate_get
  .text.lora_config_isack_get
-                0x0800b8cc       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b8cc                lora_config_isack_get
+                0x0800b8c8       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b8c8                lora_config_isack_get
  .text.store_data
-                0x0800b8dc       0xe4 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b8dc                store_data
+                0x0800b8d8       0xe4 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b8d8                store_data
  .text.read_data
-                0x0800b9c0       0x68 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800b9c0                read_data
+                0x0800b9bc       0x68 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800b9bc                read_data
  .text.EEPROM_Store_key
-                0x0800ba28       0x78 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800ba28                EEPROM_Store_key
+                0x0800ba24       0x78 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800ba24                EEPROM_Store_key
  .text.Flash_Read_key
-                0x0800baa0       0x9c /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800baa0                Flash_Read_key
+                0x0800ba9c       0x9c /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800ba9c                Flash_Read_key
  .text.EEPROM_Store_Config
-                0x0800bb3c      0x34c /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800bb3c                EEPROM_Store_Config
+                0x0800bb38      0x34c /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800bb38                EEPROM_Store_Config
  .text.EEPROM_Read_Config
-                0x0800be88      0x2b4 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800be88                EEPROM_Read_Config
+                0x0800be84      0x2b4 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800be84                EEPROM_Read_Config
  .text.fdr_config
-                0x0800c13c       0xec /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800c13c                fdr_config
+                0x0800c138       0xec /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800c138                fdr_config
  .text.LORA_Init
-                0x0800c228      0x11c /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800c228                LORA_Init
+                0x0800c224      0x11c /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800c224                LORA_Init
  .text.string_touint
-                0x0800c344       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800c344                string_touint
+                0x0800c340       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800c340                string_touint
  .text.new_firmware_update
-                0x0800c380       0x80 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
-                0x0800c380                new_firmware_update
+                0x0800c37c       0x80 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x0800c37c                new_firmware_update
  .text.tiny_vfscanf
-                0x0800c400      0x25c /home/phil/Repos/LoRa_STM32-claude/build/obj/tiny_sscanf_7164f13a.o
+                0x0800c3fc      0x25c /home/phil/Repos/LoRa_STM32-claude/build/obj/tiny_sscanf_7164f13a.o
  .text.tiny_sscanf
-                0x0800c65c       0x16 /home/phil/Repos/LoRa_STM32-claude/build/obj/tiny_sscanf_7164f13a.o
-                0x0800c65c                tiny_sscanf
+                0x0800c658       0x16 /home/phil/Repos/LoRa_STM32-claude/build/obj/tiny_sscanf_7164f13a.o
+                0x0800c658                tiny_sscanf
  .text.RegionIsActive
-                0x0800c672        0xa /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c672                RegionIsActive
+                0x0800c66e        0xa /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c66e                RegionIsActive
  .text.RegionGetPhyParam
-                0x0800c67c       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c67c                RegionGetPhyParam
+                0x0800c678       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c678                RegionGetPhyParam
  .text.RegionSetBandTxDone
-                0x0800c690        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c690                RegionSetBandTxDone
+                0x0800c68c        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c68c                RegionSetBandTxDone
  .text.RegionInitDefaults
-                0x0800c69e        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c69e                RegionInitDefaults
+                0x0800c69a        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c69a                RegionInitDefaults
  .text.RegionVerify
-                0x0800c6ac       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c6ac                RegionVerify
+                0x0800c6a8       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c6a8                RegionVerify
  .text.RegionApplyCFList
-                0x0800c6c4        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c6c4                RegionApplyCFList
+                0x0800c6c0        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c6c0                RegionApplyCFList
  .text.RegionChanMaskSet
-                0x0800c6d2       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c6d2                RegionChanMaskSet
+                0x0800c6ce       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c6ce                RegionChanMaskSet
  .text.RegionAdrNext
-                0x0800c6e6       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c6e6                RegionAdrNext
+                0x0800c6e2       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c6e2                RegionAdrNext
  .text.RegionComputeRxWindowParameters
-                0x0800c702       0x16 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c702                RegionComputeRxWindowParameters
+                0x0800c6fe       0x16 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c6fe                RegionComputeRxWindowParameters
  .text.RegionRxConfig
-                0x0800c718       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c718                RegionRxConfig
+                0x0800c714       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c714                RegionRxConfig
  .text.RegionTxConfig
-                0x0800c730       0x1a /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c730                RegionTxConfig
+                0x0800c72c       0x1a /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c72c                RegionTxConfig
  .text.RegionLinkAdrReq
-                0x0800c74a       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c74a                RegionLinkAdrReq
+                0x0800c746       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c746                RegionLinkAdrReq
  .text.RegionRxParamSetupReq
-                0x0800c76a       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c76a                RegionRxParamSetupReq
+                0x0800c766       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c766                RegionRxParamSetupReq
  .text.RegionNewChannelReq
-                0x0800c77e       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c77e                RegionNewChannelReq
+                0x0800c77a       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c77a                RegionNewChannelReq
  .text.RegionTxParamSetupReq
-                0x0800c792       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c792                RegionTxParamSetupReq
+                0x0800c78e       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c78e                RegionTxParamSetupReq
  .text.RegionDlChannelReq
-                0x0800c7a6       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c7a6                RegionDlChannelReq
+                0x0800c7a2       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c7a2                RegionDlChannelReq
  .text.RegionAlternateDr
-                0x0800c7ba       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c7ba                RegionAlternateDr
+                0x0800c7b6       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c7b6                RegionAlternateDr
  .text.RegionCalcBackOff
-                0x0800c7ce        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c7ce                RegionCalcBackOff
+                0x0800c7ca        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c7ca                RegionCalcBackOff
  .text.RegionNextChannel
-                0x0800c7dc       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c7dc                RegionNextChannel
+                0x0800c7d8       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c7d8                RegionNextChannel
  .text.RegionSetContinuousWave
-                0x0800c7f8        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c7f8                RegionSetContinuousWave
+                0x0800c7f4        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c7f4                RegionSetContinuousWave
  .text.RegionApplyDrOffset
-                0x0800c806       0x1a /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
-                0x0800c806                RegionApplyDrOffset
+                0x0800c802       0x1a /home/phil/Repos/LoRa_STM32-claude/build/obj/Region_e7cf99a6.o
+                0x0800c802                RegionApplyDrOffset
  .text.RegionCommonChanVerifyDr
-                0x0800c820       0x6a /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
-                0x0800c820                RegionCommonChanVerifyDr
+                0x0800c81c       0x6a /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
+                0x0800c81c                RegionCommonChanVerifyDr
  .text.RegionCommonValueInRange
-                0x0800c88a       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
-                0x0800c88a                RegionCommonValueInRange
+                0x0800c886       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
+                0x0800c886                RegionCommonValueInRange
  .text.RegionCommonChanDisable
-                0x0800c89e       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
-                0x0800c89e                RegionCommonChanDisable
+                0x0800c89a       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
+                0x0800c89a                RegionCommonChanDisable
  .text.RegionCommonCountChannels
-                0x0800c8c6       0x3e /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
-                0x0800c8c6                RegionCommonCountChannels
+                0x0800c8c2       0x3e /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
+                0x0800c8c2                RegionCommonCountChannels
  .text.RegionCommonChanMaskCopy
-                0x0800c904       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
-                0x0800c904                RegionCommonChanMaskCopy
+                0x0800c900       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
+                0x0800c900                RegionCommonChanMaskCopy
  .text.RegionCommonSetBandTxDone
-                0x0800c920        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
-                0x0800c920                RegionCommonSetBandTxDone
+                0x0800c91c        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
+                0x0800c91c                RegionCommonSetBandTxDone
  .text.RegionCommonUpdateBandTimeOff
-                0x0800c92c       0x9a /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
-                0x0800c92c                RegionCommonUpdateBandTimeOff
+                0x0800c928       0x9a /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
+                0x0800c928                RegionCommonUpdateBandTimeOff
  .text.RegionCommonParseLinkAdrReq
-                0x0800c9c6       0x36 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
-                0x0800c9c6                RegionCommonParseLinkAdrReq
+                0x0800c9c2       0x36 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
+                0x0800c9c2                RegionCommonParseLinkAdrReq
  .text.RegionCommonLinkAdrReqVerifyParams
-                0x0800c9fc       0x9c /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
-                0x0800c9fc                RegionCommonLinkAdrReqVerifyParams
+                0x0800c9f8       0x9c /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
+                0x0800c9f8                RegionCommonLinkAdrReqVerifyParams
  .text.RegionCommonComputeSymbolTimeLoRa
-                0x0800ca98       0x34 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
-                0x0800ca98                RegionCommonComputeSymbolTimeLoRa
+                0x0800ca94       0x34 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
+                0x0800ca94                RegionCommonComputeSymbolTimeLoRa
  .text.RegionCommonComputeSymbolTimeFsk
-                0x0800cacc       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
-                0x0800cacc                RegionCommonComputeSymbolTimeFsk
+                0x0800cac8       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
+                0x0800cac8                RegionCommonComputeSymbolTimeFsk
  .text.RegionCommonComputeRxWindowParameters
-                0x0800cae4       0xac /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
-                0x0800cae4                RegionCommonComputeRxWindowParameters
+                0x0800cae0       0xac /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
+                0x0800cae0                RegionCommonComputeRxWindowParameters
  .text.RegionCommonComputeTxPower
-                0x0800cb90       0x3a /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
-                0x0800cb90                RegionCommonComputeTxPower
+                0x0800cb8c       0x3a /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
+                0x0800cb8c                RegionCommonComputeTxPower
  .text.RegionCommonCalcBackOff
-                0x0800cbca       0x4a /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
-                0x0800cbca                RegionCommonCalcBackOff
+                0x0800cbc6       0x4a /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionCommon_2f44c7de.o
+                0x0800cbc6                RegionCommonCalcBackOff
  .text.VerifyTxFreq
-                0x0800cc14       0xa0 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800cc10       0xa0 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
  .text.RegionEU868GetPhyParam
-                0x0800ccb4       0xcc /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800ccb4                RegionEU868GetPhyParam
+                0x0800ccb0       0xcc /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800ccb0                RegionEU868GetPhyParam
  .text.RegionEU868SetBandTxDone
-                0x0800cd80       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800cd80                RegionEU868SetBandTxDone
+                0x0800cd7c       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800cd7c                RegionEU868SetBandTxDone
  .text.RegionEU868InitDefaults
-                0x0800cda8       0x90 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800cda8                RegionEU868InitDefaults
+                0x0800cda4       0x90 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800cda4                RegionEU868InitDefaults
  .text.RegionEU868Verify
-                0x0800ce38       0x58 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800ce38                RegionEU868Verify
+                0x0800ce34       0x58 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800ce34                RegionEU868Verify
  .text.RegionEU868ChanMaskSet
-                0x0800ce90       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800ce90                RegionEU868ChanMaskSet
+                0x0800ce8c       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800ce8c                RegionEU868ChanMaskSet
  .text.RegionEU868AdrNext
-                0x0800cebc       0x6c /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800cebc                RegionEU868AdrNext
+                0x0800ceb8       0x6c /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800ceb8                RegionEU868AdrNext
  .text.RegionEU868ComputeRxWindowParameters
-                0x0800cf28       0x84 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800cf28                RegionEU868ComputeRxWindowParameters
+                0x0800cf24       0x84 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800cf24                RegionEU868ComputeRxWindowParameters
  .text.RegionEU868RxConfig
-                0x0800cfac      0x150 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800cfac                RegionEU868RxConfig
+                0x0800cfa8      0x150 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800cfa8                RegionEU868RxConfig
  .text.RegionEU868TxConfig
-                0x0800d0fc      0x194 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800d0fc                RegionEU868TxConfig
+                0x0800d0f8      0x194 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800d0f8                RegionEU868TxConfig
  .text.RegionEU868LinkAdrReq
-                0x0800d290      0x138 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800d290                RegionEU868LinkAdrReq
+                0x0800d28c      0x138 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800d28c                RegionEU868LinkAdrReq
  .text.RegionEU868RxParamSetupReq
-                0x0800d3c8       0x40 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800d3c8                RegionEU868RxParamSetupReq
+                0x0800d3c4       0x40 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800d3c4                RegionEU868RxParamSetupReq
  .text.RegionEU868TxParamSetupReq
-                0x0800d408        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800d408                RegionEU868TxParamSetupReq
- *fill*         0x0800d40e        0x2 
+                0x0800d404        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800d404                RegionEU868TxParamSetupReq
+ *fill*         0x0800d40a        0x2 
  .text.RegionEU868DlChannelReq
-                0x0800d410       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800d410                RegionEU868DlChannelReq
+                0x0800d40c       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800d40c                RegionEU868DlChannelReq
  .text.RegionEU868AlternateDr
-                0x0800d44c       0x26 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800d44c                RegionEU868AlternateDr
- *fill*         0x0800d472        0x2 
+                0x0800d448       0x26 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800d448                RegionEU868AlternateDr
+ *fill*         0x0800d46e        0x2 
  .text.RegionEU868CalcBackOff
-                0x0800d474       0x34 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800d474                RegionEU868CalcBackOff
+                0x0800d470       0x34 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800d470                RegionEU868CalcBackOff
  .text.RegionEU868NextChannel
-                0x0800d4a8      0x108 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800d4a8                RegionEU868NextChannel
+                0x0800d4a4      0x108 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800d4a4                RegionEU868NextChannel
  .text.RegionEU868ChannelAdd
-                0x0800d5b0       0xe8 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800d5b0                RegionEU868ChannelAdd
+                0x0800d5ac       0xe8 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800d5ac                RegionEU868ChannelAdd
  .text.RegionEU868ChannelsRemove
-                0x0800d698       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800d698                RegionEU868ChannelsRemove
+                0x0800d694       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800d694                RegionEU868ChannelsRemove
  .text.RegionEU868ApplyCFList
-                0x0800d6c8       0x6a /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800d6c8                RegionEU868ApplyCFList
+                0x0800d6c4       0x6a /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800d6c4                RegionEU868ApplyCFList
  .text.RegionEU868NewChannelReq
-                0x0800d732       0x3a /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800d732                RegionEU868NewChannelReq
+                0x0800d72e       0x3a /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800d72e                RegionEU868NewChannelReq
  .text.RegionEU868SetContinuousWave
-                0x0800d76c       0x50 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800d76c                RegionEU868SetContinuousWave
+                0x0800d768       0x50 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800d768                RegionEU868SetContinuousWave
  .text.RegionEU868ApplyDrOffset
-                0x0800d7bc        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
-                0x0800d7bc                RegionEU868ApplyDrOffset
- *fill*         0x0800d7ca        0x2 
+                0x0800d7b8        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x0800d7b8                RegionEU868ApplyDrOffset
+ *fill*         0x0800d7c6        0x2 
  .text.ResetMacParameters
-                0x0800d7cc       0xdc /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800d7c8       0xdc /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .text.ValidatePayloadLength
-                0x0800d8a8       0x48 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800d8a4       0x48 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .text.OnAckTimeoutTimerEvent
-                0x0800d8f0       0x4c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800d8ec       0x4c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .text.PrepareRxDoneAbort
-                0x0800d93c       0x50 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800d938       0x50 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .text.RxWindowSetup
-                0x0800d98c       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800d988       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .text.OnRxWindow2TimerEvent
-                0x0800d9a4       0x94 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800d9a0       0x94 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .text.OnRadioTxTimeout
-                0x0800da38       0x40 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800da34       0x40 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .text.OnRadioTxDone
-                0x0800da78      0x144 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800da74      0x144 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .text.OnRxWindow1TimerEvent
-                0x0800dbbc       0x9c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800dbb8       0x9c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .text.OnRadioRxTimeout
-                0x0800dc58       0x88 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800dc54       0x88 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .text.OnRadioRxError
-                0x0800dce0       0x88 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800dcdc       0x88 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .text.ProcessMacCommands
-                0x0800dd68      0x538 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800dd64      0x538 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .text.OnRadioRxDone
-                0x0800e2a0      0x58c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800e29c      0x58c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .text.printf_joinmessage
-                0x0800e82c       0x84 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
-                0x0800e82c                printf_joinmessage
+                0x0800e828       0x84 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800e828                printf_joinmessage
  .text.PrepareFrame
-                0x0800e8b0      0x388 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
-                0x0800e8b0                PrepareFrame
+                0x0800e8ac      0x388 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800e8ac                PrepareFrame
  .text.SendFrameOnChannel
-                0x0800ec38      0x130 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
-                0x0800ec38                SendFrameOnChannel
+                0x0800ec34      0x130 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800ec34                SendFrameOnChannel
  .text.ScheduleTx
-                0x0800ed68      0x1ec /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
- .text.Send     0x0800ef54       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
-                0x0800ef54                Send
+                0x0800ed64      0x1ec /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+ .text.Send     0x0800ef50       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800ef50                Send
  .text.OnTxDelayedTimerEvent
-                0x0800ef90       0x80 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800ef8c       0x80 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .text.OnMacStateCheckTimerEvent
-                0x0800f010      0x4ac /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800f00c      0x4ac /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .text.SetTxContinuousWave
-                0x0800f4bc       0x5c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
-                0x0800f4bc                SetTxContinuousWave
+                0x0800f4b8       0x5c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800f4b8                SetTxContinuousWave
  .text.SetTxContinuousWave1
-                0x0800f518       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
-                0x0800f518                SetTxContinuousWave1
+                0x0800f514       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800f514                SetTxContinuousWave1
  .text.LoRaMacInitialization
-                0x0800f554      0x2b4 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
-                0x0800f554                LoRaMacInitialization
+                0x0800f550      0x2b4 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800f550                LoRaMacInitialization
  .text.LoRaMacQueryTxPossible
-                0x0800f808       0xf8 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
-                0x0800f808                LoRaMacQueryTxPossible
+                0x0800f804       0xf8 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800f804                LoRaMacQueryTxPossible
  .text.LoRaMacMibGetRequestConfirm
-                0x0800f900      0x12c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
-                0x0800f900                LoRaMacMibGetRequestConfirm
+                0x0800f8fc      0x12c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800f8fc                LoRaMacMibGetRequestConfirm
  .text.LoRaMacMibSetRequestConfirm
-                0x0800fa2c      0x2ec /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
-                0x0800fa2c                LoRaMacMibSetRequestConfirm
+                0x0800fa28      0x2ec /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800fa28                LoRaMacMibSetRequestConfirm
  .text.LoRaMacMlmeRequest
-                0x0800fd18      0x1a8 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
-                0x0800fd18                LoRaMacMlmeRequest
+                0x0800fd14      0x1a8 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800fd14                LoRaMacMlmeRequest
  .text.LoRaMacMcpsRequest
-                0x0800fec0      0x15c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
-                0x0800fec0                LoRaMacMcpsRequest
+                0x0800febc      0x15c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x0800febc                LoRaMacMcpsRequest
  .text.LoRaMacTestSetDutyCycleOn
-                0x0801001c       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
-                0x0801001c                LoRaMacTestSetDutyCycleOn
+                0x08010018       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x08010018                LoRaMacTestSetDutyCycleOn
  .text.LoRaMacComputeMic
-                0x08010040       0x84 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMacCrypto_5c88798c.o
-                0x08010040                LoRaMacComputeMic
+                0x0801003c       0x84 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMacCrypto_5c88798c.o
+                0x0801003c                LoRaMacComputeMic
  .text.LoRaMacPayloadEncrypt
-                0x080100c4       0xf4 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMacCrypto_5c88798c.o
-                0x080100c4                LoRaMacPayloadEncrypt
+                0x080100c0       0xf4 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMacCrypto_5c88798c.o
+                0x080100c0                LoRaMacPayloadEncrypt
  .text.LoRaMacPayloadDecrypt
-                0x080101b8       0x1a /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMacCrypto_5c88798c.o
-                0x080101b8                LoRaMacPayloadDecrypt
- *fill*         0x080101d2        0x2 
+                0x080101b4       0x1a /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMacCrypto_5c88798c.o
+                0x080101b4                LoRaMacPayloadDecrypt
+ *fill*         0x080101ce        0x2 
  .text.LoRaMacJoinComputeMic
-                0x080101d4       0x50 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMacCrypto_5c88798c.o
-                0x080101d4                LoRaMacJoinComputeMic
+                0x080101d0       0x50 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMacCrypto_5c88798c.o
+                0x080101d0                LoRaMacJoinComputeMic
  .text.LoRaMacJoinDecrypt
-                0x08010224       0x44 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMacCrypto_5c88798c.o
-                0x08010224                LoRaMacJoinDecrypt
+                0x08010220       0x44 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMacCrypto_5c88798c.o
+                0x08010220                LoRaMacJoinDecrypt
  .text.LoRaMacJoinComputeSKeys
-                0x08010268       0x9c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMacCrypto_5c88798c.o
-                0x08010268                LoRaMacJoinComputeSKeys
+                0x08010264       0x9c /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMacCrypto_5c88798c.o
+                0x08010264                LoRaMacJoinComputeSKeys
  .text.OnCertifTxNextPacketTimerEvent
-                0x08010304       0xbc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora-test_9d43f367.o
+                0x08010300       0xbc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora-test_9d43f367.o
  .text.certif_running
-                0x080103c0        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora-test_9d43f367.o
-                0x080103c0                certif_running
+                0x080103bc        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/lora-test_9d43f367.o
+                0x080103bc                certif_running
  .text.certif_DownLinkIncrement
-                0x080103cc       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora-test_9d43f367.o
-                0x080103cc                certif_DownLinkIncrement
+                0x080103c8       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora-test_9d43f367.o
+                0x080103c8                certif_DownLinkIncrement
  .text.certif_linkCheck
-                0x080103dc       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora-test_9d43f367.o
-                0x080103dc                certif_linkCheck
+                0x080103d8       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora-test_9d43f367.o
+                0x080103d8                certif_linkCheck
  .text.certif_rx
-                0x080103fc      0x1d8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora-test_9d43f367.o
-                0x080103fc                certif_rx
- .text.DelayMs  0x080105d4        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/delay_69b8651c.o
-                0x080105d4                DelayMs
+                0x080103f8      0x1d8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora-test_9d43f367.o
+                0x080103f8                certif_rx
+ .text.DelayMs  0x080105d0        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/delay_69b8651c.o
+                0x080105d0                DelayMs
  .text.LPM_SetOffMode
-                0x080105dc       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/low_power_manager_062ac3e9.o
-                0x080105dc                LPM_SetOffMode
+                0x080105d8       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/low_power_manager_062ac3e9.o
+                0x080105d8                LPM_SetOffMode
  .text.LPM_SetStopMode
-                0x08010608       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/low_power_manager_062ac3e9.o
-                0x08010608                LPM_SetStopMode
+                0x08010604       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/low_power_manager_062ac3e9.o
+                0x08010604                LPM_SetStopMode
  .text.LPM_GetMode
-                0x08010634       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/low_power_manager_062ac3e9.o
-                0x08010634                LPM_GetMode
+                0x08010630       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/low_power_manager_062ac3e9.o
+                0x08010630                LPM_GetMode
  .text.LPM_ExitSleepMode
-                0x0801065c        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/low_power_manager_062ac3e9.o
-                0x0801065c                LPM_ExitSleepMode
+                0x08010658        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/low_power_manager_062ac3e9.o
+                0x08010658                LPM_ExitSleepMode
  .text.LPM_EnterOffMode
-                0x0801065e        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/low_power_manager_062ac3e9.o
-                0x0801065e                LPM_EnterOffMode
+                0x0801065a        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/low_power_manager_062ac3e9.o
+                0x0801065a                LPM_EnterOffMode
  .text.LPM_ExitOffMode
-                0x08010660        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/low_power_manager_062ac3e9.o
-                0x08010660                LPM_ExitOffMode
- *fill*         0x08010662        0x2 
+                0x0801065c        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/low_power_manager_062ac3e9.o
+                0x0801065c                LPM_ExitOffMode
+ *fill*         0x0801065e        0x2 
  .text.LPM_EnterLowPower
-                0x08010664       0x38 /home/phil/Repos/LoRa_STM32-claude/build/obj/low_power_manager_062ac3e9.o
-                0x08010664                LPM_EnterLowPower
+                0x08010660       0x38 /home/phil/Repos/LoRa_STM32-claude/build/obj/low_power_manager_062ac3e9.o
+                0x08010660                LPM_EnterLowPower
  .text.TimerSetTimeout
-                0x0801069c       0x2a /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
- *fill*         0x080106c6        0x2 
+                0x08010698       0x2a /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
+ *fill*         0x080106c2        0x2 
  .text.TimerInsertNewHeadTimer
-                0x080106c8       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
+                0x080106c4       0x1c /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
  .text.TimerInit
-                0x080106e4        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
-                0x080106e4                TimerInit
- *fill*         0x080106f2        0x2 
+                0x080106e0        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
+                0x080106e0                TimerInit
+ *fill*         0x080106ee        0x2 
  .text.TimerStart
-                0x080106f4       0x68 /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
-                0x080106f4                TimerStart
+                0x080106f0       0x68 /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
+                0x080106f0                TimerStart
  .text.TimerIrqHandler
-                0x0801075c       0x74 /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
-                0x0801075c                TimerIrqHandler
+                0x08010758       0x74 /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
+                0x08010758                TimerIrqHandler
  .text.TimerStop
-                0x080107d0       0x58 /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
-                0x080107d0                TimerStop
+                0x080107cc       0x58 /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
+                0x080107cc                TimerStop
  .text.TimerSetValue
-                0x08010828       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
-                0x08010828                TimerSetValue
+                0x08010824       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
+                0x08010824                TimerSetValue
  .text.TimerGetCurrentTime
-                0x0801084a        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
-                0x0801084a                TimerGetCurrentTime
+                0x08010846        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
+                0x08010846                TimerGetCurrentTime
  .text.TimerGetElapsedTime
-                0x08010856       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
-                0x08010856                TimerGetElapsedTime
- *fill*         0x0801086e        0x2 
- .text.rand1    0x08010870       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/utilities_06cf1bad.o
-                0x08010870                rand1
- .text.srand1   0x0801089c        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/utilities_06cf1bad.o
-                0x0801089c                srand1
- .text.randr    0x080108a8       0x16 /home/phil/Repos/LoRa_STM32-claude/build/obj/utilities_06cf1bad.o
-                0x080108a8                randr
- .text.memcpy1  0x080108be       0x12 /home/phil/Repos/LoRa_STM32-claude/build/obj/utilities_06cf1bad.o
-                0x080108be                memcpy1
- .text.memcpyr  0x080108d0       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/utilities_06cf1bad.o
-                0x080108d0                memcpyr
- .text.memset1  0x080108e8       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/utilities_06cf1bad.o
-                0x080108e8                memset1
+                0x08010852       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/timeServer_ff13a564.o
+                0x08010852                TimerGetElapsedTime
+ *fill*         0x0801086a        0x2 
+ .text.rand1    0x0801086c       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/utilities_06cf1bad.o
+                0x0801086c                rand1
+ .text.srand1   0x08010898        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/utilities_06cf1bad.o
+                0x08010898                srand1
+ .text.randr    0x080108a4       0x16 /home/phil/Repos/LoRa_STM32-claude/build/obj/utilities_06cf1bad.o
+                0x080108a4                randr
+ .text.memcpy1  0x080108ba       0x12 /home/phil/Repos/LoRa_STM32-claude/build/obj/utilities_06cf1bad.o
+                0x080108ba                memcpy1
+ .text.memcpyr  0x080108cc       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/utilities_06cf1bad.o
+                0x080108cc                memcpyr
+ .text.memset1  0x080108e4       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/utilities_06cf1bad.o
+                0x080108e4                memset1
  .text.Trace_TxCpltCallback
-                0x08010900       0x4c /home/phil/Repos/LoRa_STM32-claude/build/obj/trace_0f7c981b.o
+                0x080108fc       0x4c /home/phil/Repos/LoRa_STM32-claude/build/obj/trace_0f7c981b.o
  .text.TraceInit
-                0x0801094c       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/trace_0f7c981b.o
-                0x0801094c                TraceInit
+                0x08010948       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/trace_0f7c981b.o
+                0x08010948                TraceInit
  .text.TraceSend
-                0x08010974       0x8c /home/phil/Repos/LoRa_STM32-claude/build/obj/trace_0f7c981b.o
-                0x08010974                TraceSend
+                0x08010970       0x8c /home/phil/Repos/LoRa_STM32-claude/build/obj/trace_0f7c981b.o
+                0x08010970                TraceSend
  .text.CircularQueue_Init
-                0x08010a00       0x26 /home/phil/Repos/LoRa_STM32-claude/build/obj/queue_53f702e2.o
-                0x08010a00                CircularQueue_Init
+                0x080109fc       0x26 /home/phil/Repos/LoRa_STM32-claude/build/obj/queue_53f702e2.o
+                0x080109fc                CircularQueue_Init
  .text.CircularQueue_Add
-                0x08010a26      0x1fa /home/phil/Repos/LoRa_STM32-claude/build/obj/queue_53f702e2.o
-                0x08010a26                CircularQueue_Add
+                0x08010a22      0x1fa /home/phil/Repos/LoRa_STM32-claude/build/obj/queue_53f702e2.o
+                0x08010a22                CircularQueue_Add
  .text.CircularQueue_Remove
-                0x08010c20       0xbc /home/phil/Repos/LoRa_STM32-claude/build/obj/queue_53f702e2.o
-                0x08010c20                CircularQueue_Remove
+                0x08010c1c       0xbc /home/phil/Repos/LoRa_STM32-claude/build/obj/queue_53f702e2.o
+                0x08010c1c                CircularQueue_Remove
  .text.CircularQueue_Sense
-                0x08010cdc       0x90 /home/phil/Repos/LoRa_STM32-claude/build/obj/queue_53f702e2.o
-                0x08010cdc                CircularQueue_Sense
+                0x08010cd8       0x90 /home/phil/Repos/LoRa_STM32-claude/build/obj/queue_53f702e2.o
+                0x08010cd8                CircularQueue_Sense
  .text.aes_set_key
-                0x08010d6c      0x108 /home/phil/Repos/LoRa_STM32-claude/build/obj/aes_fc1b9773.o
-                0x08010d6c                aes_set_key
+                0x08010d68      0x108 /home/phil/Repos/LoRa_STM32-claude/build/obj/aes_fc1b9773.o
+                0x08010d68                aes_set_key
  .text.aes_encrypt
-                0x08010e74      0x37c /home/phil/Repos/LoRa_STM32-claude/build/obj/aes_fc1b9773.o
-                0x08010e74                aes_encrypt
+                0x08010e70      0x37c /home/phil/Repos/LoRa_STM32-claude/build/obj/aes_fc1b9773.o
+                0x08010e70                aes_encrypt
  .text.AES_CMAC_Init
-                0x080111f0       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/cmac_a4bbb0de.o
-                0x080111f0                AES_CMAC_Init
+                0x080111ec       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/cmac_a4bbb0de.o
+                0x080111ec                AES_CMAC_Init
  .text.AES_CMAC_SetKey
-                0x08011210        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/cmac_a4bbb0de.o
-                0x08011210                AES_CMAC_SetKey
+                0x0801120c        0xe /home/phil/Repos/LoRa_STM32-claude/build/obj/cmac_a4bbb0de.o
+                0x0801120c                AES_CMAC_SetKey
  .text.AES_CMAC_Update
-                0x0801121e       0xc2 /home/phil/Repos/LoRa_STM32-claude/build/obj/cmac_a4bbb0de.o
-                0x0801121e                AES_CMAC_Update
+                0x0801121a       0xc2 /home/phil/Repos/LoRa_STM32-claude/build/obj/cmac_a4bbb0de.o
+                0x0801121a                AES_CMAC_Update
  .text.AES_CMAC_Final
-                0x080112e0      0x150 /home/phil/Repos/LoRa_STM32-claude/build/obj/cmac_a4bbb0de.o
-                0x080112e0                AES_CMAC_Final
+                0x080112dc      0x150 /home/phil/Repos/LoRa_STM32-claude/build/obj/cmac_a4bbb0de.o
+                0x080112dc                AES_CMAC_Final
  .text.via_chameleon_probe
-                0x08011430       0x12 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
-                0x08011430                via_chameleon_probe
+                0x0801142c       0x12 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
+                0x0801142c                via_chameleon_probe
  .text.via_chameleon_trigger
-                0x08011442       0x1a /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
-                0x08011442                via_chameleon_trigger
+                0x0801143e       0x1a /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
+                0x0801143e                via_chameleon_trigger
  .text.via_chameleon_wait_ready
-                0x0801145c       0x4a /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
-                0x0801145c                via_chameleon_wait_ready
- *fill*         0x080114a6        0x2 
+                0x08011458       0x4a /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
+                0x08011458                via_chameleon_wait_ready
+ *fill*         0x080114a2        0x2 
  .text.via_chameleon_read_sample
-                0x080114a8      0x168 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
-                0x080114a8                via_chameleon_read_sample
+                0x080114a4      0x168 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
+                0x080114a4                via_chameleon_read_sample
  .text.via_chameleon_acquire
-                0x08011610       0x60 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
-                0x08011610                via_chameleon_acquire
+                0x0801160c       0x60 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
+                0x0801160c                via_chameleon_acquire
  .text.put_u32_be
-                0x08011670       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/chameleon_payload.o
+                0x0801166c       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/chameleon_payload.o
  .text.chameleon_payload_encode_v2
-                0x08011680       0x98 /home/phil/Repos/LoRa_STM32-claude/build/obj/chameleon_payload.o
-                0x08011680                chameleon_payload_encode_v2
+                0x0801167c       0x98 /home/phil/Repos/LoRa_STM32-claude/build/obj/chameleon_payload.o
+                0x0801167c                chameleon_payload_encode_v2
  .text.__muldi3
-                0x08011718       0x44 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_muldi3.o)
-                0x08011718                __aeabi_lmul
-                0x08011718                __muldi3
+                0x08011714       0x44 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_muldi3.o)
+                0x08011714                __aeabi_lmul
+                0x08011714                __muldi3
  .text.__fixunssfsi
-                0x0801175c       0x2e /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_fixunssfsi.o)
-                0x0801175c                __aeabi_f2uiz
-                0x0801175c                __fixunssfsi
- *fill*         0x0801178a        0x2 
+                0x08011758       0x2e /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_fixunssfsi.o)
+                0x08011758                __aeabi_f2uiz
+                0x08011758                __fixunssfsi
+ *fill*         0x08011786        0x2 
  .text.__fixunsdfsi
-                0x0801178c       0x38 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_fixunsdfsi.o)
-                0x0801178c                __fixunsdfsi
-                0x0801178c                __aeabi_d2uiz
+                0x08011788       0x38 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_fixunsdfsi.o)
+                0x08011788                __fixunsdfsi
+                0x08011788                __aeabi_d2uiz
  .text.__udivmoddi4
-                0x080117c4       0xea /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
-                0x080117c4                __udivmoddi4
- *fill*         0x080118ae        0x2 
+                0x080117c0       0xea /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
+                0x080117c0                __udivmoddi4
+ *fill*         0x080118aa        0x2 
  .text.__aeabi_fdiv
-                0x080118b0      0x1c4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(divsf3.o)
-                0x080118b0                __aeabi_fdiv
- .text.__eqsf2  0x08011a74       0x4a /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(eqsf2.o)
-                0x08011a74                __nesf2
-                0x08011a74                __eqsf2
- .text.__gesf2  0x08011abe       0x7c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(gesf2.o)
-                0x08011abe                __gtsf2
-                0x08011abe                __gesf2
- .text.__lesf2  0x08011b3a       0x7c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(lesf2.o)
-                0x08011b3a                __lesf2
-                0x08011b3a                __ltsf2
- *fill*         0x08011bb6        0x2 
+                0x080118ac      0x1c4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(divsf3.o)
+                0x080118ac                __aeabi_fdiv
+ .text.__eqsf2  0x08011a70       0x4a /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(eqsf2.o)
+                0x08011a70                __nesf2
+                0x08011a70                __eqsf2
+ .text.__gesf2  0x08011aba       0x7c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(gesf2.o)
+                0x08011aba                __gtsf2
+                0x08011aba                __gesf2
+ .text.__lesf2  0x08011b36       0x7c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(lesf2.o)
+                0x08011b36                __lesf2
+                0x08011b36                __ltsf2
+ *fill*         0x08011bb2        0x2 
  .text.__aeabi_fmul
-                0x08011bb8      0x1f0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(mulsf3.o)
-                0x08011bb8                __aeabi_fmul
+                0x08011bb4      0x1f0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(mulsf3.o)
+                0x08011bb4                __aeabi_fmul
  .text.__aeabi_fsub
-                0x08011da8      0x304 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(subsf3.o)
-                0x08011da8                __aeabi_fsub
+                0x08011da4      0x304 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(subsf3.o)
+                0x08011da4                __aeabi_fsub
  .text.__aeabi_f2iz
-                0x080120ac       0x3c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(fixsfsi.o)
-                0x080120ac                __aeabi_f2iz
+                0x080120a8       0x3c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(fixsfsi.o)
+                0x080120a8                __aeabi_f2iz
  .text.__aeabi_i2f
-                0x080120e8       0x88 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(floatsisf.o)
-                0x080120e8                __aeabi_i2f
+                0x080120e4       0x88 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(floatsisf.o)
+                0x080120e4                __aeabi_i2f
  .text.__aeabi_ui2f
-                0x08012170       0x7c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(floatunsisf.o)
-                0x08012170                __aeabi_ui2f
+                0x0801216c       0x7c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(floatunsisf.o)
+                0x0801216c                __aeabi_ui2f
  .text.__aeabi_dadd
-                0x080121ec      0x590 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(adddf3.o)
-                0x080121ec                __aeabi_dadd
+                0x080121e8      0x590 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(adddf3.o)
+                0x080121e8                __aeabi_dadd
  .text.__aeabi_ddiv
-                0x0801277c      0x50c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(divdf3.o)
-                0x0801277c                __aeabi_ddiv
- .text.__eqdf2  0x08012c88       0x84 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(eqdf2.o)
-                0x08012c88                __eqdf2
-                0x08012c88                __nedf2
- .text.__gedf2  0x08012d0c       0xc8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(gedf2.o)
-                0x08012d0c                __gtdf2
-                0x08012d0c                __gedf2
- .text.__ledf2  0x08012dd4       0xc8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(ledf2.o)
-                0x08012dd4                __ltdf2
-                0x08012dd4                __ledf2
+                0x08012778      0x50c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(divdf3.o)
+                0x08012778                __aeabi_ddiv
+ .text.__eqdf2  0x08012c84       0x84 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(eqdf2.o)
+                0x08012c84                __eqdf2
+                0x08012c84                __nedf2
+ .text.__gedf2  0x08012d08       0xc8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(gedf2.o)
+                0x08012d08                __gtdf2
+                0x08012d08                __gedf2
+ .text.__ledf2  0x08012dd0       0xc8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(ledf2.o)
+                0x08012dd0                __ltdf2
+                0x08012dd0                __ledf2
  .text.__aeabi_dmul
-                0x08012e9c      0x44c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(muldf3.o)
-                0x08012e9c                __aeabi_dmul
+                0x08012e98      0x44c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(muldf3.o)
+                0x08012e98                __aeabi_dmul
  .text.__aeabi_dsub
-                0x080132e8      0x5a4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(subdf3.o)
-                0x080132e8                __aeabi_dsub
+                0x080132e4      0x5a4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(subdf3.o)
+                0x080132e4                __aeabi_dsub
  .text.__aeabi_d2iz
-                0x0801388c       0x64 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(fixdfsi.o)
-                0x0801388c                __aeabi_d2iz
+                0x08013888       0x64 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(fixdfsi.o)
+                0x08013888                __aeabi_d2iz
  .text.__aeabi_i2d
-                0x080138f0       0x50 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(floatsidf.o)
-                0x080138f0                __aeabi_i2d
+                0x080138ec       0x50 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(floatsidf.o)
+                0x080138ec                __aeabi_i2d
  .text.__aeabi_ui2d
-                0x08013940       0x40 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(floatunsidf.o)
-                0x08013940                __aeabi_ui2d
+                0x0801393c       0x40 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(floatunsidf.o)
+                0x0801393c                __aeabi_ui2d
  .text.__aeabi_f2d
-                0x08013980       0x84 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(extendsfdf2.o)
-                0x08013980                __aeabi_f2d
+                0x0801397c       0x84 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(extendsfdf2.o)
+                0x0801397c                __aeabi_f2d
  .text.__aeabi_d2f
-                0x08013a04       0xe0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(truncdfsf2.o)
-                0x08013a04                __aeabi_d2f
- .text.atoi     0x08013ae4        0xc /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-atoi.o)
-                0x08013ae4                atoi
+                0x08013a00       0xe0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(truncdfsf2.o)
+                0x08013a00                __aeabi_d2f
+ .text.atoi     0x08013ae0        0xc /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-atoi.o)
+                0x08013ae0                atoi
  .text._strtol_l.isra.0
-                0x08013af0      0x114 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
+                0x08013aec      0x114 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
  .text._strtol_r
-                0x08013c04        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
-                0x08013c04                _strtol_r
- .text.strtol   0x08013c0c       0x18 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
-                0x08013c0c                strtol
- .text.sscanf   0x08013c24       0x54 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sscanf.o)
-                0x08013c24                sscanf
-                0x08013c24                siscanf
+                0x08013c00        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
+                0x08013c00                _strtol_r
+ .text.strtol   0x08013c08       0x18 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
+                0x08013c08                strtol
+ .text.sscanf   0x08013c20       0x54 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sscanf.o)
+                0x08013c20                sscanf
+                0x08013c20                siscanf
  .text.__seofread
-                0x08013c78        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-stdio.o)
-                0x08013c78                __seofread
+                0x08013c74        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-stdio.o)
+                0x08013c74                __seofread
  .text._vsnprintf_r
-                0x08013c7c       0x58 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
-                0x08013c7c                _vsnprintf_r
-                0x08013c7c                _vsniprintf_r
+                0x08013c78       0x58 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
+                0x08013c78                _vsnprintf_r
+                0x08013c78                _vsniprintf_r
  .text.vsnprintf
-                0x08013cd4       0x18 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
-                0x08013cd4                vsnprintf
-                0x08013cd4                vsniprintf
- .text.memset   0x08013cec       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memset.o)
-                0x08013cec                memset
- .text.strncmp  0x08013cfc       0x22 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strncmp.o)
-                0x08013cfc                strncmp
- *fill*         0x08013d1e        0x2 
- .text.__errno  0x08013d20        0xc /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-errno.o)
-                0x08013d20                __errno
+                0x08013cd0       0x18 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
+                0x08013cd0                vsnprintf
+                0x08013cd0                vsniprintf
+ .text.memset   0x08013ce8       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memset.o)
+                0x08013ce8                memset
+ .text.strncmp  0x08013cf8       0x22 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strncmp.o)
+                0x08013cf8                strncmp
+ *fill*         0x08013d1a        0x2 
+ .text.__errno  0x08013d1c        0xc /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-errno.o)
+                0x08013d1c                __errno
  .text.__libc_init_array
-                0x08013d2c       0x48 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-init.o)
-                0x08013d2c                __libc_init_array
+                0x08013d28       0x48 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-init.o)
+                0x08013d28                __libc_init_array
  .text.__retarget_lock_acquire_recursive
-                0x08013d74        0x2 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
-                0x08013d74                __retarget_lock_acquire_recursive
+                0x08013d70        0x2 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
+                0x08013d70                __retarget_lock_acquire_recursive
  .text.__retarget_lock_release_recursive
-                0x08013d76        0x2 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
-                0x08013d76                __retarget_lock_release_recursive
- .text.memcpy   0x08013d78       0x12 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memcpy-stub.o)
-                0x08013d78                memcpy
- *fill*         0x08013d8a        0x2 
- .text._free_r  0x08013d8c       0x94 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-freer.o)
-                0x08013d8c                _free_r
+                0x08013d72        0x2 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
+                0x08013d72                __retarget_lock_release_recursive
+ .text.memcpy   0x08013d74       0x12 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memcpy-stub.o)
+                0x08013d74                memcpy
+ *fill*         0x08013d86        0x2 
+ .text._free_r  0x08013d88       0x94 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-freer.o)
+                0x08013d88                _free_r
  .text.sbrk_aligned
-                0x08013e20       0x44 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
+                0x08013e1c       0x44 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
  .text._malloc_r
-                0x08013e64      0x100 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
-                0x08013e64                _malloc_r
+                0x08013e60      0x100 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
+                0x08013e60                _malloc_r
  .text.__malloc_lock
-                0x08013f64       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
-                0x08013f64                __malloc_lock
+                0x08013f60       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
+                0x08013f60                __malloc_lock
  .text.__malloc_unlock
-                0x08013f74       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
-                0x08013f74                __malloc_unlock
+                0x08013f70       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
+                0x08013f70                __malloc_unlock
  .text.__ssputs_r
-                0x08013f84       0xc8 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
-                0x08013f84                __ssputs_r
+                0x08013f80       0xc8 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
+                0x08013f80                __ssputs_r
  .text._svfprintf_r
-                0x0801404c      0x208 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
-                0x0801404c                _svfprintf_r
-                0x0801404c                _svfiprintf_r
+                0x08014048      0x208 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
+                0x08014048                _svfprintf_r
+                0x08014048                _svfiprintf_r
  .text._sungetc_r
-                0x08014254       0x78 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
-                0x08014254                _sungetc_r
+                0x08014250       0x78 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x08014250                _sungetc_r
  .text.__ssrefill_r
-                0x080142cc       0x3e /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
-                0x080142cc                __ssrefill_r
- *fill*         0x0801430a        0x2 
+                0x080142c8       0x3e /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x080142c8                __ssrefill_r
+ *fill*         0x08014306        0x2 
  .text.__ssvfscanf_r
-                0x0801430c      0x2c4 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
-                0x0801430c                __ssvfscanf_r
-                0x0801430c                __ssvfiscanf_r
+                0x08014308      0x2c4 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x08014308                __ssvfscanf_r
+                0x08014308                __ssvfiscanf_r
  .text._printf_common
-                0x080145d0       0xde /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
-                0x080145d0                _printf_common
- *fill*         0x080146ae        0x2 
+                0x080145cc       0xde /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x080145cc                _printf_common
+ *fill*         0x080146aa        0x2 
  .text._printf_i
-                0x080146b0      0x218 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
-                0x080146b0                _printf_i
+                0x080146ac      0x218 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x080146ac                _printf_i
  .text._scanf_chars
-                0x080148c8       0xc0 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
-                0x080148c8                _scanf_chars
+                0x080148c4       0xc0 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x080148c4                _scanf_chars
  .text._scanf_i
-                0x08014988      0x1f8 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
-                0x08014988                _scanf_i
- .text.__sccl   0x08014b80       0x72 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sccl.o)
-                0x08014b80                __sccl
- *fill*         0x08014bf2        0x2 
+                0x08014984      0x1f8 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x08014984                _scanf_i
+ .text.__sccl   0x08014b7c       0x72 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sccl.o)
+                0x08014b7c                __sccl
+ *fill*         0x08014bee        0x2 
  .text.__submore
-                0x08014bf4       0x7c /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ungetc.o)
-                0x08014bf4                __submore
- .text.memmove  0x08014c70       0x24 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memmove.o)
-                0x08014c70                memmove
- .text._sbrk_r  0x08014c94       0x24 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sbrkr.o)
-                0x08014c94                _sbrk_r
- .text.memchr   0x08014cb8       0x16 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memchr-stub.o)
-                0x08014cb8                memchr
+                0x08014bf0       0x7c /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ungetc.o)
+                0x08014bf0                __submore
+ .text.memmove  0x08014c6c       0x24 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memmove.o)
+                0x08014c6c                memmove
+ .text._sbrk_r  0x08014c90       0x24 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sbrkr.o)
+                0x08014c90                _sbrk_r
+ .text.memchr   0x08014cb4       0x16 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memchr-stub.o)
+                0x08014cb4                memchr
  .text._realloc_r
-                0x08014cce       0x60 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-reallocr.o)
-                0x08014cce                _realloc_r
- *fill*         0x08014d2e        0x2 
+                0x08014cca       0x60 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-reallocr.o)
+                0x08014cca                _realloc_r
+ *fill*         0x08014d2a        0x2 
  .text._strtoul_l.isra.0
-                0x08014d30      0x100 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
+                0x08014d2c      0x100 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
  .text._strtoul_r
-                0x08014e30        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
-                0x08014e30                _strtoul_r
+                0x08014e2c        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
+                0x08014e2c                _strtoul_r
  .text._malloc_usable_size_r
-                0x08014e38       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-msizer.o)
-                0x08014e38                _malloc_usable_size_r
- .text._sbrk    0x08014e48       0x1c /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libnosys.a(sbrk.o)
-                0x08014e48                _sbrk
- .text.ceil     0x08014e64      0x110 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_ceil.o)
-                0x08014e64                ceil
- .text.floor    0x08014f74      0x11c /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_floor.o)
-                0x08014f74                floor
- .text.round    0x08015090       0x9c /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_round.o)
-                0x08015090                round
+                0x08014e34       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-msizer.o)
+                0x08014e34                _malloc_usable_size_r
+ .text._sbrk    0x08014e44       0x1c /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libnosys.a(sbrk.o)
+                0x08014e44                _sbrk
+ .text.ceil     0x08014e60      0x110 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_ceil.o)
+                0x08014e60                ceil
+ .text.floor    0x08014f70      0x11c /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_floor.o)
+                0x08014f70                floor
+ .text.round    0x0801508c       0x9c /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_round.o)
+                0x0801508c                round
  *(.glue_7)
- .glue_7        0x0801512c        0x0 linker stubs
+ .glue_7        0x08015128        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x0801512c        0x0 linker stubs
+ .glue_7t       0x08015128        0x0 linker stubs
  *(.eh_frame)
- .eh_frame      0x0801512c        0x0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
+ .eh_frame      0x08015128        0x0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
  *(.init)
- .init          0x0801512c        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crti.o
-                0x0801512c                _init
- .init          0x08015130        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtn.o
+ .init          0x08015128        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crti.o
+                0x08015128                _init
+ .init          0x0801512c        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtn.o
  *(.fini)
- .fini          0x08015138        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crti.o
-                0x08015138                _fini
- .fini          0x0801513c        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtn.o
-                0x08015144                        . = ALIGN (0x4)
-                0x08015144                        _etext = .
+ .fini          0x08015134        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crti.o
+                0x08015134                _fini
+ .fini          0x08015138        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtn.o
+                0x08015140                        . = ALIGN (0x4)
+                0x08015140                        _etext = .
 
-.vfp11_veneer   0x08015144        0x0
- .vfp11_veneer  0x08015144        0x0 linker stubs
+.vfp11_veneer   0x08015140        0x0
+ .vfp11_veneer  0x08015140        0x0 linker stubs
 
-.v4_bx          0x08015144        0x0
- .v4_bx         0x08015144        0x0 linker stubs
+.v4_bx          0x08015140        0x0
+ .v4_bx         0x08015140        0x0 linker stubs
 
-.iplt           0x08015144        0x0
- .iplt          0x08015144        0x0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
+.iplt           0x08015140        0x0
+ .iplt          0x08015140        0x0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
 
-.rodata         0x08015148     0x26e8
-                0x08015148                        . = ALIGN (0x4)
+.rodata         0x08015140     0x26e8
+                0x08015140                        . = ALIGN (0x4)
  *(.rodata)
- .rodata        0x08015148        0xb /home/phil/Repos/LoRa_STM32-claude/build/obj/tfsensor_f8521127.o
- *fill*         0x08015153        0x1 
- .rodata        0x08015154        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
- .rodata        0x0801515c       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
- .rodata        0x08015180        0xc /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+ .rodata        0x08015140        0xb /home/phil/Repos/LoRa_STM32-claude/build/obj/tfsensor_f8521127.o
+ *fill*         0x0801514b        0x1 
+ .rodata        0x0801514c        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+ .rodata        0x08015154       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+ .rodata        0x08015178        0xc /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
  *(.rodata*)
  .rodata.EEPROM_program.str1.1
-                0x0801518c     0x1afa /home/phil/Repos/LoRa_STM32-claude/build/obj/flash_eraseprogram_078ea408.o
+                0x08015184     0x1afa /home/phil/Repos/LoRa_STM32-claude/build/obj/flash_eraseprogram_078ea408.o
                                  0x1d (size before relaxing)
  .rodata.EEPROM_erase_one_address.str1.1
-                0x08016c86       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/flash_eraseprogram_078ea408.o
+                0x08016c7e       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/flash_eraseprogram_078ea408.o
  .rodata.SX1276OnDio0Irq.str1.1
-                0x08016c86       0x31 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
+                0x08016c7e       0x31 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
  .rodata.SX1276OnDio1Irq.str1.1
-                0x08016c86        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
- *fill*         0x08016c86        0x2 
+                0x08016c7e        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
+ *fill*         0x08016c7e        0x2 
  .rodata.CSWTCH.94
-                0x08016c88       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
+                0x08016c80       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
  .rodata.FskBandwidths
-                0x08016ca0       0xb0 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
-                0x08016ca0                FskBandwidths
+                0x08016c98       0xb0 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
+                0x08016c98                FskBandwidths
  .rodata.RadioRegsInit
-                0x08016d50       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
-                0x08016d50                RadioRegsInit
+                0x08016d48       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
+                0x08016d48                RadioRegsInit
  .rodata.waitbusy.str1.1
-                0x08016d80        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/lidar_lite_v3hp_29c3a030.o
+                0x08016d78        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/lidar_lite_v3hp_29c3a030.o
  .rodata.LidarLite_init.str1.1
-                0x08016d80        0x7 /home/phil/Repos/LoRa_STM32-claude/build/obj/lidar_lite_v3hp_29c3a030.o
+                0x08016d78        0x7 /home/phil/Repos/LoRa_STM32-claude/build/obj/lidar_lite_v3hp_29c3a030.o
  .rodata.LidarLite.str1.1
-                0x08016d80        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/lidar_lite_v3hp_29c3a030.o
- .rodata.Radio  0x08016d80       0x68 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276mb1las_a2dfe320.o
-                0x08016d80                Radio
+                0x08016d78        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/lidar_lite_v3hp_29c3a030.o
+ .rodata.Radio  0x08016d78       0x68 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276mb1las_a2dfe320.o
+                0x08016d78                Radio
  .rodata.PLLMulTable
-                0x08016de8        0x9 /home/phil/Repos/LoRa_STM32-claude/build/obj/system_stm32l0xx_d1d9d34c.o
-                0x08016de8                PLLMulTable
+                0x08016de0        0x9 /home/phil/Repos/LoRa_STM32-claude/build/obj/system_stm32l0xx_d1d9d34c.o
+                0x08016de0                PLLMulTable
  .rodata.APBPrescTable
-                0x08016df1        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/system_stm32l0xx_d1d9d34c.o
-                0x08016df1                APBPrescTable
+                0x08016de9        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/system_stm32l0xx_d1d9d34c.o
+                0x08016de9                APBPrescTable
  .rodata.AHBPrescTable
-                0x08016df9       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/system_stm32l0xx_d1d9d34c.o
-                0x08016df9                AHBPrescTable
+                0x08016df1       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/system_stm32l0xx_d1d9d34c.o
+                0x08016df1                AHBPrescTable
  .rodata.BSP_sensor_Read.str1.1
-                0x08016e09      0x1d2 /home/phil/Repos/LoRa_STM32-claude/build/obj/bsp_fc5dfbea.o
+                0x08016e01      0x1d2 /home/phil/Repos/LoRa_STM32-claude/build/obj/bsp_fc5dfbea.o
  .rodata.BSP_sensor_Init.str1.1
-                0x08016e09      0x155 /home/phil/Repos/LoRa_STM32-claude/build/obj/bsp_fc5dfbea.o
+                0x08016e01      0x155 /home/phil/Repos/LoRa_STM32-claude/build/obj/bsp_fc5dfbea.o
  .rodata.DaysInMonthLeapYear
-                0x08016e09        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/hw_rtc_40701610.o
+                0x08016e01        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/hw_rtc_40701610.o
  .rodata.DaysInMonth
-                0x08016e15        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/hw_rtc_40701610.o
+                0x08016e0d        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/hw_rtc_40701610.o
  .rodata.LORA_ConfirmClass.str1.1
-                0x08016e21       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
+                0x08016e19       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
  .rodata.LORA_RxData.str1.1
-                0x08016e21       0x4a /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
+                0x08016e19       0x4a /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
  .rodata.LORA_HasJoined.str1.1
-                0x08016e21        0x9 /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
+                0x08016e19        0x9 /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
  .rodata.main.str1.1
-                0x08016e21       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
+                0x08016e19       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
  .rodata.at_tfmini_data_receive.str1.1
-                0x08016e21        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
+                0x08016e19        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
  .rodata.print_8_02x.str1.1
-                0x08016e21       0x2a /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x2a /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.print_16_02x.str1.1
-                0x08016e21       0x52 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x52 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.print_d.str1.1
-                0x08016e21        0x5 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19        0x5 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.print_u.str1.1
-                0x08016e21        0x5 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19        0x5 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.changeform.str1.1
-                0x08016e21       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.sscanf_16_hhx.part.0.isra.0.str1.1
-                0x08016e21       0x50 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x50 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_DEBUG_run.str1.1
-                0x08016e21       0x13 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x13 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_FDR.str1.1
-                0x08016e21        0x5 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19        0x5 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_DevEUI_set.str1.1
-                0x08016e21       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_DevAddr_set.str1.1
-                0x08016e21       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_TransmitPower_set.str1.1
-                0x08016e21       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_DutyCycle_get.str1.1
-                0x08016e21        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_Rx2Frequency_set.str1.1
-                0x08016e21        0x4 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19        0x4 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_JoinAcceptDelay1_set.str1.1
-                0x08016e21       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_NetworkID_get.str1.1
-                0x08016e21       0x16 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x16 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_DeviceClass_get.str1.1
-                0x08016e21        0x5 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19        0x5 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_SendBinary.str1.1
-                0x08016e21       0x29 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x29 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_ReceiveBinary.str1.1
-                0x08016e21        0xd /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19        0xd /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_Receive.str1.1
-                0x08016e21        0x3 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19        0x3 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_RJTDC_set.str1.1
-                0x08016e21       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_RPL_set.str1.1
-                0x08016e21       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_version_get.str1.1
-                0x08016e21        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_ack_set.str1.1
-                0x08016e21        0x9 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19        0x9 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_ack_get.str1.1
-                0x08016e21        0xb /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19        0xb /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_CFG_run.str1.1
-                0x08016e21       0x53 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x53 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_TDC_set.str1.1
-                0x08016e21       0x23 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x23 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_MOD_set.str1.1
-                0x08016e21       0x29 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x29 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_INTMOD1_set.str1.1
-                0x08016e21       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_INTMOD2_set.str1.1
-                0x08016e21       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_INTMOD3_set.str1.1
-                0x08016e21       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_weight_GapValue_set.str1.1
-                0x08016e21        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_weight_GapValue_get.str1.1
-                0x08016e21        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_SETCNT_set.str1.1
-                0x08016e21        0x7 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19        0x7 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_downlink_detect_set.str1.1
-                0x08016e21       0x2d /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19       0x2d /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_setmaxnbtrans_set.str1.1
-                0x08016e21        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_setmaxnbtrans_get.str1.1
-                0x08016e21        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.CSWTCH.111
-                0x08016e21        0xd /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e19        0xd /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.CMD_Process.str1.1
-                0x08016e2e       0xe3 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
+                0x08016e26       0xe3 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
  .rodata.printf_all_config.str1.1
-                0x08016e2e        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
+                0x08016e26        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
  .rodata.str1.1
-                0x08016e2e      0xfcb /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
- *fill*         0x08016e2e        0x2 
+                0x08016e26      0xfcb /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
+ *fill*         0x08016e26        0x2 
  .rodata.ATCommand
-                0x08016e30      0x588 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
+                0x08016e28      0x588 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
  .rodata.ATError_description
-                0x080173b8       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
+                0x080173b0       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
  .rodata.region_printf.str1.1
-                0x080173e0        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x080173d8        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
  .rodata.key_printf.str1.1
-                0x080173e0       0x32 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x080173d8       0x32 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
  .rodata.lora_config_devaddr_get.str1.1
-                0x080173e0        0x9 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x080173d8        0x9 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
  .rodata.EEPROM_Store_Config.str1.1
-                0x080173e0       0x17 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x080173d8       0x17 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
  .rodata.LORA_Init.str1.1
-                0x080173e0       0x92 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x080173d8       0x92 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
  .rodata.string_touint.str1.1
-                0x080173e0        0x7 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x080173d8        0x7 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
  .rodata.RegionEU868RxConfig.str1.1
-                0x080173e0       0x42 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x080173d8       0x42 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
  .rodata.RegionEU868TxConfig.str1.1
-                0x080173e0       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x080173d8       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
  .rodata.MaxPayloadOfDatarateRepeaterEU868
-                0x080173e0        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x080173d8        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
  .rodata.MaxPayloadOfDatarateEU868
-                0x080173e8        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x080173e0        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
  .rodata.BandwidthsEU868
-                0x080173f0       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x080173e8       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
  .rodata.DataratesEU868
-                0x08017410        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x08017408        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
  .rodata.ProcessMacCommands.str1.1
-                0x08017418       0xad /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x08017410       0xad /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .rodata.printf_joinmessage.str1.1
-                0x08017418       0x5f /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x08017410       0x5f /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .rodata.SendFrameOnChannel.str1.1
-                0x08017418       0x52 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x08017410       0x52 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .rodata.LoRaMacMaxEirpTable
-                0x08017418       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x08017410       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .rodata.OnCertifTxNextPacketTimerEvent.str1.1
-                0x08017428       0x1a /home/phil/Repos/LoRa_STM32-claude/build/obj/lora-test_9d43f367.o
+                0x08017420       0x1a /home/phil/Repos/LoRa_STM32-claude/build/obj/lora-test_9d43f367.o
  .rodata.gfm3_sbox
-                0x08017428      0x100 /home/phil/Repos/LoRa_STM32-claude/build/obj/aes_fc1b9773.o
+                0x08017420      0x100 /home/phil/Repos/LoRa_STM32-claude/build/obj/aes_fc1b9773.o
  .rodata.gfm2_sbox
-                0x08017528      0x100 /home/phil/Repos/LoRa_STM32-claude/build/obj/aes_fc1b9773.o
- .rodata.sbox   0x08017628      0x100 /home/phil/Repos/LoRa_STM32-claude/build/obj/aes_fc1b9773.o
+                0x08017520      0x100 /home/phil/Repos/LoRa_STM32-claude/build/obj/aes_fc1b9773.o
+ .rodata.sbox   0x08017620      0x100 /home/phil/Repos/LoRa_STM32-claude/build/obj/aes_fc1b9773.o
  .rodata.raw_cmds.0
-                0x08017728        0x3 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
+                0x08017720        0x3 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
  .rodata.comp_cmds.1
-                0x0801772b        0x3 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
+                0x08017723        0x3 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
  .rodata._ctype_
-                0x0801772e      0x101 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ctype_.o)
-                0x0801772e                _ctype_
+                0x08017726      0x101 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ctype_.o)
+                0x08017726                _ctype_
  .rodata._svfprintf_r.str1.1
-                0x0801782f       0x11 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
+                0x08017827       0x11 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
  .rodata.__ssvfscanf_r.str1.1
-                0x0801782f        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x08017827        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
  .rodata._printf_i.str1.1
-                0x0801782f       0x22 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x08017827       0x22 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
  .rodata._scanf_i.str1.1
-                0x0801782f       0x12 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x08017827       0x12 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
  .rodata.str1.1
-                0x0801782f        0x9 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
-                0x08017854                        . = ALIGN (0x4)
- *fill*         0x0801782f        0x1 
+                0x08017827        0x9 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x0801784c                        . = ALIGN (0x4)
+ *fill*         0x08017827        0x1 
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
-.ARM            0x08017830        0x8
-                0x08017830                        __exidx_start = .
+.ARM            0x08017828        0x8
+                0x08017828                        __exidx_start = .
  *(.ARM.exidx*)
  .ARM.exidx.text.__udivmoddi4
-                0x08017830        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
-                0x08017838                        __exidx_end = .
+                0x08017828        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
+                0x08017830                        __exidx_end = .
 
-.rel.dyn        0x08017838        0x0
- .rel.iplt      0x08017838        0x0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
+.rel.dyn        0x08017830        0x0
+ .rel.iplt      0x08017830        0x0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
 
-.preinit_array  0x08017838        0x0
-                0x08017838                        PROVIDE (__preinit_array_start = .)
+.preinit_array  0x08017830        0x0
+                0x08017830                        PROVIDE (__preinit_array_start = .)
  *(.preinit_array*)
-                0x08017838                        PROVIDE (__preinit_array_end = .)
+                0x08017830                        PROVIDE (__preinit_array_end = .)
 
-.init_array     0x08017838        0x4
-                0x08017838                        PROVIDE (__init_array_start = .)
+.init_array     0x08017830        0x4
+                0x08017830                        PROVIDE (__init_array_start = .)
  *(SORT_BY_NAME(.init_array.*))
  *(.init_array*)
- .init_array    0x08017838        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
-                0x0801783c                        PROVIDE (__init_array_end = .)
+ .init_array    0x08017830        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
+                0x08017834                        PROVIDE (__init_array_end = .)
 
-.fini_array     0x0801783c        0x4
-                0x0801783c                        PROVIDE (__fini_array_start = .)
+.fini_array     0x08017834        0x4
+                0x08017834                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_NAME(.fini_array.*))
  *(.fini_array*)
- .fini_array    0x0801783c        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
-                0x08017840                        PROVIDE (__fini_array_end = .)
-                0x08017840                        _sidata = LOADADDR (.data)
+ .fini_array    0x08017834        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
+                0x08017838                        PROVIDE (__fini_array_end = .)
+                0x08017838                        _sidata = LOADADDR (.data)
 
-.data           0x20000000      0x1b0 load address 0x08017840
+.data           0x20000000      0x1b0 load address 0x08017838
                 0x20000000                        . = ALIGN (0x4)
                 0x20000000                        _sdata = .
  *(.data)
@@ -5440,10 +5440,10 @@ LOAD /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtn.o
                 0x200001b0                        . = ALIGN (0x4)
                 0x200001b0                        _edata = .
 
-.igot.plt       0x200001b0        0x0 load address 0x080179f0
+.igot.plt       0x200001b0        0x0 load address 0x080179e8
  .igot.plt      0x200001b0        0x0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
 
-.bss            0x200001b0     0x16c8 load address 0x080179f0
+.bss            0x200001b0     0x16c8 load address 0x080179e8
                 0x200001b0                        . = ALIGN (0x4)
                 0x200001b0                        _sbss = .
                 0x200001b0                        __bss_start__ = _sbss
@@ -6035,7 +6035,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtn.o
                 0x20001878                        __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x20001878      0x800 load address 0x080179f0
+                0x20001878      0x800 load address 0x080179e8
                 0x20001878                        . = ALIGN (0x8)
                 0x20001878                        PROVIDE (end = .)
                 [!provide]                        PROVIDE (_end = .)

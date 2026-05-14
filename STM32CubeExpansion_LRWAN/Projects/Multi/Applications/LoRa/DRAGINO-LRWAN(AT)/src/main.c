@@ -1092,7 +1092,7 @@ static void LORA_RxData( lora_AppData_t *AppData )
 			if(mode==5)
 			{
 				if((AppData->BuffSize == 2 )&&(AppData->Buff[1]==0x01))   //---->AT+WEIGRE
-				{	
+				{
 				  weightreset();
 				  rxpr_flags=1;							
 				}
@@ -1127,19 +1127,25 @@ static void LORA_RxData( lora_AppData_t *AppData )
 		case 0x0A:
 		{
 			if( AppData->BuffSize == 2 )         
-			{	
-				if((AppData->Buff[1]>=0x01)&&(AppData->Buff[1]<=0x09))    //---->AT+MOD
 				{
+					if((AppData->Buff[1]>=0x01)&&(AppData->Buff[1]<=0x09))    //---->AT+MOD
+					{
 #ifdef USE_CHAMELEON
-					mode=0x03;
+						if(AppData->Buff[1]==0x03)
+						{
+							mode=0x03;
+							EEPROM_Store_Config();
+							atz_flags=1;
+							rxpr_flags=1;
+						}
 #else
-					mode=AppData->Buff[1];
+						mode=AppData->Buff[1];
+						EEPROM_Store_Config();
+						atz_flags=1;
+						rxpr_flags=1;
 #endif
-					EEPROM_Store_Config();
-					atz_flags=1;						
-					rxpr_flags=1;	
-				}						 
-			}				
+					}
+				}
 			break;
 		}
 		

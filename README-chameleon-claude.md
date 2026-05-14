@@ -116,7 +116,7 @@ firmware version.
    to report the 10 Mohm sentinel; the decoder derives channel-open state from
    those values.
 4. Connect a real probe set. Expect realistic resistances and clean flags. If
-   temp fault bit 2 appears, it refers to the Chameleon-side DS18B20 path
+   temp fault bit 1 appears, it refers to the Chameleon-side DS18B20 path
    (`0x01` / `0x30`), not the LSN50 external DS18B20 path.
 5. Run a 24-48 h soak.
 

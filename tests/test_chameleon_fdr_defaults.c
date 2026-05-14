@@ -61,7 +61,8 @@ int main(void) {
     assert_contains(lora, "#ifdef USE_CHAMELEON\n\tmode=3;\n#endif", "eeprom read forces mode 3");
     assert_contains(at_mod_set, "#ifdef USE_CHAMELEON\n\tif (workmode != 3)\n\t{\n\t\tPPRINTF(\"Chameleon firmware supports MOD=3 only\\r\\n\");\n\t\treturn AT_PARAM_ERROR;\n\t}\n#endif", "at mod rejects non-3 chameleon mode");
     assert_contains(at_mod_set, "Chameleon firmware supports MOD=3 only", "at mod chameleon message");
-    assert_contains(downlink_mod_case, "#ifdef USE_CHAMELEON\n\t\t\t\t\tmode=0x03;\n#else\n\t\t\t\t\tmode=AppData->Buff[1];\n#endif", "downlink mod clamps chameleon mode");
+    assert_contains(downlink_mod_case, "#ifdef USE_CHAMELEON\n\t\t\t\t\t\tif(AppData->Buff[1]==0x03)\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\tmode=0x03;", "downlink mod accepts only chameleon mode 3");
+    assert_contains(downlink_mod_case, "#else\n\t\t\t\t\t\tmode=AppData->Buff[1];", "stock downlink mod remains configurable");
 
     free(downlink_mod_case);
     free(at_mod_set);
