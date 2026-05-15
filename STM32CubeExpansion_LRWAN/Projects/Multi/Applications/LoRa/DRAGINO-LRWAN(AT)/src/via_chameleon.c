@@ -115,6 +115,16 @@ int via_chameleon_read_sample(chameleon_sample_t *sample) {
         }
     }
 
+    /* If any non-open channel finished with CAL == RAW, flag the sample as
+     * compensation-pending so the back end can mark this row invalid. */
+    for (int i = 0; i < 3; i++) {
+        if (*comp_outs[i] == *raw_outs[i] &&
+            *raw_outs[i] != CHAMELEON_RES_OPEN_OHMS) {
+            sample->status_flags |= CHAMELEON_FLAG_COMP_PENDING;
+            break;
+        }
+    }
+
     cmd = CHAMELEON_CMD_ID;
     if (chameleon_board_i2c_write_read(CHAMELEON_I2C_ADDR_7BIT, &cmd, 1, sample->array_id, 8) != CHAMELEON_I2C_OK) {
         memset(sample->array_id, 0, 8);
