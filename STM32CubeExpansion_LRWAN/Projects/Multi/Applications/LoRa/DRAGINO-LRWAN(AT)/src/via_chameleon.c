@@ -75,6 +75,10 @@ int via_chameleon_read_sample(chameleon_sample_t *sample) {
         all_ok = 0;
     }
 
+    /* Settle: STATUS_READY can fire before CAL2/CAL3 are populated on the
+     * peripheral side. Wait unconditionally before reading any CAL register. */
+    chameleon_board_delay_ms(CHAMELEON_POST_READY_SETTLE_MS);
+
     for (int i = 0; i < 3; i++) {
         cmd = comp_cmds[i];
         if (chameleon_board_i2c_write_read(CHAMELEON_I2C_ADDR_7BIT, &cmd, 1, buf4, 4) == CHAMELEON_I2C_OK) {
@@ -90,6 +94,24 @@ int via_chameleon_read_sample(chameleon_sample_t *sample) {
         } else {
             *raw_outs[i] = 0;
             all_ok = 0;
+        }
+
+        /* Retry CAL[i] when the peripheral returned CAL == RAW for a
+         * non-open channel — that is the pass-through signature observed on
+         * kaba100 when STATUS_READY fires before per-channel compensation
+         * has actually been computed. */
+        if (*comp_outs[i] == *raw_outs[i] &&
+            *raw_outs[i] != CHAMELEON_RES_OPEN_OHMS) {
+            for (uint8_t r = 0; r < CHAMELEON_CAL_RETRY_COUNT; r++) {
+                chameleon_board_delay_ms(CHAMELEON_CAL_RETRY_DELAY_MS);
+                cmd = comp_cmds[i];
+                if (chameleon_board_i2c_write_read(CHAMELEON_I2C_ADDR_7BIT,
+                                                   &cmd, 1, buf4, 4)
+                    == CHAMELEON_I2C_OK) {
+                    *comp_outs[i] = le32(buf4);
+                }
+                if (*comp_outs[i] != *raw_outs[i]) break;
+            }
         }
     }
 
