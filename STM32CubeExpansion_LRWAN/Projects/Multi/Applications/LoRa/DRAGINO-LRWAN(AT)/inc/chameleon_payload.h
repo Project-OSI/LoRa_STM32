@@ -14,6 +14,7 @@
 #define CHAMELEON_FLAG_CH1_OPEN        (1U << 4)
 #define CHAMELEON_FLAG_CH2_OPEN        (1U << 5)
 #define CHAMELEON_FLAG_CH3_OPEN        (1U << 6)
+#define CHAMELEON_FLAG_COMP_PENDING    (1U << 7)  /* CAL[i] == RAW[i] for at least one non-open channel after retry */
 
 typedef struct {
     uint16_t adc_pa0_mv;
