@@ -2263,7 +2263,7 @@ Discarded input sections
  .text.via_chameleon_wait_ready
                 0x00000000       0x4a /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
  .text.via_chameleon_read_sample
-                0x00000000      0x168 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
+                0x00000000      0x1d0 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
  .rodata.raw_cmds.1
                 0x00000000        0x3 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
  .rodata.comp_cmds.2

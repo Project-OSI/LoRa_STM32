@@ -3008,7 +3008,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtn.o
                 0x08000000                g_pfnVectors
                 0x080000c0                        . = ALIGN (0x4)
 
-.text           0x080000c0    0x15080
+.text           0x080000c0    0x150e8
                 0x080000c0                        . = ALIGN (0x4)
  *(.text)
  .text          0x080000c0       0x14 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_thumb1_case_uqi.o)
@@ -4898,480 +4898,480 @@ LOAD /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtn.o
                 0x08011454                via_chameleon_wait_ready
  *fill*         0x0801149e        0x2 
  .text.via_chameleon_read_sample
-                0x080114a0      0x168 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
+                0x080114a0      0x1d0 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
                 0x080114a0                via_chameleon_read_sample
  .text.via_chameleon_acquire
-                0x08011608       0x60 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
-                0x08011608                via_chameleon_acquire
+                0x08011670       0x60 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
+                0x08011670                via_chameleon_acquire
  .text.put_u32_be
-                0x08011668       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/chameleon_payload.o
+                0x080116d0       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/chameleon_payload.o
  .text.chameleon_payload_encode_v1
-                0x08011678       0x9e /home/phil/Repos/LoRa_STM32-claude/build/obj/chameleon_payload.o
-                0x08011678                chameleon_payload_encode_v1
+                0x080116e0       0x9e /home/phil/Repos/LoRa_STM32-claude/build/obj/chameleon_payload.o
+                0x080116e0                chameleon_payload_encode_v1
  .text.__muldi3
-                0x08011716       0x44 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_muldi3.o)
-                0x08011716                __aeabi_lmul
-                0x08011716                __muldi3
+                0x0801177e       0x44 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_muldi3.o)
+                0x0801177e                __aeabi_lmul
+                0x0801177e                __muldi3
  .text.__fixunssfsi
-                0x0801175a       0x2e /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_fixunssfsi.o)
-                0x0801175a                __aeabi_f2uiz
-                0x0801175a                __fixunssfsi
+                0x080117c2       0x2e /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_fixunssfsi.o)
+                0x080117c2                __aeabi_f2uiz
+                0x080117c2                __fixunssfsi
  .text.__fixunsdfsi
-                0x08011788       0x38 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_fixunsdfsi.o)
-                0x08011788                __fixunsdfsi
-                0x08011788                __aeabi_d2uiz
+                0x080117f0       0x38 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_fixunsdfsi.o)
+                0x080117f0                __fixunsdfsi
+                0x080117f0                __aeabi_d2uiz
  .text.__udivmoddi4
-                0x080117c0       0xea /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
-                0x080117c0                __udivmoddi4
- *fill*         0x080118aa        0x2 
+                0x08011828       0xea /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
+                0x08011828                __udivmoddi4
+ *fill*         0x08011912        0x2 
  .text.__aeabi_fdiv
-                0x080118ac      0x1c4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(divsf3.o)
-                0x080118ac                __aeabi_fdiv
- .text.__eqsf2  0x08011a70       0x4a /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(eqsf2.o)
-                0x08011a70                __nesf2
-                0x08011a70                __eqsf2
- .text.__gesf2  0x08011aba       0x7c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(gesf2.o)
-                0x08011aba                __gtsf2
-                0x08011aba                __gesf2
- .text.__lesf2  0x08011b36       0x7c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(lesf2.o)
-                0x08011b36                __lesf2
-                0x08011b36                __ltsf2
- *fill*         0x08011bb2        0x2 
+                0x08011914      0x1c4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(divsf3.o)
+                0x08011914                __aeabi_fdiv
+ .text.__eqsf2  0x08011ad8       0x4a /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(eqsf2.o)
+                0x08011ad8                __nesf2
+                0x08011ad8                __eqsf2
+ .text.__gesf2  0x08011b22       0x7c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(gesf2.o)
+                0x08011b22                __gtsf2
+                0x08011b22                __gesf2
+ .text.__lesf2  0x08011b9e       0x7c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(lesf2.o)
+                0x08011b9e                __lesf2
+                0x08011b9e                __ltsf2
+ *fill*         0x08011c1a        0x2 
  .text.__aeabi_fmul
-                0x08011bb4      0x1f0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(mulsf3.o)
-                0x08011bb4                __aeabi_fmul
+                0x08011c1c      0x1f0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(mulsf3.o)
+                0x08011c1c                __aeabi_fmul
  .text.__aeabi_fsub
-                0x08011da4      0x304 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(subsf3.o)
-                0x08011da4                __aeabi_fsub
+                0x08011e0c      0x304 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(subsf3.o)
+                0x08011e0c                __aeabi_fsub
  .text.__aeabi_f2iz
-                0x080120a8       0x3c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(fixsfsi.o)
-                0x080120a8                __aeabi_f2iz
+                0x08012110       0x3c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(fixsfsi.o)
+                0x08012110                __aeabi_f2iz
  .text.__aeabi_i2f
-                0x080120e4       0x88 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(floatsisf.o)
-                0x080120e4                __aeabi_i2f
+                0x0801214c       0x88 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(floatsisf.o)
+                0x0801214c                __aeabi_i2f
  .text.__aeabi_ui2f
-                0x0801216c       0x7c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(floatunsisf.o)
-                0x0801216c                __aeabi_ui2f
+                0x080121d4       0x7c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(floatunsisf.o)
+                0x080121d4                __aeabi_ui2f
  .text.__aeabi_dadd
-                0x080121e8      0x590 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(adddf3.o)
-                0x080121e8                __aeabi_dadd
+                0x08012250      0x590 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(adddf3.o)
+                0x08012250                __aeabi_dadd
  .text.__aeabi_ddiv
-                0x08012778      0x50c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(divdf3.o)
-                0x08012778                __aeabi_ddiv
- .text.__eqdf2  0x08012c84       0x84 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(eqdf2.o)
-                0x08012c84                __eqdf2
-                0x08012c84                __nedf2
- .text.__gedf2  0x08012d08       0xc8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(gedf2.o)
-                0x08012d08                __gtdf2
-                0x08012d08                __gedf2
- .text.__ledf2  0x08012dd0       0xc8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(ledf2.o)
-                0x08012dd0                __ltdf2
-                0x08012dd0                __ledf2
+                0x080127e0      0x50c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(divdf3.o)
+                0x080127e0                __aeabi_ddiv
+ .text.__eqdf2  0x08012cec       0x84 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(eqdf2.o)
+                0x08012cec                __eqdf2
+                0x08012cec                __nedf2
+ .text.__gedf2  0x08012d70       0xc8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(gedf2.o)
+                0x08012d70                __gtdf2
+                0x08012d70                __gedf2
+ .text.__ledf2  0x08012e38       0xc8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(ledf2.o)
+                0x08012e38                __ltdf2
+                0x08012e38                __ledf2
  .text.__aeabi_dmul
-                0x08012e98      0x44c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(muldf3.o)
-                0x08012e98                __aeabi_dmul
+                0x08012f00      0x44c /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(muldf3.o)
+                0x08012f00                __aeabi_dmul
  .text.__aeabi_dsub
-                0x080132e4      0x5a4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(subdf3.o)
-                0x080132e4                __aeabi_dsub
+                0x0801334c      0x5a4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(subdf3.o)
+                0x0801334c                __aeabi_dsub
  .text.__aeabi_d2iz
-                0x08013888       0x64 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(fixdfsi.o)
-                0x08013888                __aeabi_d2iz
+                0x080138f0       0x64 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(fixdfsi.o)
+                0x080138f0                __aeabi_d2iz
  .text.__aeabi_i2d
-                0x080138ec       0x50 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(floatsidf.o)
-                0x080138ec                __aeabi_i2d
+                0x08013954       0x50 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(floatsidf.o)
+                0x08013954                __aeabi_i2d
  .text.__aeabi_ui2d
-                0x0801393c       0x40 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(floatunsidf.o)
-                0x0801393c                __aeabi_ui2d
+                0x080139a4       0x40 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(floatunsidf.o)
+                0x080139a4                __aeabi_ui2d
  .text.__aeabi_f2d
-                0x0801397c       0x84 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(extendsfdf2.o)
-                0x0801397c                __aeabi_f2d
+                0x080139e4       0x84 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(extendsfdf2.o)
+                0x080139e4                __aeabi_f2d
  .text.__aeabi_d2f
-                0x08013a00       0xe0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(truncdfsf2.o)
-                0x08013a00                __aeabi_d2f
- .text.atoi     0x08013ae0        0xc /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-atoi.o)
-                0x08013ae0                atoi
+                0x08013a68       0xe0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(truncdfsf2.o)
+                0x08013a68                __aeabi_d2f
+ .text.atoi     0x08013b48        0xc /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-atoi.o)
+                0x08013b48                atoi
  .text._strtol_l.isra.0
-                0x08013aec      0x114 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
+                0x08013b54      0x114 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
  .text._strtol_r
-                0x08013c00        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
-                0x08013c00                _strtol_r
- .text.strtol   0x08013c08       0x18 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
-                0x08013c08                strtol
- .text.sscanf   0x08013c20       0x54 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sscanf.o)
-                0x08013c20                sscanf
-                0x08013c20                siscanf
+                0x08013c68        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
+                0x08013c68                _strtol_r
+ .text.strtol   0x08013c70       0x18 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
+                0x08013c70                strtol
+ .text.sscanf   0x08013c88       0x54 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sscanf.o)
+                0x08013c88                sscanf
+                0x08013c88                siscanf
  .text.__seofread
-                0x08013c74        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-stdio.o)
-                0x08013c74                __seofread
+                0x08013cdc        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-stdio.o)
+                0x08013cdc                __seofread
  .text._vsnprintf_r
-                0x08013c78       0x58 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
-                0x08013c78                _vsnprintf_r
-                0x08013c78                _vsniprintf_r
+                0x08013ce0       0x58 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
+                0x08013ce0                _vsnprintf_r
+                0x08013ce0                _vsniprintf_r
  .text.vsnprintf
-                0x08013cd0       0x18 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
-                0x08013cd0                vsnprintf
-                0x08013cd0                vsniprintf
- .text.memset   0x08013ce8       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memset.o)
-                0x08013ce8                memset
- .text.strncmp  0x08013cf8       0x22 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strncmp.o)
-                0x08013cf8                strncmp
- *fill*         0x08013d1a        0x2 
- .text.__errno  0x08013d1c        0xc /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-errno.o)
-                0x08013d1c                __errno
+                0x08013d38       0x18 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
+                0x08013d38                vsnprintf
+                0x08013d38                vsniprintf
+ .text.memset   0x08013d50       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memset.o)
+                0x08013d50                memset
+ .text.strncmp  0x08013d60       0x22 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strncmp.o)
+                0x08013d60                strncmp
+ *fill*         0x08013d82        0x2 
+ .text.__errno  0x08013d84        0xc /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-errno.o)
+                0x08013d84                __errno
  .text.__libc_init_array
-                0x08013d28       0x48 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-init.o)
-                0x08013d28                __libc_init_array
+                0x08013d90       0x48 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-init.o)
+                0x08013d90                __libc_init_array
  .text.__retarget_lock_acquire_recursive
-                0x08013d70        0x2 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
-                0x08013d70                __retarget_lock_acquire_recursive
+                0x08013dd8        0x2 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
+                0x08013dd8                __retarget_lock_acquire_recursive
  .text.__retarget_lock_release_recursive
-                0x08013d72        0x2 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
-                0x08013d72                __retarget_lock_release_recursive
- .text.memcpy   0x08013d74       0x12 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memcpy-stub.o)
-                0x08013d74                memcpy
- *fill*         0x08013d86        0x2 
- .text._free_r  0x08013d88       0x94 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-freer.o)
-                0x08013d88                _free_r
+                0x08013dda        0x2 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
+                0x08013dda                __retarget_lock_release_recursive
+ .text.memcpy   0x08013ddc       0x12 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memcpy-stub.o)
+                0x08013ddc                memcpy
+ *fill*         0x08013dee        0x2 
+ .text._free_r  0x08013df0       0x94 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-freer.o)
+                0x08013df0                _free_r
  .text.sbrk_aligned
-                0x08013e1c       0x44 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
+                0x08013e84       0x44 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
  .text._malloc_r
-                0x08013e60      0x100 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
-                0x08013e60                _malloc_r
+                0x08013ec8      0x100 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
+                0x08013ec8                _malloc_r
  .text.__malloc_lock
-                0x08013f60       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
-                0x08013f60                __malloc_lock
+                0x08013fc8       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
+                0x08013fc8                __malloc_lock
  .text.__malloc_unlock
-                0x08013f70       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
-                0x08013f70                __malloc_unlock
+                0x08013fd8       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
+                0x08013fd8                __malloc_unlock
  .text.__ssputs_r
-                0x08013f80       0xc8 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
-                0x08013f80                __ssputs_r
+                0x08013fe8       0xc8 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
+                0x08013fe8                __ssputs_r
  .text._svfprintf_r
-                0x08014048      0x208 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
-                0x08014048                _svfprintf_r
-                0x08014048                _svfiprintf_r
+                0x080140b0      0x208 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
+                0x080140b0                _svfprintf_r
+                0x080140b0                _svfiprintf_r
  .text._sungetc_r
-                0x08014250       0x78 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
-                0x08014250                _sungetc_r
+                0x080142b8       0x78 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x080142b8                _sungetc_r
  .text.__ssrefill_r
-                0x080142c8       0x3e /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
-                0x080142c8                __ssrefill_r
- *fill*         0x08014306        0x2 
+                0x08014330       0x3e /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x08014330                __ssrefill_r
+ *fill*         0x0801436e        0x2 
  .text.__ssvfscanf_r
-                0x08014308      0x2c4 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
-                0x08014308                __ssvfscanf_r
-                0x08014308                __ssvfiscanf_r
+                0x08014370      0x2c4 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x08014370                __ssvfscanf_r
+                0x08014370                __ssvfiscanf_r
  .text._printf_common
-                0x080145cc       0xde /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
-                0x080145cc                _printf_common
- *fill*         0x080146aa        0x2 
+                0x08014634       0xde /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x08014634                _printf_common
+ *fill*         0x08014712        0x2 
  .text._printf_i
-                0x080146ac      0x218 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
-                0x080146ac                _printf_i
+                0x08014714      0x218 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x08014714                _printf_i
  .text._scanf_chars
-                0x080148c4       0xc0 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
-                0x080148c4                _scanf_chars
+                0x0801492c       0xc0 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x0801492c                _scanf_chars
  .text._scanf_i
-                0x08014984      0x1f8 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
-                0x08014984                _scanf_i
- .text.__sccl   0x08014b7c       0x72 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sccl.o)
-                0x08014b7c                __sccl
- *fill*         0x08014bee        0x2 
+                0x080149ec      0x1f8 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x080149ec                _scanf_i
+ .text.__sccl   0x08014be4       0x72 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sccl.o)
+                0x08014be4                __sccl
+ *fill*         0x08014c56        0x2 
  .text.__submore
-                0x08014bf0       0x7c /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ungetc.o)
-                0x08014bf0                __submore
- .text.memmove  0x08014c6c       0x24 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memmove.o)
-                0x08014c6c                memmove
- .text._sbrk_r  0x08014c90       0x24 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sbrkr.o)
-                0x08014c90                _sbrk_r
- .text.memchr   0x08014cb4       0x16 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memchr-stub.o)
-                0x08014cb4                memchr
+                0x08014c58       0x7c /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ungetc.o)
+                0x08014c58                __submore
+ .text.memmove  0x08014cd4       0x24 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memmove.o)
+                0x08014cd4                memmove
+ .text._sbrk_r  0x08014cf8       0x24 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sbrkr.o)
+                0x08014cf8                _sbrk_r
+ .text.memchr   0x08014d1c       0x16 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memchr-stub.o)
+                0x08014d1c                memchr
  .text._realloc_r
-                0x08014cca       0x60 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-reallocr.o)
-                0x08014cca                _realloc_r
- *fill*         0x08014d2a        0x2 
+                0x08014d32       0x60 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-reallocr.o)
+                0x08014d32                _realloc_r
+ *fill*         0x08014d92        0x2 
  .text._strtoul_l.isra.0
-                0x08014d2c      0x100 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
+                0x08014d94      0x100 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
  .text._strtoul_r
-                0x08014e2c        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
-                0x08014e2c                _strtoul_r
+                0x08014e94        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
+                0x08014e94                _strtoul_r
  .text._malloc_usable_size_r
-                0x08014e34       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-msizer.o)
-                0x08014e34                _malloc_usable_size_r
- .text._sbrk    0x08014e44       0x1c /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libnosys.a(sbrk.o)
-                0x08014e44                _sbrk
- .text.ceil     0x08014e60      0x110 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_ceil.o)
-                0x08014e60                ceil
- .text.floor    0x08014f70      0x11c /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_floor.o)
-                0x08014f70                floor
- .text.round    0x0801508c       0x9c /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_round.o)
-                0x0801508c                round
+                0x08014e9c       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-msizer.o)
+                0x08014e9c                _malloc_usable_size_r
+ .text._sbrk    0x08014eac       0x1c /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libnosys.a(sbrk.o)
+                0x08014eac                _sbrk
+ .text.ceil     0x08014ec8      0x110 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_ceil.o)
+                0x08014ec8                ceil
+ .text.floor    0x08014fd8      0x11c /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_floor.o)
+                0x08014fd8                floor
+ .text.round    0x080150f4       0x9c /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_round.o)
+                0x080150f4                round
  *(.glue_7)
- .glue_7        0x08015128        0x0 linker stubs
+ .glue_7        0x08015190        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x08015128        0x0 linker stubs
+ .glue_7t       0x08015190        0x0 linker stubs
  *(.eh_frame)
- .eh_frame      0x08015128        0x0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
+ .eh_frame      0x08015190        0x0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
  *(.init)
- .init          0x08015128        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crti.o
-                0x08015128                _init
- .init          0x0801512c        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtn.o
+ .init          0x08015190        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crti.o
+                0x08015190                _init
+ .init          0x08015194        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtn.o
  *(.fini)
- .fini          0x08015134        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crti.o
-                0x08015134                _fini
- .fini          0x08015138        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtn.o
-                0x08015140                        . = ALIGN (0x4)
-                0x08015140                        _etext = .
+ .fini          0x0801519c        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crti.o
+                0x0801519c                _fini
+ .fini          0x080151a0        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtn.o
+                0x080151a8                        . = ALIGN (0x4)
+                0x080151a8                        _etext = .
 
-.vfp11_veneer   0x08015140        0x0
- .vfp11_veneer  0x08015140        0x0 linker stubs
+.vfp11_veneer   0x080151a8        0x0
+ .vfp11_veneer  0x080151a8        0x0 linker stubs
 
-.v4_bx          0x08015140        0x0
- .v4_bx         0x08015140        0x0 linker stubs
+.v4_bx          0x080151a8        0x0
+ .v4_bx         0x080151a8        0x0 linker stubs
 
-.iplt           0x08015140        0x0
- .iplt          0x08015140        0x0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
+.iplt           0x080151a8        0x0
+ .iplt          0x080151a8        0x0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
 
-.rodata         0x08015140     0x26d8
-                0x08015140                        . = ALIGN (0x4)
+.rodata         0x080151a8     0x26d8
+                0x080151a8                        . = ALIGN (0x4)
  *(.rodata)
- .rodata        0x08015140        0xb /home/phil/Repos/LoRa_STM32-claude/build/obj/tfsensor_f8521127.o
- *fill*         0x0801514b        0x1 
- .rodata        0x0801514c        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
- .rodata        0x08015154       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
- .rodata        0x08015178        0xc /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+ .rodata        0x080151a8        0xb /home/phil/Repos/LoRa_STM32-claude/build/obj/tfsensor_f8521127.o
+ *fill*         0x080151b3        0x1 
+ .rodata        0x080151b4        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+ .rodata        0x080151bc       0x24 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+ .rodata        0x080151e0        0xc /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
  *(.rodata*)
  .rodata.EEPROM_program.str1.1
-                0x08015184     0x1aeb /home/phil/Repos/LoRa_STM32-claude/build/obj/flash_eraseprogram_078ea408.o
+                0x080151ec     0x1aeb /home/phil/Repos/LoRa_STM32-claude/build/obj/flash_eraseprogram_078ea408.o
                                  0x1d (size before relaxing)
  .rodata.EEPROM_erase_one_address.str1.1
-                0x08016c6f       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/flash_eraseprogram_078ea408.o
+                0x08016cd7       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/flash_eraseprogram_078ea408.o
  .rodata.SX1276OnDio0Irq.str1.1
-                0x08016c6f       0x31 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
+                0x08016cd7       0x31 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
  .rodata.SX1276OnDio1Irq.str1.1
-                0x08016c6f        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
- *fill*         0x08016c6f        0x1 
+                0x08016cd7        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
+ *fill*         0x08016cd7        0x1 
  .rodata.CSWTCH.94
-                0x08016c70       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
+                0x08016cd8       0x18 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
  .rodata.FskBandwidths
-                0x08016c88       0xb0 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
-                0x08016c88                FskBandwidths
+                0x08016cf0       0xb0 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
+                0x08016cf0                FskBandwidths
  .rodata.RadioRegsInit
-                0x08016d38       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
-                0x08016d38                RadioRegsInit
+                0x08016da0       0x30 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276_174cd5fd.o
+                0x08016da0                RadioRegsInit
  .rodata.waitbusy.str1.1
-                0x08016d68        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/lidar_lite_v3hp_29c3a030.o
+                0x08016dd0        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/lidar_lite_v3hp_29c3a030.o
  .rodata.LidarLite_init.str1.1
-                0x08016d68        0x7 /home/phil/Repos/LoRa_STM32-claude/build/obj/lidar_lite_v3hp_29c3a030.o
+                0x08016dd0        0x7 /home/phil/Repos/LoRa_STM32-claude/build/obj/lidar_lite_v3hp_29c3a030.o
  .rodata.LidarLite.str1.1
-                0x08016d68        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/lidar_lite_v3hp_29c3a030.o
- .rodata.Radio  0x08016d68       0x68 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276mb1las_a2dfe320.o
-                0x08016d68                Radio
+                0x08016dd0        0x2 /home/phil/Repos/LoRa_STM32-claude/build/obj/lidar_lite_v3hp_29c3a030.o
+ .rodata.Radio  0x08016dd0       0x68 /home/phil/Repos/LoRa_STM32-claude/build/obj/sx1276mb1las_a2dfe320.o
+                0x08016dd0                Radio
  .rodata.PLLMulTable
-                0x08016dd0        0x9 /home/phil/Repos/LoRa_STM32-claude/build/obj/system_stm32l0xx_d1d9d34c.o
-                0x08016dd0                PLLMulTable
+                0x08016e38        0x9 /home/phil/Repos/LoRa_STM32-claude/build/obj/system_stm32l0xx_d1d9d34c.o
+                0x08016e38                PLLMulTable
  .rodata.APBPrescTable
-                0x08016dd9        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/system_stm32l0xx_d1d9d34c.o
-                0x08016dd9                APBPrescTable
+                0x08016e41        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/system_stm32l0xx_d1d9d34c.o
+                0x08016e41                APBPrescTable
  .rodata.AHBPrescTable
-                0x08016de1       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/system_stm32l0xx_d1d9d34c.o
-                0x08016de1                AHBPrescTable
+                0x08016e49       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/system_stm32l0xx_d1d9d34c.o
+                0x08016e49                AHBPrescTable
  .rodata.BSP_sensor_Read.str1.1
-                0x08016df1      0x1d2 /home/phil/Repos/LoRa_STM32-claude/build/obj/bsp_fc5dfbea.o
+                0x08016e59      0x1d2 /home/phil/Repos/LoRa_STM32-claude/build/obj/bsp_fc5dfbea.o
  .rodata.BSP_sensor_Init.str1.1
-                0x08016df1      0x155 /home/phil/Repos/LoRa_STM32-claude/build/obj/bsp_fc5dfbea.o
+                0x08016e59      0x155 /home/phil/Repos/LoRa_STM32-claude/build/obj/bsp_fc5dfbea.o
  .rodata.DaysInMonthLeapYear
-                0x08016df1        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/hw_rtc_40701610.o
+                0x08016e59        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/hw_rtc_40701610.o
  .rodata.DaysInMonth
-                0x08016dfd        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/hw_rtc_40701610.o
+                0x08016e65        0xc /home/phil/Repos/LoRa_STM32-claude/build/obj/hw_rtc_40701610.o
  .rodata.LORA_ConfirmClass.str1.1
-                0x08016e09       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
+                0x08016e71       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
  .rodata.LORA_RxData.str1.1
-                0x08016e09       0x4a /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
+                0x08016e71       0x4a /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
  .rodata.LORA_HasJoined.str1.1
-                0x08016e09        0x9 /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
+                0x08016e71        0x9 /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
  .rodata.main.str1.1
-                0x08016e09       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
+                0x08016e71       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/main_47d3d071.o
  .rodata.at_tfmini_data_receive.str1.1
-                0x08016e09        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
+                0x08016e71        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/vcom_81525599.o
  .rodata.print_8_02x.str1.1
-                0x08016e09       0x2a /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x2a /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.print_16_02x.str1.1
-                0x08016e09       0x52 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x52 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.print_d.str1.1
-                0x08016e09        0x5 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71        0x5 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.print_u.str1.1
-                0x08016e09        0x5 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71        0x5 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.changeform.str1.1
-                0x08016e09       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.sscanf_16_hhx.part.0.isra.0.str1.1
-                0x08016e09       0x50 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x50 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_DEBUG_run.str1.1
-                0x08016e09       0x13 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x13 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_FDR.str1.1
-                0x08016e09        0x5 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71        0x5 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_DevEUI_set.str1.1
-                0x08016e09       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_DevAddr_set.str1.1
-                0x08016e09       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x14 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_TransmitPower_set.str1.1
-                0x08016e09       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x2c /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_DutyCycle_get.str1.1
-                0x08016e09        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_Rx2Frequency_set.str1.1
-                0x08016e09        0x4 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71        0x4 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_JoinAcceptDelay1_set.str1.1
-                0x08016e09       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x22 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_NetworkID_get.str1.1
-                0x08016e09       0x16 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x16 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_DeviceClass_get.str1.1
-                0x08016e09        0x5 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71        0x5 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_SendBinary.str1.1
-                0x08016e09       0x29 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x29 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_ReceiveBinary.str1.1
-                0x08016e09        0xd /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71        0xd /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_Receive.str1.1
-                0x08016e09        0x3 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71        0x3 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_RJTDC_set.str1.1
-                0x08016e09       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_RPL_set.str1.1
-                0x08016e09       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_version_get.str1.1
-                0x08016e09        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_ack_set.str1.1
-                0x08016e09        0x9 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71        0x9 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_ack_get.str1.1
-                0x08016e09        0xb /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71        0xb /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_CFG_run.str1.1
-                0x08016e09       0x53 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x53 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_TDC_set.str1.1
-                0x08016e09       0x23 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x23 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_MOD_set.str1.1
-                0x08016e09       0x1a /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x1a /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_INTMOD1_set.str1.1
-                0x08016e09       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_INTMOD2_set.str1.1
-                0x08016e09       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_INTMOD3_set.str1.1
-                0x08016e09       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x1e /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_weight_GapValue_set.str1.1
-                0x08016e09        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_weight_GapValue_get.str1.1
-                0x08016e09        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_SETCNT_set.str1.1
-                0x08016e09        0x7 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71        0x7 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_downlink_detect_set.str1.1
-                0x08016e09       0x2d /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71       0x2d /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_setmaxnbtrans_set.str1.1
-                0x08016e09        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.at_setmaxnbtrans_get.str1.1
-                0x08016e09        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.CSWTCH.110
-                0x08016e09        0xd /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
+                0x08016e71        0xd /home/phil/Repos/LoRa_STM32-claude/build/obj/at_82e457e9.o
  .rodata.CMD_Process.str1.1
-                0x08016e16       0xe3 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
+                0x08016e7e       0xe3 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
  .rodata.printf_all_config.str1.1
-                0x08016e16        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
+                0x08016e7e        0x6 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
  .rodata.str1.1
-                0x08016e16      0xfcb /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
- *fill*         0x08016e16        0x2 
+                0x08016e7e      0xfcb /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
+ *fill*         0x08016e7e        0x2 
  .rodata.ATCommand
-                0x08016e18      0x588 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
+                0x08016e80      0x588 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
  .rodata.ATError_description
-                0x080173a0       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
+                0x08017408       0x28 /home/phil/Repos/LoRa_STM32-claude/build/obj/command_a2f38ca8.o
  .rodata.region_printf.str1.1
-                0x080173c8        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x08017430        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
  .rodata.key_printf.str1.1
-                0x080173c8       0x32 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x08017430       0x32 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
  .rodata.lora_config_devaddr_get.str1.1
-                0x080173c8        0x9 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x08017430        0x9 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
  .rodata.EEPROM_Store_Config.str1.1
-                0x080173c8       0x17 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x08017430       0x17 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
  .rodata.LORA_Init.str1.1
-                0x080173c8       0x92 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x08017430       0x92 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
  .rodata.string_touint.str1.1
-                0x080173c8        0x7 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
+                0x08017430        0x7 /home/phil/Repos/LoRa_STM32-claude/build/obj/lora_bb201500.o
  .rodata.RegionEU868RxConfig.str1.1
-                0x080173c8       0x42 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x08017430       0x42 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
  .rodata.RegionEU868TxConfig.str1.1
-                0x080173c8       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x08017430       0x3c /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
  .rodata.MaxPayloadOfDatarateRepeaterEU868
-                0x080173c8        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x08017430        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
  .rodata.MaxPayloadOfDatarateEU868
-                0x080173d0        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x08017438        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
  .rodata.BandwidthsEU868
-                0x080173d8       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x08017440       0x20 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
  .rodata.DataratesEU868
-                0x080173f8        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
+                0x08017460        0x8 /home/phil/Repos/LoRa_STM32-claude/build/obj/RegionEU868_fd21cf6c.o
  .rodata.ProcessMacCommands.str1.1
-                0x08017400       0xad /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x08017468       0xad /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .rodata.printf_joinmessage.str1.1
-                0x08017400       0x5f /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x08017468       0x5f /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .rodata.SendFrameOnChannel.str1.1
-                0x08017400       0x52 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x08017468       0x52 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .rodata.LoRaMacMaxEirpTable
-                0x08017400       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
+                0x08017468       0x10 /home/phil/Repos/LoRa_STM32-claude/build/obj/LoRaMac_6eac7497.o
  .rodata.OnCertifTxNextPacketTimerEvent.str1.1
-                0x08017410       0x1a /home/phil/Repos/LoRa_STM32-claude/build/obj/lora-test_9d43f367.o
+                0x08017478       0x1a /home/phil/Repos/LoRa_STM32-claude/build/obj/lora-test_9d43f367.o
  .rodata.gfm3_sbox
-                0x08017410      0x100 /home/phil/Repos/LoRa_STM32-claude/build/obj/aes_fc1b9773.o
+                0x08017478      0x100 /home/phil/Repos/LoRa_STM32-claude/build/obj/aes_fc1b9773.o
  .rodata.gfm2_sbox
-                0x08017510      0x100 /home/phil/Repos/LoRa_STM32-claude/build/obj/aes_fc1b9773.o
- .rodata.sbox   0x08017610      0x100 /home/phil/Repos/LoRa_STM32-claude/build/obj/aes_fc1b9773.o
+                0x08017578      0x100 /home/phil/Repos/LoRa_STM32-claude/build/obj/aes_fc1b9773.o
+ .rodata.sbox   0x08017678      0x100 /home/phil/Repos/LoRa_STM32-claude/build/obj/aes_fc1b9773.o
  .rodata.raw_cmds.0
-                0x08017710        0x3 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
+                0x08017778        0x3 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
  .rodata.comp_cmds.1
-                0x08017713        0x3 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
+                0x0801777b        0x3 /home/phil/Repos/LoRa_STM32-claude/build/obj/via_chameleon.o
  .rodata._ctype_
-                0x08017716      0x101 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ctype_.o)
-                0x08017716                _ctype_
+                0x0801777e      0x101 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ctype_.o)
+                0x0801777e                _ctype_
  .rodata._svfprintf_r.str1.1
-                0x08017817       0x11 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
+                0x0801787f       0x11 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
  .rodata.__ssvfscanf_r.str1.1
-                0x08017817        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x0801787f        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
  .rodata._printf_i.str1.1
-                0x08017817       0x22 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x0801787f       0x22 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
  .rodata._scanf_i.str1.1
-                0x08017817       0x12 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x0801787f       0x12 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
  .rodata.str1.1
-                0x08017817        0x9 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
-                0x0801783c                        . = ALIGN (0x4)
- *fill*         0x08017817        0x1 
+                0x0801787f        0x9 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x080178a4                        . = ALIGN (0x4)
+ *fill*         0x0801787f        0x1 
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
-.ARM            0x08017818        0x8
-                0x08017818                        __exidx_start = .
+.ARM            0x08017880        0x8
+                0x08017880                        __exidx_start = .
  *(.ARM.exidx*)
  .ARM.exidx.text.__udivmoddi4
-                0x08017818        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
-                0x08017820                        __exidx_end = .
+                0x08017880        0x8 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
+                0x08017888                        __exidx_end = .
 
-.rel.dyn        0x08017820        0x0
- .rel.iplt      0x08017820        0x0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
+.rel.dyn        0x08017888        0x0
+ .rel.iplt      0x08017888        0x0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
 
-.preinit_array  0x08017820        0x0
-                0x08017820                        PROVIDE (__preinit_array_start = .)
+.preinit_array  0x08017888        0x0
+                0x08017888                        PROVIDE (__preinit_array_start = .)
  *(.preinit_array*)
-                0x08017820                        PROVIDE (__preinit_array_end = .)
+                0x08017888                        PROVIDE (__preinit_array_end = .)
 
-.init_array     0x08017820        0x4
-                0x08017820                        PROVIDE (__init_array_start = .)
+.init_array     0x08017888        0x4
+                0x08017888                        PROVIDE (__init_array_start = .)
  *(SORT_BY_NAME(.init_array.*))
  *(.init_array*)
- .init_array    0x08017820        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
-                0x08017824                        PROVIDE (__init_array_end = .)
+ .init_array    0x08017888        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
+                0x0801788c                        PROVIDE (__init_array_end = .)
 
-.fini_array     0x08017824        0x4
-                0x08017824                        PROVIDE (__fini_array_start = .)
+.fini_array     0x0801788c        0x4
+                0x0801788c                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_NAME(.fini_array.*))
  *(.fini_array*)
- .fini_array    0x08017824        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
-                0x08017828                        PROVIDE (__fini_array_end = .)
-                0x08017828                        _sidata = LOADADDR (.data)
+ .fini_array    0x0801788c        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
+                0x08017890                        PROVIDE (__fini_array_end = .)
+                0x08017890                        _sidata = LOADADDR (.data)
 
-.data           0x20000000      0x1ac load address 0x08017828
+.data           0x20000000      0x1ac load address 0x08017890
                 0x20000000                        . = ALIGN (0x4)
                 0x20000000                        _sdata = .
  *(.data)
@@ -5434,10 +5434,10 @@ LOAD /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtn.o
                 0x200001ac                        . = ALIGN (0x4)
                 0x200001ac                        _edata = .
 
-.igot.plt       0x200001ac        0x0 load address 0x080179d4
+.igot.plt       0x200001ac        0x0 load address 0x08017a3c
  .igot.plt      0x200001ac        0x0 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtbegin.o
 
-.bss            0x200001ac     0x16c8 load address 0x080179d4
+.bss            0x200001ac     0x16c8 load address 0x08017a3c
                 0x200001ac                        . = ALIGN (0x4)
                 0x200001ac                        _sbss = .
                 0x200001ac                        __bss_start__ = _sbss
@@ -6030,7 +6030,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crtn.o
                 0x20001874                        __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x20001874      0x804 load address 0x080179d4
+                0x20001874      0x804 load address 0x08017a3c
                 0x20001878                        . = ALIGN (0x8)
  *fill*         0x20001874        0x4 
                 0x20001878                        PROVIDE (end = .)
