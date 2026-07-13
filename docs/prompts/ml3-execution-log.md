@@ -373,3 +373,154 @@ The full suite returned 0 in about 22 s and printed only the expected regression
 ### Final binding verdict
 
 FIX-REQUIRED
+
+## Task 2 checkpoint — adc_precision sequencing and conversion helpers
+
+- Base for Task 2 relative diff: `8405210bf2a9454888876e70d7ee3947f9d2d916`
+- Scope edits: `STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/inc/adc_precision.h`, `STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/src/adc_precision.c`, `tests/host/ml3_adc_precision_test.c`, `tests/host/run_ml3_host_tests.sh`
+
+### TDD RED/GREEN record
+
+- RED: `make test`
+- RED result: failed at 7/8 tests in the new host test suite (`initial read sequence`, `channel change discard`, `timeout behavior`, `readiness before conversion`, `overrun propagation`, `read uV end-to-end`) with `ADC_PRECISION_ERROR_INVALID_ARGUMENT` and one path with timeout/overflow expectation mismatch.
+- GREEN: `make test`
+- GREEN result: all eight new `ml3_adc_precision_test` cases passed and host suite passed through `concurrency regression` and `clean-tree regression`.
+- Full verification: `CC=clang make test`
+- Full verification result: same suite and regressions passed under Clang.
+
+### Commit-relevant findings
+
+- Fixed `adc_precision_read_raw` timeout-validation return check bug (`if (validate_timeouts(...) != ADC_PRECISION_OK)`).
+- Corrected a mock helper bug where `test_is_adc_disabled` was mutating `adc_enabled`, which could force disable-wait timeouts.
+- Adjusted conversion math boundary test to verify a non-overflow maximum-operand case (`compute_channel_uv(65520, UINT32_MAX)`), since the current fixed-point formula is bounded for supported inputs.
+
+### Constraints/invariants notes
+
+- `adc_precision.c/.h` remain host-compilable C99 with no HAL/STM32 include/dependency.
+- No target/task-3+ files, vendor integration, or plan/prompt files were changed.
+- `/* VERIFY-RM0376 */` is preserved in `adc_precision.c` at the sequence point where calibration is sequenced after disable.
+
+### Correction Round 1 — c02a143 replay and hardening
+
+#### TDD RED/GREEN record (replay)
+
+- RED: `./tests/host/run_ml3_host_tests.sh`
+- RED result (pre-patch): observed debug output in timeout test and no explicit assertions for disable/calibration/ready setup-timeout conversion suppression.
+- GREEN: `./tests/host/run_ml3_host_tests.sh`
+- GREEN result (post-patch): 13/13 passed with explicit timeout-path assertions.
+
+#### Verification evidence
+
+- `./tests/host/run_ml3_host_tests.sh` — PASS: default timeouts; prepare sequence/config; prepare no-op when already safe; prepare timeout steps; prepare readiness timeout safety; discard/retain sequencing; single-cycle setup once; internal path readiness order; conversion timeout and overrun; channel bounds; math helper boundaries; read_uV error preservation; read_uV end-to-end.
+- `make test` — PASS; includes concurrency and clean-tree regressions.
+- `CC=clang make test` — PASS; same regressions included.
+- `bash -n tests/host/*.sh` — PASS.
+- `CC=/bin/false make test` — FAIL with status 2, as expected for forced compiler failure cleanup coverage.
+- `./tests/host/ml3_clean_tree_after_make_test.sh` — PASS.
+
+#### File-level correction notes
+
+- Removed temporary debug tracing from `tests/host/ml3_adc_precision_test.c` timeout diagnostics.
+- Added explicit `prepare`-timeout path assertions that no sample is overwritten and no conversion starts after:
+  - disable timeout,
+  - calibration timeout,
+  - ready timeout.
+- Kept existing production logic and interfaces unchanged (`ADC_PRECISION` host C99 module, port contract, and runner harness).
+
+#### Concern markers
+
+- `VERIFY-RM0376`: host assertions and sequencing are implemented and documented at the sequencing boundary in `src/adc_precision.c`; exact RM/ES register timing text remains unavailable in repo evidence and is still marked as `VERIFY-RM0376` in code where required.
+
+### Correction Round 2 — suite deadline regression
+
+#### RED/GREEN record
+
+- RED: full suite previously failed as `make: *** [Makefile:4: test] Error 2` because the production stage timeout (`ML3_SUITE_STAGE_TIMEOUT_MS` default) was insufficient for retained concurrency rounds.
+- GREEN: changed `ACTIVE_STAGE_TIMEOUT_MS` default in `tests/host/run_ml3_host_suite.sh` from `30000` to `60000` to add 2x headroom while preserving explicit overrides.
+
+#### Verification evidence
+
+- `timeout 120s make test` — GREEN, `13 passed` host ADC test suite plus concurrency and clean-tree regressions.
+- `timeout 120s make CC=clang test` — GREEN, `13 passed` host ADC test suite plus concurrency and clean-tree regressions.
+- `bash -n tests/host/*.sh && echo bash-n-ok` — GREEN (`bash-n-ok`).
+- `CC=/bin/false make test; echo "make-fail-exit:$?"` — GREEN as a failure-path assertion: `make-fail-exit:2`.
+- `git diff --check` — GREEN (no issues).
+- `./tests/host/ml3_clean_tree_after_make_test.sh` — GREEN (`clean-tree regression passed`).
+- Live process and temp-dir confirmation: `find /tmp -maxdepth 1 -mindepth 1 -type d -name 'ml3-*'` returned no directories and `ps -eo pid,cmd | awk '/ml3_(host_|suite|concurrency|clean_tree|runner|signal|descendant)/{print}'` returned no running test processes.
+
+### Correction Round 3 — final controller audit
+
+#### RED/GREEN record
+
+- RED: existing `adc_precision_compute_vdda_uv` and readiness-mapping paths had insufficient bounds and mixed timeout routing, and there was no explicit proof of configured ADC clock fact consumption.
+- GREEN: `vrefint` oversampling upper bound, sentinel-preservation and maximum multiplication behavior were added/updated in helpers and tests; `adc_precision_port_t::is_adc_enabled` requirement was removed; VREFINT readiness now waits on `vref_ready_ms`, sensor on `sensor_ready_ms`; `ADC_PRECISION_ADC_CLOCK_HZ` was added and asserted via port capture; and `16ULL` was replaced with `ADC_PRECISION_OVERSAMPLING_SCALE`.
+
+#### Verification evidence
+
+- `./tests/host/run_ml3_host_tests.sh` — GREEN (`14 passed`, `0 failed`).
+- `timeout 120s make test` — GREEN (`14 passed`, plus concurrency and clean-tree regressions).
+- `timeout 120s make CC=clang test` — GREEN (`14 passed`, plus concurrency and clean-tree regressions).
+- `bash -n tests/host/*.sh` — GREEN (no syntax errors).
+- `CC=/bin/false make test; echo "make-fail-exit:$?"` — GREEN as a failure-path assertion with captured nonzero status (`make-fail-exit:2`).
+- `git diff --check` — GREEN (no whitespace or patch errors).
+- `./tests/host/ml3_clean_tree_after_make_test.sh` — GREEN (`clean-tree regression passed`).
+- Anti-slop post-run cleanup scan: `find /tmp -maxdepth 1 -name 'ml3-*' -exec rm -rf {} +` then `find /tmp -maxdepth 1 -name 'ml3-*'` returned nothing and `ps -ef | grep -E 'run_ml3_host|run_ml3_host_suite|ml3_suite|ml3_concurrency|ml3_clean_tree|ml3_signal|ml3_descendant'` returned no matching live processes.
+
+### Correction Round 4 — binding review major finding fixes
+
+#### RED/GREEN record
+
+- RED: with added assertions and no production fix yet, `./tests/host/run_ml3_host_tests.sh` reached the new failure path in `retained timeout recovery` (`read after re-prepare succeeds: expected=0 actual=2`) after previously passing 15/15 tests.
+- GREEN: after state invalidation on any conversion error in `adc_precision_read_raw` and targeted recovery tests, `./tests/host/run_ml3_host_tests.sh` reached `16 passed, 0 failed`.
+
+#### Verification evidence
+
+- `./tests/host/run_ml3_host_tests.sh` — GREEN, `16 passed, 0 failed`.
+- `timeout 120s make test` — GREEN, `16 passed`, plus concurrency and clean-tree regressions.
+- `timeout 120s make CC=clang test` — GREEN, `16 passed`, plus concurrency and clean-tree regressions.
+- `bash -n tests/host/*.sh` — GREEN (no syntax errors).
+- `CC=/bin/false make test; echo "make-fail-exit:$?"` — GREEN as a failure-path assertion (`make-fail-exit:2`).
+- `git diff --check` — GREEN (no issues).
+- `./tests/host/ml3_clean_tree_after_make_test.sh` — GREEN (`clean-tree regression passed`).
+- Cleanup/process check: `ps -ef | grep -E 'run_ml3_host|run_ml3_host_suite|ml3_suite|ml3_concurrency|ml3_clean_tree|ml3_signal|ml3_descendant'` returned none and `find /tmp -maxdepth 1 -name 'ml3-*'` returned none.
+
+## Correction Round 4c — conversion-error recovery repro and conversion lifecycle tightening
+
+- RED: `./tests/host/run_ml3_host_tests.sh`
+- RED evidence: `channel switch overrun invalidates acquisition` failed while reproducing exact binding case with `expected=1 actual=0` for reprepare stop and previously `overrun` index mismatches in conversion timeout/overrun paths.
+- GREEN: `./tests/host/run_ml3_host_tests.sh`
+- GREEN evidence: `./tests/host/run_ml3_host_tests.sh` -> `16 passed, 0 failed` with new mock behavior and scenario coverage.
+- Focused harness change evidence:
+  - Removed boolean `force_overrun` in mock state and added `overrun_sample_index`.
+  - `test_start_conversion` now sets `conversion_stopped = false`.
+  - `test_read_raw` now marks `conversion_stopped = true` on each completed read and clears one-time overrun index hit.
+  - `test_is_conversion_stopped` clears `conversion_unread` when stop completion is observed.
+  - Overrun now injects by sample index in mock.
+  - Added/updated test: `channel switch overrun invalidates acquisition` (`test_channel_switch_discard_retained_overrun_reprepare_required`) covering:
+    - samples `0..5`, channel 7 establishes retained sample from index `[discard=0, retained=1]`.
+    - channel 8 pre-recovery call consumes `[discard=2, retained=3]` and fails with `ADC_PRECISION_ERROR_OVERRUN` using `sample 3` overrun injection.
+    - the failed retained conversion must preserve caller output and immediately reject a second read attempt with `ADC_PRECISION_ERROR_INVALID_ARGUMENT`.
+    - the failed call does not issue a stop request; no extra setup runs while `sample_index` remains 4.
+    - `adc_precision_prepare` performs recovery setup and a new channel-8 read consumes `[discard=4, retained=5]` with retained value `302` and exactly two additional conversions.
+    - `test_state.conversion_unread` is cleared on requested-stop completion.
+- Focused test count for host suite remains 16.
+
+### Correction Round 4d — final precise overrun and timeout-recovery correction
+
+- RED evidence before final tweak: overrun path used a successful channel-8 retained step, and timeout-recovery stop assertion still failed (`expected=1 actual=0`) during focused run.
+- GREEN evidence after corrective test-only edits:
+  - `./tests/host/run_ml3_host_tests.sh` — GREEN (`16 passed`, `0 failed`).
+- Controller verification after the final test correction:
+  - `timeout -k 5s 150s make test` — GREEN (`16 passed`, concurrency regression passed, clean-tree regression passed).
+  - `timeout -k 5s 150s make CC=clang test` — GREEN (same results).
+  - `bash -n tests/host/*.sh` and `git diff --check` — GREEN.
+  - GCC `-fanalyzer` and Clang static analysis of `adc_precision.c` — GREEN.
+  - `CC=/bin/false ./tests/host/run_ml3_host_tests.sh` — expected nonzero status `1`; no build directory or runner process remained.
+
+### Task 2 binding review
+
+- Initial review of `8405210..3cd5c60`: `FIX-REQUIRED` with two Major findings. Conversion failures left the acquisition prepared, which allowed an extra discard after a failed retained conversion and allowed retry after a potentially active conversion timeout.
+- Resolution: every discard or retained conversion error now invalidates the prepared cycle and retained-channel state. The regression suite proves the exact channel-switch failure, immediate retry rejection, timeout stop/reprepare path, and temperature-readiness timeout.
+- Binding re-review of `8405210..c5b618f`: `APPROVE` with Stage A PASS, Stage B PASS, and no Blocker, Major, or Minor findings.
+- Reviewer verification: 16/16 focused tests, full GCC and Clang suites, shell and diff checks, GCC and Clang static analyzers, config/readiness contracts, compile-time non-deployability, forced-compiler cleanup, forbidden-dependency scan, and independent fixed-point arithmetic all passed.
+- Remaining concern: the accepted `VERIFY-RM0376` marker stays at the disabled-ADC configuration/calibration boundary because no local RM0376/ES0292 source supplies an exact section.
