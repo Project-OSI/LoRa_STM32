@@ -524,3 +524,216 @@ FIX-REQUIRED
 - Binding re-review of `8405210..c5b618f`: `APPROVE` with Stage A PASS, Stage B PASS, and no Blocker, Major, or Minor findings.
 - Reviewer verification: 16/16 focused tests, full GCC and Clang suites, shell and diff checks, GCC and Clang static analyzers, config/readiness contracts, compile-time non-deployability, forced-compiler cleanup, forbidden-dependency scan, and independent fixed-point arithmetic all passed.
 - Remaining concern: the accepted `VERIFY-RM0376` marker stays at the disabled-ADC configuration/calibration boundary because no local RM0376/ES0292 source supplies an exact section.
+
+## Task 3 checkpoint — measurement state machine and acquisition flow
+
+### TDD RED/GREEN record
+
+- RED: `bash tests/host/run_ml3_host_tests.sh` (pre-fix Task 3 state) failed while header/type wiring was incomplete, preventing a passing focused Task 3 run.
+- GREEN: `bash tests/host/run_ml3_host_tests.sh` — focused run exited `0` (`OK`, no failures).
+- GREEN: `CC=clang bash tests/host/run_ml3_host_tests.sh` — focused run exited `0` (`OK`, no failures).
+- GREEN: `make test` — full GCC suite passed, including runner/suite regressions.
+- GREEN: `CC=clang make test` — full Clang suite passed, including runner/suite regressions.
+
+### Files touched in this checkpoint
+
+- `STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/inc/ml3_measurement.h`
+- `STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/src/ml3_measurement.c`
+- `tests/host/ml3_measurement_task3_test.c`
+- `tests/host/run_ml3_host_tests.sh`
+- `docs/prompts/ml3-execution-log.md`
+
+#### Re-verification record (replacement editor refresh)
+
+- `bash tests/host/run_ml3_host_tests.sh` — passed (`OK`).
+- `CC=clang bash tests/host/run_ml3_host_tests.sh` — passed (`OK`).
+- `make test` — full GCC suite passed, including concurrency/clean-tree regressions.
+- `CC=clang make test` — full Clang suite passed, including concurrency/clean-tree regressions.
+
+#### Remaining ambiguity
+
+- None.
+
+### Task 3 fix round 1 — replacement editor continuation
+
+- RED (previous checkpoint in this Task 3 cycle): focused `test_adc_prepare_timeout_continues_with_cleanup` failed in `ml3_measurement_step_adc_calibrate` because `set_power_5v(false)` / `set_thermistor_excitation(false)` cleanup was not executed and the test observed `prepare path cleanup power low: expected=2 actual=1`.
+- GREEN: `ML3_STATE_ADC_CALIBRATE` now routes prepare failures through `ml3_measurement_set_adc_fault_and_continue_with_path(..., true)` to guarantee paired cleanup before process continuation.
+
+#### Verification evidence
+
+- `bash tests/host/run_ml3_host_tests.sh` — passed (`OK`, no failures).
+- `CC=clang bash tests/host/run_ml3_host_tests.sh` — passed (`OK`, no failures).
+- `make test` — passed (full GCC suite, 16/16 host measurement tests plus regressions).
+- `CC=clang make test` — passed (full Clang suite, 16/16 host measurement tests plus regressions).
+- `git diff --check` — passed.
+
+#### File changes
+
+- `STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/src/ml3_measurement.c`
+- `tests/host/ml3_measurement_task3_test.c`
+- `STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/inc/ml3_measurement.h`
+- `tests/host/run_ml3_host_tests.sh`
+- `docs/prompts/ml3-execution-log.md`
+
+#### Remaining issues
+
+- None.
+
+### Task 3 fix round 3 — sole editor correction round 3
+
+- RED: `CC=gcc ./tests/host/run_ml3_host_tests.sh` failed with 36 focused Task 3 regressions, dominated by cleared fault injections, power-on abort timing, and the PA4 high-high-low fixture.
+- GREEN: `CC=gcc ./tests/host/run_ml3_host_tests.sh` exited `0` with `OK` after the harness/production corrections.
+- GREEN: `CC=clang ./tests/host/run_ml3_host_tests.sh` exited `0` with `OK`.
+- GREEN: `make test` exited `0`; the full GCC suite completed with the existing concurrency and clean-tree regressions passing.
+- GREEN: `CC=clang make test` exited `0`; the full Clang suite completed with the same regressions passing.
+- GREEN: `bash tests/host/ml3_config_contract.sh`, `bash tests/host/ml3_readiness_cohesion_contract.sh`, `bash tests/host/ml3_marker_mutation_regression.sh`, `bash tests/host/ml3_clean_tree_after_make_test.sh`, and `bash -n tests/host/*.sh` all exited `0`.
+- GREEN: `git diff --check` exited `0`.
+- GREEN: added-line dependency scan over `ml3_measurement.h/.c`, `adc_precision.c`, and `tests/host/ml3_measurement_task3_test.c` found no added `HAL_`, `I2C`, `stm32`, or `STM32` tokens.
+- Remaining ambiguity: none.
+
+### Task 3 fix round 2 — binding controller correction round 2
+
+- RED: `./tests/host/run_ml3_host_tests.sh` reached a focused failure before stabilization (`FAIL: watchdog fail skips build: expected=0 actual=1`).
+- GREEN: after the focused assertion fix in the watchdog callback matrix, `./tests/host/run_ml3_host_tests.sh` exited `0` with `OK`.
+- GREEN: `CC=clang ./tests/host/run_ml3_host_tests.sh` exited `0` with `OK`.
+- GREEN: `make test` exited `0` (`OK` with full suite regressions).
+- GREEN: `CC=clang make test` exited `0` (`OK` with full suite regressions).
+- GREEN: `bash tests/host/ml3_config_contract.sh`, `bash tests/host/ml3_marker_mutation_regression.sh`, `bash tests/host/ml3_readiness_cohesion_contract.sh`, and `bash -n tests/host/*.sh` all exited `0`.
+- GREEN: `git diff --check` exited `0`.
+- `git diff --name-only | sed -n '1,200p'` reported `STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/inc/ml3_measurement.h`, `STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/src/ml3_measurement.c`, `tests/host/run_ml3_host_tests.sh`, `docs/prompts/ml3-execution-log.md`; plus untracked `tests/host/ml3_measurement_task3_test.c`.
+
+#### File changes
+
+- `STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/inc/ml3_measurement.h`
+- `STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/src/ml3_measurement.c`
+- `tests/host/ml3_measurement_task3_test.c`
+- `tests/host/run_ml3_host_tests.sh`
+- `docs/prompts/ml3-execution-log.md`
+
+#### Remaining issues
+
+- None.
+
+### Task 3 fix round 4 — sole implementation editor
+
+- RED: `bash tests/host/run_ml3_host_tests.sh` failed after the first focused test additions with `vref uses fixed channel 17 for both reference reads: expected=4 actual=0`, `prepare calibration timeout error: expected=4 actual=5`, and `prepare ready timeout maps to adc prepare: expected=4 actual=5`.
+- RED: `bash tests/host/run_ml3_host_tests.sh` failed after the discard/retained overrun coverage change with `overrun observed on expected retained/read discard semantics`.
+- RED: `bash tests/host/run_ml3_host_tests.sh` failed after the discharge fresh-VREFINT cases with `pa4 high-high-low has no fault: expected=0 actual=7`, `threshold straddle rechecks vref on each attempt: expected=4 actual=0`, and `discharge vref timeout on fresh vref: expected=17 actual=5`.
+- GREEN: `bash tests/host/run_ml3_host_tests.sh` exited `0`.
+- GREEN: `CC=clang bash tests/host/run_ml3_host_tests.sh` exited `0`.
+- GREEN: `make test` exited `0`; the full GCC suite completed, including the concurrency and clean-tree regressions.
+- GREEN: `CC=clang make test` exited `0`; the full Clang suite completed, including the concurrency and clean-tree regressions.
+- GREEN: `bash tests/host/ml3_config_contract.sh`, `bash tests/host/ml3_readiness_cohesion_contract.sh`, `bash tests/host/ml3_marker_mutation_regression.sh`, `bash tests/host/ml3_clean_tree_after_make_test.sh`, and `bash -n tests/host/*.sh` all exited `0`.
+- GREEN: `git diff --check` plus the untracked `tests/host/ml3_measurement_task3_test.c` trailing-whitespace scan exited `0`.
+- GREEN: added-line dependency scan over `adc_precision.h/.c`, `ml3_measurement.h/.c`, `run_ml3_host_tests.sh`, and the full untracked `tests/host/ml3_measurement_task3_test.c` found no added `HAL_`, `I2C`, `stm32`, or `STM32` tokens.
+- GREEN: Task 2 trace restoration check (`diff` of the `ADC_PRECISION_DEBUG`/`ADC_PRECISION_TRACE` lines in `adc_precision.c` against `git show HEAD:...`) exited `0`; only the calibration-specific error return changed in that file.
+
+#### Files changed in round 4
+
+- `STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/inc/adc_precision.h`
+- `STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/inc/ml3_measurement.h`
+- `STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/src/adc_precision.c`
+- `STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/src/ml3_measurement.c`
+- `tests/host/ml3_adc_precision_test.c`
+- `tests/host/ml3_measurement_task3_test.c`
+- `tests/host/run_ml3_host_tests.sh`
+- `docs/prompts/ml3-execution-log.md`
+
+#### Remaining ambiguity
+
+- None.
+
+### Task 3 fix round 5 — safety and fault-injection correction
+
+- RED: the focused GCC runner exited `1` after the test-first changes. It reported `warmup below 500 ms: expected=1 actual=0`, `error state becomes inactive`, and `error-state retry applies power low`.
+- GREEN: the focused GCC and Clang runners exited `0`. Both printed `OK`, followed by the existing 16 passing `adc_precision` cases.
+- `make test` and `CC=clang make test` exited `0`; both full suites included the existing process-lifecycle and clean-tree regressions.
+- `ml3_config_contract.sh`, `ml3_readiness_cohesion_contract.sh`, `ml3_marker_mutation_regression.sh`, `ml3_clean_tree_after_make_test.sh`, and `bash -n tests/host/*.sh` exited `0`.
+- Warm-up configuration now accepts the inclusive 500–3000 ms range and rejects 499 ms and 3001 ms. The host clock advances by 500 ms only while the measurement state is `WARMUP`, so ADC timeout fixtures retain their prior timing.
+- `ML3_STATE_ERROR` retries both safe-low callbacks once per explicit step and returns immediately. A corrupt state records `ML3_MEASUREMENT_ERR_STATE`, becomes inactive, enters `ML3_STATE_ERROR`, and attempts power-low then thermistor-low without entering process, build, or queue states.
+- The GPIO fake records requests before applying them. A failed callback leaves the simulated applied state unchanged; tests distinguish a low request from a successful low transition and prove the later error-state retry where required.
+- Each overrun injection now keys on and asserts state, physical conversion index, retained-sample ordinal, channel, and discard status. The `VERIFY_DISCHARGE` matrix covers PA4 discard and retained timeout/overrun at physical indices 2 and 3, retained ordinal 1, with exact ADC fault classification and queued invalid output.
+- Callback tests record the configured failure event. Every callback and all four watchdog points require both safe-low requests after that event; the queue-plus-cleanup case also proves the fourth power callback failed as configured.
+- The inverse discharge threshold fixture proves the retained under-load VDDA wins when it is higher than the fresh post-power-off VDDA. The first PA4 sample remains above 500 mV, a second fresh-VREFINT/PA4 pair precedes thermistor excitation, and the stored post-reference diagnostics remain unchanged.
+- `git diff --check` exited `0`. The untracked Task 3 test returned the expected `git diff --no-index --check` content status `1` with no whitespace diagnostic. Dependency scans found no HAL, STM32-header, I2C, floating-point, or heap dependency in `ml3_measurement`.
+- The Task 2 prerequisite remains narrow: the calibration-completion wait alone returns `ADC_PRECISION_ERROR_CALIBRATION`, its test asserts that enum directly, and the existing `ADC_PRECISION_DEBUG` traces are unchanged.
+- Channel-collision policy and target-side `therm_settle_ms` wiring remain deferred to Task 10 integration; this round adds neither.
+
+### Task 3 fix round 6 — causal fault and end-to-end acquisition oracles
+
+- RED: the focused GCC runner exited `1` after the exact-deadline warm-up test disabled implicit clock advancement. At 2999 ms it reported `warmup remains in state one millisecond before deadline: expected=3 actual=4`, exposing a test-clock control defect.
+- GREEN: the fake clock now permits explicit WARMUP time jumps. The test holds WARMUP at 2999 ms, transitions at 3000 ms, and repeats the same checks across `uint32_t` wrap without sleeping.
+- Nested REFERENCE_PRE timeout plus power-low failure and thermistor overrun plus thermistor-low failure tests now record explicit ADC-injection events. They assert exact state, physical conversion index, retained ordinal, channel, discard status, injection-before-cleanup-failure order, causal paired-low requests, successful error-state retry, and the preserved ADC error/fault taxonomy.
+- VERIFY_DISCHARGE PA4 discard and retained timeout cases now prove causal paired-low requests and applied low states. The queue callback snapshots the actual report; the tests require exactly one queued invalid report with every measurement/statistic presence flag cleared, fault presence retained, and valid-cycle count present and zero.
+- The nominal full-state-machine oracle uses four distinct H1-L1-L2-H2 cycles. It asserts retained phase order, pre/post VREF-derived VDDA, each cycle's high/low/differential basis, the population-variance basis, integer SD, means, common mode, median, MAD, drift, minimum, maximum, valid-cycle count, and the exact queued result.
+- `tests/host/run_ml3_host_tests.sh` and `CC=clang tests/host/run_ml3_host_tests.sh` exited `0`; both printed `OK` and the existing `16 passed, 0 failed` ADC precision result.
+- `make test` and `CC=clang make test` exited `0`; both full suites passed their concurrency and clean-tree regressions.
+- `ml3_config_contract.sh`, `ml3_readiness_cohesion_contract.sh`, `ml3_marker_mutation_regression.sh`, `ml3_clean_tree_after_make_test.sh`, and `bash -n tests/host/*.sh` exited `0`.
+- `git diff --check` exited `0`. The untracked Task 3 test returned the expected `git diff --no-index --check` content status `1` with no whitespace diagnostic.
+- The ML3 measurement dependency scan found no HAL, STM32-header, I2C, floating-point, or heap dependency. The Task 2 `ADC_PRECISION_DEBUG`/`ADC_PRECISION_TRACE` comparison against `HEAD` was unchanged.
+- Round 6 changed only `tests/host/ml3_measurement_task3_test.c` and this execution log. No production code, Task 2 prerequisite, commit, push, or pull request was added in this round.
+
+### Task 2 corrective prerequisite — binding review
+
+- Commit `a6ba85c` was reviewed over immutable range `dd58506..a6ba85c` by the required `gpt-5.6-sol` reviewer.
+- Verdict: `approve`; no Blocker, Major, or Minor findings.
+- The reviewer confirmed the error enum is append-only (`ADC_PRECISION_ERROR_CALIBRATION = 6`), the self-calibration completion wait is the only path returning it, and the other nine wait sites retain `ADC_PRECISION_ERROR_TIMEOUT`.
+- The reviewer independently derived Appendix C taxonomy values (`ADC_INIT = 0x0001`, `ADC_CAL = 0x0002`, `ADC_TIMEOUT = 0x0004`) and confirmed the distinct calibration result permits Task 3 to set `ADC_CAL` without misclassifying conversion timeouts.
+- Read-only release and `ADC_PRECISION_DEBUG` host builds both passed all 16 precision tests; release emitted no trace output and the required debug timeout traces remained present.
+
+### Task 3 binding correction round 7 — fix-required resolution
+
+- The binding reviewer returned `fix-required` with one Blocker and five Major findings: a fabricated 5,000,000 uV acceptance cap, optional reporting callbacks, missing raw ABBA evidence, omitted reset-cause capture, inadequate watchdog-order assertions, and missing coverage for the first thermistor-low failure during PREPARE. The controller had already run fresh full GCC and Clang suites successfully outside the reviewer's read-only sandbox before that verdict.
+- RED: the first extreme-domain statistic test failed with `FAIL: extreme-domain has valid cycles`. The first mandatory-reporting test failed with `FAIL: null process callback: expected=1 actual=0`. Raw-evidence and reset-cause tests initially failed to compile because the required result fields and port callback did not exist.
+- The statistic path now accepts the full signed `uint32_t` differential domain. Round 7 introduced centered integer arithmetic and quotient/remainder accumulation to avoid overflow without floating point, heap allocation, compiler-specific 128-bit integers, saturation, or a fabricated physical limit. Round 9 added the fractional-mean remainder correction required for exact population variance. Boundary tests cover alternating extrema, individual squared deviations that exceed `uint64_t`, and non-zero mean remainders.
+- `on_process`, `on_build_payload`, and `on_queue` are mandatory at initialization and are checked defensively in their state-machine steps. ADC-invalid acquisitions still process, build, and queue exactly one flagged invalid report.
+- Results now retain all H1/L1/L2/H2 raw codes for each completed cycle, with explicit presence and cycle count. Discard conversions are excluded, incomplete cycles are not committed, and invalid acquisitions clear the raw evidence.
+- A mandatory, non-failing reset-cause callback runs at acquisition start before radio sleep and before the sequence increment. Its opaque `uint32_t` value and presence flag survive invalidation and reach process, payload-build, and queue callbacks.
+- Watchdog assertions now prove the four required causal positions: before power-high, before the first physical ABBA conversion, after the last physical ABBA conversion, and between payload build and queue. The PREPARE thermistor-low first-call failure test proves the exact callback state, paired-safe-low attempts, no reporting callbacks, and the later ERROR-state retry.
+- GREEN: `tests/host/run_ml3_host_tests.sh` and `CC=clang tests/host/run_ml3_host_tests.sh` exited `0`, printing `OK` and `16 passed, 0 failed` for the precision tests.
+- GREEN: `make test` and `CC=clang make test` exited `0`; both full suites passed the functional host tests, concurrency regression, and clean-tree regression.
+- GREEN: `ml3_config_contract.sh`, `ml3_readiness_cohesion_contract.sh`, `ml3_marker_mutation_regression.sh`, `ml3_clean_tree_after_make_test.sh`, and `bash -n tests/host/*.sh` exited `0`.
+- GREEN: `git diff --check`, the Task 2 trace invariant, and scans for the removed cap, hardware dependencies, floating point, heap allocation, and 128-bit integer extensions all passed.
+- Round 7 changed `ml3_measurement.h`, `ml3_measurement.c`, `ml3_measurement_task3_test.c`, and this execution log. It did not change Task 2 code, the host runner, commits, remotes, or pull requests.
+
+### Task 3 binding correction round 8 — invalid reset cause and WD3 causality
+
+- The binding follow-up found two required test gaps. ADC-invalid reports had no nonzero reset-cause oracle, and the WD3 test observed the last conversion start rather than successful raw consumption.
+- Mutation RED: temporarily assigning zero to `reset_cause` inside `ml3_measurement_invalidate_measurement_data()` made the focused runner fail with `FAIL: invalid process retains exact reset cause: expected=3277492711 actual=0`. The mutation was removed.
+- The invalid-report case uses reset cause `0xC35A91E7`, completes one ABBA cycle, then injects a retained H1 overrun in the second cycle. Process, payload-build, and queue snapshots each retain the exact reset-cause presence and value while the full invalid-measurement oracle confirms cleared raw evidence and statistics.
+- WD3 RED: after the test required a final raw-consumption event, the focused runner failed with `FAIL: final successful ABBA raw-consumption event recorded`. The host ADC callback now records `TEST_EVENT_RAW_CONSUMED` after it returns a raw code. The watchdog oracle requires final conversion start, then final raw consumption, then WD3; a refresh between conversion start and read completion fails the ordering assertion. Production behavior and headers are unchanged by this instrumentation.
+- Overrun paths now use the full invalid-measurement helper, including ABBA raw-evidence clearing. The centered-variance implementation has a short comment stating the exact quotient/remainder identity; its arithmetic is unchanged.
+- Fresh focused GCC and Clang runners exited `0`, printing `OK` and `16 passed, 0 failed` for the precision tests. Fresh full GCC and Clang `make test` runs also exited `0`; each passed the functional host tests, concurrency regression, and clean-tree regression.
+- The four explicit contract scripts and `bash -n tests/host/*.sh` exited `0`. The hardware-dependency, floating-point, heap, 128-bit integer, removed-cap, Task 2 trace, whitespace, and allowed-scope checks also passed.
+- A first full GCC attempt passed its functional stage but failed the concurrency gate because 44 stale `/tmp/ml3-runner-status.*/cc-wrapper.sh` process groups from earlier runs made the runner exceed the fixed 8-second deadline. Exact process-group cleanup reduced a single runner from 9.138 seconds to 7.925 seconds; the standalone three-round concurrency regression then passed in 30.541 seconds. Both later full suites passed, but each left two new wrappers, confirming a pre-existing status-regression harness leak. Those exact wrappers were removed after each run; the harness and deadlines remain unchanged for a separate correction.
+- Round 8 changed `ml3_measurement.c`, `ml3_measurement_task3_test.c`, and this execution log. It preserved the Round 7 header changes and added no commit, remote update, or pull request.
+
+### Task 3 binding correction round 9 — exact variance and mixed-sign median
+
+- `gpt-5.6-sol` rereviewed Task 3 commit `095fa89bf29c80bc772e9acc6af7deca0e853ce9` over immutable range `a6ba85c..095fa89`. Verdict: `fix-required`, with two Major findings and no Blocker or Minor finding. All non-statistics Task 3 checks were approved.
+- Variance RED: the valid differential set `[0,0,0,2]` failed with `fractional-mean exact floor variance produces zero SD: expected=0 actual=1`. Reversing the final remainder comparison recreated the same failure after the fix.
+- The variance path now derives `floor(A/n)` and `A mod n`, where `A=sum((x-trunc(S/n))^2)`, then subtracts one exactly when `(A mod n)*n < (S-n*trunc(S/n))^2`. This equals `floor((n*sum(x^2)-S^2)/n^2)` and preserves the full-domain centered-square bounds. Zeroing the final fractional-mean remainder term only for a negative remainder failed `[−5,−5,−3]` with `negative fractional-mean correction uses mathematical floor: expected=0 actual=1`. This pins the final fractional remainder subtraction; it does not exercise the centered-correction floor division.
+- Median RED: the four-cycle differential set `[−5,−1,2,8]` failed with `mixed-sign middle pair average truncates toward zero: expected=0 actual=1`. Removing the opposite-sign branch after the fix recreated that failure. Opposite-sign operands now add directly, which cannot overflow; same-sign operands retain the half/remainder decomposition. The oracle also requires MAD `3` and floor SD `4`.
+- Independent `__int128` ground truth matched production median and floor SD for 203,385 exhaustive sorted small-domain sets and 300,000 deterministic extreme-heavy or random ordered sets with `n=3..8`. A separate oracle matched the safe average for 500,121 boundary or random full-`int64_t` pairs. Existing eight-cycle alternating extrema and three-cycle individual-square-overflow tests remain unchanged.
+- Fresh focused GCC and Clang runners exited `0`, printing `OK` and `16 passed, 0 failed` for the precision tests. Fresh full GCC and Clang `make test` runs also exited `0`; each passed the functional host tests, concurrency regression, and clean-tree regression.
+- Each full suite started with zero stale ML3 wrappers and left the two wrappers from the known status-regression harness leak. Exact process-group cleanup left zero after each run. This round did not alter the harness or its deadlines.
+- The four explicit contract scripts, `bash -n tests/host/*.sh`, dependency and arithmetic scans, removed-cap scan, Task 2 trace invariant, whitespace check, and exact-scope check exited `0`.
+- Round 9 changed `ml3_measurement.c`, `ml3_measurement_task3_test.c`, and this execution log. It added no commit, remote update, or pull request.
+
+### Task 3 binding correction round 10 — centered correction floor mutation
+
+- An independent arithmetic review approved the implementation but found that Round 9 did not directly test mathematical floor division in the centered correction. The new eight-cycle oracle uses seven differentials of `−2` and one differential of `+1`: `n=8`, `center=0`, `q=floor(sum(z^2)/n)=3`, `t=5`, `mean=−1`, `d=−1`, `r=−5`, and centered-correction numerator `X=t−2dr=−5`. Mathematical `floor(X/n)` is `−1`; the exact population variance is `63/64`, so floor SD is `0`.
+- Mutation RED: with the helper kept referenced so compilation reached the numeric assertions, temporarily replacing the centered correction's `ml3_measurement_floor_div_i64(X,n)` call with C integer division `X/n` made the focused GCC runner exit `1`: `negative centered-correction uses mathematical floor division: expected=0 actual=1`. The temporary mutation and helper reference were removed.
+- GREEN: after restoring the mathematical floor call, fresh focused GCC and Clang runners exited `0`, printing `OK` and `16 passed, 0 failed` for the precision tests.
+- Fresh full GCC and Clang `make test` runs exited `0`; each passed the functional host tests, concurrency regression, and clean-tree regression. Each run started with zero exact ML3 wrappers, left the two wrappers from the known status-regression harness leak, and was followed by exact process-group cleanup to zero. This round did not alter that harness or its deadlines.
+- The centered-variance comment now distinguishes the loop's accumulation of centered-square quotient and remainder from the later correction that derives `floor(A/n)` and `A mod n`.
+- The four explicit contract scripts and `bash -n tests/host/*.sh` exited `0`. Round 10 touched only `ml3_measurement.c`, `ml3_measurement_task3_test.c`, and this execution log; it changed no production algorithm and added no commit, remote update, or pull request.
+
+### Task 3 binding rereview — approved
+
+- The required `gpt-5.6-sol` reviewer examined immutable range `a6ba85c..f525f5e` in session `019f5f33-0e77-7201-b940-0a8fc2dab8e3`. Its complete report is preserved at `/tmp/ml3-task3-binding-rereview2.txt`.
+- Verdict: `approve`; no Blocker, Major, or Minor findings.
+- The reviewer independently checked the exact population-variance derivation and its signed bounds, 4,291,892 exhaustive small-domain sample sets, 500,000 extreme or deterministic-random sets with three through eight cycles, and 500,005 full-range signed 64-bit averages.
+- Four in-memory mutations were rejected by the focused tests: removal of the fractional-mean correction, reversal of the remainder comparison, replacement of mathematical floor division with C truncation in the centered correction, and restoration of the old mixed-sign median average.
+- Strict GCC and Clang in-memory builds passed the Task 3 contract tests and all 16 Task 2 precision-ADC tests. The configuration, readiness, shell-syntax, analyzer, diff-hygiene, and immutable-range checks also passed.
+- The rereview confirmed that all findings from the two earlier binding reviews were resolved. Task 3 is complete at the reviewed production-and-test tree in `f525f5e`; the only later amendment is this approval record.

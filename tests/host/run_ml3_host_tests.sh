@@ -177,6 +177,7 @@ MODULE_SOURCES=(
   "$SRC_DIR/ml3_at_commands.c"
 )
 PRECISION_TEST="$ROOT_DIR/tests/host/ml3_adc_precision_test.c"
+TASK3_TEST="$ROOT_DIR/tests/host/ml3_measurement_task3_test.c"
 
 cleanup() {
   local cleanup_status=0
@@ -246,7 +247,28 @@ if [ "$status" -ne 0 ]; then
   exit "$status"
 fi
 
+ml3_run_isolated_command "$CC" "${CFLAGS[@]}" \
+  "$TASK3_TEST" \
+  "$BUILD_DIR"/adc_precision.o \
+  "$BUILD_DIR"/ml3_measurement.o \
+  "$BUILD_DIR"/ml3_calibration.o \
+  "$BUILD_DIR"/ml3_quality.o \
+  "$BUILD_DIR"/ml3_payload.o \
+  "$BUILD_DIR"/ml3_thermistor.o \
+  "$BUILD_DIR"/ml3_at_commands.o \
+  -o "$BUILD_DIR/ml3_measurement_task3_test"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
 ml3_run_isolated_command "$BUILD_DIR/ml3_contract_test"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
+ml3_run_isolated_command "$BUILD_DIR/ml3_measurement_task3_test"
 status=$?
 if [ "$status" -ne 0 ]; then
   exit "$status"
