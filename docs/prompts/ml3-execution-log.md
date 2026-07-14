@@ -889,3 +889,47 @@ coverage when replacing a shorter valid record with a longer one.
 - Definitive full GCC and Clang suites remain pending the separate process-guard
   integration. The reviewed production-and-test tree is complete at
   `13343ad`; the only later amendment is this approval record.
+
+## Task 5 checkpoint — quality classification
+
+Task 5 adds the pure-C quality evaluator and keeps every hardware-derived
+threshold pending in `ml3_config.h`. The config loader returns
+`CONFIG_PENDING` without changing its output until the existing guard,
+common-mode, +5 V, noise, warm-up drift, VDDA drift, and die-temperature
+readiness flags are set.
+
+- The canonical flag values occupy bits 0 through 15. The fixed invalidating
+  mask is `0x027F`, and the state encodings are VALID 0, DEGRADED 1, and
+  INVALID 2. Task 3 ADC and thermistor fault names now alias these values.
+- The evaluator consumes converted electrical evidence. It does not scale ADC
+  codes, apply calibration, or derive terminal voltage. Missing mandatory
+  evidence fails closed with `INCOMPLETE`, an INVALID result, the supplied
+  flags and cycle count, and no invented transmitted flag. A fixed invalidating
+  flag or fewer than three valid cycles is sufficient for a normal INVALID
+  result when numeric evidence is absent.
+- Low-rail counts are separate for HI and LO. For `N` completed cycles, either
+  input needs at least `N` guarded samples among its own `2N` retained samples.
+  Guard equality counts because a zero-clipped input is ambiguous.
+- HI-over uses mean HI and pre-acquisition VDDA with an inclusive 100000 µV
+  margin. Differential range is inclusive from -20000 through 1100000 µV;
+  common-mode, +5 V, and die-temperature endpoints are also valid.
+- Noise, absolute warm-up drift, and VDDA drift set their warning flags only
+  above the warning boundary. Their INVALID transitions are also strict, so
+  equality at the invalid threshold remains DEGRADED. Signed drift handles
+  `INT64_MIN`; VDDA comparisons use exact 96-bit cross-products built from
+  64-by-32-bit limbs.
+- The local invalidating signature contains fixed invalidating flags plus
+  separate cycle-count, VDDA, noise, warm-up, and incomplete-evidence reasons.
+  Warning-only flag changes do not alter it.
+
+TDD started with missing flag/API compile failures, then behavioral RED cases
+for malformed threshold tables, cycle-count validity, fixed-mask state, missing
+evidence, each range boundary, separate rail counts, dynamic thresholds, and
+overflowing VDDA cross-products. The final focused GCC and Clang runners exit
+0 and print `ml3 quality: OK`, the Task 3 `OK`, calibration `OK`, and all 16
+Task 2 ADC passes. A GCC UBSan build of the quality test also exits 0.
+
+Task 5 changes `ml3_quality.h`, `ml3_quality.c`, the quality host test,
+`ml3_measurement.h`, the focused host runner, and this log. It adds no target
+adapter, hardware constant, payload behavior, remote command, push, or pull
+request.
