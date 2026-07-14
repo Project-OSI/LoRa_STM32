@@ -162,48 +162,35 @@ static void test_raw_values(void) {
 }
 
 static void test_calibration_record_span(void) {
-  enum { CALIBRATION_PREFIX_LENGTH = 10, MAX_BINARY_RECORD_LENGTH = 2092 };
-  uint8_t command[] = {
-    'A', 'T', '+', 'M', 'L', '3', 'C', 'A', 'L', '=',
-    0x01U, 0xFFU, 'A', ' ', 'B'
-  };
-  uint8_t embedded_nul[] = {
-    'A', 'T', '+', 'M', 'L', '3', 'C', 'A', 'L', '=', 'A', 0U, 'B'
-  };
-  uint8_t maximum_record[CALIBRATION_PREFIX_LENGTH + MAX_BINARY_RECORD_LENGTH];
+  uint8_t command[] = "AT+ML3CAL=0,52,01FfA0B1";
+  uint8_t invalid_odd_hex[] = "AT+ML3CAL=0,52,01F";
+  uint8_t invalid_offset[] = "AT+ML3CAL=1,52,01FfA0B1";
   ml3_at_command_t output;
 
   EXPECT_STATUS(ML3_AT_STATUS_OK,
-    ml3_at_parse(command, sizeof(command), &output), "opaque record accepted");
+    ml3_at_parse(command, sizeof(command) - 1U, &output), "chunk accepted");
   EXPECT_TRUE(output.operation == ML3_AT_OPERATION_SET_CALIBRATION,
     "calibration write operation");
-  EXPECT_TRUE(output.argument.calibration_record.bytes == &command[10],
-    "calibration record borrows input span");
-  EXPECT_TRUE(output.argument.calibration_record.length == 5U,
-    "calibration record length");
-  EXPECT_TRUE(output.argument.calibration_record.bytes[1] == 0xFFU,
-    "opaque record is not decoded");
-  command[10] = 0x22U;
-  EXPECT_TRUE(output.argument.calibration_record.bytes[0] == 0x22U,
-    "borrowed record lifetime follows input storage");
+  EXPECT_TRUE(output.argument.calibration_chunk.offset == 0U,
+    "calibration chunk offset");
+  EXPECT_TRUE(output.argument.calibration_chunk.total_length == 52U,
+    "calibration chunk total length");
+  EXPECT_TRUE(output.argument.calibration_chunk.hex_length == 8U,
+    "calibration chunk hex length");
+  EXPECT_TRUE(output.argument.calibration_chunk.hex[2] == 'F',
+    "calibration chunk borrows hex span");
 
   expect_text_error_preserves_output("AT+ML3CAL=", ML3_AT_STATUS_EMPTY_RECORD,
     "empty calibration record");
-  expect_error_preserves_output(embedded_nul, sizeof(embedded_nul),
-    ML3_AT_STATUS_RECORD_CONTAINS_NUL, "embedded NUL record rejected");
-
-  (void)memcpy(maximum_record, "AT+ML3CAL=", CALIBRATION_PREFIX_LENGTH);
-  (void)memset(&maximum_record[CALIBRATION_PREFIX_LENGTH], 0xA5,
-    MAX_BINARY_RECORD_LENGTH);
+  expect_text_error_preserves_output("AT+ML3CAL=0,52,01F",
+    ML3_AT_STATUS_INVALID_VALUE, "odd calibration hex rejected");
+  expect_text_error_preserves_output("AT+ML3CAL=0,52,01FG",
+    ML3_AT_STATUS_INVALID_VALUE, "non-hex calibration digit rejected");
   EXPECT_STATUS(ML3_AT_STATUS_OK,
-    ml3_at_parse(maximum_record, sizeof(maximum_record), &output),
-    "2092-byte opaque record has no invented AT-buffer limit");
-  EXPECT_TRUE(output.argument.calibration_record.bytes
-      == &maximum_record[CALIBRATION_PREFIX_LENGTH],
-    "maximum record remains borrowed");
-  EXPECT_TRUE(output.argument.calibration_record.length
-      == MAX_BINARY_RECORD_LENGTH,
-    "maximum binary record length preserved");
+    ml3_at_parse(invalid_offset, sizeof(invalid_offset) - 1U, &output),
+    "nonzero continuation chunk accepted by parser");
+  expect_error_preserves_output(invalid_odd_hex, sizeof(invalid_odd_hex) - 1U,
+    ML3_AT_STATUS_INVALID_VALUE, "odd calibration span rejected");
 }
 
 static void test_exact_case_and_framing(void) {

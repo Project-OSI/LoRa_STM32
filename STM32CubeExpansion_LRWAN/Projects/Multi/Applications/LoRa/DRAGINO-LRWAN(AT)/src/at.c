@@ -64,6 +64,8 @@
 #include "gpio_exti.h"
 #include "weight.h"
 #include "bsp.h"
+#include "ml3_at_commands.h"
+#include "ml3_config.h"
 
 bool debug_flags=0;
 bool message_flags=0;
@@ -222,6 +224,105 @@ void set_at_receive(uint8_t AppPort, uint8_t* Buff, uint8_t BuffSize)
   memcpy1((uint8_t *)ReceivedData, Buff, BuffSize);
   ReceivedDataSize = BuffSize;
   ReceivedDataPort = AppPort;
+}
+
+static ATEerror_t ml3_translate_parse_status(ml3_at_status_t status)
+{
+  switch (status)
+  {
+    case ML3_AT_STATUS_OK:
+      return AT_OK;
+    case ML3_AT_STATUS_VALUE_OUT_OF_RANGE:
+      return AT_PARAM_NOT_Range;
+    case ML3_AT_STATUS_UNKNOWN_COMMAND:
+      return AT_ERROR;
+    case ML3_AT_STATUS_INVALID_ARGUMENT:
+    case ML3_AT_STATUS_INVALID_SYNTAX:
+    case ML3_AT_STATUS_EMPTY_VALUE:
+    case ML3_AT_STATUS_INVALID_VALUE:
+    case ML3_AT_STATUS_NUMERIC_OVERFLOW:
+    case ML3_AT_STATUS_EMPTY_RECORD:
+    case ML3_AT_STATUS_RECORD_CONTAINS_NUL:
+    default:
+      return AT_PARAM_ERROR;
+  }
+}
+
+ATEerror_t at_ml3_execute(const uint8_t *input, size_t input_length)
+{
+  ml3_at_command_t command;
+  ml3_at_status_t parse_status;
+  uint16_t warmup_ms;
+  uint8_t cycles;
+  uint8_t raw_enabled;
+
+  parse_status = ml3_at_parse(input, input_length, &command);
+  if (parse_status != ML3_AT_STATUS_OK)
+  {
+    return ml3_translate_parse_status(parse_status);
+  }
+
+  switch (command.operation)
+  {
+    case ML3_AT_OPERATION_QUERY_SETTINGS:
+      if (!BSP_ML3_GetSettings(&warmup_ms, &cycles, &raw_enabled))
+      {
+        return AT_ERROR;
+      }
+      PPRINTF("+ML3:MODE=%u,FPORT=%u,WARM=%u,CYCLES=%u,RAW=%u\r\n",
+        (unsigned)ML3_CONFIG_MODE_ML3, (unsigned)ML3_CONFIG_FPORT,
+        (unsigned)warmup_ms, (unsigned)cycles, (unsigned)raw_enabled);
+      return AT_OK;
+
+    case ML3_AT_OPERATION_SET_WARMUP_MS:
+      return BSP_ML3_SetWarmup(command.argument.warmup_ms)
+        ? AT_OK : AT_BUSY_ERROR;
+
+    case ML3_AT_OPERATION_SET_CYCLES:
+      return BSP_ML3_SetCycles(command.argument.cycles)
+        ? AT_OK : AT_BUSY_ERROR;
+
+    case ML3_AT_OPERATION_SET_RAW:
+      return BSP_ML3_SetRaw(command.argument.raw_enabled)
+        ? AT_OK : AT_BUSY_ERROR;
+
+    case ML3_AT_OPERATION_TEST:
+      if (!BSP_ML3_RequestDiagnostic())
+      {
+        PPRINTF("+ML3:ACQUISITION_NOT_READY\r\n");
+        return AT_ERROR;
+      }
+      return AT_OK;
+
+    case ML3_AT_OPERATION_QUERY_CALIBRATION:
+      PPRINTF("+ML3CAL:PENDING\r\n");
+      return AT_OK;
+
+    case ML3_AT_OPERATION_SET_CALIBRATION:
+      if (!BSP_ML3_CalibrationChunk(&command.argument.calibration_chunk))
+      {
+        return AT_PARAM_ERROR;
+      }
+      PPRINTF("+ML3CAL:STAGED\r\n");
+      return AT_OK;
+
+    case ML3_AT_OPERATION_CLEAR_CALIBRATION:
+      if (!BSP_ML3_CalibrationClear())
+      {
+        PPRINTF("+ML3CAL:CLEAR_PENDING\r\n");
+        return AT_ERROR;
+      }
+      return AT_OK;
+
+    case ML3_AT_OPERATION_QUERY_VERSION:
+      PPRINTF("+ML3VER:PROTOCOL=%u,MODE=%u,FPORT=%u\r\n",
+        (unsigned)ML3_CONFIG_PROTOCOL_VERSION,
+        (unsigned)ML3_CONFIG_MODE_ML3, (unsigned)ML3_CONFIG_FPORT);
+      return AT_OK;
+
+    default:
+      return AT_ERROR;
+  }
 }
 
 ATEerror_t at_return_ok(const char *param)
@@ -1571,14 +1672,15 @@ ATEerror_t at_MOD_set(const char *param)
   {
     return AT_PARAM_ERROR;
   }
-	if ((workmode>=1)&&(workmode<=9))
+	if ((workmode>=1)&&((workmode<=9)||(workmode==ML3_CONFIG_MODE_ML3)))
   {
     mode=workmode;	
   	PPRINTF("Attention:Take effect after ATZ\r\n");			
 	}
 	else
 	{
-		PPRINTF("Mode of range is 1 to 9\r\n");	
+		PPRINTF("Mode of range is 1 to 9 or ML3 mode %u\r\n",
+			(unsigned)ML3_CONFIG_MODE_ML3);
     return AT_PARAM_ERROR;
 	}
 	
@@ -1765,6 +1867,10 @@ ATEerror_t at_getsensorvaule_set(const char *param)
 		{
 			return AT_BUSY_ERROR;
 		}	
+		if (mode == ML3_CONFIG_MODE_ML3)
+		{
+			return BSP_ML3_RequestDiagnostic() ? AT_OK : AT_ERROR;
+		}
 		sensor_t sensor_message;
 		BSP_sensor_Read(&sensor_message,1);
 	}

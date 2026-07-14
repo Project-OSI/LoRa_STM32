@@ -54,6 +54,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include <stdint.h>
+#include <stddef.h>
 
 /* Exported types ------------------------------------------------------------*/
 /*
@@ -153,6 +154,11 @@ void weightreset(void);
  * @retval None
  */
 void set_at_receive(uint8_t AppPort, uint8_t* Buff, uint8_t BuffSize);
+
+/* Dedicated parser/dispatcher for the ML3 namespace.  It is intentionally
+ * kept outside the legacy AT table so ML3 commands cannot trigger its generic
+ * prefix matching or automatic EEPROM persistence. */
+ATEerror_t at_ml3_execute(const uint8_t *input, size_t input_length);
 
 /**
  * @brief  Return AT_OK in all cases

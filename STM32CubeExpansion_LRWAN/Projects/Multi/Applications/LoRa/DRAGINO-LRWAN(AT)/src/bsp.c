@@ -50,9 +50,12 @@
 #include "hw.h"
 #include "timeServer.h"
 #include "bsp.h"
+#include "ml3_config.h"
 #include "delay.h"
 #include "vcom.h"
 #include "lora.h"
+#include "ml3_measurement.h"
+#include "ml3_calibration.h"
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #if defined(LoRa_Sensor_Node)
@@ -102,8 +105,295 @@ extern uint8_t inmode,inmode2,inmode3;
 extern uint16_t power_time;
 extern uint32_t COUNT,COUNT2;
 
+/* ML3 state is deliberately kept in this target adapter rather than in the
+ * generic sensor structure.  No EEPROM slot or device-hash algorithm is
+ * assumed here; calibration chunks are only staged until those release
+ * inputs are approved. */
+static bool ml3_initialized;
+static bool ml3_active;
+static bool ml3_request_pending;
+static bool ml3_battery_valid;
+static uint8_t ml3_battery_level;
+static uint16_t ml3_warmup_ms;
+static uint8_t ml3_cycles;
+static uint8_t ml3_raw_enabled;
+static uint8_t ml3_calibration_staging[ML3_AT_CALIBRATION_MAX_RECORD_LENGTH];
+static uint16_t ml3_calibration_total;
+static uint16_t ml3_calibration_next_offset;
+static bool ml3_calibration_staging_active;
+
+static bool ml3_mode_selected(void)
+{
+  return mode == ML3_CONFIG_MODE_ML3;
+}
+
+static int ml3_hex_value(uint8_t byte)
+{
+  if ((byte >= (uint8_t)'0') && (byte <= (uint8_t)'9'))
+  {
+    return (int)(byte - (uint8_t)'0');
+  }
+  if ((byte >= (uint8_t)'A') && (byte <= (uint8_t)'F'))
+  {
+    return (int)(byte - (uint8_t)'A') + 10;
+  }
+  if ((byte >= (uint8_t)'a') && (byte <= (uint8_t)'f'))
+  {
+    return (int)(byte - (uint8_t)'a') + 10;
+  }
+  return -1;
+}
+
+static uint16_t ml3_target_read_u16_le(const uint8_t *bytes)
+{
+  return (uint16_t)((uint16_t)bytes[0] | ((uint16_t)bytes[1] << 8U));
+}
+
+static uint32_t ml3_target_read_u32_le(const uint8_t *bytes)
+{
+  return (uint32_t)bytes[0]
+    | ((uint32_t)bytes[1] << 8U)
+    | ((uint32_t)bytes[2] << 16U)
+    | ((uint32_t)bytes[3] << 24U);
+}
+
+void BSP_ML3_Init(void)
+{
+#if defined(STM32L072xx)
+  /* HW_Init runs before EEPROM mode restore and therefore initializes the
+   * legacy HAL ADC. It does not start a conversion; fence its peripheral
+   * state here before ML3 can ever acquire it (RM0376 ADC control sequence). */
+  if ((ADC1->CR & ADC_CR_ADSTART) != 0U)
+  {
+    ADC1->CR |= ADC_CR_ADSTP;
+  }
+  if ((ADC1->CR & ADC_CR_ADEN) != 0U)
+  {
+    ADC1->CR |= ADC_CR_ADDIS;
+  }
+  RCC->APB2ENR &= ~RCC_APB2ENR_ADCEN;
+#endif
+  ml3_initialized = true;
+  ml3_active = false;
+  ml3_request_pending = false;
+  ml3_battery_valid = false;
+  ml3_battery_level = UINT8_C(0xFF);
+  ml3_warmup_ms = (uint16_t)ML3_CONFIG_WARMUP_TIME_MS;
+  ml3_cycles = 0U;
+  ml3_raw_enabled = 0U;
+  ml3_calibration_total = 0U;
+  ml3_calibration_next_offset = 0U;
+  ml3_calibration_staging_active = false;
+}
+
+void BSP_ML3_Service(void)
+{
+  if (!ml3_mode_selected() || !ml3_initialized)
+  {
+    return;
+  }
+
+  /* This is the only target-side acquisition entry point.  It remains
+   * intentionally inert until the measured Gate 0/Phase 2 contract is true;
+   * mode 10 still owns the ADC lockout while the gate is false. */
+  if (!ML3_CONFIG_ACQUISITION_READY)
+  {
+    ml3_active = false;
+    ml3_request_pending = false;
+    return;
+  }
+
+  /* The direct ADC/measurement port is added when the hardware gate supplies
+   * its channels, rail guard, and timing values. */
+  ml3_active = false;
+  ml3_request_pending = false;
+}
+
+bool BSP_ML3_IsActive(void)
+{
+  return ml3_active;
+}
+
+bool BSP_ML3_RequestRoutine(void)
+{
+  if (!ml3_mode_selected() || !ml3_initialized || !ML3_CONFIG_ACQUISITION_READY)
+  {
+    return false;
+  }
+  if (ml3_active || ml3_request_pending)
+  {
+    return false;
+  }
+  ml3_request_pending = true;
+  return true;
+}
+
+bool BSP_ML3_RequestDiagnostic(void)
+{
+  return BSP_ML3_RequestRoutine();
+}
+
+void BSP_ML3_Abort(void)
+{
+  ml3_active = false;
+  ml3_request_pending = false;
+  ml3_battery_valid = false;
+  ml3_battery_level = UINT8_C(0xFF);
+}
+
+uint8_t BSP_ML3_GetBatteryLevel(void)
+{
+  if (ml3_mode_selected())
+  {
+    return ml3_battery_valid ? ml3_battery_level : UINT8_C(0xFF);
+  }
+  return HW_GetBatteryLevel();
+}
+
+uint16_t BSP_ML3_GetTemperatureLevel(void)
+{
+  if (ml3_mode_selected())
+  {
+    return UINT16_C(0xFFFF);
+  }
+  return HW_GetTemperatureLevel();
+}
+
+bool BSP_ML3_GetSettings(uint16_t *warmup_ms, uint8_t *cycles,
+  uint8_t *raw_enabled)
+{
+  if ((warmup_ms == NULL) || (cycles == NULL) || (raw_enabled == NULL))
+  {
+    return false;
+  }
+  *warmup_ms = ml3_warmup_ms;
+  *cycles = ml3_cycles;
+  *raw_enabled = ml3_raw_enabled;
+  return true;
+}
+
+bool BSP_ML3_SetWarmup(uint16_t warmup_ms)
+{
+  if ((warmup_ms < ML3_MEASUREMENT_MIN_WARMUP_MS)
+      || (warmup_ms > ML3_MEASUREMENT_MAX_WARMUP_MS)
+      || ml3_active)
+  {
+    return false;
+  }
+  ml3_warmup_ms = warmup_ms;
+  return true;
+}
+
+bool BSP_ML3_SetCycles(uint8_t cycles)
+{
+  if ((cycles < ML3_MEASUREMENT_MIN_ABBA_CYCLES)
+      || (cycles > ML3_MEASUREMENT_MAX_ABBA_CYCLES)
+      || ml3_active)
+  {
+    return false;
+  }
+  ml3_cycles = cycles;
+  return true;
+}
+
+bool BSP_ML3_SetRaw(uint8_t raw_enabled)
+{
+  if ((raw_enabled > 1U) || ml3_active)
+  {
+    return false;
+  }
+  ml3_raw_enabled = raw_enabled;
+  return true;
+}
+
+bool BSP_ML3_CalibrationChunk(const ml3_at_calibration_chunk_t *chunk)
+{
+  uint8_t decoded[ML3_AT_CALIBRATION_CHUNK_MAX_BYTES];
+  size_t byte_count;
+  size_t index;
+
+  if ((chunk == NULL) || (chunk->hex == NULL)
+      || (chunk->total_length < ML3_AT_CALIBRATION_MIN_RECORD_LENGTH)
+      || (chunk->total_length > ML3_AT_CALIBRATION_MAX_RECORD_LENGTH)
+      || (chunk->hex_length == 0U) || ((chunk->hex_length & 1U) != 0U)
+      || (chunk->hex_length > ML3_AT_CALIBRATION_CHUNK_MAX_HEX))
+  {
+    return false;
+  }
+  byte_count = chunk->hex_length / 2U;
+  if ((size_t)chunk->offset + byte_count > chunk->total_length)
+  {
+    return false;
+  }
+  for (index = 0U; index < byte_count; ++index)
+  {
+    int high = ml3_hex_value(chunk->hex[index * 2U]);
+    int low = ml3_hex_value(chunk->hex[(index * 2U) + 1U]);
+    if ((high < 0) || (low < 0))
+    {
+      return false;
+    }
+    decoded[index] = (uint8_t)((high << 4) | low);
+  }
+  if (chunk->offset == 0U)
+  {
+    ml3_calibration_total = chunk->total_length;
+    ml3_calibration_next_offset = 0U;
+    ml3_calibration_staging_active = true;
+  }
+  if (!ml3_calibration_staging_active
+      || chunk->total_length != ml3_calibration_total
+      || chunk->offset != ml3_calibration_next_offset)
+  {
+    return false;
+  }
+  (void)memcpy(&ml3_calibration_staging[chunk->offset], decoded, byte_count);
+  ml3_calibration_next_offset = (uint16_t)(chunk->offset + byte_count);
+  if (ml3_calibration_next_offset == ml3_calibration_total)
+  {
+    uint8_t point_count = ml3_calibration_staging[39U];
+    size_t expected_length = ML3_CALIBRATION_FIXED_SIZE
+      + ((size_t)point_count * 8U);
+    uint32_t stored_crc = ml3_target_read_u32_le(
+      &ml3_calibration_staging[ml3_calibration_total - 4U]);
+    if ((ml3_target_read_u32_le(&ml3_calibration_staging[0])
+          != ML3_CALIBRATION_MAGIC)
+        || (ml3_target_read_u16_le(&ml3_calibration_staging[4U])
+          != ML3_CALIBRATION_SCHEMA_VERSION)
+        || (point_count == 1U)
+        || (expected_length != ml3_calibration_total)
+        || (stored_crc != ml3_calibration_crc32(ml3_calibration_staging,
+          ml3_calibration_total - 4U)))
+    {
+      ml3_calibration_staging_active = false;
+      ml3_calibration_total = 0U;
+      ml3_calibration_next_offset = 0U;
+      return false;
+    }
+  }
+  /* The complete record is intentionally not committed: Appendix B requires
+   * an approved device hash and EEPROM slot map before any persistent write. */
+  return true;
+}
+
+bool BSP_ML3_CalibrationClear(void)
+{
+  ml3_calibration_total = 0U;
+  ml3_calibration_next_offset = 0U;
+  ml3_calibration_staging_active = false;
+  /* Clearing a verified slot is blocked until its target address and hash
+   * policy are supplied; never erase an unknown EEPROM location. */
+  return false;
+}
+
 void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
-{	
+{
+	if (ml3_mode_selected())
+	{
+		(void)BSP_ML3_RequestDiagnostic();
+		return;
+	}
+
  	#if defined(LoRa_Sensor_Node)
 
 	HW_GetBatteryLevel( );	
@@ -484,6 +774,11 @@ void  BSP_sensor_Init( void  )
   #if defined(LoRa_Sensor_Node)
 	
 	 pwr_control_IoInit();		
+	if (ml3_mode_selected())
+	{
+		BSP_ML3_Init();
+		return;
+	}
 	
 	if((mode==1)||(mode==3))
 	{	 

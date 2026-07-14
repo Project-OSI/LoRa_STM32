@@ -58,10 +58,18 @@ extract_define_block() {
 
 exempt_zero_macros="ML3_CONFIG_PAYLOAD_TYPE_ROUTINE ML3_CONFIG_PAYLOAD_TYPE"
 
-require_define_zero ML3_CONFIG_MODE_ML3 "MODE_ML3"
-require_define_zero ML3_CONFIG_FPORT "FPort"
-require_define_zero ML3_CONFIG_MODE_ML3_READY "MODE_ML3 readiness"
-require_define_zero ML3_CONFIG_FPORT_READY "FPort readiness"
+if ! grep -Eq '^#define[[:space:]]+ML3_CONFIG_MODE_ML3[[:space:]]+10U' "$CONFIG"; then
+  fail "MODE_ML3 is not the authorized mode 10"
+fi
+if ! grep -Eq '^#define[[:space:]]+ML3_CONFIG_FPORT[[:space:]]+13U' "$CONFIG"; then
+  fail "FPort is not the authorized FPort 13"
+fi
+if ! grep -Eq '^#define[[:space:]]+ML3_CONFIG_MODE_ML3_READY[[:space:]]+1U' "$CONFIG"; then
+  fail "MODE_ML3 readiness is not enabled for the authorized decision"
+fi
+if ! grep -Eq '^#define[[:space:]]+ML3_CONFIG_FPORT_READY[[:space:]]+1U' "$CONFIG"; then
+  fail "FPort readiness is not enabled for the authorized decision"
+fi
 require_define_zero ML3_CONFIG_THERMISTOR_EFFECTIVE_REFERENCE_OHM "thermistor effective reference resistance"
 require_define_zero ML3_CONFIG_THERMISTOR_EFFECTIVE_REFERENCE_READY "thermistor effective reference readiness"
 require_define_zero ML3_CONFIG_THERMISTOR_RAIL_GUARD_CODE "thermistor rail guard"

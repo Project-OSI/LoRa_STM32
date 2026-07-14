@@ -46,6 +46,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include <stdlib.h>
+#include <string.h>
 #include "at.h"
 #include "hw.h"
 #include "command.h"
@@ -907,6 +908,12 @@ static void parse_cmd(const char *cmd)
   }
   else
   {
+    if (strncmp(cmd, "AT+ML3", sizeof("AT+ML3") - 1U) == 0)
+    {
+      status = at_ml3_execute((const uint8_t *)cmd, strlen(cmd));
+      com_error(status);
+      return;
+    }
     /* point to the start of the command, excluding AT */
     status = AT_ERROR;
     cmd += 2;

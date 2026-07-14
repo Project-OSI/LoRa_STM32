@@ -29,7 +29,7 @@ if ! "$VALIDATOR" >/dev/null 2>&1; then
   exit 1
 fi
 
-if ! perl -0pi -e 's/^#define ML3_CONFIG_MODE_ML3\s+0U\s+\/\* GATE0-PENDING \(§3\.6\) \*\/$/#define ML3_CONFIG_MODE_ML3 0U/m' "$MUTATED_CONFIG"; then
+if ! perl -0pi -e 's/^#define ML3_CONFIG_MODE_ML3\s+10U\s*.*$/#define ML3_CONFIG_MODE_ML3 0U/m' "$MUTATED_CONFIG"; then
   printf 'marker-mutation regression failed to mutate config fixture\n'
   exit 1
 fi

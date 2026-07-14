@@ -58,6 +58,7 @@
 #include "gpio_exti.h"
 #include "weight.h"
 #include "iwdg.h"
+#include "ml3_config.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -216,8 +217,8 @@ extern void printf_joinmessage(void);
 
 /* Private variables ---------------------------------------------------------*/
 /* load Main call backs structure*/
-static LoRaMainCallback_t LoRaMainCallbacks ={ HW_GetBatteryLevel,
-                                               HW_GetTemperatureLevel,
+static LoRaMainCallback_t LoRaMainCallbacks ={ BSP_ML3_GetBatteryLevel,
+                                               BSP_ML3_GetTemperatureLevel,
                                                HW_GetUniqueId,
                                                HW_GetRandomSeed,
                                                LORA_RxData,
@@ -275,6 +276,7 @@ int main( void )
   {
 		/* Handle UART commands */
     CMD_Process();
+		BSP_ML3_Service();
 
 		if(joined_led_flags==1)
 		{
@@ -496,7 +498,10 @@ int main( void )
      * don't go in low power mode if we just received a char
      */
 #ifndef LOW_POWER_DISABLE
-    LPM_EnterLowPower();
+    if (!BSP_ML3_IsActive())
+    {
+      LPM_EnterLowPower();
+    }
 #endif
     ENABLE_IRQ();
     
@@ -545,6 +550,15 @@ static void Send( void )
     /*Not joined, try again later*/
     return;
   }
+	if (mode == ML3_CONFIG_MODE_ML3)
+	{
+		/* Mode 10 never enters the legacy sensor reader.  The target service
+		 * owns acquisition and will queue FPort 13 only after its readiness
+		 * gates and radio acceptance path are implemented. */
+		AppData.Port = ML3_CONFIG_FPORT;
+		(void)BSP_ML3_RequestRoutine();
+		return;
+	}
 	
 	BSP_sensor_Read( &sensor_data,message_flags );
 	message_flags=0;
@@ -923,7 +937,6 @@ static void LORA_RxData( lora_AppData_t *AppData )
 	is_there_data=1;
 		
   set_at_receive(AppData->Port, AppData->Buff, AppData->BuffSize);
-	
 	switch(AppData->Buff[0] & 0xff)
   {		
 	  case 0x01:   
@@ -1106,7 +1119,9 @@ static void LORA_RxData( lora_AppData_t *AppData )
 		{
 			if( AppData->BuffSize == 2 )         
 			{	
-				if((AppData->Buff[1]>=0x01)&&(AppData->Buff[1]<=0x09))    //---->AT+MOD
+				if((AppData->Buff[1]>=0x01)
+					&& ((AppData->Buff[1]<=0x09)
+						|| (AppData->Buff[1]==ML3_CONFIG_MODE_ML3)))    //---->AT+MOD
 				{
 					mode=AppData->Buff[1];
 					EEPROM_Store_Config();

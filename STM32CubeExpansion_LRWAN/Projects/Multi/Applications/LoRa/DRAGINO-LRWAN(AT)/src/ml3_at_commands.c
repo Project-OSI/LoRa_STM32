@@ -76,22 +76,73 @@ static ml3_at_status_t ml3_at_parse_bounded_uint32(const uint8_t* bytes,
   return ML3_AT_STATUS_OK;
 }
 
-static ml3_at_status_t ml3_at_parse_calibration_record(const uint8_t* input,
-  size_t input_length, size_t prefix_length, ml3_at_command_t* parsed) {
-  size_t record_length = input_length - prefix_length;
-  size_t index;
+static int ml3_at_is_hex(uint8_t byte) {
+  return (byte >= (uint8_t)'0' && byte <= (uint8_t)'9')
+    || (byte >= (uint8_t)'A' && byte <= (uint8_t)'F')
+    || (byte >= (uint8_t)'a' && byte <= (uint8_t)'f');
+}
 
-  if (record_length == 0U) {
+static ml3_at_status_t ml3_at_parse_calibration_chunk(const uint8_t* input,
+  size_t input_length, size_t prefix_length, ml3_at_command_t* parsed) {
+  size_t cursor = prefix_length;
+  size_t comma;
+  uint32_t offset;
+  uint32_t total_length;
+  size_t hex_length;
+  size_t index;
+  ml3_at_status_t status;
+
+  if (cursor == input_length) {
     return ML3_AT_STATUS_EMPTY_RECORD;
   }
-  for (index = 0U; index < record_length; ++index) {
-    if (input[prefix_length + index] == 0U) {
-      return ML3_AT_STATUS_RECORD_CONTAINS_NUL;
+  comma = cursor;
+  while (comma < input_length && input[comma] != (uint8_t)',') {
+    ++comma;
+  }
+  if (comma == input_length) {
+    return ML3_AT_STATUS_INVALID_SYNTAX;
+  }
+  status = ml3_at_parse_uint32(&input[cursor], comma - cursor, &offset);
+  if (status != ML3_AT_STATUS_OK) {
+    return status;
+  }
+  cursor = comma + 1U;
+  comma = cursor;
+  while (comma < input_length && input[comma] != (uint8_t)',') {
+    ++comma;
+  }
+  if (comma == input_length) {
+    return ML3_AT_STATUS_INVALID_SYNTAX;
+  }
+  status = ml3_at_parse_bounded_uint32(&input[cursor], comma - cursor,
+    ML3_AT_CALIBRATION_MIN_RECORD_LENGTH,
+    ML3_AT_CALIBRATION_MAX_RECORD_LENGTH, &total_length);
+  if (status != ML3_AT_STATUS_OK) {
+    return status;
+  }
+  cursor = comma + 1U;
+  hex_length = input_length - cursor;
+  if (hex_length == 0U) {
+    return ML3_AT_STATUS_EMPTY_RECORD;
+  }
+  if ((hex_length & 1U) != 0U
+      || hex_length > ML3_AT_CALIBRATION_CHUNK_MAX_HEX) {
+    return ML3_AT_STATUS_INVALID_VALUE;
+  }
+  if (offset > total_length
+      || (uint32_t)(hex_length / 2U) > total_length - offset) {
+    return ML3_AT_STATUS_VALUE_OUT_OF_RANGE;
+  }
+  for (index = cursor; index < input_length; ++index) {
+    if (!ml3_at_is_hex(input[index])) {
+      return ML3_AT_STATUS_INVALID_VALUE;
     }
   }
   parsed->operation = ML3_AT_OPERATION_SET_CALIBRATION;
-  parsed->argument.calibration_record.bytes = &input[prefix_length];
-  parsed->argument.calibration_record.length = record_length;
+  parsed->argument.calibration_chunk.offset = (uint16_t)offset;
+  parsed->argument.calibration_chunk.total_length = (uint16_t)total_length;
+  parsed->argument.calibration_chunk.hex = &input[cursor];
+  parsed->argument.calibration_chunk.hex_length = hex_length;
   return ML3_AT_STATUS_OK;
 }
 
@@ -126,7 +177,7 @@ ml3_at_status_t ml3_at_parse(const uint8_t* input, size_t input_length,
 
   if (ml3_at_starts_with(input, input_length, calibration_prefix,
       sizeof(calibration_prefix) - 1U)) {
-    status = ml3_at_parse_calibration_record(input, input_length,
+    status = ml3_at_parse_calibration_chunk(input, input_length,
       sizeof(calibration_prefix) - 1U, &parsed);
     if (status != ML3_AT_STATUS_OK) {
       return status;

@@ -12,11 +12,11 @@ extern "C" {
 #define ML3_CONFIG_PAYLOAD_TYPE                ML3_CONFIG_PAYLOAD_TYPE_ROUTINE
 #define ML3_CONFIG_PAYLOAD_LENGTH              ML3_CONFIG_PAYLOAD_LENGTH_ROUTINE
 
-/* D2: operating mode and FPort remain blocked until the plan resolves them. */
-#define ML3_CONFIG_MODE_ML3                    0U /* GATE0-PENDING (§3.6) */
-#define ML3_CONFIG_FPORT                       0U /* GATE0-PENDING (§3.6) */
-#define ML3_CONFIG_MODE_ML3_READY              0U /* GATE0-PENDING (§3.6) */
-#define ML3_CONFIG_FPORT_READY                 0U /* GATE0-PENDING (§3.6) */
+/* D2: authorized transport decision. Hardware qualification remains gated. */
+#define ML3_CONFIG_MODE_ML3                    10U
+#define ML3_CONFIG_FPORT                       13U
+#define ML3_CONFIG_MODE_ML3_READY              1U
+#define ML3_CONFIG_FPORT_READY                 1U
 
 /* Gate 0 / Phase 1 hardware and build gates. */
 #define ML3_CONFIG_PB5_ACTIVE_LOW              0U /* GATE0-PENDING (§2.1) */
@@ -129,6 +129,12 @@ extern "C" {
    ML3_CONFIG_CAL_GAIN_READY && \
    ML3_CONFIG_CAL_CM_READY && \
    ML3_CONFIG_GATE1_APPROVAL_READY)
+
+/* Acquisition is a separate gate from selecting mode 10/FPort 13.  Keeping
+ * it false until every measured input and qualification value is present
+ * prevents a partially configured target from touching the stock ADC path. */
+#define ML3_CONFIG_ACQUISITION_READY \
+  ML3_CONFIG_GATE0_READINESS
 
 #define ML3_CONFIG_DEPLOYABLE \
   (ML3_CONFIG_PROTOCOL_READY && \

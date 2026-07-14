@@ -21,6 +21,12 @@ typedef enum {
   ML3_AT_STATUS_RECORD_CONTAINS_NUL
 } ml3_at_status_t;
 
+#define ML3_AT_CALIBRATION_MIN_RECORD_LENGTH 52U
+#define ML3_AT_CALIBRATION_MAX_RECORD_LENGTH 2092U
+#define ML3_AT_CALIBRATION_CHUNK_MAX_BYTES 48U
+#define ML3_AT_CALIBRATION_CHUNK_MAX_HEX \
+  (ML3_AT_CALIBRATION_CHUNK_MAX_BYTES * 2U)
+
 typedef enum {
   ML3_AT_OPERATION_QUERY_SETTINGS = 0,
   ML3_AT_OPERATION_SET_WARMUP_MS,
@@ -38,11 +44,19 @@ typedef struct {
   size_t length;
 } ml3_at_borrowed_span_t;
 
+typedef struct {
+  uint16_t offset;
+  uint16_t total_length;
+  const uint8_t* hex;
+  size_t hex_length;
+} ml3_at_calibration_chunk_t;
+
 typedef union {
   uint16_t warmup_ms;
   uint8_t cycles;
   uint8_t raw_enabled;
   ml3_at_borrowed_span_t calibration_record;
+  ml3_at_calibration_chunk_t calibration_chunk;
 } ml3_at_argument_t;
 
 typedef struct {
@@ -52,8 +66,10 @@ typedef struct {
 
 /*
  * This parser has no side effects. A successful SET_CALIBRATION result borrows
- * its record bytes from input; the span remains valid only while input does.
- * The caller owns decoding, storage, and verified clear operations.
+ * its ASCII hexadecimal chunk from input; the span remains valid only while
+ * input does. The caller owns decoding, storage, and verified clear operations.
+ * Calibration chunks use AT+ML3CAL=<offset>,<total>,<hex>, with at most 48
+ * decoded bytes per command so the existing 128-byte AT line remains bounded.
  */
 ml3_at_status_t ml3_at_parse(const uint8_t* input, size_t input_length,
   ml3_at_command_t* output);

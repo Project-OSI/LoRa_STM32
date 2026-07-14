@@ -1361,3 +1361,42 @@ contract group alive until the controller drained it.
   gate, both signal-status regressions, the three-round concurrency test, and
   the clean-tree fixture. Exact argv scans report zero surviving ML3 compiler
   wrappers afterward.
+
+## Task 10 — target integration checkpoint (2026-07-14)
+
+The authorized transport decision is now represented in `ml3_config.h`: mode
+`10`, FPort `13`, and readiness flags for those two protocol facts set to `1`.
+This does not make the firmware deployable; `ML3_CONFIG_ACQUISITION_READY` and
+`ML3_CONFIG_DEPLOYABLE` remain false because all measured Gate 0 and Phase 2
+inputs are still pending.
+
+The target seams are wired in `bsp.c`, `at.c`, `command.c`, and `main.c`: mode
+10 returns before the stock sensor ADC path, the battery callback uses an
+ML3-aware wrapper, the ML3 AT namespace bypasses the legacy table, and the main
+loop services the fail-closed ML3 adapter without entering low power while an
+active acquisition exists. The mode-10 send branch selects FPort 13, but it
+does not call the legacy `LORA_send` path while the deployability gate is false
+because that API can substitute an empty frame.
+
+The remaining target blocker is deliberate: `BSP_ML3_Service` does not yet
+instantiate the HAL/register adapter for `ml3_measurement_init/start/step`, so
+it clears requests while the Gate 0 contract is false. Completing that adapter
+requires verified ADC register sequencing, timer wake service, power cleanup,
+and a strict radio-acceptance API; no acquisition or payload is claimed until
+those seams are implemented and bench-tested.
+
+Calibration commands use bounded sequential hexadecimal chunks (1–48 bytes per
+line, total record length 52–2092 bytes). Complete records are staged in RAM;
+dual-slot EEPROM commit and verified clear remain pending because the plan does
+not supply the device-hash algorithm or an approved data-EEPROM slot map. No
+hardware constants, EEPROM addresses, or hash values were fabricated.
+
+The Keil STM32L072CZ project now includes all seven ML3 source modules in a
+dedicated `Projects/End_Node/ML3` group. Verification evidence for this
+checkpoint is `tests/host/ml3_target_integration_contract.sh`, the Keil XML
+parse, `tests/host/run_ml3_host_tests.sh`, and the full suite. A reproducible
+release build still requires the exact uVision/ARMCC/STM32L0 DFP toolchain,
+clean Rebuild All, archived `.hex`/`.axf`/`.map` and logs with hashes, a second
+developer reproduction, and completion of the hardware and radio gates.
+FPort 13 is an uplink selection only; no ML3 AT command is accepted from a
+downlink, preserving the plan's local-serial-only calibration rule.

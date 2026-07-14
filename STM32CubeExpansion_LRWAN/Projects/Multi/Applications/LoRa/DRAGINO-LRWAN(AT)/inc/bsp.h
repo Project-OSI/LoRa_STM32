@@ -67,6 +67,7 @@ Maintainer: Miguel Luis and Gregory Cristian
 #endif
 
 #include "hw.h"
+#include "ml3_at_commands.h"
 
 /* Includes ------------------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
@@ -131,6 +132,24 @@ void  BSP_sensor_Init( void  );
  * @retval sensor_data
  */
 void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message);
+
+/* ML3 mode-10 service boundary.  The implementation remains fail-closed
+ * until the Gate 0 and Phase 2 values in ml3_config.h are measured. */
+void BSP_ML3_Init(void);
+void BSP_ML3_Service(void);
+bool BSP_ML3_IsActive(void);
+bool BSP_ML3_RequestRoutine(void);
+bool BSP_ML3_RequestDiagnostic(void);
+void BSP_ML3_Abort(void);
+uint8_t BSP_ML3_GetBatteryLevel(void);
+uint16_t BSP_ML3_GetTemperatureLevel(void);
+bool BSP_ML3_GetSettings(uint16_t *warmup_ms, uint8_t *cycles,
+  uint8_t *raw_enabled);
+bool BSP_ML3_SetWarmup(uint16_t warmup_ms);
+bool BSP_ML3_SetCycles(uint8_t cycles);
+bool BSP_ML3_SetRaw(uint8_t raw_enabled);
+bool BSP_ML3_CalibrationChunk(const ml3_at_calibration_chunk_t *chunk);
+bool BSP_ML3_CalibrationClear(void);
 
 void Device_status( device_t *device_data);
 

@@ -690,6 +690,46 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Projects/End_Node/ML3</GroupName>
+          <Files>
+            <File>
+              <FileName>adc_precision.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\src\adc_precision.c</FilePath>
+            </File>
+            <File>
+              <FileName>ml3_measurement.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\src\ml3_measurement.c</FilePath>
+            </File>
+            <File>
+              <FileName>ml3_calibration.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\src\ml3_calibration.c</FilePath>
+            </File>
+            <File>
+              <FileName>ml3_quality.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\src\ml3_quality.c</FilePath>
+            </File>
+            <File>
+              <FileName>ml3_payload.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\src\ml3_payload.c</FilePath>
+            </File>
+            <File>
+              <FileName>ml3_thermistor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\src\ml3_thermistor.c</FilePath>
+            </File>
+            <File>
+              <FileName>ml3_at_commands.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\src\ml3_at_commands.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Middlewares/Lora/Mac/region</GroupName>
           <Files>
             <File>

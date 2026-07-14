@@ -15,6 +15,7 @@ In file Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/inc/hw_conf.h
 	
 
 
+ML3 firmware integration details are documented in [README-ml3.md](README-ml3.md).
 
 
 

@@ -179,6 +179,7 @@ trap 'ml3_request_shutdown TERM' TERM
 
 STAGES=(
   "$ROOT_DIR/tests/host/ml3_readiness_cohesion_contract.sh"
+  "$ROOT_DIR/tests/host/ml3_target_integration_contract.sh"
   "$ROOT_DIR/tests/host/run_ml3_host_tests.sh"
   "$ROOT_DIR/tests/host/ml3_marker_mutation_regression.sh"
   "$ROOT_DIR/tests/host/ml3_signal_term_regression.sh"
