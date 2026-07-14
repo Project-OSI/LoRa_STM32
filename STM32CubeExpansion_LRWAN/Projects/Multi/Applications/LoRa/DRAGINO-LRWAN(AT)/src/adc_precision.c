@@ -449,7 +449,7 @@ static adc_precision_error_t set_adcs(
   if (wait_for(port, port_ctx, timeouts->calibration_ms, port->is_calibration_complete)
       != ADC_PRECISION_OK) {
     ADC_PRECISION_TRACE("set_adcs: calibration timeout");
-    return ADC_PRECISION_ERROR_TIMEOUT;
+    return ADC_PRECISION_ERROR_CALIBRATION;
   }
 
   port->request_enable_adc(port_ctx);

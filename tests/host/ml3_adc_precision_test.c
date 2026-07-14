@@ -524,7 +524,7 @@ static void test_prepare_timeout_steps_and_no_conversion(void) {
   sample = 8765U;
   adc_precision_init(&context, &test_port, &test_state);
   err = adc_precision_prepare(&context, &timeouts);
-  EXPECT_EQ_ERR(ADC_PRECISION_ERROR_TIMEOUT, err, "calibration timeout");
+  EXPECT_EQ_ERR(ADC_PRECISION_ERROR_CALIBRATION, err, "calibration timeout");
   EXPECT_EQ_U32(8765U, sample, "no sample on calibration timeout");
   EXPECT_EQ_U32(0U, event_count_by_kind(EVENT_START_CONVERSION), "no conversion on calibration timeout");
 
