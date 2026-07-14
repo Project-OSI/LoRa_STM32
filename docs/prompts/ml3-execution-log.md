@@ -933,3 +933,108 @@ Task 5 changes `ml3_quality.h`, `ml3_quality.c`, the quality host test,
 `ml3_measurement.h`, the focused host runner, and this log. It adds no target
 adapter, hardware constant, payload behavior, remote command, push, or pull
 request.
+
+## Task 6 checkpoint — thermistor conversion
+
+Task 6 adds the host-side thermistor conversion and table interpolation. It
+does not add GPIO sequencing, an ADC port, or a production temperature table.
+Task 3 owns the powered-off/discharge order, and Task 10 will connect the pure
+conversion API to the target.
+
+### Conversion contract
+
+- The divider uses `R_therm = R_ref * C / (65520 - C)`. A `uint64_t`
+  intermediate preserves the exact unsigned product; division truncates, and
+  a result above `UINT32_MAX` returns overflow without changing caller output.
+- Tables contain resistance in ohms and temperature in centidegrees Celsius.
+  Resistance knots must be strictly monotonic. Increasing and decreasing
+  table order are accepted, endpoints are exact, interior values use linear
+  interpolation in resistance, and values outside the table return an error.
+- The interpolation product uses unsigned magnitudes. Its maximum supported
+  product is `(UINT32_MAX * (UINT32_MAX - 1))`, which fits `uint64_t`; signed
+  centidegree results are checked before assignment. No floating point, heap,
+  variable-length array, or 128-bit extension is used.
+- The rail test is inclusive: `C <= guard` or
+  `C >= 65520 - guard` returns `ML3_THERMISTOR_RAIL_FAULT`. Codes above 65520
+  are rejected before threshold subtraction.
+- Effective reference resistance, rail guard, settle time, and table readiness
+  are independent fail-closed inputs. Their production values and readiness
+  macros are zero with `PHASE2-PENDING` provenance, and all four now gate
+  `ML3_CONFIG_PHASE2_READINESS`.
+
+### TDD and verification evidence
+
+- The first RED build failed because the scaffold did not define the status or
+  ratiometric API. The interpolation RED build then failed on the missing point
+  type and function. The conversion RED build failed on the missing config,
+  result, rail-fault, and readiness contracts.
+- The config RED run reported eight missing zero-valued definitions, four
+  missing Phase 2 readiness dependencies, and the corresponding C contract
+  compile failures. Adding the pending definitions and readiness dependencies
+  made all three contracts pass.
+- Synthetic tables cover both strict resistance orders, endpoints, positive
+  and negative interior interpolation, C99 truncation toward zero, duplicate
+  and nonmonotonic knots, zero-resistance knots, one-point tables, null inputs,
+  and rejection of extrapolation. A full-domain case exercises an unsigned
+  interpolation product larger than `INT64_MAX`.
+- Divider tests cover half scale, quarter-scale truncation, zero code, the
+  largest representable result, result overflow, ADC full scale, code above
+  full scale, zero reference resistance, null output, and output preservation.
+- Conversion tests cover both inclusive rail boundaries, the adjacent
+  non-fault codes, every readiness bit, zero effective reference, zero and
+  overlapping guards, zero settle time, missing/invalid tables, null inputs,
+  and result preservation.
+- Fresh strict GCC and Clang focused builds each printed
+  `ml3_thermistor_test: OK`. GCC `-fanalyzer` and GCC ASan+UBSan also passed.
+  The integrated host runner passed under GCC and Clang and printed the Task 6
+  pass line alongside the existing Task 2–4 functional tests. No exact
+  `ml3-runner-status` wrapper process remained after either run.
+- `ml3_config_contract.sh`, `ml3_readiness_cohesion_contract.sh`,
+  `bash -n` for the changed shell scripts, dependency scans, and
+  `git diff --check` passed. The full lifecycle suite was not run in this
+  isolated task worktree; its process-guard correction is being reviewed
+  separately.
+
+### Authoritative-table blocker
+
+The repository still contains no ML3 temperature/resistance points. The
+production table must be transcribed from the Delta-T ML3 manual and checked
+against that source before `ML3_CONFIG_THERMISTOR_TABLE_READY` can become true.
+The effective reference value, rail guard, and settle time also require the
+planned hardware and bath evidence; the nominal 10.0 kΩ BOM value is not used
+as a fabricated effective calibration value.
+
+### Native review correction — order-independent interpolation
+
+- RED: the table `{100 Ω, 0 cC}, {103 Ω, -2 cC}` returned `0 cC` at
+  `101 Ω`, while the same two points in reverse order returned `-1 cC`.
+  The focused test exited 1 on the new reversed-table equality assertion.
+- The interpolation previously anchored its truncated delta at whichever point
+  appeared first. Reversing a non-integral segment changed both that anchor and
+  the fractional numerator. The segment now selects its lower-resistance point
+  as the fixed anchor before applying the existing signed-magnitude arithmetic.
+  Both table orders therefore execute the same integer calculation and retain
+  C99 truncation toward zero.
+- Later-duplicate fixtures cover increasing and decreasing three-point tables.
+  An in-memory `<=` to `<` mutation failed only the increasing fixture; the
+  corresponding `>=` to `>` mutation failed only the decreasing fixture. Both
+  mutants exited 1, while the unmodified focused test printed
+  `ml3_thermistor_test: OK`.
+
+## Tasks 5–6 integration checkpoint
+
+- Task 5 is integrated at `96e4004`. Its native independent review returned
+  `approve` with no Blocker, Major, or Minor findings. Strict GCC and Clang
+  runners, UBSan, GCC and Clang analysis, and three targeted mutations passed.
+- Task 6 is integrated after its native review correction. The narrow rereview
+  returned `approve` with no remaining findings; reversed non-integral tables
+  now agree, and the later-duplicate increasing and decreasing mutations fail.
+- The process-identity harness correction is integrated at `d78c10f` after
+  native and `gpt-5.6-sol` rereviews returned `approve` with no findings.
+- Fresh full lifecycle `make test` runs pass under GCC and Clang on the combined
+  Tasks 1–6 tree. Both runs pass the concurrency and clean-tree regressions,
+  start and end with zero exact ML3 wrapper processes, and leave the worktree
+  clean.
+- The mandatory `gpt-5.6-sol` binding reviews for Tasks 5 and 6 remain pending.
+  The external reviewer quota was exhausted on 2026-07-14 and reported a reset
+  time of 2026-07-20 21:10. No binding approval is claimed for those tasks.
