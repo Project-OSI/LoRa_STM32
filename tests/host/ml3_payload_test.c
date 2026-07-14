@@ -79,69 +79,6 @@ static void test_public_wire_contract_constants(void)
   CHECK(ML3_QUALITY_INVALIDATING_MASK == UINT16_C(0x027F));
 }
 
-static void test_routine_semantically_consistent_degraded_vector(void)
-{
-  static const uint8_t expected[ML3_PAYLOAD_ROUTINE_LENGTH] = {
-    0x01U, 0x00U, 0x00U, 0x80U, 0x12U, 0x34U, 0xFFU, 0x38U,
-    0x30U, 0x39U, 0x31U, 0x01U, 0x0CU, 0xE4U, 0x13U, 0x88U,
-    0x01U, 0x41U, 0xFFU, 0x85U, 0x09U, 0xE6U, 0x44U, 0x7EU,
-    0x00U
-  };
-  ml3_payload_routine_t input;
-  uint8_t output[ML3_PAYLOAD_ROUTINE_LENGTH];
-  size_t output_length = 0U;
-
-  input = routine_input();
-  input.status_flags = UINT16_C(0x0080);
-  input.sequence = UINT16_C(0x1234);
-  input.corrected_diff_available = true;
-  input.corrected_diff_uv = INT64_C(-20000);
-  input.mean_hi_available = true;
-  input.mean_hi_uncalibrated_uv = INT64_C(1234500);
-  input.mean_lo_available = true;
-  input.mean_lo_uncalibrated_uv = INT64_C(1254500);
-  input.vdda_available = true;
-  input.vdda_uv = INT64_C(3300000);
-  input.v5_available = true;
-  input.v5_uv = INT64_C(5000000);
-  input.noise_available = true;
-  input.noise_uv = INT64_C(321);
-  input.die_temperature_available = true;
-  input.die_temperature_millic = INT64_C(-1230);
-  input.soil_temperature_available = true;
-  input.soil_temperature_millic = INT64_C(25340);
-  input.quality_state = ML3_QUALITY_STATE_DEGRADED;
-  input.valid_cycle_count = 4U;
-  input.calibration_id = UINT8_C(0x7E);
-
-  CHECK(ml3_payload_build_routine(
-          &input,
-          output,
-          sizeof(output),
-          sizeof(output),
-          &output_length) == ML3_PAYLOAD_OK);
-  CHECK(output_length == ML3_PAYLOAD_ROUTINE_LENGTH);
-  CHECK(memcmp(output, expected, sizeof(expected)) == 0);
-}
-
-static void test_supplied_layout_oracle_is_semantically_malformed(void)
-{
-  static const uint8_t supplied_oracle[ML3_PAYLOAD_ROUTINE_LENGTH] = {
-    0x01U, 0x00U, 0xA5U, 0x5AU, 0x12U, 0x34U, 0xFFU, 0x38U,
-    0x30U, 0x39U, 0x31U, 0x01U, 0x0CU, 0xE4U, 0x13U, 0x88U,
-    0x01U, 0x41U, 0xFFU, 0x85U, 0x09U, 0xE6U, 0x44U, 0x7EU,
-    0x00U
-  };
-
-  CHECK(read_u16_be(&supplied_oracle[2]) == UINT16_C(0xA55A));
-  CHECK(read_u16_be(&supplied_oracle[4]) == UINT16_C(0x1234));
-  CHECK(read_u16_be(&supplied_oracle[6]) == UINT16_C(0xFF38));
-  CHECK(supplied_oracle[22] == UINT8_C(0x44));
-  CHECK(ml3_payload_validate_routine_frame(
-          supplied_oracle,
-          sizeof(supplied_oracle)) == ML3_PAYLOAD_ERR_SEMANTIC_INCONSISTENCY);
-}
-
 static void test_routine_sentinels_and_quality_states(void)
 {
   ml3_payload_routine_t input = routine_input();
@@ -449,63 +386,6 @@ static ml3_payload_diagnostic_t diagnostic_input(void)
   return input;
 }
 
-static void test_diagnostic_header_and_cycle_vectors(void)
-{
-  static const uint8_t expected_header[ML3_PAYLOAD_DIAGNOSTIC_HEADER_LENGTH] = {
-    0x01U, 0x01U, 0x03U, 0x12U, 0x34U, 0x00U, 0x80U, 0x44U,
-    0x89U, 0xABU, 0xCDU, 0xEFU, 0x03U, 0xE8U, 0x21U, 0x45U,
-    0x67U, 0x00U, 0x02U, 0x7EU, 0x11U, 0x11U, 0xFFU, 0xFFU,
-    0x22U, 0x22U, 0x33U, 0x33U, 0xFFU, 0xFFU
-  };
-  static const uint8_t expected_part_one[ML3_PAYLOAD_DIAGNOSTIC_CYCLE_PART_MAX_LENGTH] = {
-    0x01U, 0x01U, 0x13U,
-    0x10U, 0x00U, 0x10U, 0x01U, 0x10U, 0x02U, 0x10U, 0x03U,
-    0x10U, 0x04U, 0x10U, 0x05U, 0x10U, 0x06U, 0x10U, 0x07U,
-    0x10U, 0x08U, 0x10U, 0x09U, 0x10U, 0x0AU, 0x10U, 0x0BU,
-    0x10U, 0x0CU, 0x10U, 0x0DU, 0x10U, 0x0EU, 0x10U, 0x0FU
-  };
-  static const uint8_t expected_part_two[ML3_PAYLOAD_DIAGNOSTIC_CYCLE_PART_MAX_LENGTH] = {
-    0x01U, 0x01U, 0x23U,
-    0x10U, 0x10U, 0x10U, 0x11U, 0x10U, 0x12U, 0x10U, 0x13U,
-    0x10U, 0x14U, 0x10U, 0x15U, 0x10U, 0x16U, 0x10U, 0x17U,
-    0x10U, 0x18U, 0x10U, 0x19U, 0x10U, 0x1AU, 0x10U, 0x1BU,
-    0x10U, 0x1CU, 0x10U, 0x1DU, 0x10U, 0x1EU, 0x10U, 0x1FU
-  };
-  ml3_payload_diagnostic_t input = diagnostic_input();
-  uint8_t output[ML3_PAYLOAD_DIAGNOSTIC_CYCLE_PART_MAX_LENGTH];
-  size_t output_length = 0U;
-
-  CHECK(ml3_payload_build_diagnostic_part(
-          &input,
-          0U,
-          output,
-          sizeof(output),
-          sizeof(output),
-          &output_length) == ML3_PAYLOAD_OK);
-  CHECK(output_length == sizeof(expected_header));
-  CHECK(memcmp(output, expected_header, sizeof(expected_header)) == 0);
-
-  CHECK(ml3_payload_build_diagnostic_part(
-          &input,
-          1U,
-          output,
-          sizeof(output),
-          sizeof(output),
-          &output_length) == ML3_PAYLOAD_OK);
-  CHECK(output_length == sizeof(expected_part_one));
-  CHECK(memcmp(output, expected_part_one, sizeof(expected_part_one)) == 0);
-
-  CHECK(ml3_payload_build_diagnostic_part(
-          &input,
-          2U,
-          output,
-          sizeof(output),
-          sizeof(output),
-          &output_length) == ML3_PAYLOAD_OK);
-  CHECK(output_length == sizeof(expected_part_two));
-  CHECK(memcmp(output, expected_part_two, sizeof(expected_part_two)) == 0);
-}
-
 static void test_diagnostic_part_boundaries_and_gates(void)
 {
   static const struct {
@@ -746,14 +626,11 @@ static void test_automatic_diagnostic_rate_limit(void)
 int main(void)
 {
   test_public_wire_contract_constants();
-  test_routine_semantically_consistent_degraded_vector();
-  test_supplied_layout_oracle_is_semantically_malformed();
   test_routine_sentinels_and_quality_states();
   test_routine_boundaries_and_length_gate();
   test_routine_rejects_inconsistent_quality();
   test_adc_failure_forces_all_numeric_sentinels();
   test_therm_fault_forces_soil_temperature_sentinel();
-  test_diagnostic_header_and_cycle_vectors();
   test_diagnostic_part_boundaries_and_gates();
   test_diagnostic_rejects_inconsistent_quality();
   test_automatic_diagnostic_rate_limit();

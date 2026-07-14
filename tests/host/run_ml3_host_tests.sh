@@ -10,7 +10,13 @@ CONFIG_CONTRACT="$ROOT_DIR/tests/host/ml3_config_contract.sh"
 PAYLOAD_CONFIG_CONTRACT="$ROOT_DIR/tests/host/ml3_payload_config_gate_contract.sh"
 PAYLOAD_CONFIG_RUNNER_REGRESSION="$ROOT_DIR/tests/host/ml3_payload_config_gate_runner_regression.sh"
 CC="${CC:-gcc}"
+NODE="${NODE:-node}"
 PROCESS_GUARD="$ROOT_DIR/tests/host/ml3_process_guard.sh"
+PAYLOAD_VECTOR_TOOL="$ROOT_DIR/tests/tools/ml3_payload_vectors.js"
+PAYLOAD_VECTOR_TOOL_TEST="$ROOT_DIR/tests/host/ml3_payload_vector_tool_test.js"
+PAYLOAD_VECTOR_JSON="$ROOT_DIR/tests/vectors/ml3_payload_vectors.json"
+PAYLOAD_VECTOR_INCLUDE="$BUILD_DIR/ml3_payload_vectors.generated.inc"
+COVERAGE_CONTRACT="$ROOT_DIR/tests/host/ml3_coverage_contract.js"
 REQUESTED_EXIT_CODE=
 ACTIVE_JOB_PID=
 ACTIVE_JOB_PGID=
@@ -169,6 +175,7 @@ CFLAGS=(
   -Wmissing-declarations
   -Wundef
   -I"$INC_DIR"
+  -I"$BUILD_DIR"
 )
 MODULE_SOURCES=(
   "$SRC_DIR/adc_precision.c"
@@ -186,6 +193,7 @@ QUALITY_TEST="$ROOT_DIR/tests/host/ml3_quality_test.c"
 THERMISTOR_TEST="$ROOT_DIR/tests/host/ml3_thermistor_test.c"
 PAYLOAD_TEST="$ROOT_DIR/tests/host/ml3_payload_test.c"
 AT_COMMANDS_TEST="$ROOT_DIR/tests/host/ml3_at_commands_test.c"
+PAYLOAD_VECTORS_TEST="$ROOT_DIR/tests/host/ml3_payload_vectors_test.c"
 
 cleanup() {
   local cleanup_status=0
@@ -211,6 +219,11 @@ trap 'ml3_request_shutdown TERM' TERM
 
 status=0
 
+if ! command -v "$NODE" >/dev/null 2>&1; then
+  echo "Node.js is required for ML3 shared payload-vector validation" >&2
+  exit 1
+fi
+
 if grep -Eq '\(int(16|32)_t\)ml3_read_u(16|32)_le' "$SRC_DIR/ml3_calibration.c"; then
   echo "ml3_calibration uses implementation-defined unsigned-to-signed decode cast" >&2
   exit 1
@@ -235,6 +248,40 @@ if [ "$status" -ne 0 ]; then
 fi
 
 ml3_run_isolated_command "$PAYLOAD_CONFIG_RUNNER_REGRESSION"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
+ml3_run_isolated_command "$NODE" "$PAYLOAD_VECTOR_TOOL_TEST"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
+ml3_run_isolated_command \
+  "$NODE" "$PAYLOAD_VECTOR_TOOL" --check "$PAYLOAD_VECTOR_JSON"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
+ml3_run_isolated_command \
+  "$NODE" "$PAYLOAD_VECTOR_TOOL" --check-source-contract "$ROOT_DIR"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
+ml3_run_isolated_command "$NODE" "$COVERAGE_CONTRACT"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
+ml3_run_isolated_command \
+  "$NODE" "$PAYLOAD_VECTOR_TOOL" --generate-c \
+  "$PAYLOAD_VECTOR_JSON" "$PAYLOAD_VECTOR_INCLUDE"
 status=$?
 if [ "$status" -ne 0 ]; then
   exit "$status"
@@ -339,6 +386,16 @@ if [ "$status" -ne 0 ]; then
   exit "$status"
 fi
 
+ml3_run_isolated_command "$CC" "${CFLAGS[@]}" \
+  "$PAYLOAD_VECTORS_TEST" \
+  "$BUILD_DIR"/ml3_payload.o \
+  "$BUILD_DIR"/ml3_quality.o \
+  -o "$BUILD_DIR/ml3_payload_vectors_test"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
 ml3_run_isolated_command "$BUILD_DIR/ml3_contract_test"
 status=$?
 if [ "$status" -ne 0 ]; then
@@ -376,6 +433,12 @@ if [ "$status" -ne 0 ]; then
 fi
 
 ml3_run_isolated_command "$BUILD_DIR/ml3_at_commands_test"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
+ml3_run_isolated_command "$BUILD_DIR/ml3_payload_vectors_test"
 status=$?
 if [ "$status" -ne 0 ]; then
   exit "$status"

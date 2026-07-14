@@ -1239,3 +1239,96 @@ slot clearing remain Task 10 integration work.
   base `d78c10f`. Both runs print `ml3 AT command parser: OK`, the calibration
   and measurement pass lines, all 16 precision-ADC passes, the concurrency
   pass, and the clean-tree pass.
+
+## Task 9 checkpoint — shared payload vectors and coverage contract
+
+Task 9 adds the byte-exact fixture set consumed by the firmware host tests and
+the future osi-os decoder tests. `tests/vectors/ml3_payload_vectors.json` is the
+only tracked source of expected payload bytes.
+
+### Vector contract
+
+- Twelve routine vectors cover VALID, DEGRADED, and INVALID quality; a corrected
+  negative differential; independent all-sentinel output for `ADC_INIT`,
+  `ADC_CAL`, `ADC_TIMEOUT`, and `ADC_OVERRUN`; retained raw fields on a non-core
+  invalid acquisition; calibration-invalid and thermistor-fault sentinels; and
+  positive, negative, and toward-zero quantization boundaries.
+- Five diagnostic sets cover 0, 1, 4, 5, and 8 cycles. Their expected parts pin
+  the 30-byte header, 3-byte continuation prefix, zero-based part index, part
+  count nibble, big-endian cycle fields, and unavailable raw-code sentinels.
+- Every decoded routine and diagnostic-header fixture includes all 16 named
+  `ML3_...` flag booleans. JSON numbers must be safe integers; the validator
+  rejects unsafe values before generating C data.
+- The supplied `A55A` frame exists only in the `malformed` array with expected
+  status `semantic_inconsistency`. Four independent malformed fixtures prove
+  that each core ADC fault rejects retained measurement data, and one more
+  proves that `THERM_FAULT` cannot carry a soil temperature.
+
+### Tooling and single-source enforcement
+
+- `tests/tools/ml3_payload_vectors.js` uses Node.js standard-library modules
+  only. It checks the schema, canonical hexadecimal, byte lengths, duplicate
+  IDs, safe integers, diagnostic part metadata, input-to-byte agreement,
+  decoded-field agreement, and semantic contradictions.
+- `--generate-c` writes a temporary include into the runner's `mktemp` build
+  directory. The C test passes each JSON-derived input through the production
+  payload API, compares every output byte, checks routine and diagnostic
+  metadata, and submits every malformed routine to the production validator.
+  The EXIT trap removes the include and all other build products.
+- `--decoder-fixtures` emits deterministic validated JSON for the future
+  osi-os decoder test. No npm package or generated repository file is needed;
+  Node.js is now an explicit host-test prerequisite and the runner fails with a
+  named error when it is absent.
+- The source contract scans every C, header, JavaScript, and shell source under
+  `tests/host`. It derives canonical wire bytes from the JSON and rejects exact
+  duplicate hex strings or byte arrays regardless of filename, plus long
+  literals assigned to payload/frame/vector-named variables. The regression
+  uses `ml3_contract_test.c`; a distinct 52-byte calibration-record initializer
+  remains allowed. The three byte arrays formerly in `ml3_payload_test.c` were
+  removed after the shared vector test took ownership of those cases.
+
+### Coverage audit and TDD evidence
+
+- The vector-tool RED failed because the required module did not exist. Schema,
+  byte, field, part-metadata, unsafe-integer, malformed-status, and output-file
+  tests then passed after the validator and generator were implemented.
+- The first C vector run reported four failures against the superseded Task 7
+  implementation: core ADC data was not fully sentinelized, `THERM_FAULT` kept
+  soil temperature, and both contradictory frames passed validation. The same
+  vectors passed after rebasing onto corrected Task 7.
+- The coverage contract initially failed on the absent Task 8 test and missing
+  Task 9 runner entries. After rebasing onto `afbbbc4`, it reports eight
+  categories: ADC scale/bounds; ABBA discard, median, MAD, and variance;
+  calibration/CRC/storage cuts and sequence rollover; quality boundaries;
+  thermistor ratio/interpolation; payload semantics/length gates; shared
+  vectors; and AT parser bounds. For each category it requires named evidence
+  to be defined and invoked, then checks that the host runner executes the
+  compiled test.
+- Fresh strict GCC and Clang focused runners pass every Task 1–9 functional
+  test. Both print `ml3 payload vector tool: OK`, `validated 12 routine, 5
+  diagnostic, and 6 malformed vectors`, `ml3 coverage contract: 8 categories
+  OK`, and the existing Task 2–8 pass lines.
+- Direct byte and decoded-field mutations fail validation. `git diff --check`,
+  shell and JavaScript syntax checks, forbidden-dependency scans, the
+  single-source contract, and documentation lint pass. Per controller
+  instruction, Task 9 did not run the full lifecycle/concurrency suite.
+
+### Native review correction
+
+The first native review was `fix-required` on two isolation gaps. Mutating the
+vector oracle's core-fault mask from `0x000f` to `0x0004` still accepted the
+original fixture set because only `ADC_TIMEOUT` was isolated. The new mutation
+test failed with that behavior, then passed after all four core ADC flags gained
+independent all-sentinel and contradictory-data vectors. A structural test also
+requires all eight routine measurement fields to be sentinels for each core
+flag and requires a contradictory retained-data frame for each flag.
+
+The first attempt to scan every host byte-array initializer exposed a legitimate
+52-byte calibration-record fixture. The final scanner compares candidate bytes
+with the canonical JSON wire frames and recognizes explicit payload/frame/vector
+assignment context. It rejects a canonical 25-byte fixture placed in
+`ml3_contract_test.c` while accepting a separate 52-byte calibration-style
+initializer.
+
+The mandatory `gpt-5.6-sol` binding review remains pending because its quota is
+unavailable. No binding approval is claimed for Task 9.

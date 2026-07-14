@@ -1,0 +1,1611 @@
+{
+  "schema_version": 1,
+  "protocol": {
+    "version": 1,
+    "byte_order": "big-endian",
+    "routine_length": 25,
+    "diagnostic_header_length": 30,
+    "diagnostic_cycles_per_part": 4,
+    "max_cycles": 8,
+    "raw_sentinel": "ffff",
+    "signed_sentinel": "7fff"
+  },
+  "routine": [
+    {
+      "id": "routine_valid_nominal",
+      "input": {
+        "status_flags": 0,
+        "sequence": 1,
+        "corrected_diff_uv": 250000,
+        "mean_hi_uncalibrated_uv": 300000,
+        "mean_lo_uncalibrated_uv": 50000,
+        "vdda_uv": 3300000,
+        "v5_uv": 5000000,
+        "noise_uv": 400,
+        "die_temperature_millic": 25120,
+        "soil_temperature_millic": 18490,
+        "quality_state": "VALID",
+        "valid_cycle_count": 8,
+        "calibration_id": 7
+      },
+      "expected": {
+        "hex": "01000000000109c40bb801f40ce41388019009d00739080700",
+        "decoded": {
+          "protocol_version": 1,
+          "payload_type": 0,
+          "status_flags": 0,
+          "status_flags_named": {
+            "ML3_ADC_INIT": false,
+            "ML3_ADC_CAL": false,
+            "ML3_ADC_TIMEOUT": false,
+            "ML3_ADC_OVERRUN": false,
+            "ML3_HI_OVER": false,
+            "ML3_LOW_RAIL_CLIPPED": false,
+            "ML3_DIFF_RANGE": false,
+            "ML3_CM_RANGE": false,
+            "ML3_VREF_DRIFT": false,
+            "ML3_V5_LOW": false,
+            "ML3_V5_HIGH": false,
+            "ML3_NOISE_HIGH": false,
+            "ML3_WARMUP_DRIFT": false,
+            "ML3_CAL_INVALID": false,
+            "ML3_TEMP_RANGE": false,
+            "ML3_THERM_FAULT": false
+          },
+          "sequence": 1,
+          "corrected_diff_decimv": 2500,
+          "mean_hi_decimv": 3000,
+          "mean_lo_decimv": 500,
+          "vdda_mv": 3300,
+          "v5_mv": 5000,
+          "noise_uv": 400,
+          "die_temperature_centic": 2512,
+          "soil_temperature_centic": 1849,
+          "quality_state": "VALID",
+          "valid_cycle_count": 8,
+          "quality_reserved": 0,
+          "calibration_id": 7,
+          "reserved": 0
+        }
+      }
+    },
+    {
+      "id": "routine_degraded_negative_differential",
+      "input": {
+        "status_flags": 128,
+        "sequence": 4660,
+        "corrected_diff_uv": -20000,
+        "mean_hi_uncalibrated_uv": 1234500,
+        "mean_lo_uncalibrated_uv": 1254500,
+        "vdda_uv": 3300000,
+        "v5_uv": 5000000,
+        "noise_uv": 321,
+        "die_temperature_millic": -1230,
+        "soil_temperature_millic": 25340,
+        "quality_state": "DEGRADED",
+        "valid_cycle_count": 4,
+        "calibration_id": 126
+      },
+      "expected": {
+        "hex": "010000801234ff38303931010ce413880141ff8509e6447e00",
+        "decoded": {
+          "protocol_version": 1,
+          "payload_type": 0,
+          "status_flags": 128,
+          "status_flags_named": {
+            "ML3_ADC_INIT": false,
+            "ML3_ADC_CAL": false,
+            "ML3_ADC_TIMEOUT": false,
+            "ML3_ADC_OVERRUN": false,
+            "ML3_HI_OVER": false,
+            "ML3_LOW_RAIL_CLIPPED": false,
+            "ML3_DIFF_RANGE": false,
+            "ML3_CM_RANGE": true,
+            "ML3_VREF_DRIFT": false,
+            "ML3_V5_LOW": false,
+            "ML3_V5_HIGH": false,
+            "ML3_NOISE_HIGH": false,
+            "ML3_WARMUP_DRIFT": false,
+            "ML3_CAL_INVALID": false,
+            "ML3_TEMP_RANGE": false,
+            "ML3_THERM_FAULT": false
+          },
+          "sequence": 4660,
+          "corrected_diff_decimv": -200,
+          "mean_hi_decimv": 12345,
+          "mean_lo_decimv": 12545,
+          "vdda_mv": 3300,
+          "v5_mv": 5000,
+          "noise_uv": 321,
+          "die_temperature_centic": -123,
+          "soil_temperature_centic": 2534,
+          "quality_state": "DEGRADED",
+          "valid_cycle_count": 4,
+          "quality_reserved": 0,
+          "calibration_id": 126,
+          "reserved": 0
+        }
+      }
+    },
+    {
+      "id": "routine_invalid_adc_init_all_sentinels",
+      "input": {
+        "status_flags": 1,
+        "sequence": 65535,
+        "corrected_diff_uv": 250000,
+        "mean_hi_uncalibrated_uv": 300000,
+        "mean_lo_uncalibrated_uv": 50000,
+        "vdda_uv": 3300000,
+        "v5_uv": 5000000,
+        "noise_uv": 400,
+        "die_temperature_millic": 25120,
+        "soil_temperature_millic": 18490,
+        "quality_state": "INVALID",
+        "valid_cycle_count": 0,
+        "calibration_id": 7
+      },
+      "expected": {
+        "hex": "01000001ffff7fffffffffffffffffffffff7fff7fff800700",
+        "decoded": {
+          "protocol_version": 1,
+          "payload_type": 0,
+          "status_flags": 1,
+          "status_flags_named": {
+            "ML3_ADC_INIT": true,
+            "ML3_ADC_CAL": false,
+            "ML3_ADC_TIMEOUT": false,
+            "ML3_ADC_OVERRUN": false,
+            "ML3_HI_OVER": false,
+            "ML3_LOW_RAIL_CLIPPED": false,
+            "ML3_DIFF_RANGE": false,
+            "ML3_CM_RANGE": false,
+            "ML3_VREF_DRIFT": false,
+            "ML3_V5_LOW": false,
+            "ML3_V5_HIGH": false,
+            "ML3_NOISE_HIGH": false,
+            "ML3_WARMUP_DRIFT": false,
+            "ML3_CAL_INVALID": false,
+            "ML3_TEMP_RANGE": false,
+            "ML3_THERM_FAULT": false
+          },
+          "sequence": 65535,
+          "corrected_diff_decimv": null,
+          "mean_hi_decimv": null,
+          "mean_lo_decimv": null,
+          "vdda_mv": null,
+          "v5_mv": null,
+          "noise_uv": null,
+          "die_temperature_centic": null,
+          "soil_temperature_centic": null,
+          "quality_state": "INVALID",
+          "valid_cycle_count": 0,
+          "quality_reserved": 0,
+          "calibration_id": 7,
+          "reserved": 0
+        }
+      }
+    },
+    {
+      "id": "routine_invalid_adc_cal_all_sentinels",
+      "input": {
+        "status_flags": 2,
+        "sequence": 65535,
+        "corrected_diff_uv": 250000,
+        "mean_hi_uncalibrated_uv": 300000,
+        "mean_lo_uncalibrated_uv": 50000,
+        "vdda_uv": 3300000,
+        "v5_uv": 5000000,
+        "noise_uv": 400,
+        "die_temperature_millic": 25120,
+        "soil_temperature_millic": 18490,
+        "quality_state": "INVALID",
+        "valid_cycle_count": 0,
+        "calibration_id": 7
+      },
+      "expected": {
+        "hex": "01000002ffff7fffffffffffffffffffffff7fff7fff800700",
+        "decoded": {
+          "protocol_version": 1,
+          "payload_type": 0,
+          "status_flags": 2,
+          "status_flags_named": {
+            "ML3_ADC_INIT": false,
+            "ML3_ADC_CAL": true,
+            "ML3_ADC_TIMEOUT": false,
+            "ML3_ADC_OVERRUN": false,
+            "ML3_HI_OVER": false,
+            "ML3_LOW_RAIL_CLIPPED": false,
+            "ML3_DIFF_RANGE": false,
+            "ML3_CM_RANGE": false,
+            "ML3_VREF_DRIFT": false,
+            "ML3_V5_LOW": false,
+            "ML3_V5_HIGH": false,
+            "ML3_NOISE_HIGH": false,
+            "ML3_WARMUP_DRIFT": false,
+            "ML3_CAL_INVALID": false,
+            "ML3_TEMP_RANGE": false,
+            "ML3_THERM_FAULT": false
+          },
+          "sequence": 65535,
+          "corrected_diff_decimv": null,
+          "mean_hi_decimv": null,
+          "mean_lo_decimv": null,
+          "vdda_mv": null,
+          "v5_mv": null,
+          "noise_uv": null,
+          "die_temperature_centic": null,
+          "soil_temperature_centic": null,
+          "quality_state": "INVALID",
+          "valid_cycle_count": 0,
+          "quality_reserved": 0,
+          "calibration_id": 7,
+          "reserved": 0
+        }
+      }
+    },
+    {
+      "id": "routine_invalid_adc_timeout_all_sentinels",
+      "input": {
+        "status_flags": 4,
+        "sequence": 65535,
+        "corrected_diff_uv": 250000,
+        "mean_hi_uncalibrated_uv": 300000,
+        "mean_lo_uncalibrated_uv": 50000,
+        "vdda_uv": 3300000,
+        "v5_uv": 5000000,
+        "noise_uv": 400,
+        "die_temperature_millic": 25120,
+        "soil_temperature_millic": 18490,
+        "quality_state": "INVALID",
+        "valid_cycle_count": 0,
+        "calibration_id": 7
+      },
+      "expected": {
+        "hex": "01000004ffff7fffffffffffffffffffffff7fff7fff800700",
+        "decoded": {
+          "protocol_version": 1,
+          "payload_type": 0,
+          "status_flags": 4,
+          "status_flags_named": {
+            "ML3_ADC_INIT": false,
+            "ML3_ADC_CAL": false,
+            "ML3_ADC_TIMEOUT": true,
+            "ML3_ADC_OVERRUN": false,
+            "ML3_HI_OVER": false,
+            "ML3_LOW_RAIL_CLIPPED": false,
+            "ML3_DIFF_RANGE": false,
+            "ML3_CM_RANGE": false,
+            "ML3_VREF_DRIFT": false,
+            "ML3_V5_LOW": false,
+            "ML3_V5_HIGH": false,
+            "ML3_NOISE_HIGH": false,
+            "ML3_WARMUP_DRIFT": false,
+            "ML3_CAL_INVALID": false,
+            "ML3_TEMP_RANGE": false,
+            "ML3_THERM_FAULT": false
+          },
+          "sequence": 65535,
+          "corrected_diff_decimv": null,
+          "mean_hi_decimv": null,
+          "mean_lo_decimv": null,
+          "vdda_mv": null,
+          "v5_mv": null,
+          "noise_uv": null,
+          "die_temperature_centic": null,
+          "soil_temperature_centic": null,
+          "quality_state": "INVALID",
+          "valid_cycle_count": 0,
+          "quality_reserved": 0,
+          "calibration_id": 7,
+          "reserved": 0
+        }
+      }
+    },
+    {
+      "id": "routine_invalid_adc_overrun_all_sentinels",
+      "input": {
+        "status_flags": 8,
+        "sequence": 65535,
+        "corrected_diff_uv": 250000,
+        "mean_hi_uncalibrated_uv": 300000,
+        "mean_lo_uncalibrated_uv": 50000,
+        "vdda_uv": 3300000,
+        "v5_uv": 5000000,
+        "noise_uv": 400,
+        "die_temperature_millic": 25120,
+        "soil_temperature_millic": 18490,
+        "quality_state": "INVALID",
+        "valid_cycle_count": 0,
+        "calibration_id": 7
+      },
+      "expected": {
+        "hex": "01000008ffff7fffffffffffffffffffffff7fff7fff800700",
+        "decoded": {
+          "protocol_version": 1,
+          "payload_type": 0,
+          "status_flags": 8,
+          "status_flags_named": {
+            "ML3_ADC_INIT": false,
+            "ML3_ADC_CAL": false,
+            "ML3_ADC_TIMEOUT": false,
+            "ML3_ADC_OVERRUN": true,
+            "ML3_HI_OVER": false,
+            "ML3_LOW_RAIL_CLIPPED": false,
+            "ML3_DIFF_RANGE": false,
+            "ML3_CM_RANGE": false,
+            "ML3_VREF_DRIFT": false,
+            "ML3_V5_LOW": false,
+            "ML3_V5_HIGH": false,
+            "ML3_NOISE_HIGH": false,
+            "ML3_WARMUP_DRIFT": false,
+            "ML3_CAL_INVALID": false,
+            "ML3_TEMP_RANGE": false,
+            "ML3_THERM_FAULT": false
+          },
+          "sequence": 65535,
+          "corrected_diff_decimv": null,
+          "mean_hi_decimv": null,
+          "mean_lo_decimv": null,
+          "vdda_mv": null,
+          "v5_mv": null,
+          "noise_uv": null,
+          "die_temperature_centic": null,
+          "soil_temperature_centic": null,
+          "quality_state": "INVALID",
+          "valid_cycle_count": 0,
+          "quality_reserved": 0,
+          "calibration_id": 7,
+          "reserved": 0
+        }
+      }
+    },
+    {
+      "id": "routine_invalid_diff_range_raw_retained",
+      "input": {
+        "status_flags": 64,
+        "sequence": 2,
+        "corrected_diff_uv": 250000,
+        "mean_hi_uncalibrated_uv": 300000,
+        "mean_lo_uncalibrated_uv": 50000,
+        "vdda_uv": 3300000,
+        "v5_uv": 5000000,
+        "noise_uv": 400,
+        "die_temperature_millic": 25120,
+        "soil_temperature_millic": 18490,
+        "quality_state": "INVALID",
+        "valid_cycle_count": 8,
+        "calibration_id": 7
+      },
+      "expected": {
+        "hex": "0100004000027fff0bb801f40ce41388019009d00739880700",
+        "decoded": {
+          "protocol_version": 1,
+          "payload_type": 0,
+          "status_flags": 64,
+          "status_flags_named": {
+            "ML3_ADC_INIT": false,
+            "ML3_ADC_CAL": false,
+            "ML3_ADC_TIMEOUT": false,
+            "ML3_ADC_OVERRUN": false,
+            "ML3_HI_OVER": false,
+            "ML3_LOW_RAIL_CLIPPED": false,
+            "ML3_DIFF_RANGE": true,
+            "ML3_CM_RANGE": false,
+            "ML3_VREF_DRIFT": false,
+            "ML3_V5_LOW": false,
+            "ML3_V5_HIGH": false,
+            "ML3_NOISE_HIGH": false,
+            "ML3_WARMUP_DRIFT": false,
+            "ML3_CAL_INVALID": false,
+            "ML3_TEMP_RANGE": false,
+            "ML3_THERM_FAULT": false
+          },
+          "sequence": 2,
+          "corrected_diff_decimv": null,
+          "mean_hi_decimv": 3000,
+          "mean_lo_decimv": 500,
+          "vdda_mv": 3300,
+          "v5_mv": 5000,
+          "noise_uv": 400,
+          "die_temperature_centic": 2512,
+          "soil_temperature_centic": 1849,
+          "quality_state": "INVALID",
+          "valid_cycle_count": 8,
+          "quality_reserved": 0,
+          "calibration_id": 7,
+          "reserved": 0
+        }
+      }
+    },
+    {
+      "id": "routine_degraded_calibration_invalid",
+      "input": {
+        "status_flags": 8192,
+        "sequence": 3,
+        "corrected_diff_uv": 250000,
+        "mean_hi_uncalibrated_uv": 300000,
+        "mean_lo_uncalibrated_uv": 50000,
+        "vdda_uv": 3300000,
+        "v5_uv": 5000000,
+        "noise_uv": 400,
+        "die_temperature_millic": 25120,
+        "soil_temperature_millic": 18490,
+        "quality_state": "DEGRADED",
+        "valid_cycle_count": 4,
+        "calibration_id": 0
+      },
+      "expected": {
+        "hex": "0100200000037fff0bb801f40ce41388019009d00739440000",
+        "decoded": {
+          "protocol_version": 1,
+          "payload_type": 0,
+          "status_flags": 8192,
+          "status_flags_named": {
+            "ML3_ADC_INIT": false,
+            "ML3_ADC_CAL": false,
+            "ML3_ADC_TIMEOUT": false,
+            "ML3_ADC_OVERRUN": false,
+            "ML3_HI_OVER": false,
+            "ML3_LOW_RAIL_CLIPPED": false,
+            "ML3_DIFF_RANGE": false,
+            "ML3_CM_RANGE": false,
+            "ML3_VREF_DRIFT": false,
+            "ML3_V5_LOW": false,
+            "ML3_V5_HIGH": false,
+            "ML3_NOISE_HIGH": false,
+            "ML3_WARMUP_DRIFT": false,
+            "ML3_CAL_INVALID": true,
+            "ML3_TEMP_RANGE": false,
+            "ML3_THERM_FAULT": false
+          },
+          "sequence": 3,
+          "corrected_diff_decimv": null,
+          "mean_hi_decimv": 3000,
+          "mean_lo_decimv": 500,
+          "vdda_mv": 3300,
+          "v5_mv": 5000,
+          "noise_uv": 400,
+          "die_temperature_centic": 2512,
+          "soil_temperature_centic": 1849,
+          "quality_state": "DEGRADED",
+          "valid_cycle_count": 4,
+          "quality_reserved": 0,
+          "calibration_id": 0,
+          "reserved": 0
+        }
+      }
+    },
+    {
+      "id": "routine_degraded_thermistor_fault",
+      "input": {
+        "status_flags": 32768,
+        "sequence": 4,
+        "corrected_diff_uv": 250000,
+        "mean_hi_uncalibrated_uv": 300000,
+        "mean_lo_uncalibrated_uv": 50000,
+        "vdda_uv": 3300000,
+        "v5_uv": 5000000,
+        "noise_uv": 400,
+        "die_temperature_millic": 25120,
+        "soil_temperature_millic": 18490,
+        "quality_state": "DEGRADED",
+        "valid_cycle_count": 4,
+        "calibration_id": 7
+      },
+      "expected": {
+        "hex": "01008000000409c40bb801f40ce41388019009d07fff440700",
+        "decoded": {
+          "protocol_version": 1,
+          "payload_type": 0,
+          "status_flags": 32768,
+          "status_flags_named": {
+            "ML3_ADC_INIT": false,
+            "ML3_ADC_CAL": false,
+            "ML3_ADC_TIMEOUT": false,
+            "ML3_ADC_OVERRUN": false,
+            "ML3_HI_OVER": false,
+            "ML3_LOW_RAIL_CLIPPED": false,
+            "ML3_DIFF_RANGE": false,
+            "ML3_CM_RANGE": false,
+            "ML3_VREF_DRIFT": false,
+            "ML3_V5_LOW": false,
+            "ML3_V5_HIGH": false,
+            "ML3_NOISE_HIGH": false,
+            "ML3_WARMUP_DRIFT": false,
+            "ML3_CAL_INVALID": false,
+            "ML3_TEMP_RANGE": false,
+            "ML3_THERM_FAULT": true
+          },
+          "sequence": 4,
+          "corrected_diff_decimv": 2500,
+          "mean_hi_decimv": 3000,
+          "mean_lo_decimv": 500,
+          "vdda_mv": 3300,
+          "v5_mv": 5000,
+          "noise_uv": 400,
+          "die_temperature_centic": 2512,
+          "soil_temperature_centic": null,
+          "quality_state": "DEGRADED",
+          "valid_cycle_count": 4,
+          "quality_reserved": 0,
+          "calibration_id": 7,
+          "reserved": 0
+        }
+      }
+    },
+    {
+      "id": "routine_valid_positive_quantization_boundaries",
+      "input": {
+        "status_flags": 0,
+        "sequence": 65534,
+        "corrected_diff_uv": 1099999,
+        "mean_hi_uncalibrated_uv": 1149999,
+        "mean_lo_uncalibrated_uv": 50000,
+        "vdda_uv": 3300999,
+        "v5_uv": 5000999,
+        "noise_uv": 499,
+        "die_temperature_millic": 39999,
+        "soil_temperature_millic": 99,
+        "quality_state": "VALID",
+        "valid_cycle_count": 8,
+        "calibration_id": 255
+      },
+      "expected": {
+        "hex": "01000000fffe2af72ceb01f40ce4138801f30f9f000908ff00",
+        "decoded": {
+          "protocol_version": 1,
+          "payload_type": 0,
+          "status_flags": 0,
+          "status_flags_named": {
+            "ML3_ADC_INIT": false,
+            "ML3_ADC_CAL": false,
+            "ML3_ADC_TIMEOUT": false,
+            "ML3_ADC_OVERRUN": false,
+            "ML3_HI_OVER": false,
+            "ML3_LOW_RAIL_CLIPPED": false,
+            "ML3_DIFF_RANGE": false,
+            "ML3_CM_RANGE": false,
+            "ML3_VREF_DRIFT": false,
+            "ML3_V5_LOW": false,
+            "ML3_V5_HIGH": false,
+            "ML3_NOISE_HIGH": false,
+            "ML3_WARMUP_DRIFT": false,
+            "ML3_CAL_INVALID": false,
+            "ML3_TEMP_RANGE": false,
+            "ML3_THERM_FAULT": false
+          },
+          "sequence": 65534,
+          "corrected_diff_decimv": 10999,
+          "mean_hi_decimv": 11499,
+          "mean_lo_decimv": 500,
+          "vdda_mv": 3300,
+          "v5_mv": 5000,
+          "noise_uv": 499,
+          "die_temperature_centic": 3999,
+          "soil_temperature_centic": 9,
+          "quality_state": "VALID",
+          "valid_cycle_count": 8,
+          "quality_reserved": 0,
+          "calibration_id": 255,
+          "reserved": 0
+        }
+      }
+    },
+    {
+      "id": "routine_valid_negative_truncation_boundaries",
+      "input": {
+        "status_flags": 0,
+        "sequence": 5,
+        "corrected_diff_uv": -19999,
+        "mean_hi_uncalibrated_uv": 30001,
+        "mean_lo_uncalibrated_uv": 50000,
+        "vdda_uv": 3299999,
+        "v5_uv": 4999999,
+        "noise_uv": 0,
+        "die_temperature_millic": -19999,
+        "soil_temperature_millic": 39999,
+        "quality_state": "VALID",
+        "valid_cycle_count": 8,
+        "calibration_id": 1
+      },
+      "expected": {
+        "hex": "010000000005ff39012c01f40ce313870000f8310f9f080100",
+        "decoded": {
+          "protocol_version": 1,
+          "payload_type": 0,
+          "status_flags": 0,
+          "status_flags_named": {
+            "ML3_ADC_INIT": false,
+            "ML3_ADC_CAL": false,
+            "ML3_ADC_TIMEOUT": false,
+            "ML3_ADC_OVERRUN": false,
+            "ML3_HI_OVER": false,
+            "ML3_LOW_RAIL_CLIPPED": false,
+            "ML3_DIFF_RANGE": false,
+            "ML3_CM_RANGE": false,
+            "ML3_VREF_DRIFT": false,
+            "ML3_V5_LOW": false,
+            "ML3_V5_HIGH": false,
+            "ML3_NOISE_HIGH": false,
+            "ML3_WARMUP_DRIFT": false,
+            "ML3_CAL_INVALID": false,
+            "ML3_TEMP_RANGE": false,
+            "ML3_THERM_FAULT": false
+          },
+          "sequence": 5,
+          "corrected_diff_decimv": -199,
+          "mean_hi_decimv": 300,
+          "mean_lo_decimv": 500,
+          "vdda_mv": 3299,
+          "v5_mv": 4999,
+          "noise_uv": 0,
+          "die_temperature_centic": -1999,
+          "soil_temperature_centic": 3999,
+          "quality_state": "VALID",
+          "valid_cycle_count": 8,
+          "quality_reserved": 0,
+          "calibration_id": 1,
+          "reserved": 0
+        }
+      }
+    },
+    {
+      "id": "routine_valid_toward_zero_quantization",
+      "input": {
+        "status_flags": 0,
+        "sequence": 6,
+        "corrected_diff_uv": -199,
+        "mean_hi_uncalibrated_uv": 99,
+        "mean_lo_uncalibrated_uv": 0,
+        "vdda_uv": 999,
+        "v5_uv": 999,
+        "noise_uv": 1,
+        "die_temperature_millic": -19,
+        "soil_temperature_millic": 19,
+        "quality_state": "VALID",
+        "valid_cycle_count": 8,
+        "calibration_id": 2
+      },
+      "expected": {
+        "hex": "010000000006ffff00000000000000000001ffff0001080200",
+        "decoded": {
+          "protocol_version": 1,
+          "payload_type": 0,
+          "status_flags": 0,
+          "status_flags_named": {
+            "ML3_ADC_INIT": false,
+            "ML3_ADC_CAL": false,
+            "ML3_ADC_TIMEOUT": false,
+            "ML3_ADC_OVERRUN": false,
+            "ML3_HI_OVER": false,
+            "ML3_LOW_RAIL_CLIPPED": false,
+            "ML3_DIFF_RANGE": false,
+            "ML3_CM_RANGE": false,
+            "ML3_VREF_DRIFT": false,
+            "ML3_V5_LOW": false,
+            "ML3_V5_HIGH": false,
+            "ML3_NOISE_HIGH": false,
+            "ML3_WARMUP_DRIFT": false,
+            "ML3_CAL_INVALID": false,
+            "ML3_TEMP_RANGE": false,
+            "ML3_THERM_FAULT": false
+          },
+          "sequence": 6,
+          "corrected_diff_decimv": -1,
+          "mean_hi_decimv": 0,
+          "mean_lo_decimv": 0,
+          "vdda_mv": 0,
+          "v5_mv": 0,
+          "noise_uv": 1,
+          "die_temperature_centic": -1,
+          "soil_temperature_centic": 1,
+          "quality_state": "VALID",
+          "valid_cycle_count": 8,
+          "quality_reserved": 0,
+          "calibration_id": 2,
+          "reserved": 0
+        }
+      }
+    }
+  ],
+  "diagnostic": [
+    {
+      "id": "diagnostic_0_cycles_raw_sentinels",
+      "input": {
+        "sequence": 0,
+        "status_flags": 4,
+        "quality_state": "INVALID",
+        "valid_cycle_count": 0,
+        "reset_cause": 2309737967,
+        "warmup_ms": 1000,
+        "hardware_revision": 33,
+        "firmware_build_id": 17767,
+        "calibration_schema": 2,
+        "calibration_id": 126,
+        "vrefint_pre_raw": null,
+        "vrefint_post_raw": null,
+        "pa4_pre_raw": null,
+        "pa4_post_raw": null,
+        "thermistor_raw_ratio": null,
+        "cycles": []
+      },
+      "parts": [
+        {
+          "expected": {
+            "hex": "010101000000048089abcdef03e821456700027effffffffffffffffffff",
+            "decoded": {
+              "protocol_version": 1,
+              "payload_type": 1,
+              "part_index": 0,
+              "part_count": 1,
+              "sequence": 0,
+              "status_flags": 4,
+              "status_flags_named": {
+                "ML3_ADC_INIT": false,
+                "ML3_ADC_CAL": false,
+                "ML3_ADC_TIMEOUT": true,
+                "ML3_ADC_OVERRUN": false,
+                "ML3_HI_OVER": false,
+                "ML3_LOW_RAIL_CLIPPED": false,
+                "ML3_DIFF_RANGE": false,
+                "ML3_CM_RANGE": false,
+                "ML3_VREF_DRIFT": false,
+                "ML3_V5_LOW": false,
+                "ML3_V5_HIGH": false,
+                "ML3_NOISE_HIGH": false,
+                "ML3_WARMUP_DRIFT": false,
+                "ML3_CAL_INVALID": false,
+                "ML3_TEMP_RANGE": false,
+                "ML3_THERM_FAULT": false
+              },
+              "quality_state": "INVALID",
+              "valid_cycle_count": 0,
+              "quality_reserved": 0,
+              "reset_cause": 2309737967,
+              "warmup_ms": 1000,
+              "hardware_revision": 33,
+              "firmware_build_id": 17767,
+              "calibration_schema": 2,
+              "calibration_id": 126,
+              "vrefint_pre_raw": null,
+              "vrefint_post_raw": null,
+              "pa4_pre_raw": null,
+              "pa4_post_raw": null,
+              "thermistor_raw_ratio": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "diagnostic_1_cycle",
+      "input": {
+        "sequence": 1,
+        "status_flags": 0,
+        "quality_state": "INVALID",
+        "valid_cycle_count": 1,
+        "reset_cause": 2309737967,
+        "warmup_ms": 1000,
+        "hardware_revision": 33,
+        "firmware_build_id": 17767,
+        "calibration_schema": 2,
+        "calibration_id": 126,
+        "vrefint_pre_raw": 4369,
+        "vrefint_post_raw": 4626,
+        "pa4_pre_raw": 8738,
+        "pa4_post_raw": 13107,
+        "thermistor_raw_ratio": 17476,
+        "cycles": [
+          {
+            "h1": 0,
+            "l1": 1,
+            "l2": 2,
+            "h2": 3
+          }
+        ]
+      },
+      "parts": [
+        {
+          "expected": {
+            "hex": "010102000100008189abcdef03e821456700027e11111212222233334444",
+            "decoded": {
+              "protocol_version": 1,
+              "payload_type": 1,
+              "part_index": 0,
+              "part_count": 2,
+              "sequence": 1,
+              "status_flags": 0,
+              "status_flags_named": {
+                "ML3_ADC_INIT": false,
+                "ML3_ADC_CAL": false,
+                "ML3_ADC_TIMEOUT": false,
+                "ML3_ADC_OVERRUN": false,
+                "ML3_HI_OVER": false,
+                "ML3_LOW_RAIL_CLIPPED": false,
+                "ML3_DIFF_RANGE": false,
+                "ML3_CM_RANGE": false,
+                "ML3_VREF_DRIFT": false,
+                "ML3_V5_LOW": false,
+                "ML3_V5_HIGH": false,
+                "ML3_NOISE_HIGH": false,
+                "ML3_WARMUP_DRIFT": false,
+                "ML3_CAL_INVALID": false,
+                "ML3_TEMP_RANGE": false,
+                "ML3_THERM_FAULT": false
+              },
+              "quality_state": "INVALID",
+              "valid_cycle_count": 1,
+              "quality_reserved": 0,
+              "reset_cause": 2309737967,
+              "warmup_ms": 1000,
+              "hardware_revision": 33,
+              "firmware_build_id": 17767,
+              "calibration_schema": 2,
+              "calibration_id": 126,
+              "vrefint_pre_raw": 4369,
+              "vrefint_post_raw": 4626,
+              "pa4_pre_raw": 8738,
+              "pa4_post_raw": 13107,
+              "thermistor_raw_ratio": 17476
+            }
+          }
+        },
+        {
+          "expected": {
+            "hex": "0101120000000100020003",
+            "decoded": {
+              "protocol_version": 1,
+              "payload_type": 1,
+              "part_index": 1,
+              "part_count": 2,
+              "cycles": [
+                {
+                  "h1": 0,
+                  "l1": 1,
+                  "l2": 2,
+                  "h2": 3
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "diagnostic_4_cycles",
+      "input": {
+        "sequence": 4660,
+        "status_flags": 0,
+        "quality_state": "VALID",
+        "valid_cycle_count": 4,
+        "reset_cause": 2309737967,
+        "warmup_ms": 1000,
+        "hardware_revision": 33,
+        "firmware_build_id": 17767,
+        "calibration_schema": 2,
+        "calibration_id": 126,
+        "vrefint_pre_raw": 4369,
+        "vrefint_post_raw": 4626,
+        "pa4_pre_raw": 8738,
+        "pa4_post_raw": 13107,
+        "thermistor_raw_ratio": 17476,
+        "cycles": [
+          {
+            "h1": 4096,
+            "l1": 4097,
+            "l2": 4098,
+            "h2": 4099
+          },
+          {
+            "h1": 4100,
+            "l1": 4101,
+            "l2": 4102,
+            "h2": 4103
+          },
+          {
+            "h1": 4104,
+            "l1": 4105,
+            "l2": 4106,
+            "h2": 4107
+          },
+          {
+            "h1": 4108,
+            "l1": 4109,
+            "l2": 4110,
+            "h2": 4111
+          }
+        ]
+      },
+      "parts": [
+        {
+          "expected": {
+            "hex": "010102123400000489abcdef03e821456700027e11111212222233334444",
+            "decoded": {
+              "protocol_version": 1,
+              "payload_type": 1,
+              "part_index": 0,
+              "part_count": 2,
+              "sequence": 4660,
+              "status_flags": 0,
+              "status_flags_named": {
+                "ML3_ADC_INIT": false,
+                "ML3_ADC_CAL": false,
+                "ML3_ADC_TIMEOUT": false,
+                "ML3_ADC_OVERRUN": false,
+                "ML3_HI_OVER": false,
+                "ML3_LOW_RAIL_CLIPPED": false,
+                "ML3_DIFF_RANGE": false,
+                "ML3_CM_RANGE": false,
+                "ML3_VREF_DRIFT": false,
+                "ML3_V5_LOW": false,
+                "ML3_V5_HIGH": false,
+                "ML3_NOISE_HIGH": false,
+                "ML3_WARMUP_DRIFT": false,
+                "ML3_CAL_INVALID": false,
+                "ML3_TEMP_RANGE": false,
+                "ML3_THERM_FAULT": false
+              },
+              "quality_state": "VALID",
+              "valid_cycle_count": 4,
+              "quality_reserved": 0,
+              "reset_cause": 2309737967,
+              "warmup_ms": 1000,
+              "hardware_revision": 33,
+              "firmware_build_id": 17767,
+              "calibration_schema": 2,
+              "calibration_id": 126,
+              "vrefint_pre_raw": 4369,
+              "vrefint_post_raw": 4626,
+              "pa4_pre_raw": 8738,
+              "pa4_post_raw": 13107,
+              "thermistor_raw_ratio": 17476
+            }
+          }
+        },
+        {
+          "expected": {
+            "hex": "0101121000100110021003100410051006100710081009100a100b100c100d100e100f",
+            "decoded": {
+              "protocol_version": 1,
+              "payload_type": 1,
+              "part_index": 1,
+              "part_count": 2,
+              "cycles": [
+                {
+                  "h1": 4096,
+                  "l1": 4097,
+                  "l2": 4098,
+                  "h2": 4099
+                },
+                {
+                  "h1": 4100,
+                  "l1": 4101,
+                  "l2": 4102,
+                  "h2": 4103
+                },
+                {
+                  "h1": 4104,
+                  "l1": 4105,
+                  "l2": 4106,
+                  "h2": 4107
+                },
+                {
+                  "h1": 4108,
+                  "l1": 4109,
+                  "l2": 4110,
+                  "h2": 4111
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "diagnostic_5_cycles",
+      "input": {
+        "sequence": 5,
+        "status_flags": 128,
+        "quality_state": "DEGRADED",
+        "valid_cycle_count": 5,
+        "reset_cause": 2309737967,
+        "warmup_ms": 1000,
+        "hardware_revision": 33,
+        "firmware_build_id": 17767,
+        "calibration_schema": 2,
+        "calibration_id": 126,
+        "vrefint_pre_raw": 4369,
+        "vrefint_post_raw": 4626,
+        "pa4_pre_raw": 8738,
+        "pa4_post_raw": 13107,
+        "thermistor_raw_ratio": 17476,
+        "cycles": [
+          {
+            "h1": 8192,
+            "l1": 8193,
+            "l2": 8194,
+            "h2": 8195
+          },
+          {
+            "h1": 8196,
+            "l1": 8197,
+            "l2": 8198,
+            "h2": 8199
+          },
+          {
+            "h1": 8200,
+            "l1": 8201,
+            "l2": 8202,
+            "h2": 8203
+          },
+          {
+            "h1": 8204,
+            "l1": 8205,
+            "l2": 8206,
+            "h2": 8207
+          },
+          {
+            "h1": 8208,
+            "l1": 8209,
+            "l2": 8210,
+            "h2": 8211
+          }
+        ]
+      },
+      "parts": [
+        {
+          "expected": {
+            "hex": "010103000500804589abcdef03e821456700027e11111212222233334444",
+            "decoded": {
+              "protocol_version": 1,
+              "payload_type": 1,
+              "part_index": 0,
+              "part_count": 3,
+              "sequence": 5,
+              "status_flags": 128,
+              "status_flags_named": {
+                "ML3_ADC_INIT": false,
+                "ML3_ADC_CAL": false,
+                "ML3_ADC_TIMEOUT": false,
+                "ML3_ADC_OVERRUN": false,
+                "ML3_HI_OVER": false,
+                "ML3_LOW_RAIL_CLIPPED": false,
+                "ML3_DIFF_RANGE": false,
+                "ML3_CM_RANGE": true,
+                "ML3_VREF_DRIFT": false,
+                "ML3_V5_LOW": false,
+                "ML3_V5_HIGH": false,
+                "ML3_NOISE_HIGH": false,
+                "ML3_WARMUP_DRIFT": false,
+                "ML3_CAL_INVALID": false,
+                "ML3_TEMP_RANGE": false,
+                "ML3_THERM_FAULT": false
+              },
+              "quality_state": "DEGRADED",
+              "valid_cycle_count": 5,
+              "quality_reserved": 0,
+              "reset_cause": 2309737967,
+              "warmup_ms": 1000,
+              "hardware_revision": 33,
+              "firmware_build_id": 17767,
+              "calibration_schema": 2,
+              "calibration_id": 126,
+              "vrefint_pre_raw": 4369,
+              "vrefint_post_raw": 4626,
+              "pa4_pre_raw": 8738,
+              "pa4_post_raw": 13107,
+              "thermistor_raw_ratio": 17476
+            }
+          }
+        },
+        {
+          "expected": {
+            "hex": "0101132000200120022003200420052006200720082009200a200b200c200d200e200f",
+            "decoded": {
+              "protocol_version": 1,
+              "payload_type": 1,
+              "part_index": 1,
+              "part_count": 3,
+              "cycles": [
+                {
+                  "h1": 8192,
+                  "l1": 8193,
+                  "l2": 8194,
+                  "h2": 8195
+                },
+                {
+                  "h1": 8196,
+                  "l1": 8197,
+                  "l2": 8198,
+                  "h2": 8199
+                },
+                {
+                  "h1": 8200,
+                  "l1": 8201,
+                  "l2": 8202,
+                  "h2": 8203
+                },
+                {
+                  "h1": 8204,
+                  "l1": 8205,
+                  "l2": 8206,
+                  "h2": 8207
+                }
+              ]
+            }
+          }
+        },
+        {
+          "expected": {
+            "hex": "0101232010201120122013",
+            "decoded": {
+              "protocol_version": 1,
+              "payload_type": 1,
+              "part_index": 2,
+              "part_count": 3,
+              "cycles": [
+                {
+                  "h1": 8208,
+                  "l1": 8209,
+                  "l2": 8210,
+                  "h2": 8211
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "diagnostic_8_cycles",
+      "input": {
+        "sequence": 8,
+        "status_flags": 64,
+        "quality_state": "INVALID",
+        "valid_cycle_count": 8,
+        "reset_cause": 2309737967,
+        "warmup_ms": 1000,
+        "hardware_revision": 33,
+        "firmware_build_id": 17767,
+        "calibration_schema": 2,
+        "calibration_id": 126,
+        "vrefint_pre_raw": 4369,
+        "vrefint_post_raw": 4626,
+        "pa4_pre_raw": 8738,
+        "pa4_post_raw": 13107,
+        "thermistor_raw_ratio": 17476,
+        "cycles": [
+          {
+            "h1": 12288,
+            "l1": 12289,
+            "l2": 12290,
+            "h2": 12291
+          },
+          {
+            "h1": 12292,
+            "l1": 12293,
+            "l2": 12294,
+            "h2": 12295
+          },
+          {
+            "h1": 12296,
+            "l1": 12297,
+            "l2": 12298,
+            "h2": 12299
+          },
+          {
+            "h1": 12300,
+            "l1": 12301,
+            "l2": 12302,
+            "h2": 12303
+          },
+          {
+            "h1": 12304,
+            "l1": 12305,
+            "l2": 12306,
+            "h2": 12307
+          },
+          {
+            "h1": 12308,
+            "l1": 12309,
+            "l2": 12310,
+            "h2": 12311
+          },
+          {
+            "h1": 12312,
+            "l1": 12313,
+            "l2": 12314,
+            "h2": 12315
+          },
+          {
+            "h1": 12316,
+            "l1": 12317,
+            "l2": 12318,
+            "h2": 12319
+          }
+        ]
+      },
+      "parts": [
+        {
+          "expected": {
+            "hex": "010103000800408889abcdef03e821456700027e11111212222233334444",
+            "decoded": {
+              "protocol_version": 1,
+              "payload_type": 1,
+              "part_index": 0,
+              "part_count": 3,
+              "sequence": 8,
+              "status_flags": 64,
+              "status_flags_named": {
+                "ML3_ADC_INIT": false,
+                "ML3_ADC_CAL": false,
+                "ML3_ADC_TIMEOUT": false,
+                "ML3_ADC_OVERRUN": false,
+                "ML3_HI_OVER": false,
+                "ML3_LOW_RAIL_CLIPPED": false,
+                "ML3_DIFF_RANGE": true,
+                "ML3_CM_RANGE": false,
+                "ML3_VREF_DRIFT": false,
+                "ML3_V5_LOW": false,
+                "ML3_V5_HIGH": false,
+                "ML3_NOISE_HIGH": false,
+                "ML3_WARMUP_DRIFT": false,
+                "ML3_CAL_INVALID": false,
+                "ML3_TEMP_RANGE": false,
+                "ML3_THERM_FAULT": false
+              },
+              "quality_state": "INVALID",
+              "valid_cycle_count": 8,
+              "quality_reserved": 0,
+              "reset_cause": 2309737967,
+              "warmup_ms": 1000,
+              "hardware_revision": 33,
+              "firmware_build_id": 17767,
+              "calibration_schema": 2,
+              "calibration_id": 126,
+              "vrefint_pre_raw": 4369,
+              "vrefint_post_raw": 4626,
+              "pa4_pre_raw": 8738,
+              "pa4_post_raw": 13107,
+              "thermistor_raw_ratio": 17476
+            }
+          }
+        },
+        {
+          "expected": {
+            "hex": "0101133000300130023003300430053006300730083009300a300b300c300d300e300f",
+            "decoded": {
+              "protocol_version": 1,
+              "payload_type": 1,
+              "part_index": 1,
+              "part_count": 3,
+              "cycles": [
+                {
+                  "h1": 12288,
+                  "l1": 12289,
+                  "l2": 12290,
+                  "h2": 12291
+                },
+                {
+                  "h1": 12292,
+                  "l1": 12293,
+                  "l2": 12294,
+                  "h2": 12295
+                },
+                {
+                  "h1": 12296,
+                  "l1": 12297,
+                  "l2": 12298,
+                  "h2": 12299
+                },
+                {
+                  "h1": 12300,
+                  "l1": 12301,
+                  "l2": 12302,
+                  "h2": 12303
+                }
+              ]
+            }
+          }
+        },
+        {
+          "expected": {
+            "hex": "0101233010301130123013301430153016301730183019301a301b301c301d301e301f",
+            "decoded": {
+              "protocol_version": 1,
+              "payload_type": 1,
+              "part_index": 2,
+              "part_count": 3,
+              "cycles": [
+                {
+                  "h1": 12304,
+                  "l1": 12305,
+                  "l2": 12306,
+                  "h2": 12307
+                },
+                {
+                  "h1": 12308,
+                  "l1": 12309,
+                  "l2": 12310,
+                  "h2": 12311
+                },
+                {
+                  "h1": 12312,
+                  "l1": 12313,
+                  "l2": 12314,
+                  "h2": 12315
+                },
+                {
+                  "h1": 12316,
+                  "l1": 12317,
+                  "l2": 12318,
+                  "h2": 12319
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "malformed": [
+    {
+      "id": "malformed_supplied_a55a_semantic_inconsistency",
+      "kind": "routine",
+      "hex": "0100a55a1234ff38303931010ce413880141ff8509e6447e00",
+      "decoded": {
+        "protocol_version": 1,
+        "payload_type": 0,
+        "status_flags": 42330,
+        "status_flags_named": {
+          "ML3_ADC_INIT": false,
+          "ML3_ADC_CAL": true,
+          "ML3_ADC_TIMEOUT": false,
+          "ML3_ADC_OVERRUN": true,
+          "ML3_HI_OVER": true,
+          "ML3_LOW_RAIL_CLIPPED": false,
+          "ML3_DIFF_RANGE": true,
+          "ML3_CM_RANGE": false,
+          "ML3_VREF_DRIFT": true,
+          "ML3_V5_LOW": false,
+          "ML3_V5_HIGH": true,
+          "ML3_NOISE_HIGH": false,
+          "ML3_WARMUP_DRIFT": false,
+          "ML3_CAL_INVALID": true,
+          "ML3_TEMP_RANGE": false,
+          "ML3_THERM_FAULT": true
+        },
+        "sequence": 4660,
+        "corrected_diff_decimv": -200,
+        "mean_hi_decimv": 12345,
+        "mean_lo_decimv": 12545,
+        "vdda_mv": 3300,
+        "v5_mv": 5000,
+        "noise_uv": 321,
+        "die_temperature_centic": -123,
+        "soil_temperature_centic": 2534,
+        "quality_state": "DEGRADED",
+        "valid_cycle_count": 4,
+        "quality_reserved": 0,
+        "calibration_id": 126,
+        "reserved": 0
+      },
+      "expected_status": "semantic_inconsistency"
+    },
+    {
+      "id": "malformed_adc_init_with_measurement_data",
+      "kind": "routine",
+      "hex": "0100000100017fff0bb801f40ce41388019009d00739880700",
+      "decoded": {
+        "protocol_version": 1,
+        "payload_type": 0,
+        "status_flags": 1,
+        "status_flags_named": {
+          "ML3_ADC_INIT": true,
+          "ML3_ADC_CAL": false,
+          "ML3_ADC_TIMEOUT": false,
+          "ML3_ADC_OVERRUN": false,
+          "ML3_HI_OVER": false,
+          "ML3_LOW_RAIL_CLIPPED": false,
+          "ML3_DIFF_RANGE": false,
+          "ML3_CM_RANGE": false,
+          "ML3_VREF_DRIFT": false,
+          "ML3_V5_LOW": false,
+          "ML3_V5_HIGH": false,
+          "ML3_NOISE_HIGH": false,
+          "ML3_WARMUP_DRIFT": false,
+          "ML3_CAL_INVALID": false,
+          "ML3_TEMP_RANGE": false,
+          "ML3_THERM_FAULT": false
+        },
+        "sequence": 1,
+        "corrected_diff_decimv": null,
+        "mean_hi_decimv": 3000,
+        "mean_lo_decimv": 500,
+        "vdda_mv": 3300,
+        "v5_mv": 5000,
+        "noise_uv": 400,
+        "die_temperature_centic": 2512,
+        "soil_temperature_centic": 1849,
+        "quality_state": "INVALID",
+        "valid_cycle_count": 8,
+        "quality_reserved": 0,
+        "calibration_id": 7,
+        "reserved": 0
+      },
+      "expected_status": "semantic_inconsistency"
+    },
+    {
+      "id": "malformed_adc_cal_with_measurement_data",
+      "kind": "routine",
+      "hex": "0100000200017fff0bb801f40ce41388019009d00739880700",
+      "decoded": {
+        "protocol_version": 1,
+        "payload_type": 0,
+        "status_flags": 2,
+        "status_flags_named": {
+          "ML3_ADC_INIT": false,
+          "ML3_ADC_CAL": true,
+          "ML3_ADC_TIMEOUT": false,
+          "ML3_ADC_OVERRUN": false,
+          "ML3_HI_OVER": false,
+          "ML3_LOW_RAIL_CLIPPED": false,
+          "ML3_DIFF_RANGE": false,
+          "ML3_CM_RANGE": false,
+          "ML3_VREF_DRIFT": false,
+          "ML3_V5_LOW": false,
+          "ML3_V5_HIGH": false,
+          "ML3_NOISE_HIGH": false,
+          "ML3_WARMUP_DRIFT": false,
+          "ML3_CAL_INVALID": false,
+          "ML3_TEMP_RANGE": false,
+          "ML3_THERM_FAULT": false
+        },
+        "sequence": 1,
+        "corrected_diff_decimv": null,
+        "mean_hi_decimv": 3000,
+        "mean_lo_decimv": 500,
+        "vdda_mv": 3300,
+        "v5_mv": 5000,
+        "noise_uv": 400,
+        "die_temperature_centic": 2512,
+        "soil_temperature_centic": 1849,
+        "quality_state": "INVALID",
+        "valid_cycle_count": 8,
+        "quality_reserved": 0,
+        "calibration_id": 7,
+        "reserved": 0
+      },
+      "expected_status": "semantic_inconsistency"
+    },
+    {
+      "id": "malformed_adc_timeout_with_measurement_data",
+      "kind": "routine",
+      "hex": "0100000400017fff0bb801f40ce41388019009d00739880700",
+      "decoded": {
+        "protocol_version": 1,
+        "payload_type": 0,
+        "status_flags": 4,
+        "status_flags_named": {
+          "ML3_ADC_INIT": false,
+          "ML3_ADC_CAL": false,
+          "ML3_ADC_TIMEOUT": true,
+          "ML3_ADC_OVERRUN": false,
+          "ML3_HI_OVER": false,
+          "ML3_LOW_RAIL_CLIPPED": false,
+          "ML3_DIFF_RANGE": false,
+          "ML3_CM_RANGE": false,
+          "ML3_VREF_DRIFT": false,
+          "ML3_V5_LOW": false,
+          "ML3_V5_HIGH": false,
+          "ML3_NOISE_HIGH": false,
+          "ML3_WARMUP_DRIFT": false,
+          "ML3_CAL_INVALID": false,
+          "ML3_TEMP_RANGE": false,
+          "ML3_THERM_FAULT": false
+        },
+        "sequence": 1,
+        "corrected_diff_decimv": null,
+        "mean_hi_decimv": 3000,
+        "mean_lo_decimv": 500,
+        "vdda_mv": 3300,
+        "v5_mv": 5000,
+        "noise_uv": 400,
+        "die_temperature_centic": 2512,
+        "soil_temperature_centic": 1849,
+        "quality_state": "INVALID",
+        "valid_cycle_count": 8,
+        "quality_reserved": 0,
+        "calibration_id": 7,
+        "reserved": 0
+      },
+      "expected_status": "semantic_inconsistency"
+    },
+    {
+      "id": "malformed_adc_overrun_with_measurement_data",
+      "kind": "routine",
+      "hex": "0100000800017fff0bb801f40ce41388019009d00739880700",
+      "decoded": {
+        "protocol_version": 1,
+        "payload_type": 0,
+        "status_flags": 8,
+        "status_flags_named": {
+          "ML3_ADC_INIT": false,
+          "ML3_ADC_CAL": false,
+          "ML3_ADC_TIMEOUT": false,
+          "ML3_ADC_OVERRUN": true,
+          "ML3_HI_OVER": false,
+          "ML3_LOW_RAIL_CLIPPED": false,
+          "ML3_DIFF_RANGE": false,
+          "ML3_CM_RANGE": false,
+          "ML3_VREF_DRIFT": false,
+          "ML3_V5_LOW": false,
+          "ML3_V5_HIGH": false,
+          "ML3_NOISE_HIGH": false,
+          "ML3_WARMUP_DRIFT": false,
+          "ML3_CAL_INVALID": false,
+          "ML3_TEMP_RANGE": false,
+          "ML3_THERM_FAULT": false
+        },
+        "sequence": 1,
+        "corrected_diff_decimv": null,
+        "mean_hi_decimv": 3000,
+        "mean_lo_decimv": 500,
+        "vdda_mv": 3300,
+        "v5_mv": 5000,
+        "noise_uv": 400,
+        "die_temperature_centic": 2512,
+        "soil_temperature_centic": 1849,
+        "quality_state": "INVALID",
+        "valid_cycle_count": 8,
+        "quality_reserved": 0,
+        "calibration_id": 7,
+        "reserved": 0
+      },
+      "expected_status": "semantic_inconsistency"
+    },
+    {
+      "id": "malformed_therm_fault_with_soil_temperature",
+      "kind": "routine",
+      "hex": "01008000000109c40bb801f40ce41388019009d00739480700",
+      "decoded": {
+        "protocol_version": 1,
+        "payload_type": 0,
+        "status_flags": 32768,
+        "status_flags_named": {
+          "ML3_ADC_INIT": false,
+          "ML3_ADC_CAL": false,
+          "ML3_ADC_TIMEOUT": false,
+          "ML3_ADC_OVERRUN": false,
+          "ML3_HI_OVER": false,
+          "ML3_LOW_RAIL_CLIPPED": false,
+          "ML3_DIFF_RANGE": false,
+          "ML3_CM_RANGE": false,
+          "ML3_VREF_DRIFT": false,
+          "ML3_V5_LOW": false,
+          "ML3_V5_HIGH": false,
+          "ML3_NOISE_HIGH": false,
+          "ML3_WARMUP_DRIFT": false,
+          "ML3_CAL_INVALID": false,
+          "ML3_TEMP_RANGE": false,
+          "ML3_THERM_FAULT": true
+        },
+        "sequence": 1,
+        "corrected_diff_decimv": 2500,
+        "mean_hi_decimv": 3000,
+        "mean_lo_decimv": 500,
+        "vdda_mv": 3300,
+        "v5_mv": 5000,
+        "noise_uv": 400,
+        "die_temperature_centic": 2512,
+        "soil_temperature_centic": 1849,
+        "quality_state": "DEGRADED",
+        "valid_cycle_count": 8,
+        "quality_reserved": 0,
+        "calibration_id": 7,
+        "reserved": 0
+      },
+      "expected_status": "semantic_inconsistency"
+    }
+  ]
+}
