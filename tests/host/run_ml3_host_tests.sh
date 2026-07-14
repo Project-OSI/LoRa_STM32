@@ -185,6 +185,7 @@ CALIBRATION_TEST="$ROOT_DIR/tests/host/ml3_calibration_test.c"
 QUALITY_TEST="$ROOT_DIR/tests/host/ml3_quality_test.c"
 THERMISTOR_TEST="$ROOT_DIR/tests/host/ml3_thermistor_test.c"
 PAYLOAD_TEST="$ROOT_DIR/tests/host/ml3_payload_test.c"
+AT_COMMANDS_TEST="$ROOT_DIR/tests/host/ml3_at_commands_test.c"
 
 cleanup() {
   local cleanup_status=0
@@ -329,6 +330,15 @@ if [ "$status" -ne 0 ]; then
   exit "$status"
 fi
 
+ml3_run_isolated_command "$CC" "${CFLAGS[@]}" \
+  "$AT_COMMANDS_TEST" \
+  "$BUILD_DIR"/ml3_at_commands.o \
+  -o "$BUILD_DIR/ml3_at_commands_test"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
 ml3_run_isolated_command "$BUILD_DIR/ml3_contract_test"
 status=$?
 if [ "$status" -ne 0 ]; then
@@ -360,6 +370,12 @@ if [ "$status" -ne 0 ]; then
 fi
 
 ml3_run_isolated_command "$BUILD_DIR/ml3_payload_test"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
+ml3_run_isolated_command "$BUILD_DIR/ml3_at_commands_test"
 status=$?
 if [ "$status" -ne 0 ]; then
   exit "$status"

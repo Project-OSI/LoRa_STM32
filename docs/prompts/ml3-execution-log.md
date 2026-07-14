@@ -1203,3 +1203,39 @@ gates.
 - Strict GCC and Clang focused runners, both compile-gate contracts, shell
   syntax checks, whitespace checks, and documentation lint pass after the
   correction.
+## Task 8 checkpoint — length-delimited AT parser
+
+Task 8 implements only the pure parser. Vendor command registration, response
+formatting, configuration mutation, calibration decoding, EEPROM writes, and
+slot clearing remain Task 10 integration work.
+
+- The parser recognizes only the nine §3.14 operations. Matching is
+  case-sensitive and length-delimited; it rejects leading or trailing ASCII
+  whitespace, CR/LF, suffixes, aliases, and prefix collisions.
+- Warm-up, cycle-count, and raw-mode values use manual unsigned-decimal parsing.
+  The parser distinguishes empty values, non-digits, `uint32_t` overflow, and
+  command-specific range failures. Warm-up accepts 500 through 3000 ms, cycles
+  accept 2 through 8, and raw mode accepts 0 or 1.
+- Every failure leaves the caller's output object byte-for-byte unchanged. A
+  successful parse assigns a local result only after all syntax, overflow, and
+  range checks pass.
+- `AT+ML3CAL=<record>` returns a borrowed pointer and explicit length into the
+  caller's input. The parser neither copies nor interprets the record. It
+  rejects an empty span and embedded NUL because the Task 10 text transport
+  must not truncate a length-delimited command silently; other record bytes
+  remain opaque.
+- No record encoding or vendor-buffer limit was chosen. A host test accepts a
+  2092-byte opaque span, the maximum binary schema-v2 record before any text
+  encoding. Task 10 must select an encoding and transport strategy that fits
+  the vendor AT path without assuming its existing command buffer is large
+  enough.
+- `AT+ML3CALCLR` produces `ML3_AT_OPERATION_CLEAR_CALIBRATION` and performs no
+  storage action. Task 10 must bind it to a verified redundant-slot clear
+  operation; Task 4 currently exposes load and store, not erase semantics.
+- TDD RED: the strict GCC runner failed while the scaffold lacked every parser
+  type and operation. GREEN: focused GCC and Clang runners pass the command
+  contract along with the approved Task 2 through Task 4 tests.
+- Full `make test` and `make test CC=clang` pass after the process-guard fix at
+  base `d78c10f`. Both runs print `ml3 AT command parser: OK`, the calibration
+  and measurement pass lines, all 16 precision-ADC passes, the concurrency
+  pass, and the clean-tree pass.
