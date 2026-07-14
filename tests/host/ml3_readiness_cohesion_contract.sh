@@ -62,6 +62,8 @@ require_defined_zero ML3_CONFIG_GATE0_APPROVAL_READY "Gate 0 approval"
 require_defined_zero ML3_CONFIG_GATE1_APPROVAL_READY "Gate 1 approval"
 require_defined_zero ML3_CONFIG_V5_DIVIDER_RATIO_PPM "canonical divider value"
 require_defined_zero ML3_CONFIG_V5_DIVIDER_RATIO_READY "canonical divider readiness"
+require_defined_zero ML3_CONFIG_MAX_FRMPAYLOAD_BYTES "maximum FRMPayload bytes"
+require_defined_zero ML3_CONFIG_MAX_FRMPAYLOAD_READY "maximum FRMPayload readiness"
 
 require_define_block_symbols ML3_CONFIG_GATE0_READINESS \
   ML3_CONFIG_PB5_ACTIVE_LOW_READY \
@@ -76,6 +78,7 @@ require_define_block_symbols ML3_CONFIG_GATE0_READINESS \
   ML3_CONFIG_WARMUP_TIME_READY \
   ML3_CONFIG_LORA_REGION_READY \
   ML3_CONFIG_LORA_DATARATE_READY \
+  ML3_CONFIG_MAX_FRMPAYLOAD_READY \
   ML3_CONFIG_ROUTINE_MAX_AIRTIME_READY \
   ML3_CONFIG_DIAGNOSTIC_MAX_AIRTIME_READY \
   ML3_CONFIG_GATE0_APPROVAL_READY

@@ -7,6 +7,8 @@ INC_DIR="$APP_DIR/inc"
 SRC_DIR="$APP_DIR/src"
 BUILD_DIR=$(mktemp -d "${TMPDIR:-/tmp}/ml3-build.XXXXXX")
 CONFIG_CONTRACT="$ROOT_DIR/tests/host/ml3_config_contract.sh"
+PAYLOAD_CONFIG_CONTRACT="$ROOT_DIR/tests/host/ml3_payload_config_gate_contract.sh"
+PAYLOAD_CONFIG_RUNNER_REGRESSION="$ROOT_DIR/tests/host/ml3_payload_config_gate_runner_regression.sh"
 CC="${CC:-gcc}"
 PROCESS_GUARD="$ROOT_DIR/tests/host/ml3_process_guard.sh"
 REQUESTED_EXIT_CODE=
@@ -182,6 +184,7 @@ TASK3_TEST="$ROOT_DIR/tests/host/ml3_measurement_task3_test.c"
 CALIBRATION_TEST="$ROOT_DIR/tests/host/ml3_calibration_test.c"
 QUALITY_TEST="$ROOT_DIR/tests/host/ml3_quality_test.c"
 THERMISTOR_TEST="$ROOT_DIR/tests/host/ml3_thermistor_test.c"
+PAYLOAD_TEST="$ROOT_DIR/tests/host/ml3_payload_test.c"
 
 cleanup() {
   local cleanup_status=0
@@ -219,6 +222,18 @@ if grep -Eiq '\b(float|double|malloc|calloc|realloc|free|__int128|HAL_|stm32|i2c
 fi
 
 ml3_run_isolated_command "$CONFIG_CONTRACT"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
+ml3_run_isolated_command "$PAYLOAD_CONFIG_CONTRACT"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
+ml3_run_isolated_command "$PAYLOAD_CONFIG_RUNNER_REGRESSION"
 status=$?
 if [ "$status" -ne 0 ]; then
   exit "$status"
@@ -304,6 +319,16 @@ if [ "$status" -ne 0 ]; then
   exit "$status"
 fi
 
+ml3_run_isolated_command "$CC" "${CFLAGS[@]}" \
+  "$PAYLOAD_TEST" \
+  "$BUILD_DIR"/ml3_payload.o \
+  "$BUILD_DIR"/ml3_quality.o \
+  -o "$BUILD_DIR/ml3_payload_test"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
 ml3_run_isolated_command "$BUILD_DIR/ml3_contract_test"
 status=$?
 if [ "$status" -ne 0 ]; then
@@ -329,6 +354,12 @@ if [ "$status" -ne 0 ]; then
 fi
 
 ml3_run_isolated_command "$BUILD_DIR/ml3_thermistor_test"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
+ml3_run_isolated_command "$BUILD_DIR/ml3_payload_test"
 status=$?
 if [ "$status" -ne 0 ]; then
   exit "$status"

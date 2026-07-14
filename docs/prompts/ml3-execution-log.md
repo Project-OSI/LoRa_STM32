@@ -1038,3 +1038,168 @@ as a fabricated effective calibration value.
 - The mandatory `gpt-5.6-sol` binding reviews for Tasks 5 and 6 remain pending.
   The external reviewer quota was exhausted on 2026-07-14 and reported a reset
   time of 2026-07-20 21:10. No binding approval is claimed for those tasks.
+
+## Task 7 checkpoint — routine and diagnostic payloads
+
+Task 7 implements the Appendix A routine frame, an explicit diagnostic frame
+map, per-frame length gates, and the automatic-diagnostic limiter. The module
+uses primitive fixed-width inputs so Tasks 5 and 6 can supply their results
+without a dependency on unintegrated structs.
+
+### Frozen wire contract
+
+- Routine frames are 25 bytes, big-endian, with version 1 and type 0. Public
+  constants pin every offset. HI and LO inputs are named
+  `mean_*_uncalibrated_uv`; the payload module only quantizes these
+  VREFINT-compensated values and never applies calibration to them.
+- Integer quantization uses C99 truncation toward zero: µV to 0.1 mV divides by
+  100, µV to mV divides by 1000, and milli°C to centi°C divides by 10. Negative
+  values are rejected for unsigned fields before division, so `-1 µV` cannot
+  become a plausible zero.
+- Unavailable corrected and temperature fields use `0x7FFF`; unavailable
+  unsigned and diagnostic raw fields use `0xFFFF`. The builder forces the
+  corrected field to `0x7FFF` whenever quality is INVALID or `CAL_INVALID` is
+  set, even if the caller supplies a corrected value. Encodable values that
+  collide with a sentinel are rejected.
+- The fixed invalidating mask is `0x027F`. Fixed invalidating flags or fewer
+  than three valid cycles require quality INVALID; quality VALID rejects every
+  nonzero flag, and DEGRADED rejects fixed invalidating flags. Diagnostic valid
+  cycles cannot exceed the number of captured raw cycles. Contradictions return
+  `ML3_PAYLOAD_ERR_SEMANTIC_INCONSISTENCY` instead of being normalized.
+- Appendix A.2 did not assign diagnostic offsets. This task freezes the
+  conservative 30-byte big-endian header requested by the controller: bytes
+  0–2 are version, type 1, and zero-based part index/count; bytes 3–29 contain
+  sequence, flags, quality, reset cause, warm-up, hardware revision, firmware
+  build, calibration schema and ID, then the five raw fields in the stated
+  order. Continuation parts contain the 3-byte prefix and at most four
+  `H1,L1,L2,H2` cycles. Counts 0 through 8 produce one through three parts.
+- The supplied hex oracle
+  `0100a55a1234ff38303931010ce413880141ff8509e6447e00` is malformed, not a
+  valid Task 9 ground-truth frame. Flags `0xA55A` set `CAL_INVALID` and other
+  invalidating bits, while quality byte `0x44` says DEGRADED and corrected data
+  is non-sentinel. Tests use it only to pin offsets and endianness, then require
+  the semantic validator to reject it. Separate VALID, DEGRADED, and INVALID
+  builder vectors obey the sentinel rules.
+- Every builder takes a caller-supplied maximum FRMPayload length and rejects a
+  zero gate or an oversized frame before writing output. The central config now
+  has zero-valued `ML3_CONFIG_MAX_FRMPAYLOAD_BYTES` and readiness entries marked
+  `GATE0-PENDING (§2.1 item 5, §3.13)`; no region, data-rate, or airtime value was
+  invented.
+- The automatic limiter uses caller-owned fixed storage and a 21,600,000 ms
+  interval. Unsigned subtraction makes elapsed time wrap-safe. Eligibility is
+  read-only, a new signature fails closed when capacity is full, and the caller
+  invokes `ml3_payload_auto_diag_mark_queued` only after every diagnostic part
+  is accepted by the radio queue.
+
+### TDD and verification evidence
+
+- Routine RED failed compilation because the scaffold had no payload types,
+  constants, or builder. GREEN reproduced a semantically consistent negative-
+  differential vector and the 25-byte layout.
+- Semantic RED failed compilation before the routine validator existed. GREEN
+  rejected the malformed supplied oracle and covered all sentinels, all three
+  quality states, negative truncation, reserved encodings, and range and length
+  failures.
+- Diagnostic RED failed compilation before the header, cycle, and part APIs
+  existed. GREEN byte-compared the 30-byte header and both 35-byte continuation
+  frames, then covered 0, 1, 4, 5, and 8 cycles, invalid parts, raw-code bounds,
+  and per-part FRMPayload gates.
+- Limiter RED failed compilation before the entry and eligibility APIs existed.
+  GREEN covered same and different signatures, the exact six-hour boundary,
+  `uint32_t` wrap, full and zero capacity, and no mutation until the explicit
+  queue-accepted mark.
+- Self-review found that C99 `-1 / 100` is zero. A regression first failed when
+  `-1 µV` reached an unsigned field; validation before division made it pass.
+- A controller semantic audit added seven failing mutations: fixed invalidating
+  flags with DEGRADED, warning flags with VALID, too few valid cycles without
+  INVALID, and diagnostic valid cycles above captured cycles. The builders and
+  raw-frame validator now reject each contradiction.
+- Fresh full `make test` and `CC=clang make test` runs exited 0. Both printed
+  `ml3 payload: OK`, passed all earlier module tests, and passed the concurrency
+  and clean-tree regressions.
+- The configuration and readiness contracts, pending-marker mutation test,
+  `bash -n tests/host/*.sh`, GCC `-fanalyzer`, Clang static analysis, and a GCC
+  ASan+UBSan payload run exited 0. `git diff --check`, the untracked-test
+  whitespace check, forbidden dependency scans, and documentation lint passed.
+
+### Pending integration gates
+
+- Gate 0 must supply and approve the maximum FRMPayload size for the deployed
+  region and data rate. Builders remain fail-closed while the value is zero.
+- Task 5 supplies the stable nonzero invalidating signature and owns its
+  derivation. Task 7 treats the signature as opaque.
+- Task 10 owns cross-reset persistence, storage loading, and the call to mark
+  only after queue acceptance. No nonvolatile adapter is present here.
+- Task 9 must publish semantically valid shared JSON vectors. It must not copy
+  the malformed `A55A` oracle into decoder ground truth.
+- The binding `gpt-5.6-sol` review is pending because its quota is unavailable.
+
+### Task 7 native review correction — sentinel and build gates
+
+The native review returned `fix-required` with one Blocker and two Major
+findings. Task 7 was first rebased as one commit onto the combined Tasks 1–6
+head `839b8ac` so the correction could consume Task 5's canonical quality API.
+
+- Sentinel RED produced 16 focused-test failures. With `ADC_TIMEOUT` and
+  caller availability still true, seven non-corrected numeric fields encoded
+  plausible zeros; seven validator mutations replacing required sentinels with
+  zero were accepted. `THERM_FAULT` also encoded and accepted a zero soil
+  temperature.
+- Core ADC failures (`ADC_INIT`, `ADC_CAL`, `ADC_TIMEOUT`, or `ADC_OVERRUN`) now
+  force corrected, HI, LO, VDDA, +5 V, noise, die temperature, and soil
+  temperature to their specified sentinels. `THERM_FAULT` independently forces
+  the soil-temperature sentinel. The raw-frame validator enforces the same
+  flag-specific rules, so caller availability cannot create plausible abort
+  data.
+- Canonical-ownership RED stopped compilation while `ml3_payload.h` still
+  defined a separate invalidating mask and calibration flag. The public header
+  now includes `ml3_quality.h`, stores `ml3_quality_state_t`, uses
+  `ML3_QUALITY_INVALIDATING_MASK` and `ML3_QUALITY_FLAG_CAL_INVALID`, and aliases
+  its cycle capacity to `ML3_QUALITY_MAX_BURST_CYCLES`. Compile guards reject a
+  return of the removed payload-owned mask or calibration flag.
+- The FRMPayload contract compiles the current readiness-0, maximum-0 config,
+  then compiles copied headers with readiness 1 and maxima 34 and 35. An initial
+  version searched the original include directory first; its acceptance result
+  was discarded. After correcting include precedence, deleting the production
+  preprocessor gate made the 34-byte mutation fail with `accepted ready maximum
+  34`. Restoring the gate rejects 34 with its named diagnostic and accepts 35
+  under GCC and Clang.
+- The preprocessor comparisons use the public 25-byte routine, 30-byte header,
+  and 35-byte continuation maxima. No region or data-rate constant was added,
+  and readiness 0 continues to block `ML3_CONFIG_DEPLOYABLE` while allowing the
+  host build.
+- Fresh strict GCC and Clang focused runners exit 0 and print the Task 2–7 pass
+  lines. The compile-gate contract passes under both compilers. GCC
+  `-fanalyzer`, Clang static analysis, and the GCC ASan+UBSan payload test also
+  exit 0.
+- Configuration, readiness, and marker-mutation contracts, shell syntax,
+  payload-owned-quality scans, forbidden dependency scans, whitespace checks,
+  and documentation lint pass. The full lifecycle suite was not repeated for
+  this narrow correction; the focused runner includes every functional module
+  through Task 7.
+
+### Task 7 native rereview correction — test-gate closure
+
+The rereview accepted the production correction and found two gaps in its test
+gates.
+
+- The FRMPayload compile contract used `set -u`, so compiler exit 99 from either
+  required-success compile was ignored. Direct mutations of `pending.o` and
+  `exact.o` each exited 0 and printed `ml3 payload config gate: OK`. The contract
+  now uses `set -eu`; the expected 34-byte compile failure remains guarded by an
+  `if` condition.
+- A fake compiler regression injects exit 99 at `pending.o` and `exact.o`. It
+  requires the contract to return 99 and forbids the success banner in both
+  cases. The regression is part of the focused host runner and passes under GCC
+  and Clang.
+- The core ADC sentinel test now covers `ADC_INIT`, `ADC_CAL`, `ADC_TIMEOUT`, and
+  `ADC_OVERRUN`. For each flag it checks every routine numeric field produced by
+  the builder and replaces each required sentinel with zero to require validator
+  rejection.
+- A timeout-only core-mask mutation produced 42 failures: each of the three
+  omitted flags left seven builder fields plausible and allowed seven
+  contradictory validator mutations. Restoring the four-flag mask returned the
+  focused suite to green.
+- Strict GCC and Clang focused runners, both compile-gate contracts, shell
+  syntax checks, whitespace checks, and documentation lint pass after the
+  correction.
