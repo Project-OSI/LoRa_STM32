@@ -737,3 +737,155 @@ FIX-REQUIRED
 - Four in-memory mutations were rejected by the focused tests: removal of the fractional-mean correction, reversal of the remainder comparison, replacement of mathematical floor division with C truncation in the centered correction, and restoration of the old mixed-sign median average.
 - Strict GCC and Clang in-memory builds passed the Task 3 contract tests and all 16 Task 2 precision-ADC tests. The configuration, readiness, shell-syntax, analyzer, diff-hygiene, and immutable-range checks also passed.
 - The rereview confirmed that all findings from the two earlier binding reviews were resolved. Task 3 is complete at the reviewed production-and-test tree in `f525f5e`; the only later amendment is this approval record.
+
+## Task 4 checkpoint — calibration math and redundant storage
+
+Task 4 implements the fixed-point correction model, schema-v2 byte encoding,
+CRC-32/ISO-HDLC, dual-slot selection, and verified writes. It adds no EEPROM
+addresses, target adapter, or device-hash derivation; those choices remain
+blocked on Task 10 target integration.
+
+### Resolved Appendix B and math choices
+
+- The public model owns no dynamic memory. Piecewise points and record workspace
+  are caller-owned. Counts 2 through 255 require strictly increasing raw-input
+  knots and a nondecreasing effective transfer (`input + correction`); count 0
+  disables the table and count 1 is invalid.
+- Calibration ID 0 is invalid because payload ID 0 means no calibration. A
+  validated record with nonzero ID and all-zero coefficients remains an identity
+  correction. The stored +5 V divider coefficient does not participate in the
+  moisture correction formula.
+- Every division follows the specified staged order and C99 truncation toward
+  zero. Multiply-divide uses checked quotient/remainder decomposition, so it
+  accepts representable full-range signed 64-bit cases without floating point,
+  saturation, heap allocation, variable-length arrays, `__int128`, or fabricated
+  coefficient and voltage limits. Every failure leaves the output unchanged.
+- Records are encoded field by field as little-endian two's-complement bytes;
+  C structs are never serialized. The fixed magic is `0x4D4C3343`, schema is 2,
+  and encoded length is exactly `52 + 8N`. The decoding buffer argument is available
+  capacity, so a valid record may occupy the prefix of a larger slot.
+- The caller supplies the expected nonzero magic and device hash. Validation
+  checks the fixed protocol magic, schema, encoded length, capacity, device hash,
+  nonzero calibration ID, piecewise semantics, and trailing CRC before changing
+  the output model, point storage, or sequence.
+- Sequence ordering uses unsigned modular distance. A distance in
+  `1..0x7FFFFFFF` is newer; equality and `0x80000000` fail closed as ambiguous.
+  Sequence 0 is newer than `0xFFFFFFFF`, and the first stored record uses 0.
+- Store reads and validates both slots before writing. It chooses an invalid or
+  strictly older slot, assigns the sequence, invalidates every applicable old
+  and candidate CRC location, writes and verifies the body, then writes the new
+  CRC last. Each invalidation byte differs from both the stored byte and the
+  candidate CRC byte and is read back before the body write. This keeps even an
+  all-zero candidate CRC uncommitted through partial final-CRC writes.
+- A reported final-CRC write failure may still return success only when exact
+  full readback and normal record validation prove that the record committed.
+  Other I/O failures, silent corruption, partial writes, or ambiguous sequences
+  do not write or select a plausible replacement.
+
+### TDD and verification evidence
+
+- Initial RED: `CC=gcc bash tests/host/run_ml3_host_tests.sh` exited 1 because
+  the empty scaffold lacked `ml3_calibration_model_t` and the requested API.
+- Portability RED: the expanded runner rejected implementation-defined
+  unsigned-to-signed decode casts. Explicit two's-complement decoding replaced
+  them.
+- Exact-length review corrected an overstrict test: encoded length must equal
+  `52 + 8N`, while the containing buffer may be larger. The final test pins that
+  capacity behavior.
+- The all-zero CRC oracle uses sequence `0xD9ED3857`, whose documented
+  zero-point record CRC is `0x00000000`. A power cut after the body must reload
+  the previous sequence `0xD9ED3856`; the verified nonzero marker makes that
+  test pass.
+- Focused GCC and Clang runners both exit 0. Each prints
+  `ml3 calibration: OK`, the Task 3 `OK`, and all 16 Task 2 precision-ADC passes.
+- Calibration tests cover the required numeric oracles, signed extremes,
+  overflowing raw products with representable quotients, staged overflow and
+  output preservation, raw-keyed interpolation, endpoint holds, flat effective
+  segments, count 255, both byte fixtures, CRC metadata mutations with recomputed
+  CRCs, transactional decode/encode failures, sequence rollover, equality and
+  half-range ambiguity, newest-slot preservation, different old/new CRC
+  locations, partial body and 1–3 byte CRC writes, silent marker/body/CRC
+  corruption, read/write failures, and final-CRC callback failure.
+- GCC `-fanalyzer`, Clang static analysis, and a GCC ASan+UBSan calibration run
+  pass. `ml3_config_contract.sh`, `ml3_readiness_cohesion_contract.sh`,
+  `ml3_marker_mutation_regression.sh`, `ml3_clean_tree_after_make_test.sh`, and
+  `bash -n tests/host/*.sh` pass.
+- Dependency, floating-point, heap, VLA, `__int128`, and native-struct
+  serialization scans pass. `git diff --check` and the exact five-file scope
+  check pass.
+- Definitive full suites remain pending integration of the separately reviewed
+  process-guard fix. After all Task 4, Task 3, and Task 2 binaries passed, the
+  final GCC suite failed only at the pre-existing concurrency gate with
+  `round 1 runner A did not finish in time`; both final Clang attempts failed at
+  the same gate with `round 2 runner A did not finish in time`. Clean-start was
+  not established: the original pre-count checked the `bash` column instead of
+  the wrapper-path column. A corrected inventory found four exact stale wrapper
+  groups after the failed attempts; those four isolated groups were terminated
+  and a follow-up exact scan found none.
+
+### Files changed
+
+- `STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/inc/ml3_calibration.h`
+- `STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/src/ml3_calibration.c`
+- `tests/host/ml3_calibration_test.c`
+- `tests/host/run_ml3_host_tests.sh`
+- `docs/prompts/ml3-execution-log.md`
+
+### Task 4 binding correction — final-sum cancellation and two-marker cuts
+
+The binding `gpt-5.6-sol` review of commit `33119ed` returned
+`fix-required` with two Major findings. Term divisions and interpolation were
+accepted. The open work was exact final summation and complete power-cut
+coverage when replacing a shorter valid record with a longer one.
+
+- Final-sum RED: the focused GCC runner exited 1 with eight assertions. Both
+  `INT64_MAX` and `INT64_MIN` cases returned overflow when an offset or gain term
+  crossed the boundary before an opposite common-mode term cancelled it.
+- Final-sum GREEN: the six already-computed terms are split into fixed-size
+  positive and negative magnitude arrays. Opposite signs cancel before either
+  side is accumulated. The accumulator therefore returns the exact signed
+  64-bit result whenever the final sum is representable, without changing the
+  staged temperature, gain, common-mode, or interpolation divisions. True
+  positive and negative overflow still preserve the caller output.
+- Reversed offset/common-mode sign cases cover both fixed addition orders. An
+  implementation that merely moves common mode before offset avoids the first
+  extreme pair but overflows on the reversed pair.
+- The correction uses six compile-time-sized terms. It adds no floating point,
+  heap allocation, variable-length array, saturation, or 128-bit extension.
+- The storage matrix seeds a two-point sequence-10 record in slot 0 and a
+  shorter zero-point sequence-9 record in slot 1, then attempts a two-point
+  sequence-11 replacement. It injects callback failure, partial application,
+  silent corruption, and readback failure at the old CRC marker, candidate CRC
+  marker, body, and final CRC boundaries.
+- Every precommit case reloads sequence 10 and the original two-point model from
+  slot 0. Exact final commit and a fully applied final-CRC callback failure
+  reload sequence 11 from slot 1. A final readback I/O failure reports I/O to
+  the writer but reloads sequence 11 because the CRC had already committed.
+  All cases compare slot 0 byte-for-byte and pin the old CRC offset 48, candidate
+  CRC offset 64, 64-byte body, and slot-1-only writes.
+- Matrix mutation RED: a temporary copy that skipped the old CRC marker exited
+  1 with 89 failed assertions, including premature sequence-11 selection.
+  Restoring the production path returned the focused runner to green.
+- Final focused GCC and Clang runners exit 0. Each prints
+  `ml3 calibration: OK`, the Task 3 `OK`, and all 16 Task 2 ADC passes.
+- Full GCC and Clang suites are not claimed for this correction. They remain
+  pending integration of the separately reviewed process-guard fix described
+  in the preceding checkpoint.
+
+### Task 4 binding rereview
+
+- The required `gpt-5.6-sol` rereviewer examined immutable range
+  `5a6a327cb0fb9aebe6914f7a7de0d617b7695c7b..13343adac24d545acb04104c15ad271a2f93eeae`
+  in session `019f5f93-6aa8-7b21-84b7-f855ec4657bb`. Its complete report is
+  preserved at `/tmp/ml3-task4-binding-rereview.txt`.
+- Verdict: `approve`; no Blocker, Major, or Minor findings.
+- The reviewer independently passed 100,000 big-integer formula cases, 50,000
+  piecewise cases, both CRC fixtures, and 23 storage fault cases in each record-
+  length direction. The current tests also rejected the superseded naive
+  summation implementation.
+- Strict GCC and Clang focused binaries, GCC and Clang analyzers, `-Wvla`, and
+  ASan+UBSan passed. Scope, governing-document, forbidden-token, whitespace,
+  and clean-worktree checks passed.
+- Definitive full GCC and Clang suites remain pending the separate process-guard
+  integration. The reviewed production-and-test tree is complete at
+  `13343ad`; the only later amendment is this approval record.

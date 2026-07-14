@@ -178,6 +178,7 @@ MODULE_SOURCES=(
 )
 PRECISION_TEST="$ROOT_DIR/tests/host/ml3_adc_precision_test.c"
 TASK3_TEST="$ROOT_DIR/tests/host/ml3_measurement_task3_test.c"
+CALIBRATION_TEST="$ROOT_DIR/tests/host/ml3_calibration_test.c"
 
 cleanup() {
   local cleanup_status=0
@@ -202,6 +203,11 @@ trap 'ml3_request_shutdown INT' INT
 trap 'ml3_request_shutdown TERM' TERM
 
 status=0
+
+if grep -Eq '\(int(16|32)_t\)ml3_read_u(16|32)_le' "$SRC_DIR/ml3_calibration.c"; then
+  echo "ml3_calibration uses implementation-defined unsigned-to-signed decode cast" >&2
+  exit 1
+fi
 
 ml3_run_isolated_command "$CONFIG_CONTRACT"
 status=$?
@@ -262,6 +268,15 @@ if [ "$status" -ne 0 ]; then
   exit "$status"
 fi
 
+ml3_run_isolated_command "$CC" "${CFLAGS[@]}" \
+  "$CALIBRATION_TEST" \
+  "$BUILD_DIR"/ml3_calibration.o \
+  -o "$BUILD_DIR/ml3_calibration_test"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
 ml3_run_isolated_command "$BUILD_DIR/ml3_contract_test"
 status=$?
 if [ "$status" -ne 0 ]; then
@@ -269,6 +284,12 @@ if [ "$status" -ne 0 ]; then
 fi
 
 ml3_run_isolated_command "$BUILD_DIR/ml3_measurement_task3_test"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
+ml3_run_isolated_command "$BUILD_DIR/ml3_calibration_test"
 status=$?
 if [ "$status" -ne 0 ]; then
   exit "$status"
