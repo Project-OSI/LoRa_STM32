@@ -3,6 +3,7 @@ set -u
 
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 SUITE="$ROOT_DIR/tests/host/run_ml3_host_suite.sh"
+PAYLOAD_CONFIG_CONTRACT="$ROOT_DIR/tests/host/ml3_payload_config_gate_contract.sh"
 TEST_TMPDIR=$(mktemp -d "${TMPDIR:-/tmp}/ml3-suite-status.XXXXXX")
 SUITE_TMPDIR=$(mktemp -d "$TEST_TMPDIR/suite.XXXXXX")
 MUTATED_SUITE="$TEST_TMPDIR/run_ml3_host_suite.sh"
@@ -12,13 +13,17 @@ LOG_FILE_FLATTEN="$TEST_TMPDIR/suite_flatten.log"
 SUITE_IDENTITY_FILE="$TEST_TMPDIR/suite.identity"
 CC_PID_FILE="$TEST_TMPDIR/cc.pid"
 CC_IDENTITY_FILE="$TEST_TMPDIR/cc.identity"
+CC_OWNER_IDENTITY_FILE="$TEST_TMPDIR/cc.owner.identity"
+CC_RECHECK_OWNER_IDENTITY_FILE="$TEST_TMPDIR/cc.owner.recheck.identity"
 CC_SENTINEL="$TEST_TMPDIR/cc-sentinel"
 CC_WRAPPER="$TEST_TMPDIR/cc-wrapper.sh"
 GREP_SENTINEL="$TEST_TMPDIR/grep-sentinel"
 SUITE_PID=
 PROCESS_GUARD="$ROOT_DIR/tests/host/ml3_process_guard.sh"
+NESTED_IDENTITY_HELPER="$ROOT_DIR/tests/host/ml3_nested_process_identity.sh"
 
 . "$PROCESS_GUARD"
+. "$NESTED_IDENTITY_HELPER"
 
 ml3_now_ms() {
   date +%s%3N
@@ -159,7 +164,15 @@ run_case() {
   local suite_pid=
   local cc_pid=
 
-  rm -f "$CC_SENTINEL" "$GREP_SENTINEL" "$CC_PID_FILE" "$CC_IDENTITY_FILE" "$SUITE_IDENTITY_FILE"
+  rm -f \
+    "$CC_SENTINEL" \
+    "$GREP_SENTINEL" \
+    "$CC_PID_FILE" \
+    "$CC_IDENTITY_FILE" \
+    "$CC_OWNER_IDENTITY_FILE" \
+    "$CC_RECHECK_OWNER_IDENTITY_FILE" \
+    "$SUITE_IDENTITY_FILE"
+  rm -rf "$TEST_TMPDIR/missing-cc-member"
 
   make_mutated_suite "$suite_file" "$flatten"
 
@@ -205,9 +218,34 @@ EOF
 
   cc_pid=$(cat "$CC_PID_FILE" 2>/dev/null || true)
   if [ -n "$cc_pid" ]; then
-    if ! ml3_store_process_identity_file "$CC_IDENTITY_FILE" "$cc_pid"; then
-      printf '%s suite status regression could not capture compiler identity\n' "$name"
+    if persist_nested_wrapper_identities \
+      "$cc_pid" \
+      "$CC_WRAPPER" \
+      "$PAYLOAD_CONFIG_CONTRACT" \
+      "$TEST_TMPDIR/missing-cc-member/cc.identity" \
+      "$CC_OWNER_IDENTITY_FILE" \
+      $(( $(ml3_now_ms) + 1000 )) \
+      >"$TEST_TMPDIR/forced-member-write-failure.log" 2>&1; then
+      printf '%s suite status regression accepted forced compiler member write failure\n' "$name"
+      return 1
+    fi
+    if [ ! -s "$CC_OWNER_IDENTITY_FILE" ]; then
+      printf '%s suite status regression did not retain owner after compiler member write failure\n' "$name"
+      return 1
+    fi
+    if ! persist_nested_wrapper_identities \
+      "$cc_pid" \
+      "$CC_WRAPPER" \
+      "$PAYLOAD_CONFIG_CONTRACT" \
+      "$CC_IDENTITY_FILE" \
+      "$CC_RECHECK_OWNER_IDENTITY_FILE" \
+      $(( $(ml3_now_ms) + 1000 )); then
+      printf '%s suite status regression could not capture compiler member and contract owner\n' "$name"
       cat "$log_file"
+      return 1
+    fi
+    if ! cmp -s "$CC_OWNER_IDENTITY_FILE" "$CC_RECHECK_OWNER_IDENTITY_FILE"; then
+      printf '%s suite status regression owner changed after member write failure\n' "$name"
       return 1
     fi
   fi
@@ -237,8 +275,12 @@ EOF
     return 1
   fi
 
-  if ! ml3_drain_owned_process_identity_file "$CC_IDENTITY_FILE" $(( $(ml3_now_ms) + 1000 )); then
+  if ! drain_recorded_isolated_owner "$CC_OWNER_IDENTITY_FILE" $(( $(ml3_now_ms) + 1000 )); then
     printf '%s suite status regression left compiler wrapper alive\n' "$name"
+    return 1
+  fi
+  if recorded_process_identity_alive "$CC_IDENTITY_FILE"; then
+    printf '%s suite status regression found live compiler member after owner drain\n' "$name"
     return 1
   fi
   if ! ml3_drain_owned_process_identity_file "$SUITE_IDENTITY_FILE" $(( $(ml3_now_ms) + 1000 )); then
@@ -267,7 +309,12 @@ cleanup() {
     fi
     SUITE_PID=
   fi
-  if ! ml3_drain_owned_process_identity_file "$CC_IDENTITY_FILE" $(( $(ml3_now_ms) + 1000 )); then
+  if [ -s "$CC_OWNER_IDENTITY_FILE" ]; then
+    if ! drain_recorded_isolated_owner "$CC_OWNER_IDENTITY_FILE" $(( $(ml3_now_ms) + 1000 )); then
+      status=1
+    fi
+  fi
+  if [ -s "$CC_IDENTITY_FILE" ] && recorded_process_identity_alive "$CC_IDENTITY_FILE"; then
     status=1
   fi
   if [ "$status" -ne 0 ]; then

@@ -3,6 +3,7 @@ set -u
 
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 RUNNER="$ROOT_DIR/tests/host/run_ml3_host_tests.sh"
+PAYLOAD_CONFIG_CONTRACT="$ROOT_DIR/tests/host/ml3_payload_config_gate_contract.sh"
 TEST_TMPDIR=$(mktemp -d "${TMPDIR:-/tmp}/ml3-runner-status.XXXXXX")
 RUNNER_TMPDIR=$(mktemp -d "$TEST_TMPDIR/runner.XXXXXX")
 MUTATED_RUNNER="$TEST_TMPDIR/run_ml3_host_tests.sh"
@@ -24,10 +25,7 @@ SPECIAL_COMM_BINARY="$TEST_TMPDIR/special-comm"
 SPECIAL_COMM_IDENTITY_FILE="$TEST_TMPDIR/special-comm.identity"
 ML3_STATUS_RUNNER_PID=
 PROCESS_GUARD="$ROOT_DIR/tests/host/ml3_process_guard.sh"
-EXACT_STAT_STATE=
-EXACT_STAT_PGID=
-EXACT_STAT_SID=
-EXACT_STAT_STARTTIME=
+NESTED_IDENTITY_HELPER="$ROOT_DIR/tests/host/ml3_nested_process_identity.sh"
 RECORDED_OWNER_PID=
 RECORDED_OWNER_PGID=
 RECORDED_OWNER_SID=
@@ -45,6 +43,7 @@ UNRECORDED_OWNER_WRAPPER=
 SAFE_OWNER_STARTTIME=
 
 . "$PROCESS_GUARD"
+. "$NESTED_IDENTITY_HELPER"
 
 ml3_now_ms() {
   date +%s%3N
@@ -245,44 +244,367 @@ assert_process_guard_owner_reuse_races_rejected() {
   return 0
 }
 
-read_exact_process_fields() {
-  local pid=$1
-  local stat=
+assert_nested_identity_persistence_structure() {
+  local persist_body="$TEST_TMPDIR/persist-nested-wrapper.body"
+  local cleanup_body="$TEST_TMPDIR/cleanup.body"
+  local owner_persist_line=
+  local first_member_write_line=
+  local final_member_read_line=
 
-  EXACT_STAT_STATE=
-  EXACT_STAT_PGID=
-  EXACT_STAT_SID=
-  EXACT_STAT_STARTTIME=
+  awk '
+    $0 == "persist_nested_wrapper_identities() {" { capture = 1 }
+    capture && $0 != "persist_nested_wrapper_identities() {" && $0 ~ /^[A-Za-z_][A-Za-z0-9_]*\(\) \{$/ { exit }
+    capture { print }
+  ' "$NESTED_IDENTITY_HELPER" >"$persist_body"
+  owner_persist_line=$(command grep -n -F \
+    'mv -f -- "$owner_identity_tmp" "$owner_identity_file"' \
+    "$persist_body" | head -n 1 | cut -d: -f1)
+  final_member_read_line=$(command grep -n -F \
+    'read_exact_process_fields "$member_pid"' \
+    "$persist_body" | tail -n 1 | cut -d: -f1)
+  first_member_write_line=$(command grep -n -F \
+    '"$member_starttime" >"$member_identity_tmp"' \
+    "$persist_body" | head -n 1 | cut -d: -f1)
+  if [ -z "$owner_persist_line" ] || \
+    [ -z "$first_member_write_line" ] || \
+    [ -z "$final_member_read_line" ] || \
+    [ "$owner_persist_line" -ge "$first_member_write_line" ] || \
+    [ "$owner_persist_line" -ge "$final_member_read_line" ]; then
+    printf 'nested identity oracle requires owner persistence before member write and revalidation\n'
+    return 1
+  fi
 
-  case "$pid" in
-    ''|*[!0-9]*) return 1 ;;
-  esac
+  awk '
+    $0 == "cleanup() {" { capture = 1 }
+    capture && $0 != "cleanup() {" && $0 ~ /^[A-Za-z_][A-Za-z0-9_]*\(\) \{$/ { exit }
+    capture { print }
+  ' "$0" >"$cleanup_body"
+  if ! command grep -Fq 'if [ -s "$CC_DRAIN_IDENTITY_FILE" ]; then' "$cleanup_body"; then
+    printf 'nested identity oracle requires cleanup to be driven by persisted owner identity\n'
+    return 1
+  fi
 
-  IFS= read -r -d '' stat 2>/dev/null <"/proc/$pid/stat" || [ -n "$stat" ] || return 1
-  stat=${stat##*) }
-  set -- $stat
-  [ "$#" -ge 20 ] || return 1
-
-  EXACT_STAT_STATE=$1
-  EXACT_STAT_PGID=$3
-  EXACT_STAT_SID=$4
-  EXACT_STAT_STARTTIME=${20}
+  return 0
 }
 
-exact_wrapper_cmdline_matches() {
-  local pid=$1
-  local wrapper=$2
-  local argument=
-  local matches=0
+run_nested_persistence_mutation_case() {
+  local mode=$1
+  local member_identity_file="$TEST_TMPDIR/$mode.member.identity"
+  local owner_identity_file="$TEST_TMPDIR/$mode.owner.identity"
+  local kill_sentinel="$TEST_TMPDIR/$mode.kill"
+  local mutation_log="$TEST_TMPDIR/$mode.log"
 
-  [ -r "/proc/$pid/cmdline" ] || return 1
-  while IFS= read -r -d '' argument; do
-    if [ "$argument" = "$wrapper" ]; then
-      matches=$(( matches + 1 ))
+  rm -f "$member_identity_file" "$owner_identity_file" "$kill_sentinel" "$mutation_log"
+  if (
+    FAKE_READ_COUNT=0
+    FAKE_CMDLINE_COUNT=0
+    FAKE_MV_COUNT=0
+    read_exact_process_fields() {
+      local pid=$1
+
+      FAKE_READ_COUNT=$(( FAKE_READ_COUNT + 1 ))
+      EXACT_STAT_STATE=S
+      case "$FAKE_READ_COUNT" in
+        1)
+          [ "$pid" = 100 ] || return 1
+          EXACT_STAT_PGID=200
+          EXACT_STAT_SID=200
+          EXACT_STAT_STARTTIME=10
+          if [ "$mode" = "member_is_owner" ]; then
+            EXACT_STAT_PGID=100
+            EXACT_STAT_SID=100
+          fi
+          ;;
+        2)
+          if [ "$mode" = "member_is_owner" ]; then
+            [ "$pid" = 100 ] || return 1
+            EXACT_STAT_PGID=100
+            EXACT_STAT_SID=100
+            EXACT_STAT_STARTTIME=10
+            return 0
+          fi
+          [ "$pid" = 200 ] || return 1
+          EXACT_STAT_PGID=200
+          EXACT_STAT_SID=200
+          EXACT_STAT_STARTTIME=10
+          ;;
+        3)
+          [ "$pid" = 100 ] || return 1
+          EXACT_STAT_PGID=200
+          EXACT_STAT_SID=200
+          EXACT_STAT_STARTTIME=10
+          case "$mode" in
+            member_is_owner)
+              EXACT_STAT_PGID=100
+              EXACT_STAT_SID=100
+              ;;
+            member_reuse) EXACT_STAT_STARTTIME=11 ;;
+            member_regroup)
+              EXACT_STAT_PGID=300
+              EXACT_STAT_SID=300
+              ;;
+          esac
+          ;;
+        4)
+          if [ "$mode" = "member_is_owner" ]; then
+            [ "$pid" = 100 ] || return 1
+            EXACT_STAT_PGID=100
+            EXACT_STAT_SID=100
+            EXACT_STAT_STARTTIME=10
+            return 0
+          fi
+          [ "$pid" = 200 ] || return 1
+          EXACT_STAT_PGID=200
+          EXACT_STAT_SID=200
+          EXACT_STAT_STARTTIME=10
+          case "$mode" in
+            owner_reuse) EXACT_STAT_STARTTIME=11 ;;
+            owner_regroup)
+              EXACT_STAT_PGID=300
+              EXACT_STAT_SID=300
+              ;;
+          esac
+          ;;
+        *) return 1 ;;
+      esac
+      return 0
+    }
+    exact_wrapper_cmdline_matches() {
+      FAKE_CMDLINE_COUNT=$(( FAKE_CMDLINE_COUNT + 1 ))
+      case "$mode:$FAKE_CMDLINE_COUNT" in
+        member_wrong_cmdline:1|owner_wrong_cmdline:2|member_post_cmdline:3|owner_post_cmdline:4) return 1 ;;
+      esac
+      return 0
+    }
+    ml3_now_ms() {
+      printf '%s' 1
+    }
+    sleep() {
+      return 0
+    }
+    kill() {
+      : >"$kill_sentinel"
+      return 0
+    }
+    if [ "$mode" = "partial_move_failure" ]; then
+      mv() {
+        FAKE_MV_COUNT=$(( FAKE_MV_COUNT + 1 ))
+        if [ "$FAKE_MV_COUNT" -eq 2 ]; then
+          return 1
+        fi
+        command mv "$@"
+      }
     fi
-  done <"/proc/$pid/cmdline"
 
-  [ "$matches" -eq 1 ]
+    if [ "$mode" = "identity_write_failure" ]; then
+      member_identity_file="$TEST_TMPDIR/missing-$mode/member.identity"
+      rm -rf "$(dirname -- "$member_identity_file")"
+    fi
+    if persist_nested_wrapper_identities \
+      100 \
+      /verified/compiler-wrapper \
+      /verified/config-contract \
+      "$member_identity_file" \
+      "$owner_identity_file" \
+      0 >"$mutation_log" 2>&1; then
+      [ "$mode" = "equal_starttime" ] || exit 91
+    else
+      [ "$mode" != "equal_starttime" ] || exit 92
+    fi
+
+    if [ "$mode" = "equal_starttime" ]; then
+      [ "$(<"$member_identity_file")" = "100 200 200 10" ] || exit 93
+      [ "$(<"$owner_identity_file")" = "200 200 200 10" ] || exit 94
+    else
+      [ ! -e "$member_identity_file" ] || exit 95
+    fi
+    case "$mode" in
+      member_reuse|member_regroup|owner_reuse|owner_regroup|member_post_cmdline|owner_post_cmdline|identity_write_failure|partial_move_failure)
+        [ "$(<"$owner_identity_file")" = "200 200 200 10" ] || exit 96
+        ;;
+      member_is_owner|member_wrong_cmdline|owner_wrong_cmdline)
+        [ ! -e "$owner_identity_file" ] || exit 97
+        ;;
+    esac
+    if [ "$mode" = "identity_write_failure" ]; then
+      DRAINED_IDENTITY=
+      ml3_drain_owned_process_identity_file() {
+        IFS= read -r DRAINED_IDENTITY <"$1"
+        return 0
+      }
+      if ! drain_recorded_isolated_owner "$owner_identity_file" 0 || \
+        [ "$DRAINED_IDENTITY" != "200 200 200 10" ]; then
+        exit 99
+      fi
+    fi
+    [ ! -e "$kill_sentinel" ] || exit 98
+  ); then
+    return 0
+  fi
+
+  printf 'nested identity mutation oracle failed for %s\n' "$mode"
+  sed -n '1,80p' "$mutation_log"
+  return 1
+}
+
+assert_nested_persistence_mutations_rejected() {
+  local mode=
+
+  for mode in \
+    equal_starttime \
+    member_is_owner \
+    member_reuse \
+    member_regroup \
+    owner_reuse \
+    owner_regroup \
+    member_wrong_cmdline \
+    owner_wrong_cmdline \
+    member_post_cmdline \
+    owner_post_cmdline \
+    identity_write_failure \
+    partial_move_failure; do
+    if ! run_nested_persistence_mutation_case "$mode"; then
+      return 1
+    fi
+  done
+  return 0
+}
+
+assert_exact_cmdline_mutations_rejected() {
+  local fixture_pid=
+  local fixture_pgid=
+  local fixture_sid=
+  local fixture_starttime=
+  local fixture_identity="$TEST_TMPDIR/duplicate-argv.identity"
+  local target="$TEST_TMPDIR/exact-argv-target"
+  local deadline_ms=
+
+  if ! exact_wrapper_cmdline_matches "$$" "$0"; then
+    printf 'exact argv oracle rejected the current regression script\n'
+    return 1
+  fi
+  if exact_wrapper_cmdline_matches "$$" "$0.suffix" || \
+    exact_wrapper_cmdline_matches "$$" "$TEST_TMPDIR/wrong-wrapper"; then
+    printf 'exact argv oracle accepted substring or wrong path\n'
+    return 1
+  fi
+
+  setsid bash -c 'trap "" HUP INT TERM; while :; do :; done' "$target" "$target" &
+  fixture_pid=$!
+  deadline_ms=$(( $(ml3_now_ms) + 1000 ))
+  while :; do
+    if read -r fixture_pid fixture_pgid fixture_sid fixture_starttime \
+      < <(ml3_capture_process_identity "$fixture_pid") && \
+      [ "$fixture_pid" = "$fixture_pgid" ] && \
+      [ "$fixture_pid" = "$fixture_sid" ]; then
+      break
+    fi
+    if [ ! -e "/proc/$fixture_pid" ] || [ "$(ml3_now_ms)" -ge "$deadline_ms" ]; then
+      kill -s KILL "$fixture_pid" 2>/dev/null || true
+      wait "$fixture_pid" 2>/dev/null || true
+      printf 'duplicate argv oracle could not capture isolated fixture identity\n'
+      return 1
+    fi
+    sleep 0.05
+  done
+  printf '%s %s %s %s\n' \
+    "$fixture_pid" "$fixture_pgid" "$fixture_sid" "$fixture_starttime" >"$fixture_identity"
+  if exact_wrapper_cmdline_matches "$fixture_pid" "$target"; then
+    printf 'exact argv oracle accepted duplicate path arguments\n'
+    if ! drain_recorded_isolated_owner "$fixture_identity" $(( $(ml3_now_ms) + 500 )); then
+      ml3_signal_owned_process_identity_file KILL "$fixture_identity" || true
+    fi
+    wait "$fixture_pid" 2>/dev/null || true
+    return 1
+  fi
+  if ! drain_recorded_isolated_owner \
+    "$fixture_identity" \
+    $(( $(ml3_now_ms) + 500 )); then
+    ml3_signal_owned_process_identity_file KILL "$fixture_identity" || true
+    ml3_wait_for_owned_process_identity_file \
+      "$fixture_identity" \
+      $(( $(ml3_now_ms) + 500 )) || true
+    wait "$fixture_pid" 2>/dev/null || true
+    printf 'duplicate argv oracle could not drain verified fixture group\n'
+    return 1
+  fi
+  wait "$fixture_pid" 2>/dev/null || true
+  return 0
+}
+
+assert_live_regrouped_wrapper_is_not_mistaken_for_pid_reuse() {
+  local identity_file="$TEST_TMPDIR/regrouped-member.identity"
+  local kill_sentinel="$TEST_TMPDIR/regrouped-member.kill"
+
+  printf '%s %s %s %s\n' 100 200 200 10 >"$identity_file"
+  rm -f "$kill_sentinel"
+  if (
+    read_exact_process_fields() {
+      EXACT_STAT_STATE=S
+      EXACT_STAT_PGID=300
+      EXACT_STAT_SID=300
+      EXACT_STAT_STARTTIME=10
+      return 0
+    }
+    exact_wrapper_cmdline_matches() {
+      return 0
+    }
+    kill() {
+      : >"$kill_sentinel"
+      return 0
+    }
+    assert_recorded_wrapper_member_gone \
+      regrouped_member \
+      "$identity_file" \
+      /verified/compiler-wrapper >/dev/null 2>&1
+  ); then
+    printf 'member no-survivor oracle accepted live wrapper after regroup\n'
+    return 1
+  fi
+  if [ -e "$kill_sentinel" ]; then
+    printf 'member no-survivor oracle signalled regrouped wrapper without ownership\n'
+    return 1
+  fi
+  return 0
+}
+
+assert_owned_drain_rejects_member_identity() {
+  local identity_file="$TEST_TMPDIR/non-owner-drain.identity"
+  local drain_sentinel="$TEST_TMPDIR/non-owner-drain.called"
+
+  printf '%s %s %s %s\n' 100 200 200 10 >"$identity_file"
+  rm -f "$drain_sentinel"
+  if (
+    ml3_drain_owned_process_identity_file() {
+      : >"$drain_sentinel"
+      return 0
+    }
+    drain_recorded_isolated_owner "$identity_file" 0
+  ); then
+    printf 'owned-process drain oracle accepted a nested member identity\n'
+    return 1
+  fi
+  if [ -e "$drain_sentinel" ]; then
+    printf 'owned-process drain oracle delegated a non-owner identity\n'
+    return 1
+  fi
+  return 0
+}
+
+assert_member_stat_inspection_failure_is_not_gone() {
+  local identity_file="$TEST_TMPDIR/member-stat-read-failure.identity"
+
+  printf '%s %s %s %s\n' "$$" "$$" "$$" 10 >"$identity_file"
+  if ! (
+    read_exact_process_fields() {
+      return 1
+    }
+    recorded_process_identity_alive "$identity_file"
+  ); then
+    printf 'member no-survivor oracle treated live PID stat failure as gone\n'
+    return 1
+  fi
+  return 0
 }
 
 persist_independent_cleanup_identity() {
@@ -564,6 +886,14 @@ read_recorded_wrapper_identity() {
   case "$RECORDED_OWNER_PGID" in ''|*[!0-9]*) return 1 ;; esac
   case "$RECORDED_OWNER_SID" in ''|*[!0-9]*) return 1 ;; esac
   case "$RECORDED_OWNER_STARTTIME" in ''|*[!0-9]*) return 1 ;; esac
+}
+
+read_recorded_isolated_owner_identity() {
+  local identity_file=$1
+
+  if ! read_recorded_wrapper_identity "$identity_file"; then
+    return 1
+  fi
   [ "$RECORDED_OWNER_PID" = "$RECORDED_OWNER_PGID" ] && \
     [ "$RECORDED_OWNER_PID" = "$RECORDED_OWNER_SID" ]
 }
@@ -573,7 +903,7 @@ load_safe_recorded_wrapper_identity() {
   local wrapper=$2
 
   SAFE_OWNER_STARTTIME=
-  if ! read_recorded_wrapper_identity "$identity_file"; then
+  if ! read_recorded_isolated_owner_identity "$identity_file"; then
     return 1
   fi
   if [ "$VERIFIED_OWNER_PID" = "$RECORDED_OWNER_PID" ] && \
@@ -673,6 +1003,123 @@ assert_no_exact_wrapper_survivor() {
   return 1
 }
 
+assert_recorded_wrapper_member_gone() {
+  local name=$1
+  local identity_file=$2
+  local wrapper=$3
+
+  if ! read_recorded_wrapper_identity "$identity_file"; then
+    printf '%s runner status regression could not read compiler member identity\n' "$name"
+    return 1
+  fi
+  if ! read_exact_process_fields "$RECORDED_OWNER_PID"; then
+    if [ -e "/proc/$RECORDED_OWNER_PID" ]; then
+      printf '%s runner status regression could not inspect compiler member %s\n' \
+        "$name" "$RECORDED_OWNER_PID"
+      return 1
+    fi
+    return 0
+  fi
+  if [ "$EXACT_STAT_STARTTIME" != "$RECORDED_OWNER_STARTTIME" ]; then
+    return 0
+  fi
+  if [ "$EXACT_STAT_STATE" = "Z" ]; then
+    return 0
+  fi
+  if exact_wrapper_cmdline_matches "$RECORDED_OWNER_PID" "$wrapper"; then
+    printf '%s runner status regression found live compiler wrapper member %s after verified group drain\n' \
+      "$name" "$RECORDED_OWNER_PID"
+  else
+    printf '%s runner status regression found compiler member identity %s with changed argv after verified group drain\n' \
+      "$name" "$RECORDED_OWNER_PID"
+  fi
+  return 1
+}
+
+terminate_verified_contract_owner_only() {
+  local name=$1
+  local member_identity_file=$2
+  local owner_identity_file=$3
+  local wrapper=$4
+  local owner_program=$5
+  local owner_pid=
+  local owner_pgid=
+  local owner_sid=
+  local owner_starttime=
+  local member_pid=
+  local member_pgid=
+  local member_sid=
+  local member_starttime=
+  local deadline_ms=
+
+  if ! read_recorded_isolated_owner_identity "$owner_identity_file"; then
+    printf '%s leaderless oracle could not read isolated contract owner\n' "$name"
+    return 1
+  fi
+  owner_pid=$RECORDED_OWNER_PID
+  owner_pgid=$RECORDED_OWNER_PGID
+  owner_sid=$RECORDED_OWNER_SID
+  owner_starttime=$RECORDED_OWNER_STARTTIME
+  if ! read_recorded_wrapper_identity "$member_identity_file"; then
+    printf '%s leaderless oracle could not read compiler member\n' "$name"
+    return 1
+  fi
+  member_pid=$RECORDED_OWNER_PID
+  member_pgid=$RECORDED_OWNER_PGID
+  member_sid=$RECORDED_OWNER_SID
+  member_starttime=$RECORDED_OWNER_STARTTIME
+  if [ "$member_pgid" != "$owner_pgid" ] || \
+    [ "$member_sid" != "$owner_sid" ] || \
+    [ "$member_starttime" -lt "$owner_starttime" ]; then
+    printf '%s leaderless oracle found member outside recorded contract ownership\n' "$name"
+    return 1
+  fi
+  if ! read_exact_process_fields "$member_pid" || \
+    [ "$EXACT_STAT_STATE" = "Z" ] || \
+    [ "$EXACT_STAT_PGID" != "$member_pgid" ] || \
+    [ "$EXACT_STAT_SID" != "$member_sid" ] || \
+    [ "$EXACT_STAT_STARTTIME" != "$member_starttime" ] || \
+    ! exact_wrapper_cmdline_matches "$member_pid" "$wrapper"; then
+    printf '%s leaderless oracle could not revalidate compiler member\n' "$name"
+    return 1
+  fi
+  if ! read_exact_process_fields "$owner_pid" || \
+    [ "$EXACT_STAT_STATE" = "Z" ] || \
+    [ "$EXACT_STAT_PGID" != "$owner_pgid" ] || \
+    [ "$EXACT_STAT_SID" != "$owner_sid" ] || \
+    [ "$EXACT_STAT_STARTTIME" != "$owner_starttime" ] || \
+    ! exact_wrapper_cmdline_matches "$owner_pid" "$owner_program"; then
+    printf '%s leaderless oracle could not revalidate contract owner\n' "$name"
+    return 1
+  fi
+
+  kill -s KILL "$owner_pid" 2>/dev/null || true
+  deadline_ms=$(( $(ml3_now_ms) + 1000 ))
+  while read_exact_process_fields "$owner_pid" && [ "$EXACT_STAT_STATE" != "Z" ]; do
+    if [ "$EXACT_STAT_PGID" != "$owner_pgid" ] || \
+      [ "$EXACT_STAT_SID" != "$owner_sid" ] || \
+      [ "$EXACT_STAT_STARTTIME" != "$owner_starttime" ]; then
+      printf '%s leaderless oracle observed owner identity reuse\n' "$name"
+      return 1
+    fi
+    if [ "$(ml3_now_ms)" -ge "$deadline_ms" ]; then
+      printf '%s leaderless oracle contract owner did not exit\n' "$name"
+      return 1
+    fi
+    sleep 0.05
+  done
+  if ! read_exact_process_fields "$member_pid" || \
+    [ "$EXACT_STAT_STATE" = "Z" ] || \
+    [ "$EXACT_STAT_PGID" != "$member_pgid" ] || \
+    [ "$EXACT_STAT_SID" != "$member_sid" ] || \
+    [ "$EXACT_STAT_STARTTIME" != "$member_starttime" ] || \
+    ! exact_wrapper_cmdline_matches "$member_pid" "$wrapper"; then
+    printf '%s leaderless oracle did not retain resistant compiler descendant\n' "$name"
+    return 1
+  fi
+  return 0
+}
+
 assert_recorded_starttime_is_exact() {
   local name=$1
   local expected_pid=$2
@@ -697,11 +1144,14 @@ assert_recorded_starttime_is_exact() {
       "$name" "$RECORDED_OWNER_PID"
     return 1
   fi
-  VERIFIED_OWNER_PID=$RECORDED_OWNER_PID
-  VERIFIED_OWNER_PGID=$RECORDED_OWNER_PGID
-  VERIFIED_OWNER_SID=$RECORDED_OWNER_SID
-  VERIFIED_OWNER_STARTTIME=$EXACT_STAT_STARTTIME
-  VERIFIED_OWNER_WRAPPER=$wrapper
+  if [ "$RECORDED_OWNER_PID" = "$RECORDED_OWNER_PGID" ] && \
+    [ "$RECORDED_OWNER_PID" = "$RECORDED_OWNER_SID" ]; then
+    VERIFIED_OWNER_PID=$RECORDED_OWNER_PID
+    VERIFIED_OWNER_PGID=$RECORDED_OWNER_PGID
+    VERIFIED_OWNER_SID=$RECORDED_OWNER_SID
+    VERIFIED_OWNER_STARTTIME=$EXACT_STAT_STARTTIME
+    VERIFIED_OWNER_WRAPPER=$wrapper
+  fi
   if [ "$RECORDED_OWNER_STARTTIME" != "$EXACT_STAT_STARTTIME" ]; then
     printf '%s runner status regression starttime mismatch for compiler %s: recorded %s, exact %s\n' \
       "$name" "$RECORDED_OWNER_PID" "$RECORDED_OWNER_STARTTIME" "$EXACT_STAT_STARTTIME"
@@ -1097,13 +1547,15 @@ cleanup() {
   elif ! ml3_drain_owned_process_identity_file "$RUNNER_IDENTITY_FILE" $(( $(ml3_now_ms) + 1000 )); then
     status=1
   fi
-  if [ -f "$CC_IDENTITY_FILE" ]; then
-    if ! ml3_drain_owned_process_identity_file "$CC_DRAIN_IDENTITY_FILE" $(( $(ml3_now_ms) + 1000 )); then
+  if [ -s "$CC_DRAIN_IDENTITY_FILE" ]; then
+    if ! drain_recorded_isolated_owner "$CC_DRAIN_IDENTITY_FILE" $(( $(ml3_now_ms) + 1000 )); then
       status=1
     fi
   fi
-  if ! cleanup_exact_wrapper_group "$CC_IDENTITY_FILE" "$CC_WRAPPER"; then
-    status=1
+  if [ -s "$CC_IDENTITY_FILE" ]; then
+    if ! assert_recorded_wrapper_member_gone "cleanup" "$CC_IDENTITY_FILE" "$CC_WRAPPER"; then
+      status=1
+    fi
   fi
   if ! cleanup_exact_wrapper_group "$ORPHAN_IDENTITY_FILE" "$ORPHAN_WRAPPER"; then
     status=1
@@ -1184,13 +1636,14 @@ EOF
 
   cc_pid=$(cat "$CC_PID_FILE" 2>/dev/null || true)
   if [ -n "$cc_pid" ]; then
-    if ! ml3_store_process_identity_file "$CC_IDENTITY_FILE" "$cc_pid"; then
-      printf '%s runner status regression could not capture compiler identity\n' "$name"
-      cat "$runner_log"
-      return 1
-    fi
-    if ! ml3_store_process_identity_file "$CC_DRAIN_IDENTITY_FILE" "$cc_pid"; then
-      printf '%s runner status regression could not capture compiler drain identity\n' "$name"
+    if ! persist_nested_wrapper_identities \
+      "$cc_pid" \
+      "$CC_WRAPPER" \
+      "$PAYLOAD_CONFIG_CONTRACT" \
+      "$CC_IDENTITY_FILE" \
+      "$CC_DRAIN_IDENTITY_FILE" \
+      $(( $(ml3_now_ms) + 1000 )); then
+      printf '%s runner status regression could not capture compiler member and contract-owner identities\n' "$name"
       cat "$runner_log"
       return 1
     fi
@@ -1224,11 +1677,20 @@ EOF
     return 1
   fi
 
-  if ! ml3_drain_owned_process_identity_file "$CC_DRAIN_IDENTITY_FILE" $(( $(ml3_now_ms) + 1000 )); then
+  if ! terminate_verified_contract_owner_only \
+    "$name" \
+    "$CC_IDENTITY_FILE" \
+    "$CC_DRAIN_IDENTITY_FILE" \
+    "$CC_WRAPPER" \
+    "$PAYLOAD_CONFIG_CONTRACT"; then
+    return 1
+  fi
+
+  if ! drain_recorded_isolated_owner "$CC_DRAIN_IDENTITY_FILE" $(( $(ml3_now_ms) + 1000 )); then
     printf '%s runner status regression left compiler wrapper alive\n' "$name"
     return 1
   fi
-  if ! assert_no_exact_wrapper_survivor "$name" "$CC_IDENTITY_FILE" "$CC_WRAPPER"; then
+  if ! assert_recorded_wrapper_member_gone "$name" "$CC_IDENTITY_FILE" "$CC_WRAPPER"; then
     return 1
   fi
 
@@ -1263,6 +1725,24 @@ export -f grep
 export GREP_SENTINEL
 
 if ! assert_guard_scan_structure; then
+  exit 1
+fi
+if ! assert_nested_identity_persistence_structure; then
+  exit 1
+fi
+if ! assert_nested_persistence_mutations_rejected; then
+  exit 1
+fi
+if ! assert_exact_cmdline_mutations_rejected; then
+  exit 1
+fi
+if ! assert_live_regrouped_wrapper_is_not_mistaken_for_pid_reuse; then
+  exit 1
+fi
+if ! assert_owned_drain_rejects_member_identity; then
+  exit 1
+fi
+if ! assert_member_stat_inspection_failure_is_not_gone; then
   exit 1
 fi
 if ! assert_guard_scan_mutations_rejected; then

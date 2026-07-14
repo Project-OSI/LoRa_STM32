@@ -1332,3 +1332,32 @@ initializer.
 
 The mandatory `gpt-5.6-sol` binding review remains pending because its quota is
 unavailable. No binding approval is claimed for Task 9.
+
+## Harness correction — nested config-gate compiler ownership
+
+Task 7 moved a compiler invocation into the payload configuration contract.
+The signal-status fixture still treated the compiler wrapper as the isolated
+process-group owner, so it rejected a valid identity where the wrapper PID
+differed from the contract PGID and SID. A failed run left the verified
+contract group alive until the controller drained it.
+
+- The fixture now records two identities: the exact compiler member and the
+  isolated payload-contract owner. It requires the member PGID and SID to
+  match, derives the owner from that PGID, checks the exact wrapper and contract
+  argv, and permits equal owner/member start ticks.
+- The owner identity is persisted before the member identity is written. The
+  fixture then re-reads both `/proc` identities and both argv records. Cleanup
+  is keyed by the owner file, so a member write or move failure still leaves a
+  signal-safe group identity.
+- Only an identity with PID equal to PGID and SID reaches the owned-process
+  drain. The member record is evidence for start-time and argv checks; it is
+  never used as a group owner.
+- Mutation cases cover owner and member reuse, regrouping, initial and
+  post-persistence argv changes, duplicate and substring argv matches, member
+  write failure, partial move failure, and a non-owner drain attempt. The live
+  cases kill the verified contract leader while the signal-resistant compiler
+  remains, then drain the leaderless group through the recorded owner identity.
+- Full `make test CC=gcc` and `make test CC=clang` lifecycles pass the payload
+  gate, both signal-status regressions, the three-round concurrency test, and
+  the clean-tree fixture. Exact argv scans report zero surviving ML3 compiler
+  wrappers afterward.
