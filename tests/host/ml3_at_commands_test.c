@@ -168,6 +168,16 @@ static void test_calibration_record_span(void) {
   uint8_t command[] = "AT+ML3CAL=0,52,01FfA0B1";
   uint8_t invalid_odd_hex[] = "AT+ML3CAL=0,52,01F";
   uint8_t invalid_offset[] = "AT+ML3CAL=1,52,01FfA0B1";
+  uint8_t calibration_hex_with_nul[] = {
+    'A', 'T', '+', 'M', 'L', '3', 'C', 'A', 'L', '=',
+    '0', ',', '5', '2', ',',
+    '0', '1', 0U, 'F', 'f', 'A', '0', 'B', '1'
+  };
+  uint8_t calibration_offset_with_nul[] = {
+    'A', 'T', '+', 'M', 'L', '3', 'C', 'A', 'L', '=',
+    '0', 0U, ',', '5', '2', ',',
+    '0', '1', 'F', 'f', 'A', '0', 'B', '1'
+  };
   ml3_at_command_t output;
 
   EXPECT_STATUS(ML3_AT_STATUS_OK,
@@ -194,6 +204,12 @@ static void test_calibration_record_span(void) {
     "nonzero continuation chunk accepted by parser");
   expect_error_preserves_output(invalid_odd_hex, sizeof(invalid_odd_hex) - 1U,
     ML3_AT_STATUS_INVALID_VALUE, "odd calibration span rejected");
+  expect_error_preserves_output(calibration_hex_with_nul,
+    sizeof(calibration_hex_with_nul), ML3_AT_STATUS_RECORD_CONTAINS_NUL,
+    "embedded NUL in calibration hex flagged distinctly");
+  expect_error_preserves_output(calibration_offset_with_nul,
+    sizeof(calibration_offset_with_nul), ML3_AT_STATUS_RECORD_CONTAINS_NUL,
+    "embedded NUL in calibration offset field flagged distinctly");
 }
 
 static void test_exact_case_and_framing(void) {

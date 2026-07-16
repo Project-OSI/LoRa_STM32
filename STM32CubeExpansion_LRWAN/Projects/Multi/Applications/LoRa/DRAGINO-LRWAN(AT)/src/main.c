@@ -1117,18 +1117,27 @@ static void LORA_RxData( lora_AppData_t *AppData )
 		
 		case 0x0A:
 		{
-			if( AppData->BuffSize == 2 )         
-			{	
+			if( AppData->BuffSize == 2 )
+			{
+				/* Remote (downlink) AT+MOD may not select ML3 mode 10 while
+				 * ML3_CONFIG_ACQUISITION_READY is 0: with acquisition not
+				 * ready, Send() early-returns and BSP_ML3_RequestRoutine is
+				 * a no-op, so a device switched into mode 10 over the air
+				 * would stop transmitting entirely and go dark until
+				 * someone reaches it over the local serial AT+MOD path
+				 * (at.c), which is intentionally left unrestricted for
+				 * bench work. */
 				if((AppData->Buff[1]>=0x01)
 					&& ((AppData->Buff[1]<=0x09)
-						|| (AppData->Buff[1]==ML3_CONFIG_MODE_ML3)))    //---->AT+MOD
+						|| ((AppData->Buff[1]==ML3_CONFIG_MODE_ML3)
+							&& (ML3_CONFIG_ACQUISITION_READY != 0U))))    //---->AT+MOD
 				{
 					mode=AppData->Buff[1];
 					EEPROM_Store_Config();
-					atz_flags=1;						
-					rxpr_flags=1;	
-				}						 
-			}				
+					atz_flags=1;
+					rxpr_flags=1;
+				}
+			}
 			break;
 		}
 		

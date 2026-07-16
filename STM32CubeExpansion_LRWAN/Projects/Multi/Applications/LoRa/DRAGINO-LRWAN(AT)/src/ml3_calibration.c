@@ -747,7 +747,7 @@ ml3_calibration_status_t ml3_calibration_store(
   uint8_t slot_candidate_crc[ML3_CALIBRATION_SLOT_COUNT][ML3_CALIBRATION_CRC_SIZE];
   size_t candidate_length;
   size_t candidate_crc_offset;
-  size_t old_crc_offset;
+  size_t old_crc_offset = 0U;
   uint32_t next_sequence;
   uint8_t target;
   uint8_t slot;

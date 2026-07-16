@@ -103,6 +103,15 @@ static bool ml3_payload_quality_is_consistent(
       (status_flags != 0U)) {
     return false;
   }
+  /*
+   * The quality module can never emit DEGRADED with zero status flags:
+   * nonzero flags imply DEGRADED and zero flags imply VALID. Reject the
+   * unreachable tuple instead of treating it as consistent.
+   */
+  if ((quality_state == ML3_QUALITY_STATE_DEGRADED) &&
+      (status_flags == 0U)) {
+    return false;
+  }
   return true;
 }
 
@@ -329,6 +338,18 @@ ml3_payload_status_t ml3_payload_build_diagnostic_part(
   status = ml3_payload_diagnostic_part_count(input->cycle_count, &part_count);
   if (status != ML3_PAYLOAD_OK) {
     return status;
+  }
+  /*
+   * part_index and part_count are packed into the frame's high/low
+   * nibbles unmasked (see the ML3_PAYLOAD_DIAGNOSTIC_PART_OFFSET write
+   * below). A value past the 4-bit nibble range would silently corrupt
+   * that byte instead of being caught, so reject it explicitly. Safe
+   * today only because burst cycles <= ML3_MEASUREMENT_MAX_ABBA_CYCLES
+   * bounds part_count <= 3, but this guards the invariant directly.
+   */
+  if ((part_index > ML3_PAYLOAD_DIAGNOSTIC_PART_COUNT_MASK) ||
+      (part_count > ML3_PAYLOAD_DIAGNOSTIC_PART_COUNT_MASK)) {
+    return ML3_PAYLOAD_ERR_INVALID_ARGUMENT;
   }
   if ((part_index >= part_count) ||
       !ml3_payload_quality_is_valid(

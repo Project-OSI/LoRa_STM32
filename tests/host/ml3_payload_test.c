@@ -260,6 +260,49 @@ static void test_routine_rejects_inconsistent_quality(void)
           sizeof(output),
           sizeof(output),
           &output_length) == ML3_PAYLOAD_ERR_SEMANTIC_INCONSISTENCY);
+
+  /*
+   * The quality module can never emit DEGRADED with status_flags == 0
+   * (flags != 0 implies DEGRADED; flags == 0 implies VALID), so the
+   * builder must reject that tuple rather than silently accepting an
+   * unreachable state.
+   */
+  input = routine_input();
+  input.status_flags = 0U;
+  input.quality_state = ML3_QUALITY_STATE_DEGRADED;
+  CHECK(ml3_payload_build_routine(
+          &input,
+          output,
+          sizeof(output),
+          sizeof(output),
+          &output_length) == ML3_PAYLOAD_ERR_SEMANTIC_INCONSISTENCY);
+}
+
+static void test_routine_validator_rejects_degraded_zero_flags(void)
+{
+  ml3_payload_routine_t input = routine_input();
+  uint8_t output[ML3_PAYLOAD_ROUTINE_LENGTH];
+  size_t output_length = 0U;
+
+  /* Build a legitimate DEGRADED frame with nonzero flags... */
+  input.status_flags = UINT16_C(0x0080);
+  input.quality_state = ML3_QUALITY_STATE_DEGRADED;
+  CHECK(ml3_payload_build_routine(
+          &input,
+          output,
+          sizeof(output),
+          sizeof(output),
+          &output_length) == ML3_PAYLOAD_OK);
+  CHECK(ml3_payload_validate_routine_frame(output, output_length) ==
+    ML3_PAYLOAD_OK);
+
+  /* ...then forge the wire flags field down to zero after the fact.
+   * The frame still declares quality_state == DEGRADED (byte 22 is
+   * untouched), which the quality module could never have produced
+   * paired with zero flags, so the validator must reject it. */
+  write_u16_be(&output[ML3_PAYLOAD_ROUTINE_FLAGS_OFFSET], 0U);
+  CHECK(ml3_payload_validate_routine_frame(output, output_length) ==
+    ML3_PAYLOAD_ERR_SEMANTIC_INCONSISTENCY);
 }
 
 static void test_adc_failure_forces_all_numeric_sentinels(void)
@@ -505,6 +548,47 @@ static void test_diagnostic_part_boundaries_and_gates(void)
           &output_length) == ML3_PAYLOAD_ERR_VALUE_OUT_OF_RANGE);
 }
 
+static void test_diagnostic_part_index_nibble_guard(void)
+{
+  ml3_payload_diagnostic_t input = diagnostic_input();
+  uint8_t output[ML3_PAYLOAD_DIAGNOSTIC_CYCLE_PART_MAX_LENGTH];
+  size_t output_length = 0U;
+
+  /*
+   * part_index is packed into the diagnostic frame's upper nibble
+   * unmasked (see ml3_payload_build_diagnostic_part). A part_index past
+   * the 4-bit nibble range (> 0x0F) must be rejected explicitly rather
+   * than silently truncated by the cast to uint8_t.
+   */
+  input.cycle_count = 4U;
+  input.valid_cycle_count = 4U;
+  CHECK(ml3_payload_build_diagnostic_part(
+          &input,
+          UINT8_C(0x10),
+          output,
+          sizeof(output),
+          sizeof(output),
+          &output_length) == ML3_PAYLOAD_ERR_INVALID_ARGUMENT);
+
+  CHECK(ml3_payload_build_diagnostic_part(
+          &input,
+          UINT8_C(0xFF),
+          output,
+          sizeof(output),
+          sizeof(output),
+          &output_length) == ML3_PAYLOAD_ERR_INVALID_ARGUMENT);
+
+  /* The nibble boundary itself (0x0F) is still governed by the existing
+   * part_index >= part_count gate, not the new nibble guard. */
+  CHECK(ml3_payload_build_diagnostic_part(
+          &input,
+          UINT8_C(0x0F),
+          output,
+          sizeof(output),
+          sizeof(output),
+          &output_length) == ML3_PAYLOAD_ERR_VALUE_OUT_OF_RANGE);
+}
+
 static void test_diagnostic_rejects_inconsistent_quality(void)
 {
   ml3_payload_diagnostic_t input = diagnostic_input();
@@ -629,9 +713,11 @@ int main(void)
   test_routine_sentinels_and_quality_states();
   test_routine_boundaries_and_length_gate();
   test_routine_rejects_inconsistent_quality();
+  test_routine_validator_rejects_degraded_zero_flags();
   test_adc_failure_forces_all_numeric_sentinels();
   test_therm_fault_forces_soil_temperature_sentinel();
   test_diagnostic_part_boundaries_and_gates();
+  test_diagnostic_part_index_nibble_guard();
   test_diagnostic_rejects_inconsistent_quality();
   test_automatic_diagnostic_rate_limit();
 

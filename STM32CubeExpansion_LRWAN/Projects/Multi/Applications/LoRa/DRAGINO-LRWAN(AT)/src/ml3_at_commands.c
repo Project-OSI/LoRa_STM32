@@ -82,6 +82,17 @@ static int ml3_at_is_hex(uint8_t byte) {
     || (byte >= (uint8_t)'a' && byte <= (uint8_t)'f');
 }
 
+static int ml3_at_contains_nul(const uint8_t* input, size_t input_length) {
+  size_t index;
+
+  for (index = 0U; index < input_length; ++index) {
+    if (input[index] == 0U) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
 static ml3_at_status_t ml3_at_parse_calibration_chunk(const uint8_t* input,
   size_t input_length, size_t prefix_length, ml3_at_command_t* parsed) {
   size_t cursor = prefix_length;
@@ -94,6 +105,9 @@ static ml3_at_status_t ml3_at_parse_calibration_chunk(const uint8_t* input,
 
   if (cursor == input_length) {
     return ML3_AT_STATUS_EMPTY_RECORD;
+  }
+  if (ml3_at_contains_nul(&input[cursor], input_length - cursor)) {
+    return ML3_AT_STATUS_RECORD_CONTAINS_NUL;
   }
   comma = cursor;
   while (comma < input_length && input[comma] != (uint8_t)',') {
@@ -144,17 +158,6 @@ static ml3_at_status_t ml3_at_parse_calibration_chunk(const uint8_t* input,
   parsed->argument.calibration_chunk.hex = &input[cursor];
   parsed->argument.calibration_chunk.hex_length = hex_length;
   return ML3_AT_STATUS_OK;
-}
-
-static int ml3_at_contains_nul(const uint8_t* input, size_t input_length) {
-  size_t index;
-
-  for (index = 0U; index < input_length; ++index) {
-    if (input[index] == 0U) {
-      return 1;
-    }
-  }
-  return 0;
 }
 
 ml3_at_status_t ml3_at_parse(const uint8_t* input, size_t input_length,

@@ -49,6 +49,8 @@ require 'mode == ML3_CONFIG_MODE_ML3' "$AT" \
   'AT GETSENSORVALUE does not route mode 10'
 require 'AppData.Port = ML3_CONFIG_FPORT' "$MAIN" \
   'mode 10 send path does not select FPort 13'
+require 'ML3_CONFIG_ACQUISITION_READY[[:space:]]*!=[[:space:]]*0U' "$MAIN" \
+  'remote AT+MOD downlink accepts mode 10 without gating on acquisition readiness'
 if grep -q 'at_ml3_execute' "$MAIN"; then
   fail 'ML3 AT commands are reachable from the LoRaWAN downlink path'
 fi
