@@ -14,7 +14,12 @@ extern "C" {
 #endif
 
 #define ML3_MEASUREMENT_MAX_ABBA_CYCLES 8U
-#define ML3_MEASUREMENT_MIN_ABBA_CYCLES 2U
+/*
+ * A configured cycle count below ML3_MEASUREMENT_FIXED_MIN_VALID_CYCLES can
+ * never produce a valid reading (see ml3_quality.c), so the configurable
+ * floor must not be lower than that fixed minimum.
+ */
+#define ML3_MEASUREMENT_MIN_ABBA_CYCLES 3U
 #define ML3_MEASUREMENT_FIXED_MIN_VALID_CYCLES 3U
 #define ML3_MEASUREMENT_MIN_WARMUP_MS 500U
 #define ML3_MEASUREMENT_MAX_WARMUP_MS 3000U

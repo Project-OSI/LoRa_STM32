@@ -1457,7 +1457,20 @@ static void test_measurement_init_and_bounds(void) {
   config.abba_cycles = 1U;
   EXPECT_ERR(ML3_MEASUREMENT_ERR_INVALID_ARGUMENT,
     ml3_measurement_init(&ctx, &config, &task3_measurement_port, &adc_ctx, &timeouts),
-    "abba below 2");
+    "abba below 3");
+  config.abba_cycles = 2U;
+  EXPECT_ERR(ML3_MEASUREMENT_ERR_INVALID_ARGUMENT,
+    ml3_measurement_init(&ctx, &config, &task3_measurement_port, &adc_ctx, &timeouts),
+    "abba at former floor now rejected (min raised to 3; a valid reading "
+    "needs ML3_MEASUREMENT_FIXED_MIN_VALID_CYCLES=3)");
+  config.abba_cycles = 3U;
+  EXPECT_ERR(ML3_MEASUREMENT_OK,
+    ml3_measurement_init(&ctx, &config, &task3_measurement_port, &adc_ctx, &timeouts),
+    "abba accepts new floor of 3");
+  config.abba_cycles = 8U;
+  EXPECT_ERR(ML3_MEASUREMENT_OK,
+    ml3_measurement_init(&ctx, &config, &task3_measurement_port, &adc_ctx, &timeouts),
+    "abba accepts upper bound of 8");
   config.abba_cycles = 9U;
   EXPECT_ERR(ML3_MEASUREMENT_ERR_INVALID_ARGUMENT,
     ml3_measurement_init(&ctx, &config, &task3_measurement_port, &adc_ctx, &timeouts),
@@ -1467,7 +1480,7 @@ static void test_measurement_init_and_bounds(void) {
 static void test_warmup_transitions_only_at_deadline(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[64U];
   size_t sample_count = 0U;
@@ -1552,7 +1565,7 @@ static void test_warmup_transitions_only_at_deadline(void) {
 static void test_corrupted_report_callbacks_fail_safe(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[64U];
   const ml3_state_t states[] = {
@@ -1723,7 +1736,7 @@ static void test_reset_cause_capture_order_and_replacement(void) {
 static void test_adc_invalid_report_retains_exact_reset_cause(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[64U];
   size_t sample_count = 0U;
@@ -1836,7 +1849,7 @@ static void test_start_only_from_idle(void) {
 static void test_error_and_unknown_states_force_safe_low(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[64U];
   size_t sample_count = 0U;
@@ -1988,7 +2001,7 @@ static void test_nominal_sequence_and_controls(void) {
 static void test_internal_channels_are_fixed(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[64U];
 
@@ -2025,7 +2038,7 @@ static void test_channel_sequences_for_cycles(void) {
   uint16_t samples[256U];
   uint16_t expected[256U];
   uint16_t requested_channels[256U];
-  const size_t cycle_values[] = {2U, 4U, 8U};
+  const size_t cycle_values[] = {3U, 4U, 8U};
 
   test_reset_timeouts(&timeouts);
   for (size_t i = 0U; i < 3U; ++i) {
@@ -2103,7 +2116,7 @@ static void test_channel_sequences_for_cycles(void) {
 static void test_single_vref_pairing_and_order(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[64U];
   uint32_t expected_vdda_pre;
@@ -2258,7 +2271,7 @@ static void test_watchdog_points(void) {
 static void test_wrap_and_discharge_timer_behaviour(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
 
   config.warmup_ms = 500U;
@@ -2269,7 +2282,7 @@ static void test_wrap_and_discharge_timer_behaviour(void) {
   size_t sample_count = test_fill_nominal_samples(
     samples,
     sizeof(samples) / sizeof(samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -2296,7 +2309,7 @@ static void test_wrap_and_discharge_timer_behaviour(void) {
   size_t timeout_count = test_fill_nominal_samples(
     timeout_samples,
     sizeof(timeout_samples) / sizeof(timeout_samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -2327,7 +2340,7 @@ static void test_wrap_and_discharge_timer_behaviour(void) {
 static void test_reprepare_each_cycle(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[64U];
 
@@ -2335,7 +2348,7 @@ static void test_reprepare_each_cycle(void) {
   size_t sample_count = test_fill_nominal_samples(
     samples,
     sizeof(samples) / sizeof(samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -2509,7 +2522,7 @@ static void test_run_overrun_injection_with_expected_phase(
 static void test_adc_fault_indexing_matrix(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[256U];
   uint16_t post_discharge_samples[256U];
@@ -2523,7 +2536,7 @@ static void test_adc_fault_indexing_matrix(void) {
   sample_count = test_fill_nominal_samples(
     samples,
     sizeof(samples) / sizeof(samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -2540,7 +2553,7 @@ static void test_adc_fault_indexing_matrix(void) {
   post_sample_count = test_fill_nominal_samples(
     post_discharge_samples,
     sizeof(post_discharge_samples) / sizeof(post_discharge_samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -3078,7 +3091,7 @@ static void test_adc_fault_indexing_matrix(void) {
 static void test_verify_discharge_internal_read_failure_is_clean_continue(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[64U];
   size_t sample_count = 0U;
@@ -3088,7 +3101,7 @@ static void test_verify_discharge_internal_read_failure_is_clean_continue(void) 
   sample_count = test_fill_nominal_samples(
     samples,
     sizeof(samples) / sizeof(samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -3132,7 +3145,7 @@ static void test_verify_discharge_internal_read_failure_is_clean_continue(void) 
 static void test_verify_pa4_high_high_low_discharge_gating(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[64U];
   uint16_t discharge_vref_samples[] = {16000U, 16000U, 16000U};
@@ -3152,7 +3165,7 @@ static void test_verify_pa4_high_high_low_discharge_gating(void) {
   sample_count = test_fill_nominal_samples(
     samples,
     sizeof(samples) / sizeof(samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     1000U,
     23200U,
@@ -3181,7 +3194,7 @@ static void test_verify_pa4_high_high_low_discharge_gating(void) {
   EXPECT_U32((uint32_t)ML3_MEASUREMENT_OK, (uint32_t)ml3_measurement_last_error(&ctx), "pa4 high-high-low has no fault");
   EXPECT_U32(1U, (uint32_t)ctx.last_result.has_sequence, "pa4 high-high-low preserves sequence");
   EXPECT_U32(0U, (uint32_t)ctx.last_result.fault_flags, "pa4 high-high-low has no fault flags");
-  EXPECT_U32(2U, (uint32_t)ctx.last_result.valid_cycle_count, "pa4 high-high-low retains moisture cycle count");
+  EXPECT_U32((uint32_t)config.abba_cycles, (uint32_t)ctx.last_result.valid_cycle_count, "pa4 high-high-low retains moisture cycle count");
   EXPECT_U32(1U, (uint32_t)ctx.last_result.has_thermistor_raw, "pa4 high-high-low reads thermistor after discharge low sample");
 
   first_therm_on_event = test_event_nth_index_for_kind_state_arg(
@@ -3217,7 +3230,7 @@ static void test_verify_pa4_high_high_low_discharge_gating(void) {
   EXPECT_U32(1U, test_state.set_therm_true_calls, "pa4 high-high-low asserts therm once");
   EXPECT_U32(2U, test_state.set_therm_false_calls, "pa4 high-high-low deasserts therm and resets preparation low");
   EXPECT_U32((uint32_t)6U, (uint32_t)test_state.set_therm_on_retained_read_index, "pa4 high-high-low therm only after third discharge pa4 low sample");
-  EXPECT_U32((uint32_t)16U, (uint32_t)test_state.set_therm_on_sample_index, "pa4 high-high-low therm on sample index just after low");
+  EXPECT_U32((uint32_t)(discharge_start + 3U), (uint32_t)test_state.set_therm_on_sample_index, "pa4 high-high-low therm on sample index just after low");
   EXPECT_U32(
     0U,
     (uint32_t)test_event_count_for_kind_state_arg(
@@ -3242,7 +3255,7 @@ static void test_verify_pa4_high_high_low_discharge_gating(void) {
 static void test_verify_discharge_threshold_straddle_uses_fresh_vdda(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[64U];
   uint16_t discharge_vref_samples[] = {16000U, 16000U};
@@ -3255,7 +3268,7 @@ static void test_verify_discharge_threshold_straddle_uses_fresh_vdda(void) {
   sample_count = test_fill_nominal_samples(
     samples,
     sizeof(samples) / sizeof(samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     1000U,
     23200U,
@@ -3288,13 +3301,13 @@ static void test_verify_discharge_threshold_straddle_uses_fresh_vdda(void) {
       ML3_STATE_VERIFY_DISCHARGE,
       ML3_MEASUREMENT_CHANNEL_VREFINT),
     "threshold straddle rechecks vref on each attempt");
-  EXPECT_U32((uint32_t)15U, (uint32_t)test_state.set_therm_on_sample_index, "threshold straddle keeps therm low until second pa4 sample");
+  EXPECT_U32((uint32_t)(discharge_start + 2U), (uint32_t)test_state.set_therm_on_sample_index, "threshold straddle keeps therm low until second pa4 sample");
 }
 
 static void test_verify_discharge_threshold_straddle_keeps_higher_retained_vdda(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[64U];
   uint16_t discharge_vref_samples[] = {23200U, 23200U};
@@ -3317,7 +3330,7 @@ static void test_verify_discharge_threshold_straddle_keeps_higher_retained_vdda(
   sample_count = test_fill_nominal_samples(
     samples,
     sizeof(samples) / sizeof(samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     1000U,
     16000U,
@@ -3375,7 +3388,7 @@ static void test_verify_discharge_threshold_straddle_keeps_higher_retained_vdda(
       ML3_STATE_VERIFY_DISCHARGE,
       config.channel_v5),
     "retained-vdda threshold straddle samples pa4 on each attempt");
-  EXPECT_U32(15U, (uint32_t)test_state.set_therm_on_sample_index, "retained vdda blocks thermistor until second pa4 sample");
+  EXPECT_U32((uint32_t)(discharge_start + 2U), (uint32_t)test_state.set_therm_on_sample_index, "retained vdda blocks thermistor until second pa4 sample");
 
   power_off_event = test_event_nth_index_for_kind_state(TEST_EVENT_SET_POWER, ML3_STATE_POWER_OFF, 1U);
   first_vref_event = test_event_nth_index_for_kind_state_arg(
@@ -3413,7 +3426,7 @@ static void test_verify_discharge_threshold_straddle_keeps_higher_retained_vdda(
 static void test_verify_discharge_vref_timeout_continues_queue(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[64U];
   size_t sample_count = 0U;
@@ -3424,7 +3437,7 @@ static void test_verify_discharge_vref_timeout_continues_queue(void) {
   sample_count = test_fill_nominal_samples(
     samples,
     sizeof(samples) / sizeof(samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -3465,7 +3478,7 @@ static void test_abort_and_cleanup(void) {
   ml3_measurement_ctx_t ctx;
   ml3_measurement_ctx_t uninitialized_ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[64U];
   uint16_t therm_samples[64U];
@@ -3487,7 +3500,7 @@ static void test_abort_and_cleanup(void) {
   sample_count = test_fill_nominal_samples(
     samples,
     sizeof(samples) / sizeof(samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -3559,7 +3572,7 @@ static void test_abort_and_cleanup(void) {
   therm_sample_count = test_fill_nominal_samples(
     therm_samples,
     sizeof(therm_samples) / sizeof(therm_samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -3668,7 +3681,7 @@ static void test_abort_and_cleanup(void) {
 static void test_discard_and_retained_overrun_paths_are_distinct(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[256U];
   size_t sample_count = 0U;
@@ -3677,7 +3690,7 @@ static void test_discard_and_retained_overrun_paths_are_distinct(void) {
   sample_count = test_fill_nominal_samples(
     samples,
     sizeof(samples) / sizeof(samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -3724,7 +3737,7 @@ static void test_discard_and_retained_overrun_paths_are_distinct(void) {
 static void test_adc_fault_continues_queue(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[256U];
   uint16_t therm_fault_samples[256U];
@@ -3760,7 +3773,7 @@ static void test_adc_fault_continues_queue(void) {
   size_t count = test_fill_nominal_samples(
     samples,
     sizeof(samples) / sizeof(samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -3777,7 +3790,7 @@ static void test_adc_fault_continues_queue(void) {
   size_t count_for_therm_fault = test_fill_nominal_samples(
     therm_fault_samples,
     sizeof(therm_fault_samples) / sizeof(therm_fault_samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -3899,7 +3912,7 @@ static void test_adc_fault_continues_queue(void) {
 static void test_adc_fault_cleanup_failure_blocks_reporting(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[256U];
   uint16_t therm_fault_samples[256U];
@@ -3913,7 +3926,7 @@ static void test_adc_fault_cleanup_failure_blocks_reporting(void) {
   sample_count = test_fill_nominal_samples(
     samples,
     sizeof(samples) / sizeof(samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -3930,7 +3943,7 @@ static void test_adc_fault_cleanup_failure_blocks_reporting(void) {
   therm_count = test_fill_nominal_samples(
     therm_fault_samples,
     sizeof(therm_fault_samples) / sizeof(therm_fault_samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -4077,7 +4090,7 @@ static void test_adc_fault_cleanup_failure_blocks_reporting(void) {
 static void test_adc_prepare_calibration_timeout_continues_with_cleanup(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[256U];
 
@@ -4087,7 +4100,7 @@ static void test_adc_prepare_calibration_timeout_continues_with_cleanup(void) {
   size_t sample_count = test_fill_nominal_samples(
     samples,
     sizeof(samples) / sizeof(samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -4139,7 +4152,7 @@ static void test_adc_prepare_calibration_timeout_continues_with_cleanup(void) {
 static void test_adc_prepare_ready_timeout_maps_to_init_fault(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[256U];
 
@@ -4149,7 +4162,7 @@ static void test_adc_prepare_ready_timeout_maps_to_init_fault(void) {
   size_t sample_count = test_fill_nominal_samples(
     samples,
     sizeof(samples) / sizeof(samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -4194,7 +4207,7 @@ static void test_adc_prepare_ready_timeout_maps_to_init_fault(void) {
 static void test_callback_failures_fail_fast(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[64U];
   uint16_t therm_samples[64U];
@@ -4208,7 +4221,7 @@ static void test_callback_failures_fail_fast(void) {
   sample_count = test_fill_nominal_samples(
     samples,
     sizeof(samples) / sizeof(samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -4224,7 +4237,7 @@ static void test_callback_failures_fail_fast(void) {
   therm_count = test_fill_nominal_samples(
     therm_samples,
     sizeof(therm_samples) / sizeof(therm_samples[0U]),
-    2U,
+    config.abba_cycles,
     24000U,
     5400U,
     23200U,
@@ -4425,7 +4438,7 @@ static void test_callback_failures_fail_fast(void) {
 static void test_prepare_initial_thermistor_low_failure_retries_safe_low(void) {
   ml3_measurement_ctx_t ctx;
   adc_precision_context_t adc_ctx;
-  ml3_measurement_config_t config = test_default_config(2U);
+  ml3_measurement_config_t config = test_default_config(3U);
   adc_precision_timeouts_t timeouts;
   uint16_t samples[64U];
   size_t sample_count = 0U;
@@ -4712,7 +4725,7 @@ static void test_abba_raw_evidence_counts_and_excludes_discards(void) {
   adc_precision_context_t adc_ctx;
   adc_precision_timeouts_t timeouts;
   uint16_t samples[128U];
-  const uint16_t cycle_counts[] = {2U, 8U};
+  const uint16_t cycle_counts[] = {3U, 8U};
 
   test_reset_timeouts(&timeouts);
   for (size_t case_index = 0U;

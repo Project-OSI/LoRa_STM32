@@ -27,6 +27,16 @@ typedef enum {
 #define ML3_AT_CALIBRATION_CHUNK_MAX_HEX \
   (ML3_AT_CALIBRATION_CHUNK_MAX_BYTES * 2U)
 
+/*
+ * This module is compiled standalone (see tests/host/run_ml3_host_tests.sh)
+ * and cannot include ml3_measurement.h, so these must be kept in lockstep
+ * with ML3_MEASUREMENT_MIN_ABBA_CYCLES / ML3_MEASUREMENT_MAX_ABBA_CYCLES
+ * there. A configured cycle count below the measurement module's fixed
+ * minimum valid-cycle count can never produce a valid reading.
+ */
+#define ML3_AT_CYCLES_MIN_VALUE 3U
+#define ML3_AT_CYCLES_MAX_VALUE 8U
+
 typedef enum {
   ML3_AT_OPERATION_QUERY_SETTINGS = 0,
   ML3_AT_OPERATION_SET_WARMUP_MS,

@@ -218,8 +218,8 @@ ml3_at_status_t ml3_at_parse(const uint8_t* input, size_t input_length,
       sizeof(cycles_prefix) - 1U)) {
     status = ml3_at_parse_bounded_uint32(
       &input[sizeof(cycles_prefix) - 1U],
-      input_length - (sizeof(cycles_prefix) - 1U), 2U, 8U,
-      &numeric_value);
+      input_length - (sizeof(cycles_prefix) - 1U), ML3_AT_CYCLES_MIN_VALUE,
+      ML3_AT_CYCLES_MAX_VALUE, &numeric_value);
     if (status != ML3_AT_STATUS_OK) {
       return status;
     }

@@ -116,11 +116,11 @@ static void test_warmup_values(void) {
 static void test_cycles_values(void) {
   ml3_at_command_t output;
 
-  EXPECT_STATUS(ML3_AT_STATUS_OK, parse_text("AT+ML3CYCLES=2", &output),
+  EXPECT_STATUS(ML3_AT_STATUS_OK, parse_text("AT+ML3CYCLES=3", &output),
     "cycles lower endpoint");
   EXPECT_TRUE(output.operation == ML3_AT_OPERATION_SET_CYCLES,
     "cycles operation");
-  EXPECT_TRUE(output.argument.cycles == 2U, "cycles lower value");
+  EXPECT_TRUE(output.argument.cycles == 3U, "cycles lower value");
 
   EXPECT_STATUS(ML3_AT_STATUS_OK, parse_text("AT+ML3CYCLES=8", &output),
     "cycles upper endpoint");
@@ -128,6 +128,9 @@ static void test_cycles_values(void) {
 
   expect_text_error_preserves_output("AT+ML3CYCLES=1",
     ML3_AT_STATUS_VALUE_OUT_OF_RANGE, "cycles below range");
+  expect_text_error_preserves_output("AT+ML3CYCLES=2",
+    ML3_AT_STATUS_VALUE_OUT_OF_RANGE,
+    "cycles at former floor now rejected (min raised to 3)");
   expect_text_error_preserves_output("AT+ML3CYCLES=9",
     ML3_AT_STATUS_VALUE_OUT_OF_RANGE, "cycles above range");
   expect_text_error_preserves_output("AT+ML3CYCLES=",
