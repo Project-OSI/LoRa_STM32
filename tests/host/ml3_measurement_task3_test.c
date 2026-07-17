@@ -943,6 +943,103 @@ static size_t test_discharge_sample_start_index(size_t abba_cycles) {
   return 2U + (4U * abba_cycles) + 3U;
 }
 
+/*
+ * Physical conversions consumed by ABBA cycles. Entering SAMPLE_ABBA from
+ * REFERENCE_PRE the first cycle needs discards on H1, L1, and H2 (channel
+ * changes) while L2 re-reads the low channel: 2+2+1+2. Later cycles start
+ * on the channel the previous H2 finished on, so H1 needs no discard: 1+2+1+2.
+ */
+enum {
+  TEST_ABBA_FIRST_CYCLE_CONVERSIONS = 7U,
+  TEST_ABBA_LATER_CYCLE_CONVERSIONS = 6U,
+  /* Stream value consumed by a forced discard conversion after a
+   * same-channel recovery; the ADC layer throws it away. */
+  TEST_ABBA_DISCARD_FILLER = 4242U
+};
+
+/*
+ * Sample stream for a burst in which exactly one cycle is lost to a
+ * conversion fault. Retained reads consume the stream positionally, so the
+ * stream carries: the pre-reference block, the partial samples the failed
+ * cycle consumed before its fault (a prefix of H1,L1,L2,H2), an optional
+ * filler consumed by the forced discard when the resumed read lands on the
+ * same physical channel as the failed one, then the surviving cycles'
+ * samples and the post/discharge/thermistor block. Because every cycle
+ * shares the same per-phase values, the stream layout is independent of
+ * WHICH cycle failed.
+ */
+static size_t test_fill_cycle_fault_samples(
+  uint16_t* destination,
+  size_t destination_capacity,
+  size_t valid_cycles,
+  size_t failed_prefix_samples,
+  bool same_channel_recovery_filler,
+  uint16_t pre_vref,
+  uint16_t pre_v5,
+  uint16_t post_vref,
+  uint16_t post_v5,
+  uint16_t die_temp,
+  uint16_t discharge,
+  uint16_t thermistor,
+  uint16_t h1,
+  uint16_t l1,
+  uint16_t l2,
+  uint16_t h2,
+  size_t extra_discharge_samples) {
+  const uint16_t phase_values[4] = {h1, l1, l2, h2};
+  size_t index = 0U;
+  size_t cycle = 0U;
+  size_t i = 0U;
+  size_t d = 0U;
+
+  if (destination_capacity == 0U) {
+    return 0U;
+  }
+  if (failed_prefix_samples > 4U) {
+    failed_prefix_samples = 4U;
+  }
+
+  if (index < destination_capacity) {
+    destination[index++] = pre_vref;
+  }
+  if (index < destination_capacity) {
+    destination[index++] = pre_v5;
+  }
+  for (i = 0U; i < failed_prefix_samples; ++i) {
+    if (index < destination_capacity) {
+      destination[index++] = phase_values[i];
+    }
+  }
+  if (same_channel_recovery_filler && (index < destination_capacity)) {
+    destination[index++] = TEST_ABBA_DISCARD_FILLER;
+  }
+  for (cycle = 0U; cycle < valid_cycles; ++cycle) {
+    for (i = 0U; i < 4U; ++i) {
+      if (index < destination_capacity) {
+        destination[index++] = phase_values[i];
+      }
+    }
+  }
+  if (index < destination_capacity) {
+    destination[index++] = post_vref;
+  }
+  if (index < destination_capacity) {
+    destination[index++] = post_v5;
+  }
+  if (index < destination_capacity) {
+    destination[index++] = die_temp;
+  }
+  for (d = 0U; d < extra_discharge_samples; ++d) {
+    if (index < destination_capacity) {
+      destination[index++] = discharge;
+    }
+  }
+  if (index < destination_capacity) {
+    destination[index++] = thermistor;
+  }
+  return index;
+}
+
 static size_t test_make_expected_selected_physical(
   uint16_t* destination,
   size_t destination_capacity,
@@ -1769,12 +1866,15 @@ static void test_adc_invalid_report_retains_exact_reset_cause(void) {
     (uint32_t)ML3_MEASUREMENT_OK,
     (uint32_t)ml3_measurement_start(&ctx),
     "reset-cause invalid acquisition starts");
+  /* Inject into REFERENCE_POST: ABBA conversion faults are now tolerated
+   * per-cycle, so a systemic (whole-acquisition abort) fault is needed to
+   * exercise the fully-invalidated report this test pins down. */
   test_set_timeout_injection(ML3_STATE_IDLE, SIZE_MAX);
   test_set_overrun_injection(
-    ML3_STATE_SAMPLE_ABBA,
-    7U,
-    4U,
-    config.channel_hi,
+    ML3_STATE_REFERENCE_POST,
+    1U,
+    0U,
+    ML3_MEASUREMENT_CHANNEL_VREFINT,
     false);
 
   EXPECT_U32(
@@ -1786,7 +1886,10 @@ static void test_adc_invalid_report_retains_exact_reset_cause(void) {
     (uint32_t)ml3_measurement_last_error(&ctx),
     "reset-cause invalid acquisition retains ADC taxonomy");
   EXPECT_TRUE(test_state.inject_overrun_seen, "reset-cause invalid acquisition injects overrun");
-  EXPECT_U32(1U, ctx.current_abba_cycle, "reset-cause invalidation follows one completed ABBA cycle");
+  EXPECT_U32(
+    config.abba_cycles,
+    ctx.current_abba_cycle,
+    "reset-cause invalidation follows the completed ABBA burst");
   EXPECT_U32(1U, test_state.process_calls, "reset-cause invalid acquisition processes once");
   EXPECT_U32(1U, test_state.build_calls, "reset-cause invalid acquisition builds once");
   EXPECT_U32(1U, test_state.queue_calls, "reset-cause invalid acquisition queues once");
@@ -2375,6 +2478,47 @@ static void test_reprepare_each_cycle(void) {
   EXPECT_U32(2U, (uint32_t)ctx.sequence, "sequence increments");
 }
 
+/*
+ * Expected queued report when one ABBA cycle is lost to a conversion fault
+ * and the surviving count falls below ML3_MEASUREMENT_FIXED_MIN_VALID_CYCLES:
+ * the acquisition completes with its reference/thermistor evidence intact,
+ * exposes the reduced valid-cycle count, computes no statistics, and carries
+ * the recorded per-cycle fault class(es) so quality evaluates INVALID with
+ * cause.
+ */
+static void test_expect_below_floor_tolerant_result(
+  const ml3_measurement_result_t* result,
+  uint16_t configured_cycles,
+  const char* label) {
+  EXPECT_TRUE(result != NULL, label);
+  EXPECT_TRUE(result->has_reset_cause, "tolerant report retains reset-cause presence");
+  EXPECT_TRUE(result->has_sequence, "tolerant report retains sequence presence");
+  EXPECT_TRUE(result->has_faults, "tolerant below-floor report raises fault presence");
+  EXPECT_TRUE(result->has_pre_reference_raw, "tolerant report keeps pre reference");
+  EXPECT_TRUE(result->has_post_reference_raw, "tolerant report keeps post reference");
+  EXPECT_TRUE(result->has_pre_v5_raw, "tolerant report keeps pre pa4");
+  EXPECT_TRUE(result->has_post_v5_raw, "tolerant report keeps post pa4");
+  EXPECT_TRUE(result->has_die_temp_raw, "tolerant report keeps die temperature");
+  EXPECT_TRUE(result->has_thermistor_raw, "tolerant report keeps thermistor");
+  EXPECT_TRUE(result->has_vdda_pre_uv, "tolerant report keeps pre vdda");
+  EXPECT_TRUE(result->has_vdda_post_uv, "tolerant report keeps post vdda");
+  EXPECT_FALSE(result->has_mean_hi_uv, "below-floor report computes no mean hi");
+  EXPECT_FALSE(result->has_mean_lo_uv, "below-floor report computes no mean lo");
+  EXPECT_FALSE(result->has_median_diff_uv, "below-floor report computes no median");
+  EXPECT_FALSE(result->has_sd_uv, "below-floor report computes no sd");
+  EXPECT_FALSE(result->has_mad_uv, "below-floor report computes no mad");
+  EXPECT_TRUE(result->has_abba_raw, "tolerant report keeps ABBA raw evidence");
+  EXPECT_U32(configured_cycles, result->abba_raw_cycle_count,
+    "tolerant report counts all attempted cycles");
+  EXPECT_TRUE(result->has_valid_cycle_count, "tolerant report exposes valid-cycle count");
+  EXPECT_U32((uint32_t)(configured_cycles - 1U), result->valid_cycle_count,
+    "tolerant report exposes reduced valid-cycle count");
+  EXPECT_TRUE(
+    (result->fault_flags != 0U) &&
+    ((result->fault_flags & ~(uint16_t)ML3_QUALITY_INVALIDATING_MASK) == 0U),
+    "below-floor fault classes are quality-invalidating");
+}
+
 static void test_run_timeout_injection_with_expected_phase(
   ml3_measurement_ctx_t* ctx,
   adc_precision_context_t* adc_ctx,
@@ -2390,6 +2534,33 @@ static void test_run_timeout_injection_with_expected_phase(
   const char* label) {
   const size_t saved_default_conversion_polls = test_state.default_conversion_polls;
   const size_t saved_timeout_conversion_polls = test_state.timeout_conversion_polls;
+  uint16_t abba_fault_samples[64U];
+
+  if (state == ML3_STATE_SAMPLE_ABBA) {
+    /* An ABBA conversion fault now loses only its own cycle; the burst
+     * continues, so the stream must carry the surviving cycles and the
+     * post/discharge/thermistor block. A timeout consumes no sample, so
+     * the failed cycle contributed retained_index % 4 samples. */
+    sample_count = test_fill_cycle_fault_samples(
+      abba_fault_samples,
+      sizeof(abba_fault_samples) / sizeof(abba_fault_samples[0U]),
+      (size_t)config->abba_cycles - 1U,
+      retained_index % 4U,
+      expected_channel == config->channel_hi,
+      24000U,
+      5400U,
+      23200U,
+      5200U,
+      5000U,
+      1200U,
+      7000U,
+      1000U,
+      2000U,
+      2500U,
+      3000U,
+      1U);
+    samples = abba_fault_samples;
+  }
 
   test_prepare_measurement(
     ctx,
@@ -2443,7 +2614,14 @@ static void test_run_timeout_injection_with_expected_phase(
   EXPECT_U32(1U, test_state.build_calls, "timeout path reaches build");
   EXPECT_U32(1U, test_state.queue_calls, "timeout path reaches queue");
   EXPECT_TRUE(test_state.queued_result_seen, "timeout path snapshots one queued report");
-  test_expect_invalid_measurement_result(&test_state.queued_result, label);
+  if (state == ML3_STATE_SAMPLE_ABBA) {
+    test_expect_below_floor_tolerant_result(
+      &test_state.queued_result,
+      config->abba_cycles,
+      label);
+  } else {
+    test_expect_invalid_measurement_result(&test_state.queued_result, label);
+  }
   EXPECT_U32(
     (uint32_t)ML3_MEASUREMENT_FAULT_ADC_TIMEOUT,
     (uint32_t)test_state.queued_result.fault_flags,
@@ -2465,6 +2643,31 @@ static void test_run_overrun_injection_with_expected_phase(
   const char* label) {
   const size_t saved_default_conversion_polls = test_state.default_conversion_polls;
   const size_t saved_timeout_conversion_polls = test_state.timeout_conversion_polls;
+  uint16_t abba_fault_samples[64U];
+
+  if (state == ML3_STATE_SAMPLE_ABBA) {
+    /* An overrun is reported by the read itself, so the failed cycle also
+     * consumed the faulted sample: retained_index % 4 + 1 samples. */
+    sample_count = test_fill_cycle_fault_samples(
+      abba_fault_samples,
+      sizeof(abba_fault_samples) / sizeof(abba_fault_samples[0U]),
+      (size_t)config->abba_cycles - 1U,
+      (expected_retained_index % 4U) + 1U,
+      expected_channel == config->channel_hi,
+      24000U,
+      5400U,
+      23200U,
+      5200U,
+      5000U,
+      1200U,
+      7000U,
+      1000U,
+      2000U,
+      2500U,
+      3000U,
+      1U);
+    samples = abba_fault_samples;
+  }
 
   test_prepare_measurement(
     ctx,
@@ -2516,7 +2719,14 @@ static void test_run_overrun_injection_with_expected_phase(
   EXPECT_U32(1U, test_state.build_calls, "overrun path reaches build");
   EXPECT_U32(1U, test_state.queue_calls, "overrun path reaches queue");
   EXPECT_TRUE(test_state.queued_result_seen, "overrun path snapshots queued invalid report");
-  test_expect_invalid_measurement_result(&test_state.queued_result, label);
+  if (state == ML3_STATE_SAMPLE_ABBA) {
+    test_expect_below_floor_tolerant_result(
+      &test_state.queued_result,
+      config->abba_cycles,
+      label);
+  } else {
+    test_expect_invalid_measurement_result(&test_state.queued_result, label);
+  }
 }
 
 static void test_adc_fault_indexing_matrix(void) {
@@ -3750,13 +3960,14 @@ static void test_adc_fault_continues_queue(void) {
     bool discharge_to_therm;
     const char* label;
   } fault_injections[] = {
+    /* SAMPLE_ABBA conversion faults are no longer systemic: they lose only
+     * their own cycle (plan §3.9). Their coverage lives in
+     * test_adc_fault_indexing_matrix (tolerant branch) and the dedicated
+     * test_abba_* per-cycle tests. Only whole-acquisition abort states
+     * remain in this table. */
     {ML3_STATE_ADC_CALIBRATE, SIZE_MAX, SIZE_MAX, SIZE_MAX, UINT16_MAX, false, "prepare adc fault path"},
     {ML3_STATE_REFERENCE_PRE, 0U, 1U, 0U, ML3_MEASUREMENT_CHANNEL_VREFINT, false, "pre vref adc fault path"},
     {ML3_STATE_REFERENCE_PRE, 2U, 3U, 1U, config.channel_v5, false, "pre pa4 adc fault path"},
-    {ML3_STATE_SAMPLE_ABBA, 0U, 1U, 0U, config.channel_hi, false, "abba h1 adc fault path"},
-    {ML3_STATE_SAMPLE_ABBA, 2U, 3U, 1U, config.channel_lo, false, "abba l1 adc fault path"},
-    {ML3_STATE_SAMPLE_ABBA, 4U, 4U, 2U, config.channel_lo, false, "abba l2 adc fault path"},
-    {ML3_STATE_SAMPLE_ABBA, 5U, 6U, 3U, config.channel_hi, false, "abba h2 adc fault path"},
     {ML3_STATE_REFERENCE_POST, 0U, 1U, 0U, ML3_MEASUREMENT_CHANNEL_VREFINT, false, "post vref adc fault path"},
     {ML3_STATE_REFERENCE_POST, 2U, 3U, 1U, config.channel_v5, false, "post pa4 adc fault path"},
     {ML3_STATE_REFERENCE_POST, 4U, 5U, 2U, ML3_MEASUREMENT_CHANNEL_DIE_TEMP, false, "post die adc fault path"},
@@ -3888,7 +4099,6 @@ static void test_adc_fault_continues_queue(void) {
         EXPECT_TRUE(test_state.set_therm_true_calls > 0U, "therm excursion enters high before therm fault");
       }
       if ((fault_injections[i].state == ML3_STATE_REFERENCE_PRE) ||
-          (fault_injections[i].state == ML3_STATE_SAMPLE_ABBA) ||
           (fault_injections[i].state == ML3_STATE_REFERENCE_POST)) {
         EXPECT_TRUE(test_state.set_power_true_calls > 0U, "adc fault while power was on");
       }
@@ -4787,6 +4997,460 @@ static void test_abba_raw_evidence_counts_and_excludes_discards(void) {
   }
 }
 
+/*
+ * Per-cycle ABBA fault tolerance (plan §3.9). All four tests use the
+ * oracle scaling: vrefint calibration word 3000 with raw VREFINT 48000
+ * gives VDDA = 3.000000 V, so uV(raw) = raw * 3000000 / 65520 and
+ * raw = 546*k maps to k*25000 uV exactly.
+ */
+
+/* Brief item (a): one lost cycle out of four leaves a standing reading
+ * computed over exactly the surviving three cycles, with no ADC fault
+ * flags. Also covers item (f): the read that resumes after the failure
+ * must run a forced discard conversion (channel cache invalidated). */
+static void test_abba_single_cycle_timeout_tolerated_keeps_reading(void) {
+  ml3_measurement_ctx_t ctx;
+  adc_precision_context_t adc_ctx;
+  ml3_measurement_config_t config = test_default_config(4U);
+  adc_precision_timeouts_t timeouts;
+  /* Cycle 1 times out at its H1 retained conversion and consumes nothing.
+   * Cycle 2 resumes on the same physical channel (hi), so its forced
+   * discard conversion consumes the filler stream value. */
+  const uint16_t samples[] = {
+    48000U,
+    59000U,
+    10920U, 10374U, 10374U, 10920U, /* cycle 0: 500000/475000 -> +25000 uV */
+    TEST_ABBA_DISCARD_FILLER,       /* consumed by cycle 2's forced discard */
+    11466U, 10374U, 10374U, 11466U, /* cycle 2: 525000/475000 -> +50000 uV */
+    12012U, 10374U, 10374U, 12012U, /* cycle 3: 550000/475000 -> +75000 uV */
+    48000U,
+    59000U,
+    30000U,
+    8190U,
+    32000U
+  };
+  static const ml3_state_t expected_states[] = {
+    ML3_STATE_PREPARE,
+    ML3_STATE_POWER_ON,
+    ML3_STATE_WARMUP,
+    ML3_STATE_ADC_CONFIGURE,
+    ML3_STATE_ADC_CALIBRATE,
+    ML3_STATE_REFERENCE_PRE,
+    ML3_STATE_SAMPLE_ABBA,
+    ML3_STATE_REFERENCE_POST,
+    ML3_STATE_POWER_OFF,
+    ML3_STATE_VERIFY_DISCHARGE,
+    ML3_STATE_SAMPLE_THERMISTOR,
+    ML3_STATE_PROCESS,
+    ML3_STATE_BUILD_PAYLOAD,
+    ML3_STATE_QUEUE_TX,
+    ML3_STATE_IDLE
+  };
+  const ml3_measurement_result_t* result = NULL;
+
+  test_reset_timeouts(&timeouts);
+  test_prepare_measurement(
+    &ctx,
+    &adc_ctx,
+    &config,
+    &timeouts,
+    samples,
+    sizeof(samples) / sizeof(samples[0U]));
+  test_state.timeout_conversion_polls = 10U;
+  test_clear_overrun_injection();
+  /* Cycle 1's H1 retained conversion is the first conversion after the
+   * seven cycle-0 conversions. */
+  test_set_timeout_injection(
+    ML3_STATE_SAMPLE_ABBA,
+    TEST_ABBA_FIRST_CYCLE_CONVERSIONS);
+
+  EXPECT_U32(
+    (uint32_t)ML3_MEASUREMENT_STEP_DONE,
+    (uint32_t)test_run_to_completion(&ctx, 800U),
+    "tolerated timeout acquisition completes");
+  EXPECT_U32(
+    (uint32_t)ML3_MEASUREMENT_OK,
+    (uint32_t)ml3_measurement_last_error(&ctx),
+    "standing reading reports no measurement error");
+  EXPECT_TRUE(test_state.inject_timeout_seen, "cycle-1 timeout injection observed");
+  EXPECT_U32(
+    (uint32_t)ML3_STATE_SAMPLE_ABBA,
+    (uint32_t)test_state.inject_timeout_hit_state,
+    "timeout hit inside the ABBA burst");
+  EXPECT_U32(
+    (uint32_t)TEST_ABBA_FIRST_CYCLE_CONVERSIONS,
+    (uint32_t)test_state.inject_timeout_hit_index,
+    "timeout hit cycle 1 H1");
+  EXPECT_U32(
+    (uint32_t)config.channel_hi,
+    (uint32_t)test_state.inject_timeout_hit_channel,
+    "timeout hit the high channel");
+  test_expect_state_exact(
+    expected_states,
+    sizeof(expected_states) / sizeof(expected_states[0U]));
+
+  EXPECT_TRUE(ctx.cycle_valid[0U], "cycle 0 stays valid");
+  EXPECT_FALSE(ctx.cycle_valid[1U], "faulted cycle 1 marked invalid");
+  EXPECT_TRUE(ctx.cycle_valid[2U], "cycle 2 stays valid");
+  EXPECT_TRUE(ctx.cycle_valid[3U], "cycle 3 stays valid");
+  EXPECT_U32(4U, ctx.current_abba_cycle, "all four cycles attempted");
+
+  result = &ctx.last_result;
+  EXPECT_U32(0U, result->fault_flags, "standing reading raises no ADC fault flags");
+  EXPECT_FALSE(result->has_faults, "standing reading omits fault presence");
+  EXPECT_TRUE(result->has_valid_cycle_count, "valid-cycle count present");
+  EXPECT_U32(3U, result->valid_cycle_count, "three cycles survive");
+  EXPECT_TRUE(result->has_mean_diff_uv, "stats computed over surviving cycles");
+  EXPECT_TRUE(result->has_median_diff_uv, "median computed over surviving cycles");
+  EXPECT_I64(50000LL, result->median_diff_uv, "median over the three surviving diffs");
+  EXPECT_I64(50000LL, result->mean_diff_uv, "mean over the three surviving diffs");
+  EXPECT_I64(525000LL, result->mean_hi_uv, "mean high over surviving cycles");
+  EXPECT_I64(475000LL, result->mean_lo_uv, "mean low over surviving cycles");
+  EXPECT_I64(25000LL, result->min_diff_uv, "minimum surviving diff");
+  EXPECT_I64(75000LL, result->max_diff_uv, "maximum surviving diff");
+  EXPECT_I64(50000LL, result->drift_uv, "drift spans first to last surviving cycle");
+  EXPECT_I64(20412LL, result->sd_uv, "population sd over surviving diffs");
+  EXPECT_I64(25000LL, result->mad_uv, "mad over surviving diffs");
+
+  EXPECT_TRUE(result->has_abba_raw, "raw evidence present");
+  EXPECT_U32(4U, result->abba_raw_cycle_count, "raw evidence counts attempted cycles");
+  EXPECT_U32(10920U, result->abba_h1_raw[0U], "cycle 0 H1 raw kept");
+  EXPECT_U32(0U, result->abba_h1_raw[1U], "faulted cycle H1 raw slot cleared");
+  EXPECT_U32(0U, result->abba_l1_raw[1U], "faulted cycle L1 raw slot cleared");
+  EXPECT_U32(0U, result->abba_l2_raw[1U], "faulted cycle L2 raw slot cleared");
+  EXPECT_U32(0U, result->abba_h2_raw[1U], "faulted cycle H2 raw slot cleared");
+  EXPECT_U32(11466U, result->abba_h1_raw[2U], "cycle 2 H1 raw kept");
+  EXPECT_U32(12012U, result->abba_h1_raw[3U], "cycle 3 H1 raw kept");
+
+  /* Item (f): the resumed read re-establishes a known ADC state with one
+   * forced discard conversion. Burst conversions: cycle 0 uses 7, cycle 1
+   * only the timed-out start, cycle 2 pays the H1 discard again (7), and
+   * cycle 3 needs none (6): 21 total, versus 25 nominal. */
+  EXPECT_U32(
+    21U,
+    (uint32_t)test_event_count_for_kind_state(
+      TEST_EVENT_START_CONVERSION,
+      ML3_STATE_SAMPLE_ABBA),
+    "burst conversion count proves one forced discard and no retries");
+  EXPECT_U32(
+    12U,
+    (uint32_t)test_event_count_for_kind_state_arg(
+      TEST_EVENT_SELECT_CHANNEL,
+      ML3_STATE_SAMPLE_ABBA,
+      config.channel_hi),
+    "high-channel selects include the forced discard");
+  EXPECT_U32(
+    9U,
+    (uint32_t)test_event_count_for_kind_state_arg(
+      TEST_EVENT_SELECT_CHANNEL,
+      ML3_STATE_SAMPLE_ABBA,
+      config.channel_lo),
+    "low-channel selects skip the lost cycle");
+
+  EXPECT_U32(1U, test_state.process_calls, "standing reading processes once");
+  EXPECT_U32(1U, test_state.build_calls, "standing reading builds once");
+  EXPECT_U32(1U, test_state.queue_calls, "standing reading queues once");
+  EXPECT_TRUE(test_state.queued_result_seen, "standing reading queues a snapshot");
+  EXPECT_U32(0U, test_state.queued_result.fault_flags, "queued snapshot has no fault flags");
+  EXPECT_U32(3U, test_state.queued_result.valid_cycle_count, "queued snapshot exposes reduced count");
+  EXPECT_I64(50000LL, test_state.queued_result.median_diff_uv, "queued snapshot median");
+}
+
+/* Brief item (b): two lost cycles out of four fall below the 3-cycle floor:
+ * no statistics, and BOTH recorded fault classes are raised so quality
+ * evaluates INVALID with cause. */
+static void test_abba_two_cycle_faults_fall_below_floor_with_causes(void) {
+  ml3_measurement_ctx_t ctx;
+  adc_precision_context_t adc_ctx;
+  ml3_measurement_config_t config = test_default_config(4U);
+  adc_precision_timeouts_t timeouts;
+  /* Cycle 1 times out at H1 (nothing consumed). Cycle 2 resumes on the
+   * high channel (filler for its forced discard), reads H1, then its L1
+   * retained read overruns (that sample is consumed). Cycle 3 resumes on
+   * the LOW-to-high channel change, so no filler is needed. */
+  const uint16_t samples[] = {
+    48000U,
+    59000U,
+    10920U, 10374U, 10374U, 10920U, /* cycle 0 valid */
+    TEST_ABBA_DISCARD_FILLER,       /* cycle 2 forced discard */
+    11466U,                          /* cycle 2 H1 retained */
+    10374U,                          /* cycle 2 L1 retained: overruns */
+    12012U, 10374U, 10374U, 12012U, /* cycle 3 valid */
+    48000U,
+    59000U,
+    30000U,
+    8190U,
+    32000U
+  };
+
+  test_reset_timeouts(&timeouts);
+  test_prepare_measurement(
+    &ctx,
+    &adc_ctx,
+    &config,
+    &timeouts,
+    samples,
+    sizeof(samples) / sizeof(samples[0U]));
+  test_state.timeout_conversion_polls = 10U;
+  /* Cycle 1 H1 retained is conversion 7. After recovery, cycle 2 runs
+   * forced-discard(8)+retained(9) for H1 and discard(10)+retained(11) for
+   * L1. The fake counts every stream-consuming read as retained: cycle 0
+   * contributes 4, the cycle-2 forced discard 1, H1 retained 1 -> the L1
+   * retained read is retained ordinal 6. */
+  test_set_timeout_injection(
+    ML3_STATE_SAMPLE_ABBA,
+    TEST_ABBA_FIRST_CYCLE_CONVERSIONS);
+  test_set_overrun_injection(
+    ML3_STATE_SAMPLE_ABBA,
+    11U,
+    6U,
+    config.channel_lo,
+    false);
+
+  EXPECT_U32(
+    (uint32_t)ML3_MEASUREMENT_STEP_DONE,
+    (uint32_t)test_run_to_completion(&ctx, 800U),
+    "below-floor acquisition still completes");
+  EXPECT_TRUE(test_state.inject_timeout_seen, "cycle-1 timeout observed");
+  EXPECT_TRUE(test_state.inject_overrun_seen, "cycle-2 overrun observed");
+  EXPECT_U32(
+    (uint32_t)ML3_MEASUREMENT_ERR_ADC_OVERRUN,
+    (uint32_t)ml3_measurement_last_error(&ctx),
+    "last error carries the most recent per-cycle class");
+  EXPECT_U32(
+    (uint32_t)(ML3_MEASUREMENT_FAULT_ADC_TIMEOUT | ML3_MEASUREMENT_FAULT_ADC_OVERRUN),
+    (uint32_t)ctx.last_result.fault_flags,
+    "both per-cycle fault classes raised below the floor");
+  EXPECT_TRUE(ctx.last_result.has_faults, "fault presence raised below the floor");
+  EXPECT_TRUE(
+    (ctx.last_result.fault_flags & (uint16_t)ML3_QUALITY_INVALIDATING_MASK) ==
+      ctx.last_result.fault_flags,
+    "raised classes are quality-invalidating causes");
+
+  EXPECT_TRUE(ctx.cycle_valid[0U], "cycle 0 valid");
+  EXPECT_FALSE(ctx.cycle_valid[1U], "cycle 1 lost to timeout");
+  EXPECT_FALSE(ctx.cycle_valid[2U], "cycle 2 lost to overrun");
+  EXPECT_TRUE(ctx.cycle_valid[3U], "cycle 3 valid");
+  EXPECT_U32(4U, ctx.current_abba_cycle, "all four cycles attempted");
+  EXPECT_TRUE(ctx.last_result.has_valid_cycle_count, "valid-cycle count present");
+  EXPECT_U32(2U, ctx.last_result.valid_cycle_count, "two cycles survive");
+  EXPECT_FALSE(ctx.last_result.has_mean_diff_uv, "no stats below the floor");
+  EXPECT_FALSE(ctx.last_result.has_median_diff_uv, "no median below the floor");
+  EXPECT_FALSE(ctx.last_result.has_sd_uv, "no sd below the floor");
+
+  EXPECT_TRUE(ctx.last_result.has_pre_reference_raw, "pre reference evidence kept");
+  EXPECT_TRUE(ctx.last_result.has_post_reference_raw, "post reference evidence kept");
+  EXPECT_TRUE(ctx.last_result.has_die_temp_raw, "die temperature evidence kept");
+  EXPECT_TRUE(ctx.last_result.has_thermistor_raw, "thermistor evidence kept");
+  EXPECT_TRUE(ctx.last_result.has_abba_raw, "raw evidence kept");
+  EXPECT_U32(4U, ctx.last_result.abba_raw_cycle_count, "raw evidence counts attempts");
+  EXPECT_U32(0U, ctx.last_result.abba_h1_raw[1U], "lost cycle 1 raw cleared");
+  EXPECT_U32(0U, ctx.last_result.abba_h1_raw[2U], "lost cycle 2 raw cleared");
+  EXPECT_U32(10920U, ctx.last_result.abba_h1_raw[0U], "cycle 0 raw kept");
+  EXPECT_U32(12012U, ctx.last_result.abba_h1_raw[3U], "cycle 3 raw kept");
+
+  EXPECT_U32(1U, test_state.process_calls, "below-floor report processes once");
+  EXPECT_U32(1U, test_state.build_calls, "below-floor report builds once");
+  EXPECT_U32(1U, test_state.queue_calls, "below-floor report queues once");
+  EXPECT_TRUE(test_state.queue_after_lows, "below-floor report queued after lows");
+  EXPECT_U32(
+    (uint32_t)ML3_STATE_IDLE,
+    (uint32_t)ml3_measurement_state(&ctx),
+    "idle after below-floor completion");
+}
+
+/* Brief item (c): a fault on the LAST cycle's H2 still hands over to
+ * REFERENCE_POST; the reading stands on the three surviving cycles. */
+static void test_abba_last_cycle_h2_fault_proceeds_to_reference_post(void) {
+  ml3_measurement_ctx_t ctx;
+  adc_precision_context_t adc_ctx;
+  ml3_measurement_config_t config = test_default_config(4U);
+  adc_precision_timeouts_t timeouts;
+  /* Cycle 3 consumes H1, L1, L2 and then times out on its H2 discard
+   * conversion (low-to-high channel change), so no filler is needed. */
+  const uint16_t samples[] = {
+    48000U,
+    59000U,
+    10920U, 10374U, 10374U, 10920U, /* cycle 0: +25000 uV */
+    11466U, 10374U, 10374U, 11466U, /* cycle 1: +50000 uV */
+    12012U, 10374U, 10374U, 12012U, /* cycle 2: +75000 uV */
+    12558U, 10374U, 10374U,         /* cycle 3 partial: lost at H2 */
+    48000U,
+    59000U,
+    30000U,
+    8190U,
+    32000U
+  };
+  static const ml3_state_t expected_states[] = {
+    ML3_STATE_PREPARE,
+    ML3_STATE_POWER_ON,
+    ML3_STATE_WARMUP,
+    ML3_STATE_ADC_CONFIGURE,
+    ML3_STATE_ADC_CALIBRATE,
+    ML3_STATE_REFERENCE_PRE,
+    ML3_STATE_SAMPLE_ABBA,
+    ML3_STATE_REFERENCE_POST,
+    ML3_STATE_POWER_OFF,
+    ML3_STATE_VERIFY_DISCHARGE,
+    ML3_STATE_SAMPLE_THERMISTOR,
+    ML3_STATE_PROCESS,
+    ML3_STATE_BUILD_PAYLOAD,
+    ML3_STATE_QUEUE_TX,
+    ML3_STATE_IDLE
+  };
+  /* Cycle 3's H2 discard: 7 + 6 + 6 conversions for cycles 0-2, then
+   * H1 retained (1) + L1 discard/retained (2) + L2 retained (1). */
+  const size_t h2_discard_conversion =
+    (size_t)TEST_ABBA_FIRST_CYCLE_CONVERSIONS +
+    (2U * (size_t)TEST_ABBA_LATER_CYCLE_CONVERSIONS) +
+    4U;
+
+  test_reset_timeouts(&timeouts);
+  test_prepare_measurement(
+    &ctx,
+    &adc_ctx,
+    &config,
+    &timeouts,
+    samples,
+    sizeof(samples) / sizeof(samples[0U]));
+  test_state.timeout_conversion_polls = 10U;
+  test_clear_overrun_injection();
+  test_set_timeout_injection(ML3_STATE_SAMPLE_ABBA, h2_discard_conversion);
+
+  EXPECT_U32(
+    (uint32_t)ML3_MEASUREMENT_STEP_DONE,
+    (uint32_t)test_run_to_completion(&ctx, 800U),
+    "last-cycle fault acquisition completes");
+  EXPECT_TRUE(test_state.inject_timeout_seen, "last-cycle H2 timeout observed");
+  EXPECT_U32(
+    (uint32_t)h2_discard_conversion,
+    (uint32_t)test_state.inject_timeout_hit_index,
+    "timeout hit the last cycle's H2 discard conversion");
+  EXPECT_TRUE(test_state.inject_timeout_hit_discard, "H2 fault hit its discard conversion");
+  EXPECT_U32(
+    (uint32_t)config.channel_hi,
+    (uint32_t)test_state.inject_timeout_hit_channel,
+    "H2 fault hit the high channel");
+  test_expect_state_exact(
+    expected_states,
+    sizeof(expected_states) / sizeof(expected_states[0U]));
+  EXPECT_U32(
+    (uint32_t)ML3_MEASUREMENT_OK,
+    (uint32_t)ml3_measurement_last_error(&ctx),
+    "standing reading after last-cycle fault reports no error");
+  EXPECT_U32(0U, ctx.last_result.fault_flags, "no fault flags for standing reading");
+  EXPECT_TRUE(ctx.cycle_valid[0U], "cycle 0 valid");
+  EXPECT_TRUE(ctx.cycle_valid[1U], "cycle 1 valid");
+  EXPECT_TRUE(ctx.cycle_valid[2U], "cycle 2 valid");
+  EXPECT_FALSE(ctx.cycle_valid[3U], "last cycle lost");
+  EXPECT_U32(4U, ctx.current_abba_cycle, "all four cycles attempted");
+  EXPECT_U32(3U, ctx.last_result.valid_cycle_count, "three cycles survive");
+  EXPECT_TRUE(ctx.last_result.has_median_diff_uv, "median present");
+  EXPECT_I64(50000LL, ctx.last_result.median_diff_uv, "median over cycles 0-2");
+  EXPECT_I64(50000LL, ctx.last_result.drift_uv, "drift over surviving cycles");
+  EXPECT_TRUE(ctx.last_result.has_post_reference_raw, "post reference read after handover");
+  EXPECT_U32(1U, test_state.queue_calls, "standing reading queues once");
+  EXPECT_U32(0U, test_state.queued_result.fault_flags, "queued snapshot carries no fault");
+}
+
+/* Brief item (d): timeout and overrun classes are recorded distinctly.
+ * With the 3-cycle floor configuration a single lost cycle is already
+ * below the floor, so exactly the causing class must be raised. */
+static void test_abba_fault_classes_recorded_distinctly(void) {
+  ml3_measurement_ctx_t ctx;
+  adc_precision_context_t adc_ctx;
+  ml3_measurement_config_t config = test_default_config(3U);
+  adc_precision_timeouts_t timeouts;
+  /* Timeout case: cycle 1 H1 retained times out, consuming nothing;
+   * cycle 2 resumes on the high channel (filler). */
+  const uint16_t timeout_samples[] = {
+    48000U,
+    59000U,
+    10920U, 10374U, 10374U, 10920U,
+    TEST_ABBA_DISCARD_FILLER,
+    10920U, 10374U, 10374U, 10920U,
+    48000U,
+    59000U,
+    30000U,
+    8190U,
+    32000U
+  };
+  /* Overrun case: cycle 1 H1 retained overruns and consumes its sample;
+   * cycle 2 resumes on the high channel (filler). */
+  const uint16_t overrun_samples[] = {
+    48000U,
+    59000U,
+    10920U, 10374U, 10374U, 10920U,
+    10920U,                          /* cycle 1 H1 retained: overruns */
+    TEST_ABBA_DISCARD_FILLER,
+    10920U, 10374U, 10374U, 10920U,
+    48000U,
+    59000U,
+    30000U,
+    8190U,
+    32000U
+  };
+
+  test_reset_timeouts(&timeouts);
+  test_prepare_measurement(
+    &ctx,
+    &adc_ctx,
+    &config,
+    &timeouts,
+    timeout_samples,
+    sizeof(timeout_samples) / sizeof(timeout_samples[0U]));
+  test_state.timeout_conversion_polls = 10U;
+  test_clear_overrun_injection();
+  test_set_timeout_injection(
+    ML3_STATE_SAMPLE_ABBA,
+    TEST_ABBA_FIRST_CYCLE_CONVERSIONS);
+  EXPECT_U32(
+    (uint32_t)ML3_MEASUREMENT_STEP_DONE,
+    (uint32_t)test_run_to_completion(&ctx, 800U),
+    "timeout-class acquisition completes");
+  EXPECT_TRUE(test_state.inject_timeout_seen, "timeout class injected");
+  EXPECT_U32(
+    (uint32_t)ML3_MEASUREMENT_FAULT_ADC_TIMEOUT,
+    (uint32_t)ctx.last_result.fault_flags,
+    "timeout class recorded alone");
+  EXPECT_U32(
+    (uint32_t)ML3_MEASUREMENT_ERR_ADC_TIMEOUT,
+    (uint32_t)ml3_measurement_last_error(&ctx),
+    "timeout class reported as last error");
+  EXPECT_U32(2U, ctx.last_result.valid_cycle_count, "timeout case: two cycles survive");
+
+  test_prepare_measurement(
+    &ctx,
+    &adc_ctx,
+    &config,
+    &timeouts,
+    overrun_samples,
+    sizeof(overrun_samples) / sizeof(overrun_samples[0U]));
+  test_set_timeout_injection(ML3_STATE_IDLE, SIZE_MAX);
+  /* Cycle 1 H1 retained: conversion 7, and the fifth stream-consuming
+   * read in the burst (cycle 0 contributed four). */
+  test_set_overrun_injection(
+    ML3_STATE_SAMPLE_ABBA,
+    TEST_ABBA_FIRST_CYCLE_CONVERSIONS,
+    4U,
+    config.channel_hi,
+    false);
+  EXPECT_U32(
+    (uint32_t)ML3_MEASUREMENT_STEP_DONE,
+    (uint32_t)test_run_to_completion(&ctx, 800U),
+    "overrun-class acquisition completes");
+  EXPECT_TRUE(test_state.inject_overrun_seen, "overrun class injected");
+  EXPECT_U32(
+    (uint32_t)ML3_MEASUREMENT_FAULT_ADC_OVERRUN,
+    (uint32_t)ctx.last_result.fault_flags,
+    "overrun class recorded alone");
+  EXPECT_U32(
+    (uint32_t)ML3_MEASUREMENT_ERR_ADC_OVERRUN,
+    (uint32_t)ml3_measurement_last_error(&ctx),
+    "overrun class reported as last error");
+  EXPECT_U32(2U, ctx.last_result.valid_cycle_count, "overrun case: two cycles survive");
+}
+
 static void test_compute_stats_oracles(void) {
   ml3_measurement_result_t stats;
   int64_t hi[8];
@@ -5127,6 +5791,10 @@ int main(void) {
   test_prepare_initial_thermistor_low_failure_retries_safe_low();
   test_full_state_machine_abba_oracle();
   test_abba_raw_evidence_counts_and_excludes_discards();
+  test_abba_single_cycle_timeout_tolerated_keeps_reading();
+  test_abba_two_cycle_faults_fall_below_floor_with_causes();
+  test_abba_last_cycle_h2_fault_proceeds_to_reference_post();
+  test_abba_fault_classes_recorded_distinctly();
   test_compute_stats_oracles();
 
   if (failure_count != 0U) {

@@ -753,7 +753,13 @@ static void test_conversion_timeout_and_overrun_preserve_output(void) {
   EXPECT_EQ_U32(5555U, sample, "output preserved on overrun");
 }
 
-static void test_channel_switch_discard_retained_overrun_reprepare_required(void) {
+/*
+ * Conversion-class failures (timeout/overrun) are recoverable: the prepared
+ * session survives, only the channel-retention cache is dropped, and the
+ * next read re-establishes a known ADC state with one forced discard
+ * conversion. No re-prepare (configure/calibrate) is required.
+ */
+static void test_channel_switch_overrun_recovers_prepared_session(void) {
   adc_precision_context_t context;
   adc_precision_timeouts_t timeouts;
   uint16_t sample = 0U;
@@ -773,7 +779,7 @@ static void test_channel_switch_discard_retained_overrun_reprepare_required(void
   test_state.overrun_sample_index = 3U;
   adc_precision_init(&context, &test_port, &test_state);
   err = adc_precision_prepare(&context, &timeouts);
-  EXPECT_EQ_ERR(ADC_PRECISION_OK, err, "prepare before retained-overrun invalidation");
+  EXPECT_EQ_ERR(ADC_PRECISION_OK, err, "prepare before retained-overrun recovery");
 
   err = adc_precision_read_raw(&context, 7U, &timeouts, &sample);
   EXPECT_EQ_ERR(ADC_PRECISION_OK, err, "channel 7 establishes retention");
@@ -783,37 +789,25 @@ static void test_channel_switch_discard_retained_overrun_reprepare_required(void
   err = adc_precision_read_raw(&context, 8U, &timeouts, &sample);
   EXPECT_EQ_ERR(ADC_PRECISION_ERROR_OVERRUN, err, "channel 8 retained conversion can overrun");
   EXPECT_EQ_U32(9999U, sample, "overrun preserves caller output");
-  EXPECT(!context.acquisition_prepared, "prepared flag cleared on retained failure");
-  EXPECT(!context.has_retained_channel, "retained channel state cleared on retained failure");
-
-  sample = 4321U;
-  err = adc_precision_read_raw(&context, 8U, &timeouts, &sample);
-  EXPECT_EQ_ERR(ADC_PRECISION_ERROR_INVALID_ARGUMENT, err, "read rejected until prepare after failure");
-  EXPECT_EQ_U32(4321U, sample, "rejection preserves caller value");
-  EXPECT_EQ_U32(4U, event_count_by_kind(EVENT_START_CONVERSION), "no conversion during immediate retry");
-
-  test_state.stop_polls = 2U;
-  err = adc_precision_prepare(&context, &timeouts);
-  EXPECT_EQ_ERR(ADC_PRECISION_OK, err, "re-prepare required and succeeds");
-  EXPECT_EQ_U32(1U, event_count_by_kind(EVENT_DISABLE), "reprepare disables ADC");
-  EXPECT_EQ_U32(2U, event_count_by_kind(EVENT_CONFIGURE), "reprepare reconfigures once");
-  EXPECT_EQ_U32(2U, event_count_by_kind(EVENT_CALIBRATE), "reprepare recalibrates once");
-  EXPECT(port_event_nth_order_is(EVENT_DISABLE, EVENT_CONFIGURE, 1U, 2U),
-    "disable happens before reprepare configure");
-  EXPECT(port_event_nth_order_is(EVENT_CONFIGURE, EVENT_CALIBRATE, 2U, 2U),
-    "configure happens before reprepare calibration");
+  EXPECT(context.acquisition_prepared, "prepared session survives conversion overrun");
+  EXPECT(!context.has_retained_channel, "channel retention dropped after overrun");
 
   conversions_before = event_count_by_kind(EVENT_START_CONVERSION);
-  EXPECT_EQ_U32(4U, conversions_before, "reprepare performs no conversion");
+  EXPECT_EQ_U32(4U, conversions_before, "two reads performed four conversions");
   sample = 8888U;
   err = adc_precision_read_raw(&context, 8U, &timeouts, &sample);
-  EXPECT_EQ_ERR(ADC_PRECISION_OK, err, "recovered channel 8 read succeeds");
+  EXPECT_EQ_ERR(ADC_PRECISION_OK, err, "read after overrun succeeds without re-prepare");
   EXPECT_EQ_U32(302U, sample, "recovered read returns retained sample");
   EXPECT_EQ_U32(2U, (uint32_t)(event_count_by_kind(EVENT_START_CONVERSION) - conversions_before),
-    "recovered read performs one discard and one retained");
+    "recovered read performs one forced discard and one retained");
+  EXPECT_EQ_U32(1U, event_count_by_kind(EVENT_CONFIGURE), "no reconfigure after overrun recovery");
+  EXPECT_EQ_U32(1U, event_count_by_kind(EVENT_CALIBRATE), "no recalibration after overrun recovery");
+  EXPECT_EQ_U32(0U, event_count_by_kind(EVENT_STOP),
+    "overrun recovery needs no stop when the conversion already completed");
+  EXPECT(!test_state.sequence_violation, "overrun recovery has no sequencing violation");
 }
 
-static void test_retained_timeout_recovery_and_reprepare(void) {
+static void test_retained_timeout_recovers_prepared_session(void) {
   adc_precision_context_t context;
   adc_precision_timeouts_t timeouts;
   uint16_t sample = 0U;
@@ -830,37 +824,106 @@ static void test_retained_timeout_recovery_and_reprepare(void) {
   err = adc_precision_read_raw(&context, 7U, &timeouts, &sample);
   EXPECT_EQ_ERR(ADC_PRECISION_OK, err, "seed retained sample");
 
-  test_state.conversion_stopped = false;
   sample = 9876U;
   timeouts.conversion_ms = 1U;
   test_state.conversion_polls = 100U;
+  test_state.stop_polls = 1U;
   err = adc_precision_read_raw(&context, 7U, &timeouts, &sample);
   EXPECT_EQ_ERR(ADC_PRECISION_ERROR_TIMEOUT, err, "same-channel retained read can timeout");
   EXPECT_EQ_U32(9876U, sample, "retained timeout preserves caller sentinel");
-  EXPECT(!context.acquisition_prepared, "prepared flag cleared on retained timeout");
-  EXPECT(!context.has_retained_channel, "retained state cleared on retained timeout");
+  EXPECT(context.acquisition_prepared, "prepared session survives conversion timeout");
+  EXPECT(!context.has_retained_channel, "channel retention dropped after timeout");
+  EXPECT_EQ_U32(1U, event_count_by_kind(EVENT_STOP),
+    "timeout recovery issues one bounded stop request");
 
-  sample = 8765U;
-  err = adc_precision_read_raw(&context, 7U, &timeouts, &sample);
-  EXPECT_EQ_ERR(ADC_PRECISION_ERROR_INVALID_ARGUMENT, err, "read still rejected after retained timeout");
-  EXPECT_EQ_U32(8765U, sample, "rejection preserves caller sentinel");
-  size_t stop_count_before = event_count_by_kind(EVENT_STOP);
-  test_state.stop_polls = 1U;
-  test_state.conversion_stopped = false;
-
-  err = adc_precision_prepare(&context, &timeouts);
-  EXPECT_EQ_ERR(ADC_PRECISION_OK, err, "re-prepare after retained timeout");
-  EXPECT_EQ_U32(stop_count_before + 1U, event_count_by_kind(EVENT_STOP),
-    "timeout recovery prepare issues one stop");
   set_default_timeouts(&timeouts);
   test_state.conversion_polls = 0U;
   conversions_before = event_count_by_kind(EVENT_START_CONVERSION);
   err = adc_precision_read_raw(&context, 7U, &timeouts, &sample);
-  EXPECT_EQ_ERR(ADC_PRECISION_OK, err, "read after re-prepare succeeds");
+  EXPECT_EQ_ERR(ADC_PRECISION_OK, err, "read after timeout succeeds without re-prepare");
+  /* The forced discard consumes sample 12; the retained read returns 13. */
+  EXPECT_EQ_U32(13U, sample, "recovered read returns the retained sample after its forced discard");
   conversions_after = event_count_by_kind(EVENT_START_CONVERSION);
   EXPECT_EQ_U32(2U, (uint32_t)(conversions_after - conversions_before),
-    "recovered read again performs one discard and one retained");
+    "recovered read performs one forced discard and one retained");
+  EXPECT_EQ_U32(1U, event_count_by_kind(EVENT_CONFIGURE), "no reconfigure after timeout recovery");
+  EXPECT_EQ_U32(1U, event_count_by_kind(EVENT_CALIBRATE), "no recalibration after timeout recovery");
   EXPECT(!test_state.sequence_violation, "recovered conversion has no sequence_violation");
+}
+
+/* If the ADC cannot be brought back to a stopped state within the bounded
+ * stop window after a conversion failure, the whole prepared session is
+ * invalidated (fail closed) and a full re-prepare is required. */
+static void test_conversion_stop_failure_invalidates_session(void) {
+  adc_precision_context_t context;
+  adc_precision_timeouts_t timeouts;
+  uint16_t sample = 0U;
+  adc_precision_error_t err = ADC_PRECISION_OK;
+
+  reset_port_state();
+  set_default_timeouts(&timeouts);
+  set_default_samples(20U, 21U, 22U, 23U, 24U, 25U);
+  adc_precision_init(&context, &test_port, &test_state);
+  err = adc_precision_prepare(&context, &timeouts);
+  EXPECT_EQ_ERR(ADC_PRECISION_OK, err, "prepare for stop-failure path");
+  err = adc_precision_read_raw(&context, 7U, &timeouts, &sample);
+  EXPECT_EQ_ERR(ADC_PRECISION_OK, err, "seed retained sample before stop failure");
+
+  sample = 6543U;
+  timeouts.conversion_ms = 1U;
+  timeouts.stop_ms = 1U;
+  test_state.conversion_polls = 100U;
+  test_state.stop_polls = 1000U;
+  err = adc_precision_read_raw(&context, 7U, &timeouts, &sample);
+  EXPECT_EQ_ERR(ADC_PRECISION_ERROR_TIMEOUT, err, "stop failure still reports the conversion error");
+  EXPECT_EQ_U32(6543U, sample, "stop failure preserves caller sentinel");
+  EXPECT(!context.acquisition_prepared, "stop failure invalidates the prepared session");
+  EXPECT(!context.has_retained_channel, "stop failure clears channel retention");
+  EXPECT_EQ_U32(1U, event_count_by_kind(EVENT_STOP), "stop was requested before failing closed");
+
+  set_default_timeouts(&timeouts);
+  test_state.conversion_polls = 0U;
+  test_state.stop_polls = 0U;
+  sample = 5432U;
+  err = adc_precision_read_raw(&context, 7U, &timeouts, &sample);
+  EXPECT_EQ_ERR(ADC_PRECISION_ERROR_INVALID_ARGUMENT, err, "read rejected until re-prepare");
+  EXPECT_EQ_U32(5432U, sample, "rejection preserves caller sentinel");
+
+  test_state.conversion_stopped = false;
+  test_state.stop_polls = 1U;
+  err = adc_precision_prepare(&context, &timeouts);
+  EXPECT_EQ_ERR(ADC_PRECISION_OK, err, "re-prepare recovers from stop failure");
+  err = adc_precision_read_raw(&context, 7U, &timeouts, &sample);
+  EXPECT_EQ_ERR(ADC_PRECISION_OK, err, "read succeeds after re-prepare");
+}
+
+/* Non-conversion failure classes remain session-fatal exactly as before. */
+static void test_internal_read_failure_invalidates_session(void) {
+  adc_precision_context_t context;
+  adc_precision_timeouts_t timeouts;
+  uint16_t sample = 0U;
+  adc_precision_error_t err = ADC_PRECISION_OK;
+
+  reset_port_state();
+  set_default_timeouts(&timeouts);
+  test_state.samples[0] = 77U;
+  test_state.sample_count = 1U;
+  test_state.sample_index = 0U;
+  adc_precision_init(&context, &test_port, &test_state);
+  err = adc_precision_prepare(&context, &timeouts);
+  EXPECT_EQ_ERR(ADC_PRECISION_OK, err, "prepare for internal-failure path");
+
+  sample = 3210U;
+  err = adc_precision_read_raw(&context, 7U, &timeouts, &sample);
+  EXPECT_EQ_ERR(ADC_PRECISION_ERROR_INTERNAL, err, "exhausted port read reports internal error");
+  EXPECT_EQ_U32(3210U, sample, "internal failure preserves caller sentinel");
+  EXPECT(!context.acquisition_prepared, "internal failure stays session-fatal");
+  EXPECT(!context.has_retained_channel, "internal failure clears channel retention");
+
+  sample = 2109U;
+  err = adc_precision_read_raw(&context, 7U, &timeouts, &sample);
+  EXPECT_EQ_ERR(ADC_PRECISION_ERROR_INVALID_ARGUMENT, err, "read rejected until re-prepare");
+  EXPECT_EQ_U32(2109U, sample, "rejection preserves caller sentinel");
 }
 
 static void test_channel_bounds_and_setup_preconditions(void) {
@@ -1019,9 +1082,13 @@ int main(void) {
   run_tests(test_setup_only_once_per_acquisition, "single-cycle setup once", &passed, &failed);
   run_tests(test_internal_paths_before_conversion_and_no_premature_conversion, "internal path readiness order", &passed, &failed);
   run_tests(test_conversion_timeout_and_overrun_preserve_output, "conversion timeout and overrun", &passed, &failed);
-  run_tests(test_channel_switch_discard_retained_overrun_reprepare_required,
-    "channel switch overrun invalidates acquisition", &passed, &failed);
-  run_tests(test_retained_timeout_recovery_and_reprepare, "retained timeout recovery", &passed, &failed);
+  run_tests(test_channel_switch_overrun_recovers_prepared_session,
+    "channel switch overrun recovery", &passed, &failed);
+  run_tests(test_retained_timeout_recovers_prepared_session, "retained timeout recovery", &passed, &failed);
+  run_tests(test_conversion_stop_failure_invalidates_session,
+    "conversion stop failure session-fatal", &passed, &failed);
+  run_tests(test_internal_read_failure_invalidates_session,
+    "internal read failure session-fatal", &passed, &failed);
   run_tests(test_channel_bounds_and_setup_preconditions, "channel bounds", &passed, &failed);
   run_tests(test_compute_vdda_and_channel_uv_bounds, "math helper boundaries", &passed, &failed);
   run_tests(test_read_uV_preserves_sentinel_on_error, "read_uV error preservation", &passed, &failed);

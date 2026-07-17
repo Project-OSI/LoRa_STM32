@@ -190,6 +190,17 @@ typedef struct ml3_measurement_ctx_t {
   int64_t cycle_hi_uv[ML3_MEASUREMENT_MAX_ABBA_CYCLES];
   int64_t cycle_lo_uv[ML3_MEASUREMENT_MAX_ABBA_CYCLES];
   bool cycle_valid[ML3_MEASUREMENT_MAX_ABBA_CYCLES];
+  /*
+   * Per-cycle ABBA fault tolerance (plan section 3.9): a conversion-class
+   * failure (timeout/overrun) inside the H1/L1/L2/H2 sub-steps invalidates
+   * only the affected cycle. The fault classes seen are accumulated here
+   * and raised as fault flags after the burst only when the surviving
+   * valid-cycle count falls below ML3_MEASUREMENT_FIXED_MIN_VALID_CYCLES;
+   * otherwise the reading stands and the reduced valid-cycle count is the
+   * visible evidence.
+   */
+  uint32_t abba_cycle_fault_flags;
+  ml3_measurement_error_t abba_cycle_last_error;
   int64_t abba_h1_uv;
   int64_t abba_l1_uv;
   int64_t abba_l2_uv;

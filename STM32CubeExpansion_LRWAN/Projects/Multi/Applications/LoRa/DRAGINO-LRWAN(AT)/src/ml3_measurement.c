@@ -576,6 +576,72 @@ static ml3_measurement_step_t ml3_measurement_step_reference_pre(ml3_measurement
   return ML3_MEASUREMENT_STEP_BUSY;
 }
 
+/*
+ * Common tail after an ABBA cycle finishes (successfully or skipped):
+ * rewind to the H1 sub-step and, when the burst is complete, publish the
+ * raw-evidence count, refresh the watchdog at the unchanged end-of-burst
+ * point, and hand over to REFERENCE_POST.
+ */
+static ml3_measurement_step_t ml3_measurement_finish_abba_cycle(ml3_measurement_ctx_t* ctx) {
+  if (ctx->current_abba_cycle >= ctx->config.abba_cycles) {
+    ctx->last_result.abba_raw_cycle_count = ctx->current_abba_cycle;
+    ctx->last_result.has_abba_raw = true;
+    if (!ctx->port.watchdog_refresh(ctx->port.context)) {
+      ml3_measurement_set_error(ctx, ML3_MEASUREMENT_ERR_CALLBACK, 0U);
+      return ML3_MEASUREMENT_STEP_ERROR;
+    }
+  }
+
+  ctx->abba_substep = ML3_MEASUREMENT_ABBA_PHASE_H1;
+  if (ctx->current_abba_cycle >= ctx->config.abba_cycles) {
+    ml3_measurement_set_state(ctx, ML3_STATE_REFERENCE_POST);
+  }
+  return ML3_MEASUREMENT_STEP_BUSY;
+}
+
+/*
+ * Per-cycle fault tolerance (plan section 3.9): a conversion-class failure
+ * (timeout/overrun) inside one of the four ABBA sub-steps loses only the
+ * current cycle. Its partial samples are discarded, the fault class is
+ * recorded for the post-burst decision, and the burst continues with the
+ * next cycle (or hands over to REFERENCE_POST after the last one). There
+ * are no retries: a failed cycle is a lost cycle, so the burst duration
+ * stays bounded. Any other error class means the ADC session itself is no
+ * longer usable (adc_precision keeps those session-fatal), so the whole
+ * acquisition aborts exactly as before.
+ *
+ * ADC channel-discard cache: adc_precision_read_raw has already recovered
+ * its own state for conversion-class failures - it stopped the ADC within
+ * the bounded stop window and invalidated its channel-retention cache, so
+ * the next conversion re-establishes a known state by forcing a fresh
+ * channel select plus one discard conversion. Nothing further is needed
+ * here. (If even that bounded stop failed, the ADC layer invalidated the
+ * whole prepared session and the next read returns a non-conversion error
+ * that takes the systemic abort path below.)
+ */
+static ml3_measurement_step_t ml3_measurement_handle_abba_read_failure(
+  ml3_measurement_ctx_t* ctx,
+  ml3_measurement_error_t error) {
+  if ((error != ML3_MEASUREMENT_ERR_ADC_TIMEOUT) &&
+      (error != ML3_MEASUREMENT_ERR_ADC_OVERRUN)) {
+    ml3_measurement_set_adc_fault_and_continue(ctx, error);
+    return ML3_MEASUREMENT_STEP_BUSY;
+  }
+
+  ctx->abba_cycle_fault_flags |= ml3_measurement_map_adc_fault_bits(error);
+  ctx->abba_cycle_last_error = error;
+
+  if (ctx->current_abba_cycle < ctx->config.abba_cycles) {
+    /* Discard the failed cycle's partial samples. */
+    ctx->cycle_hi_uv[ctx->current_abba_cycle] = 0;
+    ctx->cycle_lo_uv[ctx->current_abba_cycle] = 0;
+    ctx->cycle_valid[ctx->current_abba_cycle] = false;
+    ++ctx->current_abba_cycle;
+  }
+
+  return ml3_measurement_finish_abba_cycle(ctx);
+}
+
 static ml3_measurement_step_t ml3_measurement_step_sample_abba(ml3_measurement_ctx_t* ctx) {
   ml3_measurement_error_t err = ML3_MEASUREMENT_OK;
 
@@ -591,8 +657,7 @@ static ml3_measurement_step_t ml3_measurement_step_sample_abba(ml3_measurement_c
       &ctx->abba_h1_raw,
       &ctx->abba_h1_uv);
     if (err != ML3_MEASUREMENT_OK) {
-      ml3_measurement_set_adc_fault_and_continue(ctx, err);
-      return ML3_MEASUREMENT_STEP_BUSY;
+      return ml3_measurement_handle_abba_read_failure(ctx, err);
     }
     ++ctx->abba_substep;
     return ML3_MEASUREMENT_STEP_BUSY;
@@ -606,8 +671,7 @@ static ml3_measurement_step_t ml3_measurement_step_sample_abba(ml3_measurement_c
       &ctx->abba_l1_raw,
       &ctx->abba_l1_uv);
     if (err != ML3_MEASUREMENT_OK) {
-      ml3_measurement_set_adc_fault_and_continue(ctx, err);
-      return ML3_MEASUREMENT_STEP_BUSY;
+      return ml3_measurement_handle_abba_read_failure(ctx, err);
     }
     ++ctx->abba_substep;
     return ML3_MEASUREMENT_STEP_BUSY;
@@ -621,8 +685,7 @@ static ml3_measurement_step_t ml3_measurement_step_sample_abba(ml3_measurement_c
       &ctx->abba_l2_raw,
       &ctx->abba_l2_uv);
     if (err != ML3_MEASUREMENT_OK) {
-      ml3_measurement_set_adc_fault_and_continue(ctx, err);
-      return ML3_MEASUREMENT_STEP_BUSY;
+      return ml3_measurement_handle_abba_read_failure(ctx, err);
     }
     ++ctx->abba_substep;
     return ML3_MEASUREMENT_STEP_BUSY;
@@ -635,8 +698,7 @@ static ml3_measurement_step_t ml3_measurement_step_sample_abba(ml3_measurement_c
     &ctx->abba_h2_raw,
     &ctx->abba_h2_uv);
   if (err != ML3_MEASUREMENT_OK) {
-    ml3_measurement_set_adc_fault_and_continue(ctx, err);
-    return ML3_MEASUREMENT_STEP_BUSY;
+    return ml3_measurement_handle_abba_read_failure(ctx, err);
   }
 
   if (ctx->current_abba_cycle < ctx->config.abba_cycles) {
@@ -652,20 +714,7 @@ static ml3_measurement_step_t ml3_measurement_step_sample_abba(ml3_measurement_c
     ++ctx->current_abba_cycle;
   }
 
-  if (ctx->current_abba_cycle >= ctx->config.abba_cycles) {
-    ctx->last_result.abba_raw_cycle_count = ctx->current_abba_cycle;
-    ctx->last_result.has_abba_raw = true;
-    if (!ctx->port.watchdog_refresh(ctx->port.context)) {
-      ml3_measurement_set_error(ctx, ML3_MEASUREMENT_ERR_CALLBACK, 0U);
-      return ML3_MEASUREMENT_STEP_ERROR;
-    }
-  }
-
-  ctx->abba_substep = ML3_MEASUREMENT_ABBA_PHASE_H1;
-  if (ctx->current_abba_cycle >= ctx->config.abba_cycles) {
-    ml3_measurement_set_state(ctx, ML3_STATE_REFERENCE_POST);
-  }
-  return ML3_MEASUREMENT_STEP_BUSY;
+  return ml3_measurement_finish_abba_cycle(ctx);
 }
 
 static ml3_measurement_step_t ml3_measurement_step_reference_post(ml3_measurement_ctx_t* ctx) {
@@ -717,6 +766,23 @@ static ml3_measurement_step_t ml3_measurement_step_reference_post(ml3_measuremen
   ctx->last_result.has_die_temp_raw = true;
 
   ml3_measurement_collect_stats(ctx);
+  /*
+   * Post-burst decision on recorded per-cycle fault classes (plan section
+   * 3.9): with at least ML3_MEASUREMENT_FIXED_MIN_VALID_CYCLES surviving
+   * cycles the reading stands - the invalidating ADC fault flags are NOT
+   * raised and the reduced valid-cycle count is the visible evidence.
+   * Below the floor the recorded class(es) are raised so the INVALID
+   * reading carries its cause; the <floor -> INVALID decision itself
+   * belongs to the quality module.
+   */
+  if ((ctx->abba_cycle_fault_flags != 0U) &&
+      (ctx->last_result.valid_cycle_count <
+       (uint16_t)ML3_MEASUREMENT_FIXED_MIN_VALID_CYCLES)) {
+    ml3_measurement_set_fault(
+      ctx,
+      ctx->abba_cycle_last_error,
+      (uint16_t)ctx->abba_cycle_fault_flags);
+  }
   ml3_measurement_set_state(ctx, ML3_STATE_POWER_OFF);
   return ML3_MEASUREMENT_STEP_BUSY;
 }
@@ -966,6 +1032,8 @@ ml3_measurement_error_t ml3_measurement_start(ml3_measurement_ctx_t* ctx) {
   ctx->current_abba_cycle = 0U;
   ctx->abba_substep = ML3_MEASUREMENT_ABBA_PHASE_H1;
   ctx->discharge_timed_out = false;
+  ctx->abba_cycle_fault_flags = 0U;
+  ctx->abba_cycle_last_error = ML3_MEASUREMENT_OK;
   ctx->abba_h1_uv = 0;
   ctx->abba_l1_uv = 0;
   ctx->abba_l2_uv = 0;

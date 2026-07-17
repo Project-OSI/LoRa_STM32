@@ -24,6 +24,9 @@ static const adc_precision_config_t k_adc_precision_config = {
 
 static bool validate_port(const adc_precision_port_t* port);
 static void invalidate_prepared_cycle(adc_precision_context_t* context);
+static adc_precision_error_t recover_after_conversion_failure(
+  adc_precision_context_t* context,
+  adc_precision_error_t error);
 static adc_precision_error_t validate_timeouts(
   const adc_precision_timeouts_t* timeouts,
   adc_precision_timeouts_t* resolved);
@@ -144,8 +147,7 @@ adc_precision_error_t adc_precision_read_raw(
       &context->resolved_timeouts,
       &discarded_sample);
     if (err != ADC_PRECISION_OK) {
-      invalidate_prepared_cycle(context);
-      return err;
+      return recover_after_conversion_failure(context, err);
     }
   }
 
@@ -157,8 +159,7 @@ adc_precision_error_t adc_precision_read_raw(
         &context->resolved_timeouts,
         &raw_sample);
     if (err != ADC_PRECISION_OK) {
-      invalidate_prepared_cycle(context);
-      return err;
+      return recover_after_conversion_failure(context, err);
     }
   }
 
@@ -369,6 +370,47 @@ static void invalidate_prepared_cycle(adc_precision_context_t* context) {
   context->acquisition_prepared = false;
   context->has_retained_channel = false;
   context->retained_channel = 0U;
+}
+
+/*
+ * Failure handling for a single conversion inside a prepared acquisition.
+ *
+ * Conversion-class failures (timeout, overrun) are recoverable: the ADC's
+ * configuration and self-calibration are untouched, so the prepared session
+ * survives. The ADC is first brought back to a known stopped state within
+ * the bounded stop window (a timed-out conversion may still be running),
+ * then only the channel-retention cache is dropped so the next read forces
+ * a fresh channel select plus one discard conversion. If the ADC cannot be
+ * stopped in time, the whole session is invalidated (fail closed) and a
+ * full re-prepare is required. Every other failure class remains
+ * session-fatal exactly as before. The original error is always returned.
+ */
+static adc_precision_error_t recover_after_conversion_failure(
+  adc_precision_context_t* context,
+  adc_precision_error_t error) {
+  if ((error != ADC_PRECISION_ERROR_TIMEOUT) &&
+      (error != ADC_PRECISION_ERROR_OVERRUN)) {
+    invalidate_prepared_cycle(context);
+    return error;
+  }
+
+  if (!context->port->is_conversion_stopped(context->port_ctx)) {
+    context->port->request_stop_conversion(context->port_ctx);
+    if (wait_for(
+        context->port,
+        context->port_ctx,
+        context->resolved_timeouts.stop_ms,
+        context->port->is_conversion_stopped) != ADC_PRECISION_OK) {
+      ADC_PRECISION_TRACE("recover_after_conversion_failure: stop timeout, session fatal");
+      invalidate_prepared_cycle(context);
+      return error;
+    }
+  }
+
+  context->has_retained_channel = false;
+  context->retained_channel = 0U;
+  ADC_PRECISION_TRACE("recover_after_conversion_failure: session retained, cache dropped");
+  return error;
 }
 
 static adc_precision_error_t validate_timeouts(

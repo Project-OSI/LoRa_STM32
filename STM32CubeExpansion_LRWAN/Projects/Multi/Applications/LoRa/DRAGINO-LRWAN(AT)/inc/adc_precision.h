@@ -93,6 +93,17 @@ adc_precision_error_t adc_precision_default_timeouts(adc_precision_timeouts_t* t
 adc_precision_error_t adc_precision_prepare(
   adc_precision_context_t* context,
   const adc_precision_timeouts_t* timeouts);
+/*
+ * Single oversampled read of one channel inside a prepared acquisition.
+ *
+ * Failure semantics: a conversion-class failure (ADC_PRECISION_ERROR_TIMEOUT
+ * or ADC_PRECISION_ERROR_OVERRUN) is recoverable - the ADC is stopped within
+ * the bounded stop window, only the channel-retention cache is dropped, and
+ * the next read re-establishes a known state with a forced discard
+ * conversion; no re-prepare is needed. If that stop fails, or on any other
+ * failure class, the prepared session is invalidated and reads are rejected
+ * until adc_precision_prepare() succeeds again.
+ */
 adc_precision_error_t adc_precision_read_raw(
   adc_precision_context_t* context,
   uint16_t channel,
