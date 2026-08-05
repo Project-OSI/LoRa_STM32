@@ -66,6 +66,9 @@
 #include "bsp.h"
 #include "ml3_at_commands.h"
 #include "ml3_config.h"
+#if ML3_BENCH_TOOLS
+#include "bench_adc.h"
+#endif
 
 bool debug_flags=0;
 bool message_flags=0;
@@ -248,6 +251,86 @@ static ATEerror_t ml3_translate_parse_status(ml3_at_status_t status)
   }
 }
 
+#if ML3_BENCH_TOOLS
+/*
+ * AT+ML3ADC dispatch -- bench-only oversampled ADC readout for Gate 0 Section
+ * 4 (docs/ml3-gate0-bench-runbook.md). Intercepted here, ahead of
+ * ml3_at_parse(), because ml3_at_commands.c (one of the ML3-branch modules
+ * covered by tests/host/run_ml3_host_tests.sh) is not touched by this bench
+ * tool: it has no notion of AT+ML3ADC and would otherwise report it as an
+ * unknown command, which is exactly the fallback behavior the non-bench
+ * build keeps (this whole block compiles out there).
+ *
+ * Syntax: "AT+ML3ADC" (no argument) samples all three external channels;
+ * "AT+ML3ADC=0" / "=1" / "=4" samples exactly one (PA0/IN0, PA1/IN1,
+ * PA4/IN4 respectively). Any other argument is AT_PARAM_ERROR.
+ */
+static const char ML3_BENCH_ADC_COMMAND[] = "AT+ML3ADC";
+static const char ML3_BENCH_ADC_ARG_PREFIX[] = "AT+ML3ADC=";
+
+static ATEerror_t ml3_bench_adc_execute(const uint8_t *input, size_t input_length)
+{
+  static const char *const channel_labels[BENCH_ADC_CHANNEL_COUNT] =
+    { "0", "1", "4" };
+  uint8_t channel_mask;
+  bench_adc_result_t result;
+  size_t index;
+
+  if (input_length == sizeof(ML3_BENCH_ADC_COMMAND) - 1U)
+  {
+    channel_mask = (uint8_t)BENCH_ADC_CH_ALL;
+  }
+  else if (input_length == sizeof(ML3_BENCH_ADC_ARG_PREFIX) - 1U + 1U
+    && input[sizeof(ML3_BENCH_ADC_ARG_PREFIX) - 1U] == (uint8_t)'0')
+  {
+    channel_mask = (uint8_t)BENCH_ADC_CH_PA0;
+  }
+  else if (input_length == sizeof(ML3_BENCH_ADC_ARG_PREFIX) - 1U + 1U
+    && input[sizeof(ML3_BENCH_ADC_ARG_PREFIX) - 1U] == (uint8_t)'1')
+  {
+    channel_mask = (uint8_t)BENCH_ADC_CH_PA1;
+  }
+  else if (input_length == sizeof(ML3_BENCH_ADC_ARG_PREFIX) - 1U + 1U
+    && input[sizeof(ML3_BENCH_ADC_ARG_PREFIX) - 1U] == (uint8_t)'4')
+  {
+    channel_mask = (uint8_t)BENCH_ADC_CH_PA4;
+  }
+  else
+  {
+    return AT_PARAM_ERROR;
+  }
+
+  if (!bench_adc_run(channel_mask, &result))
+  {
+    PPRINTF("+ML3ADC:ERROR\r\n");
+    return AT_ERROR;
+  }
+
+  for (index = 0U; index < (size_t)BENCH_ADC_CHANNEL_COUNT; ++index)
+  {
+    if (!result.channel[index].sampled)
+    {
+      continue;
+    }
+    PPRINTF("+ML3ADC:CH=%s,MEAN_X100=%lu,MIN=%u,MAX=%u,UV=%lu\r\n",
+      channel_labels[index],
+      (unsigned long)result.channel[index].mean_code_x100,
+      (unsigned)result.channel[index].min_code,
+      (unsigned)result.channel[index].max_code,
+      (unsigned long)result.channel[index].uv);
+  }
+
+  PPRINTF("+ML3ADC:VDDA_FIRST_MV=%lu,VDDA_LAST_MV=%lu,"
+    "VREF_MEAN_X100_FIRST=%lu,VREF_MEAN_X100_LAST=%lu,CAL=%lu\r\n",
+    (unsigned long)result.vdda_mv_first, (unsigned long)result.vdda_mv_last,
+    (unsigned long)result.vrefint_mean_code_x100_first,
+    (unsigned long)result.vrefint_mean_code_x100_last,
+    (unsigned long)result.calibration_factor);
+
+  return AT_OK;
+}
+#endif /* ML3_BENCH_TOOLS */
+
 ATEerror_t at_ml3_execute(const uint8_t *input, size_t input_length)
 {
   ml3_at_command_t command;
@@ -255,6 +338,14 @@ ATEerror_t at_ml3_execute(const uint8_t *input, size_t input_length)
   uint16_t warmup_ms;
   uint8_t cycles;
   uint8_t raw_enabled;
+
+#if ML3_BENCH_TOOLS
+  if (input_length >= sizeof(ML3_BENCH_ADC_COMMAND) - 1U
+    && memcmp(input, ML3_BENCH_ADC_COMMAND, sizeof(ML3_BENCH_ADC_COMMAND) - 1U) == 0)
+  {
+    return ml3_bench_adc_execute(input, input_length);
+  }
+#endif
 
   parse_status = ml3_at_parse(input, input_length, &command);
   if (parse_status != ML3_AT_STATUS_OK)
@@ -315,9 +406,25 @@ ATEerror_t at_ml3_execute(const uint8_t *input, size_t input_length)
       return AT_OK;
 
     case ML3_AT_OPERATION_QUERY_VERSION:
+#if ML3_BENCH_TOOLS
+      /* Bench images must never be ambiguous with a field image: append
+       * +BENCH so a flashed unit always self-identifies. This is a
+       * distinct PPRINTF call (not a %s placeholder fed by an #if/#else
+       * argument) specifically so the default build's format string and
+       * argument count are untouched -- a placeholder approach was tried
+       * first and, even with an empty "" substituted in the non-bench
+       * branch, changed the compiled default image (extra format
+       * specifier + extra vararg is not a no-op at the object-code level,
+       * even though the printed text is unchanged) and broke the
+       * byte-identical-default-build gate. */
+      PPRINTF("+ML3VER:PROTOCOL=%u,MODE=%u,FPORT=%u,+BENCH\r\n",
+        (unsigned)ML3_CONFIG_PROTOCOL_VERSION,
+        (unsigned)ML3_CONFIG_MODE_ML3, (unsigned)ML3_CONFIG_FPORT);
+#else
       PPRINTF("+ML3VER:PROTOCOL=%u,MODE=%u,FPORT=%u\r\n",
         (unsigned)ML3_CONFIG_PROTOCOL_VERSION,
         (unsigned)ML3_CONFIG_MODE_ML3, (unsigned)ML3_CONFIG_FPORT);
+#endif
       return AT_OK;
 
     default:

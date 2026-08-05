@@ -51,6 +51,76 @@ Toolchain: `arm-none-eabi-gcc` (developed and verified against 16.1.0),
 plus the matching `binutils`/`newlib` (nano + nosys specs). No Keil/ARMCC
 involved anywhere in this path.
 
+## Bench variant
+
+```sh
+make -C gcc BENCH=1     # build/lora-bench.elf, build/lora-bench.hex, build/lora-bench.bin
+make -C gcc BENCH=1 size
+make -C gcc BENCH=1 clean   # or plain `make -C gcc clean`, which removes both variants
+```
+
+**Not for deployment.** `lora-bench.bin` adds a bench-only oversampled ADC
+readout (`AT+ML3ADC`) for Gate 0 Section 4
+(`docs/ml3-gate0-bench-runbook.md`) and self-identifies so it can never be
+mistaken for a field image: `AT+ML3VER=?` appends a `,+BENCH` suffix on
+this build only. **No unit whose `AT+ML3VER=?` response contains `+BENCH`
+may ever be installed on a farm gateway.** The default `make -C gcc`
+target (no `BENCH=`) is unaffected byte-for-byte -- everything the bench
+variant adds is compiled out under `#if ML3_BENCH_TOOLS` (the Makefile
+only defines `-DML3_BENCH_TOOLS=1` when `BENCH=1`), and the two variants'
+object files live in separate `build/app-bench/` / `build/cube-bench/`
+subdirectories so building one after the other never links a stale
+object built with the other's flags.
+
+The added module (`src/bench_adc.c` + `inc/bench_adc.h`) is a direct
+STM32L0 HAL/register implementation -- it deliberately does not go
+through `adc_precision.c` (the gated production acquisition port, still
+blocked on the open Task 10 decisions) and touches none of the 7
+ML3-branch modules, `main.c`'s mode dispatch, or the Keil project. It is
+pure passive reads: no TX, no rail control, no dependence on ML3 mode 10,
+safe to run at any time with a bench source driving the probe.
+
+### Gate 0 Section 4 usage sketch
+
+1. Flash `lora-bench.bin` to the bench unit; confirm `AT+ML3VER=?` reports
+   `+BENCH`.
+2. Fit the RC network per plan Section 3.2 and drive the bench voltage
+   source onto the probe under test.
+3. `AT+ML3ADC` (no argument) samples all three external channels
+   (PA0/IN0, PA1/IN1, PA4/IN4) in one invocation; `AT+ML3ADC=0`,
+   `AT+ML3ADC=1`, or `AT+ML3ADC=4` samples exactly one. Every invocation
+   also self-calibrates the ADC and brackets the channel reads with two
+   VREFINT reads (before and after), regardless of how many external
+   channels were requested.
+4. Repeat at each Section 4 injection point ({0, 2, 5, 10, 20, 50, 100} mV
+   and {VDDA-100, VDDA-20} mV) and record the printed lines against the
+   reference meter.
+
+### Output format
+
+Every line is prefixed `+ML3ADC:` for easy grepping. One line per
+requested channel, followed by exactly one summary line:
+
+```
++ML3ADC:CH=<0|1|4>,MEAN_X100=<raw code mean * 100>,MIN=<raw code>,MAX=<raw code>,UV=<microvolts vs ground>
++ML3ADC:VDDA_FIRST_MV=<mV>,VDDA_LAST_MV=<mV>,VREF_MEAN_X100_FIRST=<raw code mean * 100>,VREF_MEAN_X100_LAST=<raw code mean * 100>,CAL=<ADC calibration factor>
+```
+
+`MEAN_X100`/`VREF_MEAN_X100_*` are the mean of 64 software-averaged raw
+12-bit ADC codes, fixed-point scaled by 100 (i.e. divide by 100 for the
+code, or by 100*4095/VDDA_mV/1000 for volts) -- kept as an integer because
+this build does not link `_printf_float` support for `%f` beyond what
+`at.c`/`bsp.c` already required. `MIN`/`MAX` are the raw-code spread
+across those 64 samples. `UV` is the channel's computed microvolts versus
+ground, using `VDDA_FIRST_MV` (the VDDA computed from the VREFINT read
+immediately before the channel-sampling loop -- the reading closest in
+time to it). `CAL` is the value `HAL_ADCEx_Calibration_GetValue()`
+returns from the one self-calibration run at the start of the
+invocation. On any calibration or conversion failure/timeout (a bounded
+10 ms poll, not `HAL_MAX_DELAY`, so a stuck ADC fails fast instead of
+hanging the AT console) the invocation instead prints `+ML3ADC:ERROR` and
+returns `AT_ERROR`.
+
 ## Warning policy
 
 - **Vendor sources** (everything under `STM32CubeExpansion_LRWAN/Drivers`,

@@ -13,13 +13,43 @@
 #   make -C gcc clean
 #   make -C gcc size        # arm-none-eabi-size summary
 #
+#   make -C gcc BENCH=1     # build build/lora-bench.elf/.hex/.bin -- a
+#                            # bench-only variant adding AT+ML3ADC (see
+#                            # README.md "Bench variant"). NOT for field
+#                            # deployment. Object files are namespaced under
+#                            # separate build/app-bench/, build/cube-bench/
+#                            # subdirectories (see APP_OBJDIR/CUBE_OBJDIR
+#                            # below) so switching BENCH=0/1 back and forth
+#                            # never links a stale object built with the
+#                            # other variant's CFLAGS -- no `clean` required
+#                            # between variants, and the default (BENCH=0)
+#                            # build's objects/artifacts are never touched
+#                            # by a BENCH=1 build or vice versa.
+#
 # Toolchain: arm-none-eabi-gcc (tested with 16.1.0). No Keil/ARMCC involved.
 
 APP_ROOT  := ..
 CUBE_ROOT := ../../../../../..
 BUILD_DIR := build
 
-TARGET := lora
+# BENCH=1 selects the bench-only ADC readout variant (AT+ML3ADC, Gate 0
+# Section 4). Everything it adds -- the extra source, the -DML3_BENCH_TOOLS=1
+# define, the distinct TARGET/object-dir namespacing -- is confined to this
+# block; BENCH=0 (the default) is byte-for-byte the same build this Makefile
+# has always produced.
+BENCH ?= 0
+
+ifeq ($(BENCH),1)
+TARGET      := lora-bench
+APP_OBJDIR  := app-bench
+CUBE_OBJDIR := cube-bench
+BENCH_SRCS  := $(APP_ROOT)/src/bench_adc.c
+else
+TARGET      := lora
+APP_OBJDIR  := app
+CUBE_OBJDIR := cube
+BENCH_SRCS  :=
+endif
 
 PREFIX  ?= arm-none-eabi-
 CC      := $(PREFIX)gcc
@@ -135,7 +165,7 @@ CUBE_SRCS := \
   $(CUBE_ROOT)/Middlewares/Third_Party/Lora/Crypto/aes.c \
   $(CUBE_ROOT)/Middlewares/Third_Party/Lora/Crypto/cmac.c
 
-ALL_C_SRCS := $(APP_SRCS) $(ML3_SRCS) $(CUBE_SRCS)
+ALL_C_SRCS := $(APP_SRCS) $(ML3_SRCS) $(CUBE_SRCS) $(BENCH_SRCS)
 ASM_SRCS   := $(STARTUP)
 
 # ---------------------------------------------------------------------------
@@ -181,6 +211,14 @@ DEFINES := \
   -DUSE_HAL_DRIVER \
   -DUSE_SHT \
   -DREGION_EU868
+
+# ML3_BENCH_TOOLS=1 is the ONLY define this Makefile ever adds beyond the
+# uvprojx-harvested list above, and only for BENCH=1. It must never appear
+# in the default (BENCH=0) build's flags -- tests/host/
+# ml3_target_integration_contract.sh greps this Makefile to pin that down.
+ifeq ($(BENCH),1)
+DEFINES += -DML3_BENCH_TOOLS=1
+endif
 
 # ---------------------------------------------------------------------------
 # Flags
@@ -249,17 +287,27 @@ LDFLAGS := $(MCU_FLAGS) \
 # rules bind each object to an explicit, fully-qualified source path, so
 # there is no directory search to get shadowed.
 #
-# APP_SRCS/ML3_SRCS objects are namespaced under build/app/ by basename
-# (safe: both lists are files that live directly in the single src/ dir,
-# so basenames are inherently unique there). CUBE_SRCS objects are
-# namespaced under build/cube/ preserving their full path *relative to
-# CUBE_ROOT*, not just the basename, precisely to avoid repeating the
-# lora.c mistake for any other vendor basename collision.
-APP_OBJS   := $(addprefix $(BUILD_DIR)/app/,$(notdir $(APP_SRCS:.c=.o)))
-ML3_OBJS   := $(addprefix $(BUILD_DIR)/app/,$(notdir $(ML3_SRCS:.c=.o)))
-CUBE_OBJS  := $(patsubst $(CUBE_ROOT)/%.c,$(BUILD_DIR)/cube/%.o,$(CUBE_SRCS))
-ASM_OBJS   := $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SRCS:.s=.o)))
-ALL_OBJS   := $(APP_OBJS) $(ML3_OBJS) $(CUBE_OBJS) $(ASM_OBJS)
+# APP_SRCS/ML3_SRCS/BENCH_SRCS objects are namespaced under
+# build/$(APP_OBJDIR)/ by basename (safe: all three lists are files that
+# live directly in the single src/ dir, so basenames are inherently unique
+# there). CUBE_SRCS objects are namespaced under build/$(CUBE_OBJDIR)/
+# preserving their full path *relative to CUBE_ROOT*, not just the
+# basename, precisely to avoid repeating the lora.c mistake for any other
+# vendor basename collision. $(APP_OBJDIR)/$(CUBE_OBJDIR) resolve to
+# app/cube for the default build and app-bench/cube-bench for BENCH=1 (see
+# top of file) -- this is what lets both variants coexist under the same
+# build/ directory without a `clean` in between and without ever mixing
+# objects built with different CFLAGS.
+APP_OBJS   := $(addprefix $(BUILD_DIR)/$(APP_OBJDIR)/,$(notdir $(APP_SRCS:.c=.o)))
+ML3_OBJS   := $(addprefix $(BUILD_DIR)/$(APP_OBJDIR)/,$(notdir $(ML3_SRCS:.c=.o)))
+BENCH_OBJS := $(addprefix $(BUILD_DIR)/$(APP_OBJDIR)/,$(notdir $(BENCH_SRCS:.c=.o)))
+CUBE_OBJS  := $(patsubst $(CUBE_ROOT)/%.c,$(BUILD_DIR)/$(CUBE_OBJDIR)/%.o,$(CUBE_SRCS))
+# Namespaced alongside APP_OBJS (not loose under $(BUILD_DIR)) for the same
+# reason as everything else in this section: ASFLAGS includes $(DEFINES),
+# which differs between BENCH=0/1, so the assembled object must not be
+# reused across variants either.
+ASM_OBJS   := $(addprefix $(BUILD_DIR)/$(APP_OBJDIR)/,$(notdir $(ASM_SRCS:.s=.o)))
+ALL_OBJS   := $(APP_OBJS) $(ML3_OBJS) $(BENCH_OBJS) $(CUBE_OBJS) $(ASM_OBJS)
 
 ELF := $(BUILD_DIR)/$(TARGET).elf
 HEX := $(BUILD_DIR)/$(TARGET).hex
@@ -282,19 +330,19 @@ $(BIN): $(ELF)
 
 # Vendor App sources (src/*.c minus the 7 ML3 modules): static pattern
 # rule, explicit source directory, no VPATH search.
-$(APP_OBJS): $(BUILD_DIR)/app/%.o: $(APP_ROOT)/src/%.c
+$(APP_OBJS): $(BUILD_DIR)/$(APP_OBJDIR)/%.o: $(APP_ROOT)/src/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(VENDOR_CFLAGS) -c $< -o $@
 
 # Vendor CubeL0/LoRaWAN sources under STM32CubeExpansion_LRWAN/{Drivers,
 # Middlewares}: static pattern rule preserving the full path under
-# build/cube/ (see the CUBE_OBJS comment above for why -- this is what
-# fixed the wrong-lora.c-linked bug). iwdg.o is carved out of this rule's
-# target list (not out of CUBE_OBJS/the link) because it needs the extra
-# -include below; giving the same target a recipe from two rules would
-# only produce a harmless "overriding recipe" make warning, but excluding
-# it here avoids that noise entirely.
-$(filter-out $(BUILD_DIR)/cube/Drivers/BSP/Components/iwdg/iwdg.o,$(CUBE_OBJS)): $(BUILD_DIR)/cube/%.o: $(CUBE_ROOT)/%.c
+# build/$(CUBE_OBJDIR)/ (see the CUBE_OBJS comment above for why -- this is
+# what fixed the wrong-lora.c-linked bug). iwdg.o is carved out of this
+# rule's target list (not out of CUBE_OBJS/the link) because it needs the
+# extra -include below; giving the same target a recipe from two rules
+# would only produce a harmless "overriding recipe" make warning, but
+# excluding it here avoids that noise entirely.
+$(filter-out $(BUILD_DIR)/$(CUBE_OBJDIR)/Drivers/BSP/Components/iwdg/iwdg.o,$(CUBE_OBJS)): $(BUILD_DIR)/$(CUBE_OBJDIR)/%.o: $(CUBE_ROOT)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(VENDOR_CFLAGS) -c $< -o $@
 
@@ -307,7 +355,7 @@ $(filter-out $(BUILD_DIR)/cube/Drivers/BSP/Components/iwdg/iwdg.o,$(CUBE_OBJS)):
 # name). Instead, pre-arm iwdg.h's include guard via an extra -include so
 # iwdg.c never sees the conflicting extern prototype. This explicit rule
 # overrides the static pattern rule above for this one object only.
-$(BUILD_DIR)/cube/Drivers/BSP/Components/iwdg/iwdg.o: $(CUBE_ROOT)/Drivers/BSP/Components/iwdg/iwdg.c iwdg_shim.h
+$(BUILD_DIR)/$(CUBE_OBJDIR)/Drivers/BSP/Components/iwdg/iwdg.o: $(CUBE_ROOT)/Drivers/BSP/Components/iwdg/iwdg.c iwdg_shim.h
 	@mkdir -p $(dir $@)
 	$(CC) $(VENDOR_CFLAGS) -include iwdg_shim.h -c $< -o $@
 
@@ -315,11 +363,21 @@ $(BUILD_DIR)/cube/Drivers/BSP/Components/iwdg/iwdg.o: $(CUBE_ROOT)/Drivers/BSP/C
 # idiom as APP_OBJS, but a different object subdir (app/) is impossible to
 # share with a plain pattern rule at the same stem, so this is spelled out
 # as one static pattern rule matching exactly the ML3_OBJS list.
-$(ML3_OBJS): $(BUILD_DIR)/app/%.o: $(APP_ROOT)/src/%.c
+$(ML3_OBJS): $(BUILD_DIR)/$(APP_OBJDIR)/%.o: $(APP_ROOT)/src/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(ML3_STRICT_CFLAGS) -c $< -o $@
 
-$(ASM_OBJS): $(BUILD_DIR)/%.o: %.s
+# Bench-only module (BENCH=1 only; BENCH_OBJS/BENCH_SRCS are empty for the
+# default build, so this rule never matches anything there). Held to the
+# exact same strict/-Werror warning set as the 7 ML3-branch modules, per
+# the "no target-side regression can hide behind cross-compilation" policy
+# in the README -- bench_adc.c is new code, not vendor code, so it gets no
+# exemption.
+$(BENCH_OBJS): $(BUILD_DIR)/$(APP_OBJDIR)/%.o: $(APP_ROOT)/src/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(ML3_STRICT_CFLAGS) -c $< -o $@
+
+$(ASM_OBJS): $(BUILD_DIR)/$(APP_OBJDIR)/%.o: %.s
 	@mkdir -p $(dir $@)
 	$(CC) $(ASFLAGS) -c $< -o $@
 
