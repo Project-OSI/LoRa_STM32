@@ -80,6 +80,40 @@ static const bench_adc_channel_map_t BENCH_ADC_CHANNEL_MAP[BENCH_ADC_CHANNEL_COU
   { ADC_IN4_LEVEL_PORT, ADC_IN4_LEVEL_PIN, ADC_CHANNEL_4 }
 };
 
+/*
+ * File-scope static, deliberately NOT a bench_adc_run() stack local --
+ * matches the vendor's own idiom in stm32l0xx_hw.c ("static ADC_HandleTypeDef
+ * hadc;", module-scope). Named bench_hadc (not hadc) specifically so it
+ * does not collide with the `hadc` parameter name used by every helper
+ * below -- a same-named file-scope static would make those parameters
+ * shadow it, which -Wshadow (part of this file's strict flag set) would
+ * correctly reject.
+ *
+ * This is not just style: Drivers/STM32L0xx_HAL_Driver/Src/
+ * stm32l0xx_hal_adc.c's HAL_ADC_Init() only does `hadc->Lock = HAL_UNLOCKED;`
+ * inside `if (hadc->State == HAL_ADC_STATE_RESET)` (HAL_ADC_STATE_RESET is
+ * 0). A stack-automatic handle has indeterminate initial content; if
+ * whatever garbage lands in .State happens not to equal 0, that branch (and
+ * the Lock (re-)initialization inside it) is skipped, and .Lock is left
+ * indeterminate too -- if it happens to equal HAL_LOCKED (1), every
+ * subsequent __HAL_LOCK() user (e.g. HAL_ADC_ConfigChannel(), see
+ * stm32l0xx_hal_adc.c) spuriously returns HAL_BUSY, i.e. an intermittent,
+ * stack-content-dependent command failure with no hardware cause. A static
+ * has implicit, guaranteed zero-initialization (State == HAL_ADC_STATE_RESET
+ * == 0, Lock == HAL_UNLOCKED == 0) with no explicit "= {0}" brace-initializer
+ * needed (so no -Wmissing-field-initializers exposure under the strict
+ * flags), so the first bench_adc_run() call is guaranteed to take the
+ * State==RESET branch. Every call after that is equally safe: HAL_ADC_DeInit()
+ * (called at the end of every bench_adc_run(), success or failure) sets
+ * hadc->State = HAL_ADC_STATE_RESET on its own success path AND
+ * unconditionally does __HAL_UNLOCK(hadc) (hadc->Lock = HAL_UNLOCKED) right
+ * before returning regardless of that path's outcome -- so .Lock can never
+ * be left indeterminate between invocations either way, and the common case
+ * (DeInit succeeds) also re-arms .State == RESET so the *next* HAL_ADC_Init()
+ * re-enters the MspInit/Lock-init branch exactly like the first call did.
+ */
+static ADC_HandleTypeDef bench_hadc;
+
 static void bench_adc_configure_gpio(void) {
   GPIO_InitTypeDef init;
   size_t index;
@@ -210,8 +244,11 @@ static uint32_t bench_adc_compute_channel_uv(uint32_t mean_code_x100,
 }
 
 bool bench_adc_run(uint8_t channel_mask, bench_adc_result_t* result) {
+  /* Note: bench_hadc is the file-scope static declared above, not a local
+   * -- see its declaration comment for why (HAL_ADC_Init()'s Lock
+   * initialization is gated on ->State, which must be a known value, not
+   * stack garbage). */
   bench_adc_result_t local;
-  ADC_HandleTypeDef hadc;
   size_t index;
   uint16_t vrefint_code_first;
   uint16_t vrefint_code_last;
@@ -240,23 +277,23 @@ bool bench_adc_run(uint8_t channel_mask, bench_adc_result_t* result) {
 
   bench_adc_configure_gpio();
 
-  if (!bench_adc_hal_init(&hadc)) {
+  if (!bench_adc_hal_init(&bench_hadc)) {
     *result = local;
     return false;
   }
 
-  if (HAL_ADCEx_Calibration_Start(&hadc, ADC_SINGLE_ENDED) != HAL_OK) {
-    bench_adc_hal_deinit(&hadc);
+  if (HAL_ADCEx_Calibration_Start(&bench_hadc, ADC_SINGLE_ENDED) != HAL_OK) {
+    bench_adc_hal_deinit(&bench_hadc);
     *result = local;
     return false;
   }
   local.calibration_factor =
-    HAL_ADCEx_Calibration_GetValue(&hadc, ADC_SINGLE_ENDED);
+    HAL_ADCEx_Calibration_GetValue(&bench_hadc, ADC_SINGLE_ENDED);
 
-  if (!bench_adc_sample_channel(&hadc, ADC_CHANNEL_VREFINT,
+  if (!bench_adc_sample_channel(&bench_hadc, ADC_CHANNEL_VREFINT,
       &local.vrefint_mean_code_x100_first, &local.vrefint_min_code_first,
       &local.vrefint_max_code_first)) {
-    bench_adc_hal_deinit(&hadc);
+    bench_adc_hal_deinit(&bench_hadc);
     *result = local;
     return false;
   }
@@ -270,12 +307,12 @@ bool bench_adc_run(uint8_t channel_mask, bench_adc_result_t* result) {
     if ((uint8_t)(channel_mask & bit) == 0U) {
       continue;
     }
-    if (!bench_adc_sample_channel(&hadc,
+    if (!bench_adc_sample_channel(&bench_hadc,
         BENCH_ADC_CHANNEL_MAP[index].adc_channel,
         &local.channel[index].mean_code_x100,
         &local.channel[index].min_code,
         &local.channel[index].max_code)) {
-      bench_adc_hal_deinit(&hadc);
+      bench_adc_hal_deinit(&bench_hadc);
       *result = local;
       return false;
     }
@@ -284,10 +321,10 @@ bool bench_adc_run(uint8_t channel_mask, bench_adc_result_t* result) {
     local.channel[index].sampled = true;
   }
 
-  if (!bench_adc_sample_channel(&hadc, ADC_CHANNEL_VREFINT,
+  if (!bench_adc_sample_channel(&bench_hadc, ADC_CHANNEL_VREFINT,
       &local.vrefint_mean_code_x100_last, &local.vrefint_min_code_last,
       &local.vrefint_max_code_last)) {
-    bench_adc_hal_deinit(&hadc);
+    bench_adc_hal_deinit(&bench_hadc);
     *result = local;
     return false;
   }
@@ -295,7 +332,7 @@ bool bench_adc_run(uint8_t channel_mask, bench_adc_result_t* result) {
     (uint16_t)((local.vrefint_mean_code_x100_last + 50U) / 100U);
   local.vdda_mv_last = bench_adc_compute_vdda_mv(vrefint_code_last);
 
-  bench_adc_hal_deinit(&hadc);
+  bench_adc_hal_deinit(&bench_hadc);
 
   local.ok = true;
   *result = local;
