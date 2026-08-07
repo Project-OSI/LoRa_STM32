@@ -68,13 +68,29 @@ The measurement core hands `on_process` / `on_build_payload` / `on_queue` a `ml3
 
 Declared in `inc/ml3_calibration.h:65-70` (`read`, `write`, `context`, `slot_capacity`). Implementation: STM32L0 data EEPROM via `HAL_FLASHEx_DATAEEPROM_Unlock/Program/Lock`, word-aligned writes.
 
-Open decisions that block this adapter (deliberately unresolved — no fabricated constants):
+### Decisions taken 2026-08-07 (independent consult; arithmetic and vendor ranges re-verified in-session)
 
-| Decision | Constraint |
-|---|---|
-| Slot base addresses and capacity | two slots, each ≥ `ML3_CALIBRATION_MAX_RECORD_SIZE` (2092 B), inside the 6 KB data EEPROM (`0x08080000`–), clear of Dragino's existing `EEPROM_Store_Config` usage — map the vendor layout first |
-| `device_id_hash` algorithm | must be reproducible by the bench tooling that generates records (`AT+ML3CAL=` chunks); propose FNV-1a over the 96-bit unique ID (`0x1FF80050/54/64`), record the choice in this file when taken |
-| Commit trigger | `BSP_ML3_CalibrationChunk` today stages bytes in RAM and CRC-checks them; Task 10 adds the `ml3_calibration_store` call once both above are decided |
+**Slot map.** Two 2048 B slots: **slot 0 at `0x08080100`**, **slot 1 at `0x08080C00`**. Runtime `port.slot_capacity` = **512 B**, deliberately below the 2092 B format maximum.
+
+| Region | Range | Note |
+|---|---|---|
+| Vendor (erased on every `AT+FDR`) | `0x08080000`–`0x080800D7` | `EEPROM_USER_START/END_ADDR_CONFIG` = base+0x04*24 … +0x04*30 (`Drivers/BSP/Components/flash_eraseprogram/flash_eraseprogram.h:85-86`); the erase loop runs 40 bytes **past** the vendor's highest write, so allocating immediately after the last written byte would be silently wiped in the field |
+| Slot 0 | `0x08080100`–`0x080808FF` | wholly inside EEPROM bank 1 (`0x08080000`–`0x08080BFF`) |
+| Slot 1 | `0x08080C00`–`0x080813FF` | wholly inside bank 2 (`0x08080C00`–`0x080817FF`) |
+
+Each slot is bank-contained so the A/B commit can always read the intact slot while the other is being written. The 512 B runtime cap is a RAM constraint, not an EEPROM one: full-size records would need buffers approaching the free RAM budget. **If the calibration model outgrows 512 B, revisit by streaming the write rather than raising the buffer.**
+
+**`device_id_hash`.** **CRC-32/ISO-HDLC**, 32-bit — reusing the module's existing `ml3_calibration_crc32` rather than adding FNV-1a, so firmware and bench tooling share one already-tested implementation. Computed over the 12-byte little-endian memory image of the UID words at `0x1FF80050 / 0x1FF80054 / 0x1FF80064`, with a result of `0` remapped to `0xA5A5A5A5` so zero stays available as "unset". This binds a record to the node it was produced for; it is **not** a security control and no adversary model applies.
+
+⚠️ **Do not use ST's `LL_GetUID_Word2()`** (`Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_utils.h:207`): it reads `UID_BASE + 8` (`0x1FF80058`), not the correct `0x1FF80064`. Verified in-tree. Read the three words directly.
+
+**Commit trigger.** `BSP_ML3_CalibrationChunk` stages and CRC-checks in RAM today; Task 10 adds the `ml3_calibration_store` call now that both decisions above are settled.
+
+### Mandatory: the HAL does not wait for EEPROM writes to complete
+
+`HAL_FLASHEx_DATAEEPROM_Program` issues the store and then calls `FLASH_WaitForLastOperation` **only on its error path** (`Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c:770-774`, verified in-tree). `HAL_OK` therefore means "write issued", not "word programmed". A naive adapter would let the two-phase commit's read-back verify race an in-flight word and report success for a record that is not durably committed — surfacing later as a silently wrong calibration on a live node.
+
+**The adapter must wait for completion explicitly after every program call, before any read-back.** Vendor files must not be edited, so the wait belongs in the adapter.
 
 The store path's two-phase commit (poison target CRC → write body → write CRC → read-back verify) was fault-injection tested on host at every write index; the adapter must preserve write granularity such that the final CRC word is the last thing written.
 
