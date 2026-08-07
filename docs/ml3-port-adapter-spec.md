@@ -78,7 +78,13 @@ Declared in `inc/ml3_calibration.h:65-70` (`read`, `write`, `context`, `slot_cap
 | Slot 0 | `0x08080100`–`0x080808FF` | wholly inside EEPROM bank 1 (`0x08080000`–`0x08080BFF`) |
 | Slot 1 | `0x08080C00`–`0x080813FF` | wholly inside bank 2 (`0x08080C00`–`0x080817FF`) |
 
-Each slot is bank-contained so the A/B commit can always read the intact slot while the other is being written. The 512 B runtime cap is a RAM constraint, not an EEPROM one: full-size records would need buffers approaching the free RAM budget. **If the calibration model outgrows 512 B, revisit by streaming the write rather than raising the buffer.**
+Each slot is bank-contained so the A/B commit can always read the intact slot while the other is being written. The 512 B runtime cap is a RAM constraint, not an EEPROM one: full-size records would need buffers approaching the free RAM budget.
+
+**512 B is confirmed ample (resolved 2026-08-07 from the ML3 User Manual v2.1, pp. 20–23).** The ML3 calibration chain is: voltage → soil refractive index via a **universal 6th-order polynomial** (`√ε = 1.0 + 6.175V + 6.303V² − 73.578V³ + 183.44V⁴ − 184.78V⁵ + 68.017V⁶`), then → volumetric water content via `θ = (√ε − a₀)/a₁`. The sensor polynomial is **not per-probe** — the manual states each ML3 is factory-adjusted to consistent dielectric performance — so nothing about the probe itself needs storing. Soil-specific calibration (Appendix 1) yields exactly two numbers, a₀ and a₁ (general values: mineral 1.6/8.4, organic 1.3/7.7).
+
+Realistic record sizes: soil coefficients 8 B; combined 7-coefficient polynomial 28 B; full 20-pair linearisation table 160 B; the complete DL2e lookup table 312 B. A practical record is under 100 B.
+
+**Design consequence:** the slots hold (a) soil coefficients, which are a property of the field rather than the device and may be shared across probes in the same soil, and (b) any per-node measurement-chain correction for our own ADC/front-end error — currently ≤0.2 mV per the §4 record, so near-negligible. Phase 2 "calibration" is therefore an agronomy task, not a per-device manufacturing step.
 
 **`device_id_hash`.** **CRC-32/ISO-HDLC**, 32-bit — reusing the module's existing `ml3_calibration_crc32` rather than adding FNV-1a, so firmware and bench tooling share one already-tested implementation. Computed over the 12-byte little-endian memory image of the UID words at `0x1FF80050 / 0x1FF80054 / 0x1FF80064`, with a result of `0` remapped to `0xA5A5A5A5` so zero stays available as "unset". This binds a record to the node it was produced for; it is **not** a security control and no adversary model applies.
 
