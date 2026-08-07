@@ -320,12 +320,26 @@ static ATEerror_t ml3_bench_adc_execute(const uint8_t *input, size_t input_lengt
       (unsigned long)result.channel[index].uv);
   }
 
+  /*
+   * VREFINT MIN/MAX (first/last) appended at the end -- bench_adc_result_t
+   * already carried vrefint_min_code_first/last and
+   * vrefint_max_code_first/last, but this line printed only the means,
+   * which is exactly why the first-conversion artifact this fix addresses
+   * was not diagnosable from AT+ML3ADC output alone. Existing keys are
+   * left unchanged (name and position) so previously recorded operator
+   * output stays parseable; new keys are appended only.
+   */
   PPRINTF("+ML3ADC:VDDA_FIRST_MV=%lu,VDDA_LAST_MV=%lu,"
-    "VREF_MEAN_X100_FIRST=%lu,VREF_MEAN_X100_LAST=%lu,CAL=%lu\r\n",
+    "VREF_MEAN_X100_FIRST=%lu,VREF_MEAN_X100_LAST=%lu,CAL=%lu,"
+    "VREF_MIN_FIRST=%u,VREF_MAX_FIRST=%u,VREF_MIN_LAST=%u,VREF_MAX_LAST=%u\r\n",
     (unsigned long)result.vdda_mv_first, (unsigned long)result.vdda_mv_last,
     (unsigned long)result.vrefint_mean_code_x100_first,
     (unsigned long)result.vrefint_mean_code_x100_last,
-    (unsigned long)result.calibration_factor);
+    (unsigned long)result.calibration_factor,
+    (unsigned)result.vrefint_min_code_first,
+    (unsigned)result.vrefint_max_code_first,
+    (unsigned)result.vrefint_min_code_last,
+    (unsigned)result.vrefint_max_code_last);
 
   return AT_OK;
 }

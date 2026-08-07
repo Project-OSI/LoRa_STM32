@@ -59,6 +59,19 @@
   ((const uint16_t*)(uint32_t)0x1FF80078UL)
 #define BENCH_ADC_VREFINT_CAL_VREF_MV 3000U
 
+/* Documented VREFINT stabilization delay after ADC_CCR_VREFEN is enabled --
+ * STM32L072 reference manual / datasheet, same figure the vendor HAL
+ * documents as LL_ADC_DELAY_VREFINT_STAB_US
+ * (Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_adc.h). Redefined locally
+ * (like BENCH_ADC_VREFINT_CAL_ADDR/_VREF_MV above) rather than including
+ * that header: stm32l0xx_ll_adc.h pulls in an unrelated pre-existing vendor
+ * bug -- LL_ADC_DMA_GetRegAddr()'s unused `Register` parameter trips
+ * -Werror=unused-parameter under this file's strict flag set purely by
+ * being parsed, the same "diagnostic fires regardless of use" class of
+ * issue already catalogued for the hw.h include above, not something this
+ * one macro justifies taking on. */
+#define BENCH_ADC_VREFINT_STAB_DELAY_US 10U
+
 /* Bounded per-conversion poll timeout. At the ADC's PCLK/4-derived clock
  * (~8 MHz on this board -- matches ADC_PRECISION_ADC_CLOCK_HZ in
  * adc_precision.h for the same hardware), 160.5 cycles is ~20 us; 10 ms
@@ -189,12 +202,71 @@ static bool bench_adc_read_raw(ADC_HandleTypeDef* hadc, uint32_t channel,
   return true;
 }
 
+/*
+ * Busy-wait microsecond delay, scaled off SystemCoreClock exactly like the
+ * HAL's own ADC_DelayMicroSecond() (Drivers/STM32L0xx_HAL_Driver/Src/
+ * stm32l0xx_hal_adc.c) -- same formula (microsecond * (SystemCoreClock /
+ * 1000000)), same volatile decrementing loop. Not a hand-rolled substitute:
+ * ADC_DelayMicroSecond() is `static` (private linkage) in that vendor .c
+ * file, so it cannot be called from here without editing a vendor file,
+ * which is out of scope ("no changes to vendor files"). SystemCoreClock
+ * itself is already visible through the existing hw.h include chain
+ * (stm32l0xx_hal.h -> stm32l0xx.h -> system_stm32l0xx.h), so no further
+ * include is needed for this function.
+ */
+static void bench_adc_delay_us(uint32_t microsecond) {
+  volatile uint32_t wait_loop_index = microsecond * (SystemCoreClock / 1000000U);
+
+  while (wait_loop_index != 0U) {
+    wait_loop_index--;
+  }
+}
+
 static bool bench_adc_sample_channel(ADC_HandleTypeDef* hadc, uint32_t channel,
     uint32_t* out_mean_code_x100, uint16_t* out_min, uint16_t* out_max) {
   uint32_t sample_index;
   uint32_t sum = 0U;
   uint16_t min_code = 0xFFFFU;
   uint16_t max_code = 0U;
+  uint16_t discard_code = 0U;
+
+  /*
+   * Belt-and-braces fix #1 of 2, applied uniformly to every channel (not
+   * special-cased to VREFINT): HAL_ADC_ConfigChannel()
+   * (Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_adc.c) is called with a
+   * "deselect all" config immediately followed by the real channel select
+   * on every bench_adc_read_raw() call, so the channel is effectively
+   * freshly (re)selected on every read here, not just the first one per
+   * bench_adc_run() invocation. This mirrors the production adc_precision
+   * module's channel-change discard (see adc_precision_read_raw()'s
+   * needs_discard/do_single_conversion logic in src/adc_precision.c): the
+   * first conversion after (re)selecting a channel is not trusted and is
+   * thrown away rather than folded into the average. Uniform across all
+   * channels so no channel is silently treated differently, and a failed
+   * discard read propagates the same failure return as any other sampling
+   * failure below.
+   */
+  if (channel == ADC_CHANNEL_VREFINT) {
+    /*
+     * Belt-and-braces fix #2 of 2, VREFINT-specific: HAL_ADC_ConfigChannel()
+     * applies ADC_TEMPSENSOR_DELAY_US after enabling ADC_CCR_TSEN for the
+     * temperature sensor, but never applies the equivalent, separately
+     * documented VREFINT stabilization delay
+     * (BENCH_ADC_VREFINT_STAB_DELAY_US above, mirroring the vendor HAL's
+     * own LL_ADC_DELAY_VREFINT_STAB_US) after enabling ADC_CCR_VREFEN for
+     * VREFINT -- the confirmed root cause of the first-conversion artifact
+     * this fix addresses (an unsettled internal reference read as a
+     * near-full-scale outlier code). Applied once here, immediately before
+     * the discard read below, since that discard is now the first VREFINT
+     * conversion attempted in this call.
+     */
+    bench_adc_delay_us(BENCH_ADC_VREFINT_STAB_DELAY_US);
+  }
+
+  if (!bench_adc_read_raw(hadc, channel, &discard_code)) {
+    return false;
+  }
+  (void)discard_code;
 
   for (sample_index = 0U; sample_index < (uint32_t)BENCH_ADC_SAMPLE_COUNT;
       ++sample_index) {
