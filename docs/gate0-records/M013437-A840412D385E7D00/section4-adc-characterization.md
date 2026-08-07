@@ -65,7 +65,7 @@ Predictive check: the transfer function derived from the anchors predicted ~6.7 
 
 ## Still open for this section
 
-- **Re-run air + water with the 1 kΩ + 100 nF front-end fitted** (Finding 6) and re-derive the offset from a driven zero.
+- Re-run air + water with the 1 kΩ + 100 nF front-end fitted (Finding 6) and re-derive the offset from a driven zero. **Not blocking** — reviewed 2026-08-07: since accuracy without the network is already ≤ 0.2 mV, the network is retained for transient/ESD protection on long field cables and for anti-alias filtering, not for DC accuracy. Verify when convenient, before field installation rather than before firmware work.
 - Remaining three boards/probes (per-unit `V_guard`; near-rail behavior is a per-unit property and is not sampled).
 - Temperature extremes; fresh-vs-depleted battery repeat.
 - Power-up/power-down transient captures (no oscilloscope available on this bench).
