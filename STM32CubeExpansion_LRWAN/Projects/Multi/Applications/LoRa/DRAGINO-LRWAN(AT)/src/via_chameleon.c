@@ -1,6 +1,128 @@
 #include "via_chameleon.h"
 #include <string.h>
 
+#ifdef STM32L072xx
+#include "hw.h"
+
+/*
+ * Chameleon v1.x LSN50V2 wiring
+ * -----------------------------
+ * PB12  -> P-channel MOSFET gate (open-drain control, external pull-up to VDD)
+ * PB13  -> I2C2 SCL
+ * PB14  -> I2C2 SDA
+ * VDD   -> P-MOSFET source
+ * MOSFET drain -> Chameleon VCC and both external I2C pull-ups
+ * GND   -> Chameleon GND
+ *
+ * PB6/PB7 are deliberately not used. The LSN50V2 board has permanent pull-ups
+ * on those I2C1 pins, which can back-power an otherwise switched-off slave.
+ */
+#define CHAMELEON_PWR_PORT        GPIOB
+#define CHAMELEON_PWR_PIN         GPIO_PIN_12
+#define CHAMELEON_SCL_PORT        GPIOB
+#define CHAMELEON_SCL_PIN         GPIO_PIN_13
+#define CHAMELEON_SDA_PORT        GPIOB
+#define CHAMELEON_SDA_PIN         GPIO_PIN_14
+#define CHAMELEON_I2C_AF          GPIO_AF5_I2C2
+#define CHAMELEON_I2C_TIMING      0x00B1112EU
+
+extern I2C_HandleTypeDef I2cHandle1;
+
+static int chameleon_hw_session_begin(void)
+{
+    GPIO_InitTypeDef gpio;
+
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+
+    /* PB14 is normally configured by stock LSN50 firmware as EXTI14. MOD=3
+     * Chameleon builds use it as SDA instead, so mask the EXTI line before the
+     * bus becomes active. Leaving EXTI14 armed would turn normal SDA edges into
+     * interrupts. */
+    EXTI->IMR  &= ~(uint32_t)CHAMELEON_SDA_PIN;
+    EXTI->RTSR &= ~(uint32_t)CHAMELEON_SDA_PIN;
+    EXTI->FTSR &= ~(uint32_t)CHAMELEON_SDA_PIN;
+    __HAL_GPIO_EXTI_CLEAR_IT(CHAMELEON_SDA_PIN);
+
+    /* Set the P-MOSFET control OFF before changing PB12 to an output. With
+     * open-drain mode, SET means high impedance; the external gate-to-source
+     * pull-up therefore keeps the MOSFET off without driving above MCU VDD. */
+    HAL_GPIO_WritePin(CHAMELEON_PWR_PORT, CHAMELEON_PWR_PIN, GPIO_PIN_SET);
+    memset(&gpio, 0, sizeof(gpio));
+    gpio.Pin   = CHAMELEON_PWR_PIN;
+    gpio.Mode  = GPIO_MODE_OUTPUT_OD;
+    gpio.Pull  = GPIO_NOPULL;
+    gpio.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(CHAMELEON_PWR_PORT, &gpio);
+
+    /* Power on: pulling the P-MOSFET gate low connects LSN50 VDD to the
+     * Chameleon board. */
+    HAL_GPIO_WritePin(CHAMELEON_PWR_PORT, CHAMELEON_PWR_PIN, GPIO_PIN_RESET);
+    HAL_Delay(CHAMELEON_POWER_SETTLE_MS);
+
+    /* Configure the exposed I2C2 pair. Pull-ups must be external and tied to
+     * switched Chameleon VCC so SDA/SCL collapse when the sensor is off. */
+    gpio.Pin       = CHAMELEON_SCL_PIN | CHAMELEON_SDA_PIN;
+    gpio.Mode      = GPIO_MODE_AF_OD;
+    gpio.Pull      = GPIO_NOPULL;
+    gpio.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+    gpio.Alternate = CHAMELEON_I2C_AF;
+    HAL_GPIO_Init(GPIOB, &gpio);
+
+    __HAL_RCC_I2C2_CLK_ENABLE();
+    __HAL_RCC_I2C2_FORCE_RESET();
+    __HAL_RCC_I2C2_RELEASE_RESET();
+
+    /* Reuse the existing handle used by the Chameleon board abstraction, but
+     * point it at I2C2. The I2C2 peripheral clock and GPIOs are configured
+     * explicitly above; this avoids the stock HAL_I2C_MspInit(), which is
+     * hard-wired to I2C1/PB6/PB7 in Dragino's BSP. */
+    I2cHandle1.Instance              = I2C2;
+    I2cHandle1.State                 = HAL_I2C_STATE_RESET;
+    I2cHandle1.Init.Timing           = CHAMELEON_I2C_TIMING;
+    I2cHandle1.Init.OwnAddress1      = 0xF0;
+    I2cHandle1.Init.AddressingMode   = I2C_ADDRESSINGMODE_7BIT;
+    I2cHandle1.Init.DualAddressMode  = I2C_DUALADDRESS_DISABLE;
+    I2cHandle1.Init.OwnAddress2      = 0xFE;
+    I2cHandle1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+    I2cHandle1.Init.GeneralCallMode  = I2C_GENERALCALL_DISABLE;
+    I2cHandle1.Init.NoStretchMode    = I2C_NOSTRETCH_DISABLE;
+
+    /* HAL_I2C_Init would call Dragino's generic MSP init when State==RESET and
+     * incorrectly configure PB6/PB7. Set READY temporarily so HAL configures
+     * the peripheral registers without invoking that board callback. */
+    I2cHandle1.State = HAL_I2C_STATE_READY;
+    if (HAL_I2C_Init(&I2cHandle1) != HAL_OK) {
+        HAL_GPIO_WritePin(CHAMELEON_PWR_PORT, CHAMELEON_PWR_PIN, GPIO_PIN_SET);
+        HAL_GPIO_DeInit(GPIOB, CHAMELEON_SCL_PIN | CHAMELEON_SDA_PIN);
+        __HAL_RCC_I2C2_CLK_DISABLE();
+        return 0;
+    }
+
+    return 1;
+}
+
+static void chameleon_hw_session_end(void)
+{
+    GPIO_InitTypeDef gpio;
+
+    /* Stop the peripheral first, then isolate both bus lines before removing
+     * sensor power. This prevents the MCU from sourcing the unpowered slave
+     * through its I/O protection structures. */
+    __HAL_I2C_DISABLE(&I2cHandle1);
+    __HAL_RCC_I2C2_CLK_DISABLE();
+
+    memset(&gpio, 0, sizeof(gpio));
+    gpio.Pin  = CHAMELEON_SCL_PIN | CHAMELEON_SDA_PIN;
+    gpio.Mode = GPIO_MODE_ANALOG;
+    gpio.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOB, &gpio);
+
+    /* Release the open-drain gate control. The external pull-up turns the
+     * P-MOSFET off. */
+    HAL_GPIO_WritePin(CHAMELEON_PWR_PORT, CHAMELEON_PWR_PIN, GPIO_PIN_SET);
+}
+#endif /* STM32L072xx */
+
 static uint32_t le32(const uint8_t *p) {
     return ((uint32_t)p[0])
          | ((uint32_t)p[1] << 8)
@@ -158,6 +280,8 @@ int via_chameleon_read_sample(chameleon_sample_t *sample) {
 }
 
 int via_chameleon_acquire(chameleon_sample_t *sample, uint16_t timeout_ms) {
+    int result = 0;
+
     if (sample == 0) return 0;
     memset(sample, 0, sizeof(*sample));
 
@@ -177,27 +301,45 @@ int via_chameleon_acquire(chameleon_sample_t *sample, uint16_t timeout_ms) {
     return 1;
 #endif
 
+#ifdef STM32L072xx
+    if (!chameleon_hw_session_begin()) {
+        sample->status_flags |= CHAMELEON_FLAG_I2C_MISSING;
+        sample->battery_mv = chameleon_board_battery_mv();
+        chameleon_hw_session_end();
+        return 0;
+    }
+#endif
+
     if (!via_chameleon_probe()) {
         sample->status_flags |= CHAMELEON_FLAG_I2C_MISSING;
         sample->battery_mv = chameleon_board_battery_mv();
-        return 0;
+        result = 0;
+        goto done;
     }
 
     if (!via_chameleon_trigger()) {
         sample->status_flags |= CHAMELEON_FLAG_TIMEOUT;
         sample->battery_mv = chameleon_board_battery_mv();
-        return 1;
+        result = 1;
+        goto done;
     }
 
     if (!via_chameleon_wait_ready(timeout_ms)) {
         sample->status_flags |= CHAMELEON_FLAG_TIMEOUT;
         sample->battery_mv = chameleon_board_battery_mv();
-        return 1;
+        result = 1;
+        goto done;
     }
 
     if (!via_chameleon_read_sample(sample)) {
         sample->status_flags |= CHAMELEON_FLAG_I2C_MISSING;
     }
     sample->battery_mv = chameleon_board_battery_mv();
-    return 1;
+    result = 1;
+
+done:
+#ifdef STM32L072xx
+    chameleon_hw_session_end();
+#endif
+    return result;
 }
