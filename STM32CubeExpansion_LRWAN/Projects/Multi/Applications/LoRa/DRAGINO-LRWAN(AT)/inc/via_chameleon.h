@@ -19,11 +19,12 @@
 
 #define CHAMELEON_STATUS_READY        0x01U
 
-#define CHAMELEON_DEFAULT_TIMEOUT_MS  2000U
-#define CHAMELEON_POLL_INTERVAL_MS    50U
-#define CHAMELEON_POST_READY_SETTLE_MS  250U   /* blind settle after STATUS_READY before reading CAL/RAW */
-#define CHAMELEON_CAL_RETRY_DELAY_MS    150U   /* delay between first read and the single retry */
-#define CHAMELEON_CAL_RETRY_COUNT       1U     /* retries per channel when CAL[i] == RAW[i] */
+#define CHAMELEON_DEFAULT_TIMEOUT_MS    2000U
+#define CHAMELEON_POLL_INTERVAL_MS        50U
+#define CHAMELEON_POWER_SETTLE_MS        100U   /* cold-start delay after P-MOSFET power-on */
+#define CHAMELEON_POST_READY_SETTLE_MS   250U   /* blind settle after STATUS_READY before reading CAL/RAW */
+#define CHAMELEON_CAL_RETRY_DELAY_MS     150U   /* delay between first read and the single retry */
+#define CHAMELEON_CAL_RETRY_COUNT          1U   /* retries per channel when CAL[i] == RAW[i] */
 
 #define CHAMELEON_TEMP_SENTINEL_X100  ((int16_t)-12700)
 #define CHAMELEON_RES_OPEN_OHMS       10000000U
