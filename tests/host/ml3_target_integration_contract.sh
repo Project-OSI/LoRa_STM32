@@ -36,6 +36,34 @@ require '^#define[[:space:]]+ML3_CONFIG_MODE_ML3_READY[[:space:]]+1U' "$CONFIG" 
   'mode readiness flag missing'
 require '^#define[[:space:]]+ML3_CONFIG_FPORT_READY[[:space:]]+1U' "$CONFIG" \
   'FPort readiness flag missing'
+require '^#define[[:space:]]+ML3_CONFIG_THERMISTOR_ADC_CHANNEL[[:space:]]+2U[[:space:]]*/\*' "$CONFIG" \
+  'build-only thermistor ADC channel is not PA2/ADC_IN2'
+require '^#define[[:space:]]+ML3_CONFIG_THERMISTOR_ADC_CHANNEL_READY[[:space:]]+0U[[:space:]]*/\*' "$CONFIG" \
+  'thermistor ADC channel readiness is not held at zero'
+require '^#define[[:space:]]+ML3_CONFIG_THERMISTOR_EXCITATION_GPIO[[:space:]]+4U[[:space:]]*/\*' "$CONFIG" \
+  'build-only thermistor excitation is not PB4'
+require '^#define[[:space:]]+ML3_CONFIG_THERMISTOR_EXCITATION_GPIO_READY[[:space:]]+0U[[:space:]]*/\*' "$CONFIG" \
+  'thermistor excitation readiness is not held at zero'
+require '^#define[[:space:]]+ML3_CONFIG_ACQUISITION_READY' "$CONFIG" \
+  'acquisition readiness definition is missing'
+if ! contract_tmp=$(mktemp -d "${TMPDIR:-/tmp}/ml3-target-integration.XXXXXX"); then
+  fail 'cannot create temporary directory for build-only gate contract'
+  exit 1
+fi
+trap 'rm -rf "$contract_tmp"' EXIT
+if ! printf '%s\n' \
+  '#include "ml3_config.h"' \
+  'typedef char thermistor_adc_is_pa2[(ML3_CONFIG_THERMISTOR_ADC_CHANNEL == 2U) ? 1 : -1];' \
+  'typedef char thermistor_excitation_is_pb4[(ML3_CONFIG_THERMISTOR_EXCITATION_GPIO == 4U) ? 1 : -1];' \
+  'typedef char thermistor_adc_ready_stays_off[(ML3_CONFIG_THERMISTOR_ADC_CHANNEL_READY == 0U) ? 1 : -1];' \
+  'typedef char thermistor_excitation_ready_stays_off[(ML3_CONFIG_THERMISTOR_EXCITATION_GPIO_READY == 0U) ? 1 : -1];' \
+  'typedef char acquisition_stays_off[(ML3_CONFIG_ACQUISITION_READY == 0U) ? 1 : -1];' \
+  'typedef char deployment_stays_off[(ML3_CONFIG_DEPLOYABLE == 0U) ? 1 : -1];' \
+  'int main(void) { return 0; }' | \
+  "${CC:-cc}" -std=c99 -Werror -I"$APP_DIR/inc" -x c - -c \
+    -o "$contract_tmp/ml3_build_only_gate.o"; then
+  fail 'build-only configuration or readiness assertion failed to compile'
+fi
 require 'if \(ml3_mode_selected\(\)\)' "$BSP" \
   'BSP sensor read does not enter the ML3 ADC lockout'
 require 'BSP_ML3_Init\(\);' "$BSP" \
