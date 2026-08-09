@@ -14,6 +14,7 @@
 #define CHAMELEON_FLAG_CH1_OPEN        (1U << 4)
 #define CHAMELEON_FLAG_CH2_OPEN        (1U << 5)
 #define CHAMELEON_FLAG_CH3_OPEN        (1U << 6)
+#define CHAMELEON_FLAGS_V1_MASK         0x7FU
 /* Bit 7 is reserved in payload version 1 and must remain zero. */
 
 typedef struct {

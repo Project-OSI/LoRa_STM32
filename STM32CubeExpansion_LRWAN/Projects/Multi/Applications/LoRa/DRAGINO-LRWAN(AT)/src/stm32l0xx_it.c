@@ -280,6 +280,7 @@ void EXTI4_15_IRQHandler( void )
   HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_13 );
 
 //  HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_14 );
+#ifndef USE_CHAMELEON
  if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_14) != RESET) 
   { 
 	 if((inmode!=0)&&(join_network==1))
@@ -298,6 +299,7 @@ void EXTI4_15_IRQHandler( void )
 	 __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_14);
    HAL_GPIO_EXTI_Callback(GPIO_PIN_14);		
   }
+#endif
 
 //  HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_15 );
  if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_15) != RESET) 

@@ -71,6 +71,7 @@
 #endif
 #ifdef USE_CHAMELEON
 #include "via_chameleon.h"
+#include "chameleon_lsn50_hw.h"
 #endif
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -101,11 +102,7 @@ extern I2C_HandleTypeDef I2cHandle3;
 tfsensor_reading_t reading_t;
 
 #ifdef USE_CHAMELEON
-I2C_HandleTypeDef I2cHandle1;
-static uint8_t g_chameleon_i2c_ready;
 static chameleon_sample_t g_chameleon_last_sample;
-#define CHAMELEON_I2C_TIMING_400KHZ  0x00B1112EU
-static int chameleon_i2c1_init_400khz(void);
 const chameleon_sample_t *bsp_chameleon_last_sample(void)
 {
     return &g_chameleon_last_sample;
@@ -144,7 +141,16 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
 		}
 		else
 		{
+#ifdef USE_CHAMELEON
+			if(mode==3)
+			{
+				PPRINTF("PB14_status:I2C2_SDA\r\n");
+			}
+			else
+#endif
+			{
 			PPRINTF("PB14_status:%d\r\n",HAL_GPIO_ReadPin(GPIO_EXTI14_PORT,GPIO_EXTI14_PIN));
+			}
 		}
 	}
 	
@@ -246,7 +252,11 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
   //+5V power sensors	
 	uint16_t adcdata[3][6];
 	
+#ifdef USE_CHAMELEON
+	if((mode!=3)&&(power_time!=0))
+#else
 	if(power_time!=0)
+#endif
 	{
 		HAL_GPIO_WritePin(PWR_OUT_PORT,PWR_OUT_PIN,GPIO_PIN_RESET);//Enable 5v power supply
 		for(uint16_t i=0;i<(uint16_t)(power_time/100);i++)
@@ -351,8 +361,8 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
     {
         /* Keep stock MOD=3 ADC values in sensor_data, then append the
          * Chameleon I2C sample for main.c to encode in the same uplink. */
-        (void)via_chameleon_acquire(&g_chameleon_last_sample,
-                                    CHAMELEON_DEFAULT_TIMEOUT_MS);
+        (void)chameleon_lsn50_acquire(&g_chameleon_last_sample,
+                                      CHAMELEON_DEFAULT_TIMEOUT_MS);
         if(message==1)
         {
             PPRINTF("Chameleon flags:0x%02x temp:%d comp:%lu/%lu/%lu raw:%lu/%lu/%lu\r\n",
@@ -470,6 +480,24 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 {
   GPIO_InitTypeDef  GPIO_InitStruct;
   RCC_PeriphCLKInitTypeDef  RCC_PeriphCLKInitStruct;
+
+#ifdef USE_CHAMELEON
+  if(hi2c->Instance == I2C2)
+  {
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_I2C2_CLK_ENABLE();
+    __HAL_RCC_I2C2_FORCE_RESET();
+    __HAL_RCC_I2C2_RELEASE_RESET();
+
+    GPIO_InitStruct.Pin       = GPIO_PIN_13 | GPIO_PIN_14;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_OD;
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF5_I2C2;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    return;
+  }
+#endif
   
   /*##-1- Configure the I2C clock source. The clock is derived from the SYSCLK #*/
   RCC_PeriphCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_I2Cx;
@@ -508,6 +536,16 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
   */
 void HAL_I2C_MspDeInit(I2C_HandleTypeDef *hi2c)
 {
+#ifdef USE_CHAMELEON
+  if(hi2c->Instance == I2C2)
+  {
+    __HAL_RCC_I2C2_FORCE_RESET();
+    __HAL_RCC_I2C2_RELEASE_RESET();
+    __HAL_RCC_I2C2_CLK_DISABLE();
+    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_13 | GPIO_PIN_14);
+    return;
+  }
+#endif
   /*##-1- Reset peripherals ##################################################*/
   I2Cx_FORCE_RESET();
   I2Cx_RELEASE_RESET();
@@ -595,13 +633,8 @@ void  BSP_sensor_Init( void  )
 #ifdef USE_CHAMELEON
 	else if(mode==3)
 	{
-		if (!chameleon_i2c1_init_400khz()) {
-			PRINTF("\r\nChameleon I2C disabled; uplinks will set I2C missing\r\n");
-		} else if (via_chameleon_probe()) {
-			PRINTF("\r\nChameleon detected at 0x08\r\n");
-		} else {
-			PRINTF("\r\nChameleon NOT detected at 0x08\r\n");
-		}
+		chameleon_lsn50_prepare_sleep();
+		PRINTF("\r\nChameleon I2C2 acquisition enabled\r\n");
 	}
 #endif
 	 
@@ -669,66 +702,12 @@ void  BSP_sensor_Init( void  )
 		}
 	}
 	
+#ifndef USE_CHAMELEON
 	GPIO_EXTI14_IoInit(inmode);
+#endif
 	GPIO_INPUT_IoInit();
 
 	#endif
 }
-
-#ifdef USE_CHAMELEON
-static int chameleon_i2c1_init_400khz(void) {
-    g_chameleon_i2c_ready = 0;
-    I2cHandle1.Instance              = I2Cx;
-    I2cHandle1.Init.Timing           = CHAMELEON_I2C_TIMING_400KHZ;
-    I2cHandle1.Init.AddressingMode   = I2C_ADDRESSINGMODE_7BIT;
-    I2cHandle1.Init.DualAddressMode  = I2C_DUALADDRESS_DISABLE;
-    I2cHandle1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
-    I2cHandle1.Init.GeneralCallMode  = I2C_GENERALCALL_DISABLE;
-    I2cHandle1.Init.NoStretchMode    = I2C_NOSTRETCH_DISABLE;
-    I2cHandle1.Init.OwnAddress1      = 0xF0;
-    I2cHandle1.Init.OwnAddress2      = 0xFE;
-
-    if (HAL_I2C_Init(&I2cHandle1) != HAL_OK) {
-        PRINTF("\r\nChameleon I2C init failed\r\n");
-        /* Leave the ready flag clear so later acquisitions uplink I2C_MISSING
-         * instead of hard-hanging the node during bring-up or field faults. */
-        return 0;
-    }
-    g_chameleon_i2c_ready = 1;
-    return 1;
-}
-
-chameleon_i2c_status_t chameleon_board_i2c_write(uint8_t addr7, const uint8_t *data, size_t len) {
-    uint16_t addr8 = (uint16_t)addr7 << 1;
-    HAL_StatusTypeDef hs;
-    if (!g_chameleon_i2c_ready) { return CHAMELEON_I2C_ERR_NACK; }
-    if (len == 0) {
-        hs = HAL_I2C_IsDeviceReady(&I2cHandle1, addr8, 1, 1000);
-    } else {
-        hs = HAL_I2C_Master_Transmit(&I2cHandle1, addr8, (uint8_t *)data, (uint16_t)len, 1000);
-    }
-    if (hs == HAL_OK)      return CHAMELEON_I2C_OK;
-    if (hs == HAL_TIMEOUT) return CHAMELEON_I2C_ERR_TIMEOUT;
-    return CHAMELEON_I2C_ERR_NACK;
-}
-
-chameleon_i2c_status_t chameleon_board_i2c_write_read(uint8_t addr7,
-                                                      const uint8_t *wdata, size_t wlen,
-                                                      uint8_t *rdata, size_t rlen) {
-    if (!g_chameleon_i2c_ready) { return CHAMELEON_I2C_ERR_NACK; }
-    if (wlen != 1) { return CHAMELEON_I2C_ERR_BUS; }
-
-    HAL_StatusTypeDef hs = HAL_I2C_Mem_Read(&I2cHandle1, (uint16_t)addr7 << 1,
-                                            wdata[0], I2C_MEMADD_SIZE_8BIT,
-                                            rdata, (uint16_t)rlen, 1000);
-    if (hs == HAL_OK)      return CHAMELEON_I2C_OK;
-    if (hs == HAL_TIMEOUT) return CHAMELEON_I2C_ERR_TIMEOUT;
-    return CHAMELEON_I2C_ERR_NACK;
-}
-
-void chameleon_board_delay_ms(uint32_t ms) { HAL_Delay(ms); }
-
-uint16_t chameleon_board_battery_mv(void) { return batteryLevel_mV; }
-#endif /* USE_CHAMELEON */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

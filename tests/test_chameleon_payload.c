@@ -118,6 +118,15 @@ static void test_encode_rejects_short_buf(void) {
     ASSERT_EQ_U32(n, 0, "short buf rejected");
 }
 
+static void test_encode_keeps_reserved_flag_clear(void) {
+    chameleon_sample_t s = {0};
+    uint8_t buf[44];
+    s.status_flags = 0xFFU;
+    ASSERT_EQ_U32(chameleon_payload_encode_v1(buf, sizeof(buf), &s), 44U,
+                  "len with all internal flags");
+    ASSERT_EQ_U32(buf[9], 0x7FU, "payload v1 bit 7 reserved");
+}
+
 static void test_encode_rejects_null(void) {
     uint8_t buf[44];
     ASSERT_EQ_U32(chameleon_payload_encode_v1(NULL, sizeof(buf), NULL), 0, "null buf");
@@ -128,6 +137,7 @@ int main(void) {
     test_encode_known_sample();
     test_encode_negative_temp_and_flags();
     test_encode_rejects_short_buf();
+    test_encode_keeps_reserved_flag_clear();
     test_encode_rejects_null();
     printf("test_chameleon_payload OK\n");
     return 0;

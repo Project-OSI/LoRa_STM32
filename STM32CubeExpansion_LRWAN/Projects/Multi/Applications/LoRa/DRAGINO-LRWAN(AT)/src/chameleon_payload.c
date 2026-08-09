@@ -23,7 +23,7 @@ size_t chameleon_payload_encode_v1(uint8_t *buf, size_t buf_len,
     buf[6] = sample->mod3_status;
     buf[7] = (uint8_t)(sample->battery_mv / 100U);
     buf[8] = CHAMELEON_PAYLOAD_VERSION_V1;
-    buf[9] = sample->status_flags;
+    buf[9] = (uint8_t)(sample->status_flags & CHAMELEON_FLAGS_V1_MASK);
     put_u16_be(&buf[10], (uint16_t)sample->soil_temp_c_x100);
     put_u32_be(&buf[12], sample->r1_ohm_comp);
     put_u32_be(&buf[16], sample->r2_ohm_comp);

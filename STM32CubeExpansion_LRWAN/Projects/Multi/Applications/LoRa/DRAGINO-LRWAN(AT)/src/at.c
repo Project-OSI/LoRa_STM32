@@ -1609,7 +1609,9 @@ ATEerror_t at_INTMOD1_set(const char *param)
     return AT_PARAM_ERROR;
 	}
 	
+#ifndef USE_CHAMELEON
 	GPIO_EXTI14_IoInit(inmode);
+#endif
 	
 	return AT_OK;
 }
