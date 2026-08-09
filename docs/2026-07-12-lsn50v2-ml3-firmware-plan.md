@@ -13,7 +13,7 @@
 ## 0. Changes from draft v1.0
 
 1. **Chameleon and I²C removed entirely** (prompt contamination in the draft). These nodes carry an ML3 only.
-2. **Phase 0 characterization gate added before any firmware work**, with the external-ADC fallback decision taken on measured data.
+2. **Phase 0 characterization gate added before reachable firmware work**, with the external-ADC fallback decision taken on measured data. Before Gate 0, build-only target configuration and unregistered adapter-object compilation are permitted only while all Gate 0/Phase 2 hardware readiness macros remain zero, and `ML3_CONFIG_ACQUISITION_READY` and `ML3_CONFIG_DEPLOYABLE` remain false; that path must not make ADC access, PB5 control, thermistor excitation, EEPROM write, LoRa queue, sample processing, or physical sampling reachable.
 3. **The "20 mV safe-window floor" contradiction resolved** — see §0.1 item 1 for the v2.1 refinement.
 4. **ML3 thermistor read in release 1** (no other soil-temperature source exists on these nodes).
 5. **MCU die-temperature readout mandatory in release 1**; temperature correction expected, not exceptional.
@@ -48,8 +48,8 @@ Carried over unchanged: ABBA acquisition, hardware oversampling, VREFINT compens
 ```text
 ML3 Signal HI  ── matched passive RC network ── PA0 / ADC_IN0
 ML3 Signal LO  ── matched passive RC network ── PA1 / ADC_IN1
-ML3 thermistor ── GPIO-switched divider ─────── spare ADC pin (open decision D3)
-ML3 power      ── LSN50v2 switched +5 V (PB5 control; fail-safe state verified in hardware)
+ML3 thermistor ── PB4-switched divider ──────── PA2 / ADC_IN2
+ML3 power      ── LSN50v2 switched +5 V (PB5 control; reset/ISP/brownout state pending Gate 0)
 +5 V monitor   ── precision divider ─────────── PA4 / ADC_IN4
 Internal       ── VREFINT (ADC_IN17), temperature sensor (ADC_IN18)
 LoRaWAN        ── existing LSN50v2 radio, OSI network, new dedicated FPort
@@ -61,7 +61,7 @@ The STM32L072 ADC is single-ended. The firmware estimates the ML3 differential v
 
 The direct-ADC design is approved **conditionally**, in two stages:
 
-- **Gate 0 (Phase 0, before firmware work):** the bench characterization in Part II must confirm the ML3 signal envelope — including minimum low-rail headroom and compliant supply at the probe — is compatible with single-ended acquisition, and the effort comparison against the fallback must come out in the direct design's favor.
+- **Gate 0 (Phase 0, before reachable ML3 acquisition):** the bench characterization in Part II must confirm the ML3 signal envelope — including minimum low-rail headroom and compliant supply at the probe — is compatible with single-ended acquisition, and the effort comparison against the fallback must come out in the direct design's favor. Before this gate, only build-only target configuration and unregistered adapter-object compilation are permitted while all Gate 0/Phase 2 hardware readiness macros remain zero, and `ML3_CONFIG_ACQUISITION_READY` and `ML3_CONFIG_DEPLOYABLE` remain false. That path must not make ADC access, PB5 control, thermistor excitation, EEPROM write, LoRa queue, sample processing, or physical sampling reachable. Gate 0 remains required before any reachable ML3 acquisition, PB5-powered ML3 test, calibration write, or deployment.
 - **Gate 1 (Phase 2, before deployment):** one prototype must demonstrate full-chain performance, **evaluated on held-out points not used to fit the calibration** (§4.2), with calibrator/reference uncertainty documented and guard-banded (§4.2):
 
 | Criterion | Required result |
@@ -102,11 +102,11 @@ The direct-ADC design is approved **conditionally**, in two stages:
 
 # Part II — Phase 0: characterization gate (Gate 0)
 
-No firmware development beyond throwaway bench scripts happens before this phase completes. Deliverable: a short written go/no-go decision with the measurements attached.
+Before this phase completes, firmware work is limited to build-only target configuration and unregistered adapter-object compilation while all Gate 0/Phase 2 hardware readiness macros remain zero, and `ML3_CONFIG_ACQUISITION_READY` and `ML3_CONFIG_DEPLOYABLE` remain false. That work must not make ADC access, PB5 control, thermistor excitation, EEPROM write, LoRa queue, sample processing, or physical sampling reachable. Deliverable: a short written go/no-go decision with the measurements attached.
 
 ## 2.1 Baseline capture (per node)
 
-Record: (1) LSN50v2 PCB hardware revision; (2) STM32 device marking/silicon revision; (3) existing firmware version and commit if previously flashed; (4) Dragino `LoRa_STM32` upstream commit chosen as baseline; (5) LoRaWAN region, data rate, and channel configuration (pins the §3.13 airtime budget); (6) availability of PA0, PA1, PA4, one spare ADC pin, and one spare GPIO in the actual wiring; (7) ML3 serial number and cable length **and measured cable loop resistance**; (8) PB5 behavior during reset, ISP/bootloader entry, and brownout with the board's pull arrangement — the +5 V rail must be provably off in all of them (add/verify an external pull if not).
+Record: (1) LSN50v2 PCB hardware revision; (2) STM32 device marking/silicon revision; (3) existing firmware version and commit if previously flashed; (4) Dragino `LoRa_STM32` upstream commit chosen as baseline; (5) LoRaWAN region, data rate, and channel configuration (pins the §3.13 airtime budget); (6) availability of PA0, PA1, PA2 / ADC_IN2, PA4, and PB4 in the actual wiring; (7) ML3 serial number and cable length **and measured cable loop resistance**; (8) PB5 behavior during reset, ISP/bootloader entry, and brownout with the board's pull arrangement — the +5 V rail must be provably off in all of them (add/verify an external pull if not).
 
 ## 2.2 ML3 absolute-voltage, common-mode, and supply measurement
 
@@ -152,7 +152,7 @@ Proceed with the direct design only if **all** hold: §2.2 passes for all four p
 | Blue | Signal HI | PA0 via matched RC network |
 | Black | Signal LO | PA1 via matched RC network |
 | Green | Shield | Node GND (battery negative) at node end only |
-| Grey | Thermistor | Spare ADC pin via §3.3 divider |
+| Grey | Thermistor | PA2 / ADC_IN2 via §3.3 divider; build-only until its readiness gate is set |
 
 Signal LO shall **not** be tied to ground.
 
@@ -182,7 +182,7 @@ Cutoff ≈ 1.59 kHz, τ = 100 µs. Unpopulated 1–10 nF C0G differential-cap fo
 ## 3.3 Thermistor interface (read with ML3 power OFF)
 
 ```text
-VDD ── GPIO (push-pull, high only during read) ── R_ref 10.0 kΩ 0.1% ──┬── ADC pin
+VDD ── PB4 (push-pull, high only during read) ── R_ref 10.0 kΩ 0.1% ──┬── PA2 / ADC_IN2
                                                                         │
                                                             ML3 grey (thermistor)
                                                                         │
@@ -191,8 +191,9 @@ VDD ── GPIO (push-pull, high only during read) ── R_ref 10.0 kΩ 0.1% �
 ```
 
 - **Sequencing (load-bearing):** the thermistor shares the brown return conductor with the ML3's 18 mA supply current; read while powered, cable-resistance IR drop corrupts the measurement and Delta-T's published characteristic no longer applies directly (manual Appendix 2). The read therefore happens **after** +5 V is disabled and the rail is **verified discharged** via PA4 (below a threshold, with timeout → read skipped, `THERM_FAULT` set, soil temp = sentinel).
-- Excitation GPIO high only during the read; settle (RC + excitation), convert, GPIO low. Ratiometric (`ratio = code_OS / 65520`), VDDA cancels; GPIO `R_on` error is bounded and absorbed by the bath calibration.
-- **Conversion via the ML3 manual's thermistor lookup table with interpolation — this is not a generic 10K3A1B curve.** Authoritative coefficients from Delta-T may replace the table if supplied.
+- PA2 / ADC_IN2 and PB4 are the selected build-only identity. The fitted-circuit settle time, PA4 rail-discharge guard, and manual lookup table remain pending Gate 0 and qualification; no numeric configuration value is authorized for them yet.
+- PB4 high only during the read; after the fitted-circuit settle time, convert, then drive PB4 low. The reading is ratiometric (`ratio = code_OS / 65520`), so VDDA cancels; do not apply VREFINT compensation before `ml3_thermistor_convert`.
+- **Conversion via the ML3 manual's thermistor lookup table with interpolation — this is not a generic 10K3A1B curve.** The table requires an independent transcription check before activation. Authoritative coefficients from Delta-T may replace it if supplied.
 - Fault detection: junction pinned near either rail during excitation → `THERM_FAULT`; a thermistor fault never invalidates the moisture reading.
 - Excitation GPIO verified electrically quiet during the ABBA burst (§4.3).
 
@@ -216,7 +217,7 @@ VDD ── GPIO (push-pull, high only during read) ── R_ref 10.0 kΩ 0.1% �
 | Parameter | Value |
 |---|---|
 | ADC / resolution | ADC1, 12-bit native |
-| External channels | PA0 = IN0 (HI), PA1 = IN1 (LO), PA4 = IN4 (+5 V mon), thermistor pin (D3) |
+| External channels | PA0 = IN0 (HI), PA1 = IN1 (LO), PA2 = IN2 (thermistor, build-only until its readiness gate is set), PA4 = IN4 (+5 V mon); PB4 is the thermistor excitation GPIO |
 | Internal channels | **VREFINT = IN17; temperature sensor = IN18** |
 | ADC clock | target 8 MHz (PCLK/4 at 32 MHz; recompute and document if PCLK differs) |
 | Sampling time | 160.5 cycles (meets VREFINT/TS minimum sampling requirements) |
@@ -312,7 +313,7 @@ Dedicated FPort (§3.6), versioned. **Routine payload: 25 bytes, big-endian** �
 
 ## 4.1 Software tests (host-side)
 
-Fixed-point VREFINT formula + overflow boundaries; calibration model incl. tempco gain/offset and piecewise table; median/MAD; thermistor table interpolation; quality-state derivation from flags + invalidating mask; sentinel handling for every field; payload pack/unpack vectors (shared with the edge decoder, §5.1) incl. sentinels, negative differentials, multi-frame diagnostics; **airtime assertions per §3.13**; CRC32 + redundant-slot selection; sequence rollover.
+Fixed-point VREFINT formula + overflow boundaries; calibration model incl. tempco gain/offset and piecewise table; median/MAD; thermistor table interpolation; quality-state derivation from flags + invalidating mask; sentinel handling for every field; payload pack/unpack vectors (shared with the edge decoder, §5.1) incl. sentinels, negative differentials, multi-frame diagnostics; **airtime assertions per §3.13**; CRC32 + redundant-slot selection; sequence rollover. <!-- slop-allow: pack/unpack is the conventional payload-vector terminology -->
 
 ## 4.2 Bench calibration (per node; automated rig mandatory)
 
@@ -481,7 +482,7 @@ Quality state = INVALID if any invalidating flag, any "invalid >" threshold cros
 |---|---|---|
 | D1 | PB5 polarity **and reset/ISP/brownout state + pull arrangement**, per node | Phase 0 §2.1 |
 | D2 | Final mode number, FPort, and pinned region/data rate (airtime gate input) | Phase 1 start |
-| D3 | Thermistor ADC pin + excitation GPIO (candidates PA5 + free GPIO; verify per node) | Phase 0 §2.1 |
+| D3 | Thermistor identity selected: PA2 / ADC_IN2 + PB4 excitation; verify the physical conditions and qualification inputs per node | Phase 0 §2.1 |
 | D4 | Final warm-up value and QC thresholds | Phase 2 §4.2 |
 | D5 | ~~Soil-temp column~~ **Resolved:** new canonical `soil_temperature_c`; `ext_temperature_c` stays DS18B20-only | — |
 | D6 | Reference logger availability for Gate 2a | before Gate 2 |

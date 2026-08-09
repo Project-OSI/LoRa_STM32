@@ -6,7 +6,7 @@ Hand this file to the implementing agent as its brief. Everything it needs is ei
 
 ## Mission
 
-Make the ML3 firmware run by itself. The measurement engine is written, host-tested and reviewed; what is missing is the thin layer that connects it to real STM32L072 hardware, plus the configuration constants that hardware characterization has now supplied. When you are done, a node flashed with the default (non-bench) image and switched to mode 10 should power the probe, take a reading, and queue a LoRaWAN frame on FPort 13.
+Task 10 has a build-only boundary before activation. The measurement engine is written, host-tested and reviewed; the thin layer connecting it to STM32L072 hardware remains Gate-0-gated for activation. Gate 0 hardware characterization is incomplete for activation, so a default image must not power the probe, take a physical reading, or queue a LoRaWAN frame.
 
 You will not have hardware. Your deliverable is code that compiles clean for the target, keeps every host test green, and comes with a bring-up checklist precise enough for the project owner to execute at the bench.
 
@@ -21,7 +21,7 @@ You will not have hardware. Your deliverable is code that compiles clean for the
 ## Read these first, in this order
 
 1. **`docs/ml3-port-adapter-spec.md`** — your primary contract. Every port seam, the decisions already taken, and the mandatory EEPROM write-completion requirement.
-2. **`docs/gate0-records/M013437-A840412D385E7D00/section4-adc-characterization.md`** — the hardware measurements that justify the config values you will fill in, plus four findings that constrain your implementation.
+2. **`docs/gate0-records/M013437-A840412D385E7D00/section4-adc-characterization.md`** — the incomplete hardware-characterization record. Treat it as constraints and evidence to verify, not authorization to activate the target.
 3. **`docs/2026-07-12-lsn50v2-ml3-firmware-plan.md`** (v2.1) — the governing design. It wins on any conflict with other documents; if you find a genuine conflict, stop and report rather than choosing.
 4. **`docs/ml3-firmware-status-and-roadmap.md`** — where this task sits in the wider programme.
 5. The modules you are serving: `inc/adc_precision.h`, `inc/ml3_measurement.h`, `inc/ml3_calibration.h`, `inc/bsp.h`. Read the headers as contracts before reading implementations.
@@ -30,7 +30,7 @@ You will not have hardware. Your deliverable is code that compiles clean for the
 
 Seven modules are complete, host-tested under a strict `-Werror` set, and have passed multiple review rounds including independent fuzz-verification of their arithmetic: `adc_precision`, `ml3_measurement`, `ml3_calibration`, `ml3_thermistor`, `ml3_quality`, `ml3_payload`, `ml3_at_commands`. They are pure logic behind port structs. **Your job is to implement the ports, not to touch these modules.** If you believe one contains a defect, report it — do not fix it as a side effect of this task.
 
-Also already done: the GCC build environment, a bench diagnostic image (`AT+ML3ADC`), and the Gate 0 hardware characterization that resolved the central design question.
+Also already done: the GCC build environment and a bench diagnostic image (`AT+ML3ADC`). Gate 0 hardware characterization remains incomplete for activation.
 
 ## Hard constraints — each of these was verified in-tree, not assumed
 
@@ -49,17 +49,21 @@ Also already done: the GCC build environment, a bench diagnostic image (`AT+ML3A
 
 ## The work
 
-Do this in phases, and **stop for review between them** rather than delivering one large change.
+### Execution status
 
-**Phase 1 — ADC port.** Implement `adc_precision`'s port struct against the STM32L0 registers/HAL. Mirror the vendor's proven configuration in `HW_AdcInit` (`src/stm32l0xx_hw.c`) where it is sound, but honour the module's own sequencing contract where they differ. Resolve constraint 4 here and say what you found.
+**Task 10A** permits target configuration and adapter-object compilation only while all Gate 0/Phase 2 hardware readiness macros remain zero, and `ML3_CONFIG_ACQUISITION_READY` and `ML3_CONFIG_DEPLOYABLE` remain false. It forbids adapter registration and must not make ADC access, PB5 control, thermistor excitation, EEPROM write, LoRa queue, sample processing, or physical sampling reachable.
 
-**Phase 2 — EEPROM port.** Implement `ml3_calibration_storage_port_t` at the decided addresses: slot 0 `0x08080100`, slot 1 `0x08080C00`, 2048 B each, runtime `slot_capacity` **512 B**. Constraint 1 applies here and is the highest-risk item in this task. Implement `device_id_hash` as CRC-32/ISO-HDLC (reuse the module's existing `ml3_calibration_crc32`) over the 12-byte little-endian image of the UID words at `0x1FF80050 / 0x1FF80054 / 0x1FF80064`, remapping a result of `0` to `0xA5A5A5A5`. The exact byte and word order must be unambiguous enough that an external Node.js generator reproduces it without negotiation — write that ordering down in a comment and in your report.
+**Task 10B** is Gate-0-gated. Do its phases only after Gate 0 supplies the required values, and stop for review between them rather than delivering one large change.
 
-**Phase 3 — service wiring.** Replace the no-op body of `BSP_ML3_Service` per spec §5: instantiate the port structs once, initialise the measurement engine from the existing settings, drive `ml3_measurement_step` to completion across service calls, keep `ml3_active` true so the main loop blocks low-power mode during acquisition, and route `BSP_ML3_Abort` to `ml3_measurement_abort`.
+**Task 10B, Phase 1 — ADC port.** Implement `adc_precision`'s port struct against the STM32L0 registers/HAL. Mirror the vendor's proven configuration in `HW_AdcInit` (`src/stm32l0xx_hw.c`) where it is sound, but honour the module's own sequencing contract where they differ. Resolve constraint 4 here and say what you found.
 
-**Phase 4 — configuration.** Fill the `GATE0-PENDING` macros in `inc/ml3_config.h` from the §4 record: zero-ambiguity guard **2 mV** (offset measured +0.35 mV, zero-point noise under 1 LSB), common-mode envelope from the observed 5.0–5.2 mV LO leg, a signal ceiling that accommodates the observed 1110 mV (above the 1 V nominal), warm-up **1500 ms** provisional per manufacturer spec plus margin. Every value you write must trace to a line in the §4 record or the manufacturer specification — cite the source per macro in your report. **Invent nothing.** If a macro has no traceable basis, leave it pending and say so.
+**Task 10B, Phase 2 — EEPROM port.** Implement `ml3_calibration_storage_port_t` at the decided addresses: slot 0 `0x08080100`, slot 1 `0x08080C00`, 2048 B each, runtime `slot_capacity` **512 B**. Constraint 1 applies here and is the highest-risk item in this task. Implement `device_id_hash` as CRC-32/ISO-HDLC (reuse the module's existing `ml3_calibration_crc32`) over the 12-byte little-endian image of the UID words at `0x1FF80050 / 0x1FF80054 / 0x1FF80064`, remapping a result of `0` to `0xA5A5A5A5`. The exact byte and word order must be unambiguous enough that an external Node.js generator reproduces it without negotiation — write that ordering down in a comment and in your report.
 
-**Phase 5 — gates.** Only once phases 1–4 are complete and reviewed, flip the readiness macros so `ML3_CONFIG_ACQUISITION_READY` evaluates true, and confirm the acquisition engine is now linked into the default image (`arm-none-eabi-nm`). Note this deliberately changes the deployable image; the byte-identity gate that governed bench-tool work does not apply here and must not be cited as a reason to avoid the change.
+**Task 10B, Phase 3 — service wiring.** Replace the no-op body of `BSP_ML3_Service` per spec §5: instantiate the port structs once, initialise the measurement engine from the existing settings, drive `ml3_measurement_step` to completion across service calls, keep `ml3_active` true so the main loop blocks low-power mode during acquisition, and route `BSP_ML3_Abort` to `ml3_measurement_abort`.
+
+**Task 10B, Phase 4 — configuration.** Fill the `GATE0-PENDING` macros in `inc/ml3_config.h` only from completed Gate 0 evidence and the manufacturer specification. Every value must trace to a record line or source in the report. **Invent nothing.** If a macro has no traceable basis, leave it pending and say so.
+
+**Task 10B, Phase 5 — gates.** Only once Gate 0 and phases 1–4 are complete and reviewed, flip the readiness macros so `ML3_CONFIG_ACQUISITION_READY` evaluates true, and confirm the acquisition engine is now linked into the default image (`arm-none-eabi-nm`). Note this deliberately changes the deployable image; the byte-identity gate that governed bench-tool work does not apply here and must not be cited as a reason to avoid the change.
 
 ## Verification gates — evidence required, not assertions
 

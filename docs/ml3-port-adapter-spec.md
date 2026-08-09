@@ -2,7 +2,11 @@
 
 The ML3 modules are pure logic behind three function-pointer port structs; no code on this branch touches ADC, EEPROM, or GPIO registers for acquisition. This document specifies what the concrete STM32L072 adapters must implement so that `BSP_ML3_Service` can drive a real measurement once Gate 0 supplies the pending `ml3_config.h` values. Register references are RM0376 (reference manual) and ES0292 (errata); plan §3.7–§3.8 governs sequencing.
 
-Prerequisite: Gate 0 complete and its macros filled (see `ml3-gate0-bench-runbook.md`). Writing these adapters earlier means inventing hardware constants, which the execution process explicitly forbids.
+## Task 10 split
+
+**Task 10A, build-only:** known target configuration and adapter objects may compile while all Gate 0/Phase 2 hardware readiness macros remain zero, and `ML3_CONFIG_ACQUISITION_READY` and `ML3_CONFIG_DEPLOYABLE` remain false. These objects must not be registered through `BSP_ML3_Service` and must not make ADC access, PB5 control, thermistor excitation, EEPROM write, LoRa queue, sample processing, or physical sampling reachable.
+
+**Task 10B, activation integration:** adapter registration and any reachable hardware access require Gate 0 to supply the required values (see `ml3-gate0-bench-runbook.md`). This includes PB5-powered ML3 tests, calibration writes, and deployment.
 
 ## 1. `adc_precision_port_t` — the ADC seam
 
@@ -24,7 +28,7 @@ Declared in `inc/adc_precision.h:55-79` (23 callbacks + `port_ctx`). The core (`
 | `enable_vrefint_buffer_gate` / `enable_temperature_buffer_gate` | `SYSCFG_CFGR3.ENBUF_VREFINT_ADC` / `ENBUF_SENSOR_ADC` (verify exact bit names against RM0376 at implementation — plan §3.7) |
 | `is_vrefint_ready` / `is_temperature_ready` / buffer variants | the matching `SYSCFG_CFGR3` readiness flags (`VREFINT_RDYF` et al.) |
 | `is_reference_settled` | readiness flags plus the datasheet start-up time bound, whichever is later |
-| `select_channel` | write `ADC_CHSELR` single-bit for channels 0 (PA0 HI), 1 (PA1 LO), 4 (PA4 V5 monitor), 17 (VREFINT), 18 (die temp), plus the Gate 0 thermistor channel |
+| `select_channel` | write `ADC_CHSELR` single-bit for channels 0 (PA0 HI), 1 (PA1 LO), 2 (PA2 thermistor), 4 (PA4 V5 monitor), 17 (VREFINT), and 18 (die temp) |
 | `start_conversion` | set `ADC_CR_ADSTART` |
 | `is_conversion_complete` | `ADC_ISR_EOC == 1` |
 | `read_raw` | read `ADC_DR` immediately, report `ADC_ISR_OVR` in `*overrun`, clear OVR |
@@ -54,6 +58,8 @@ Declared in `inc/ml3_measurement.h:101-113`. These callbacks do touch board stat
 | `on_queue` | hand the built frame to the LoRaWAN stack on FPort `ML3_CONFIG_FPORT` (13) |
 
 Fail-safe invariant: every error path in the core already forces `set_power_5v(false)` and `set_thermistor_excitation(false)`; the adapter must make both calls unconditionally safe to invoke in any state, including before init completes.
+
+PB4 is the thermistor excitation GPIO. PA2 is LPUART1 TX in stock firmware. A future adapter must wait for transmit and DMA completion, reconfigure PA2 alone to analog for a sample, then restore LPUART1 TX. It must not call the legacy `vcom_IoDeInit` helper because that helper also changes PA3.
 
 ## 3. Result-stage callbacks — where the remaining wiring lives
 
@@ -102,7 +108,7 @@ The store path's two-phase commit (poison target CRC → write body → write CR
 
 ## 5. `BSP_ML3_Service` wiring
 
-The service loop (called every `main()` iteration) currently no-ops behind `ML3_CONFIG_ACQUISITION_READY`. Task 10 replaces the no-op body with: instantiate the two port structs (static, once), `ml3_measurement_init` with config from UCI-equivalent settings (`BSP_ML3_SetWarmup/SetCycles` already maintain them), then on `ml3_request_pending` → `ml3_measurement_start` and drive `ml3_measurement_step` to completion across service calls, keeping `ml3_active` true so `main()` blocks low-power mode during acquisition. `BSP_ML3_Abort` must call `ml3_measurement_abort` (which runs the fail-safe cleanup).
+The service loop (called every `main()` iteration) currently no-ops behind `ML3_CONFIG_ACQUISITION_READY`. Task 10B replaces the no-op body with: instantiate the two port structs (static, once), `ml3_measurement_init` with config from UCI-equivalent settings (`BSP_ML3_SetWarmup/SetCycles` already maintain them), then on `ml3_request_pending` → `ml3_measurement_start` and drive `ml3_measurement_step` to completion across service calls, keeping `ml3_active` true so `main()` blocks low-power mode during acquisition. `BSP_ML3_Abort` must call `ml3_measurement_abort` (which runs the fail-safe cleanup). Task 10A build-only objects must not be registered through `BSP_ML3_Service`.
 
 ## 6. Verification obligations
 
