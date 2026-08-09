@@ -31,6 +31,7 @@ void mock_chameleon_set_resistance_comp_sequence(uint8_t channel,
 void mock_chameleon_set_id(const uint8_t id[8]);
 void mock_chameleon_set_battery_mv(uint16_t v);
 void mock_chameleon_fail_command(uint8_t cmd);
+void mock_chameleon_short_command(uint8_t cmd);
 
 size_t mock_chameleon_trigger_count(void);
 size_t mock_chameleon_status_poll_count(void);

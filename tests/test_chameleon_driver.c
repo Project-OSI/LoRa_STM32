@@ -67,6 +67,17 @@ static void test_status_timeout(void) {
     int ok = via_chameleon_acquire(&s, 200);
     ASSERT_EQ_U32(ok, 1, "device present, partial data ok");
     ASSERT_TRUE(s.status_flags & CHAMELEON_FLAG_TIMEOUT, "timeout flag");
+    ASSERT_EQ_U32(mock_chameleon_total_delay_ms(), 200U, "absolute deadline");
+}
+
+static void test_status_transport_failure_is_not_busy_timeout(void) {
+    mock_chameleon_reset();
+    mock_chameleon_fail_command(CHAMELEON_CMD_STATUS);
+    ASSERT_EQ_U32(via_chameleon_trigger(), CHAMELEON_RESULT_OK, "trigger ok");
+    ASSERT_EQ_U32(via_chameleon_wait_ready(200U),
+                  CHAMELEON_RESULT_STATUS_IO_FAILED,
+                  "status transport result");
+    ASSERT_EQ_U32(mock_chameleon_total_delay_ms(), 0U, "transport fails promptly");
 }
 
 static void test_register_read_failure_sets_fault_flag(void) {
@@ -76,6 +87,17 @@ static void test_register_read_failure_sets_fault_flag(void) {
     int ok = via_chameleon_acquire(&s, CHAMELEON_DEFAULT_TIMEOUT_MS);
     ASSERT_EQ_U32(ok, 1, "device present, partial read failure ok");
     ASSERT_TRUE(s.status_flags & CHAMELEON_FLAG_I2C_MISSING, "read failure flag");
+}
+
+static void test_short_read_is_partial_sample(void) {
+    mock_chameleon_reset();
+    mock_chameleon_short_command(CHAMELEON_CMD_RES_RAW2);
+    chameleon_sample_t s;
+    int ok = via_chameleon_acquire(&s, CHAMELEON_DEFAULT_TIMEOUT_MS);
+    ASSERT_EQ_U32(ok, 1, "device present after short read");
+    ASSERT_TRUE(s.status_flags & CHAMELEON_FLAG_I2C_MISSING,
+                "short read invalidates sample");
+    ASSERT_EQ_U32(s.r2_ohm_raw, 0U, "short field zeroed");
 }
 
 static void test_sentinel_temperature(void) {
@@ -111,7 +133,9 @@ int main(void) {
     test_device_missing();
     test_status_polled_until_ready();
     test_status_timeout();
+    test_status_transport_failure_is_not_busy_timeout();
     test_register_read_failure_sets_fault_flag();
+    test_short_read_is_partial_sample();
     test_sentinel_temperature();
     test_sentinel_id();
     test_sentinel_open_channel();
