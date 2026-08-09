@@ -45,6 +45,7 @@ EOF
 
 write_suite_fixture() {
   write_stage "$FIXTURE_ROOT/tests/host/ml3_readiness_cohesion_contract.sh" ':'
+  write_stage "$FIXTURE_ROOT/tests/host/ml3_target_integration_contract.sh" ':'
   write_stage "$FIXTURE_ROOT/tests/host/run_ml3_host_tests.sh" ':'
   write_stage "$FIXTURE_ROOT/tests/host/ml3_marker_mutation_regression.sh" ':'
   write_stage "$FIXTURE_ROOT/tests/host/ml3_signal_term_regression.sh" ':'
