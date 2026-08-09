@@ -14,7 +14,7 @@ CFLAGS  ?= -std=c99 -Wall -Wextra -Werror -O0 -g
 
 OBJDIR  := build
 
-TESTS := harness_smoke chameleon_payload chameleon_driver chameleon_dummy battery_level_typo chameleon_settle_and_retry chameleon_comp_pending chameleon_open_channel_no_retry chameleon_lifecycle chameleon_integration_guards
+TESTS := harness_smoke chameleon_payload chameleon_driver chameleon_dummy battery_level_typo chameleon_settle_and_retry chameleon_comp_pending chameleon_open_channel_no_retry chameleon_lifecycle chameleon_integration_guards chameleon_build_script
 
 .PHONY: all test clean
 all: test
@@ -88,6 +88,9 @@ $(OBJDIR)/test_chameleon_lifecycle: test_chameleon_lifecycle.c \
 		"$(PROJ_BASE)/src/chameleon_lsn50_hw.c"
 
 $(OBJDIR)/test_chameleon_integration_guards: test_chameleon_integration_guards.c | $(OBJDIR)
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(OBJDIR)/test_chameleon_build_script: test_chameleon_build_script.c | $(OBJDIR)
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(OBJDIR)/test_battery_level_typo: test_battery_level_typo.c | $(OBJDIR)
