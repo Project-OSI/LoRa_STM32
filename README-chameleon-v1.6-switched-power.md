@@ -1,52 +1,131 @@
-# LSN50V2 + VIA Chameleon v1.x: switched-power wiring
+# LSN50V2 + VIA Chameleon: two power variants
 
-This branch is for the current Chameleon board revision, which has no dedicated sleep pin. The Chameleon board is fully power-cycled for every measurement using a P-channel MOSFET.
+This branch produces two EU868 bench-test firmware images for the current VIA
+Chameleon I2C reader. Both use PB13/PB14 as I2C2. Select the image that matches
+the physical power circuit; the images are not interchangeable.
 
-## LSN50V2 connections
+Connector terminal numbers are deliberately omitted. Dragino documentation and
+the earlier branch notes disagree, and the deployed LSN50V2 PCB revision has not
+been physically confirmed. Identify pins by signal name and verify them with the
+schematic or continuity measurements before wiring.
 
-| LSN50V2 signal | Terminal | Connection |
-|---|---:|---|
-| VDD | 13 (or 1) | P-channel MOSFET source |
-| PB12 | 20 | P-channel MOSFET gate control |
-| PB13 | 21 | Chameleon SCL (I2C2) |
-| PB14 | 18 | Chameleon SDA (I2C2) |
-| GND | 15 (or 12) | Chameleon GND |
+## Shared I2C wiring
 
-P-channel MOSFET drain connects to Chameleon VCC.
+| LSN50V2 signal | Chameleon connection | Firmware configuration |
+|---|---|---|
+| PB13 | SCL | I2C2 AF5, open-drain |
+| PB14 | SDA | I2C2 AF5, open-drain |
+| GND | GND | Common reference |
 
-Use an external gate-to-source pull-up (100 kOhm is a suitable default). PB12 is configured open-drain: LOW turns the sensor on; released/high-impedance lets the resistor pull the gate to VDD and turns the sensor off.
+Do not use PB6/PB7. Their fixed board pull-ups are tied to the always-powered
+LSN50 rail and can back-power a switched-off reader.
 
-SDA and SCL need pull-up resistors to the **switched Chameleon VCC on the MOSFET drain side**. 4.7 kOhm is the default if the Chameleon carrier does not already provide suitable pull-ups. Do not pull SDA/SCL to the always-powered LSN50 VDD or to +5 V.
+The MCU enables no internal I2C pull-ups. SDA and SCL require external pull-ups
+to the reader's switched 3.3 V rail. Never pull either line to +5 V. Confirm
+whether the Chameleon board already provides pull-ups before adding another
+pair.
 
-Do not use PB6/PB7 for this revision. They are the stock LSN50V2 I2C1 pair and the board-level pull-up arrangement can leave an unpowered Chameleon partly powered through SDA/SCL.
+PB14 also has the LSN50 digital-input R14/C1 network. The firmware masks and
+compiles out EXTI14 while using PB14 as SDA, but it cannot remove the passive
+network. Confirm the fitted values on the actual PCB. With a nominal 4.7 kOhm
+pull-up and 100 pF capacitance, the estimated 30-70% rise time is about 400 ns,
+already above the 300 ns Fast-mode limit before cable and reader capacitance are
+included. Scope SDA and SCL on the assembled unit. Use a separately documented
+100 kHz firmware build if the 400 kHz timing limit is not met.
 
-## Firmware sequence
+## Variant A: VCC through an external P-channel MOSFET
 
-For each measurement cycle:
+Use these files:
 
-1. Mask the stock PB14 EXTI function.
-2. Configure PB12 as open-drain and pull it LOW to switch the Chameleon on.
-3. Wait 100 ms for cold start.
-4. Configure PB13/PB14 as I2C2 SCL/SDA at 400 kHz, open-drain, no MCU pull-ups.
-5. Probe address 0x08.
-6. Trigger a fresh reading (0x40), poll status (0x41), and read temperature, compensated/raw resistance and sensor ID using the existing Chameleon protocol.
-7. Disable I2C2.
-8. Put PB13/PB14 into analog/no-pull state so the MCU cannot back-power the slave.
-9. Release PB12. The external gate pull-up switches the MOSFET off.
-10. Continue with the normal LSN50 low-power cycle.
+- `build/LSN50-chameleon-i2c2-vcc-pmos.bin`
+- `build/LSN50-chameleon-i2c2-vcc-pmos.hex`
 
-The existing 2 s measurement timeout, 50 ms status polling, post-ready settle and compensation retry logic are retained.
+Wire the LSN50 VCC rail to the P-channel MOSFET source. Connect the MOSFET drain
+to Chameleon VCC and to both I2C pull-ups. Connect PB12 to the gate and fit an
+external gate-to-source pull-up. The firmware configures PB12 open-drain: LOW is
+ON; released/high-impedance is OFF.
 
-## Bench validation before field use
+Select a MOSFET whose gate threshold and on-resistance are suitable across the
+full battery/VCC range. Verify that reader and attached DS18B20 voltage stays
+within their specified operating range at the lowest intended battery voltage.
+The common DS18B20 minimum is 3.0 V, so this variant has a low-battery gate that
+the firmware build cannot settle.
 
-First test with a multimeter before connecting the Chameleon:
+## Variant B: switched +5 V through an external 3.3 V regulator
 
-- Sensor OFF: MOSFET drain should be near 0 V.
-- Sensor ON: MOSFET drain should be approximately LSN50 VDD.
+Use these files:
 
-Then connect the Chameleon and verify:
+- `build/LSN50-chameleon-i2c2-5v-reg.bin`
+- `build/LSN50-chameleon-i2c2-5v-reg.hex`
 
-- Sensor OFF: Chameleon VCC, SDA and SCL should all fall close to 0 V. A persistent ~1-2 V level means back-powering is still present.
-- Sensor ON: Chameleon VCC and I2C HIGH levels should be approximately VDD.
-- Confirm repeated wake/read/power-off cycles without `I2C missing` payloads.
-- Run at least several hundred cycles before returning the node to the field.
+Connect the LSN50 switched +5 V output to the input of an external inline 3.3 V
+regulator. Connect the regulator output to Chameleon VCC and both I2C pull-ups.
+The firmware drives PB5 LOW to enable the LSN50 +5 V output and HIGH to disable
+it. The reader must not be connected directly to +5 V.
+
+Check regulator dropout, quiescent current, reverse leakage, startup time, and
+output discharge. An output that remains charged after PB5 goes HIGH can keep
+the reader partially powered between reports.
+
+Variant B is the first bench candidate because it supplies a regulated reader
+rail and avoids Variant A's low-VCC uncertainty.
+
+## Acquisition behavior
+
+Each report starts with the selected rail OFF and PB13/PB14 in analog/no-pull
+state. Firmware turns the rail on, waits 100 ms, initializes a private I2C2 HAL
+handle, and probes address `0x08` with short transactions for at most 100 ms. It
+then sends trigger command `0x40`, polls status command `0x41` every 50 ms for an
+absolute maximum of 2 s, and reads temperature, all raw and compensated
+resistances, and the eight-byte array ID with repeated-start transactions.
+
+Cleanup always deinitializes I2C2, returns PB13/PB14 to analog/no-pull, and turns
+the rail off. A recoverable communication failure receives at most one complete
+cold-power retry after 200 ms OFF. Open-channel, missing-temperature, and
+invalid-ID sentinel values are valid protocol responses and do not cause a
+retry. Equal raw and compensated resistance is also valid and is preserved.
+
+The LoRaWAN payload stays at version 1 and 44 bytes. It retains both raw and
+compensated readings. Status bit 7 remains reserved and is forced to zero.
+
+## Build commands
+
+From the repository root:
+
+```bash
+build/build.sh clean
+build/build.sh chameleon-i2c2-vcc-pmos
+build/build.sh chameleon-i2c2-5v-reg
+```
+
+Each target has a separate object directory. The script is repository-relative
+and does not overwrite the older `LSN50-chameleon` artifacts.
+
+## Bench gates before field use
+
+Do not connect the Chameleon until OFF/ON polarity has been confirmed with a
+meter on the selected power circuit.
+
+1. Flash Variant B first. With the reader disconnected, confirm PB5 HIGH/OFF,
+   PB5 LOW/ON, regulated output voltage, and output decay after shutdown.
+2. Connect the reader. Measure reader VCC, SDA, and SCL while active and after
+   cleanup. Any persistent intermediate voltage while OFF indicates leakage or
+   back-powering.
+3. Scope SDA/SCL rise time and logic levels at 400 kHz with the deployed cable.
+   Do not accept a marginal waveform merely because short bench reads succeed.
+4. Measure active current and complete LSN50 sleep current. Compare sleep
+   current with the reader physically disconnected.
+5. Run 100 rapid acquisition cycles. Confirm one trigger per successful report,
+   no unexpected cold retries, stable array ID, and preserved raw/compensated
+   values.
+6. Repeat with the reader unplugged, each resistance channel open, DS18B20
+   absent, SDA or SCL faulted, and battery voltage reduced to the intended
+   minimum. Confirm bounded completion and rail shutdown in every case.
+7. Run a 12-24 hour test at the normal reporting interval while logging serial
+   diagnostics, payloads, active current, and sleep current.
+8. Repeat the same sequence for Variant A, adding MOSFET gate/source/drain and
+   minimum-VCC measurements.
+
+These measurements are release gates. Successful compilation and host tests do
+not establish electrical safety, STOP-mode current, reliable 400 kHz timing, or
+field readiness.
