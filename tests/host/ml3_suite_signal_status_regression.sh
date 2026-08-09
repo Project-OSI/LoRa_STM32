@@ -4,6 +4,8 @@ set -u
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 SUITE="$ROOT_DIR/tests/host/run_ml3_host_suite.sh"
 PAYLOAD_CONFIG_CONTRACT="$ROOT_DIR/tests/host/ml3_payload_config_gate_contract.sh"
+TARGET_INTEGRATION_CONTRACT="$ROOT_DIR/tests/host/ml3_target_integration_contract.sh"
+REAL_CC="${CC:-cc}"
 TEST_TMPDIR=$(mktemp -d "${TMPDIR:-/tmp}/ml3-suite-status.XXXXXX")
 SUITE_TMPDIR=$(mktemp -d "$TEST_TMPDIR/suite.XXXXXX")
 MUTATED_SUITE="$TEST_TMPDIR/run_ml3_host_suite.sh"
@@ -179,6 +181,10 @@ run_case() {
 cat >"$CC_WRAPPER" <<'EOF'
 #!/usr/bin/env bash
 set -eu
+if [ -r "/proc/$PPID/cmdline" ] && \
+  tr '\0' ' ' <"/proc/$PPID/cmdline" | grep -Fq "$TARGET_INTEGRATION_CONTRACT"; then
+  exec "$REAL_CC" "$@"
+fi
 printf '%s\n' "$$" >"$CC_PID_FILE"
 : >"$CC_SENTINEL"
 trap '' HUP INT TERM
@@ -189,7 +195,7 @@ EOF
   chmod +x "$CC_WRAPPER"
 
   set +e
-  export CC_PID_FILE CC_SENTINEL
+  export CC_PID_FILE CC_SENTINEL TARGET_INTEGRATION_CONTRACT REAL_CC
   ML3_FORCE_DRAIN_FAILURE=1 \
   ML3_FLATTEN_DRAIN_FAILURE="$flatten" \
   setsid env TMPDIR="$SUITE_TMPDIR" CC="$CC_WRAPPER" "$suite_file" >"$log_file" 2>&1 &
