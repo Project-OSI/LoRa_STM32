@@ -68,6 +68,8 @@ static void test_status_timeout(void) {
     ASSERT_EQ_U32(ok, 1, "device present, partial data ok");
     ASSERT_TRUE(s.status_flags & CHAMELEON_FLAG_TIMEOUT, "timeout flag");
     ASSERT_EQ_U32(mock_chameleon_total_delay_ms(), 200U, "absolute deadline");
+    ASSERT_EQ_U32(mock_chameleon_status_poll_count(), 4U,
+                  "no transaction starts at deadline");
 }
 
 static void test_status_transport_failure_is_not_busy_timeout(void) {

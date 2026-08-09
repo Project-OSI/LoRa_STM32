@@ -29,12 +29,18 @@ static void clean_session(const chameleon_lsn50_ops_t *ops, int initialized)
 static chameleon_result_t bounded_probe(const chameleon_lsn50_ops_t *ops)
 {
     const uint32_t start = ops->millis(ops->context);
+    int first_probe = 1;
 
     for (;;) {
-        chameleon_result_t result = ops->probe(ops->context);
-        uint32_t elapsed;
+        chameleon_result_t result;
+        uint32_t elapsed = ops->millis(ops->context) - start;
         uint32_t delay;
 
+        if (!first_probe && elapsed >= CHAMELEON_PROBE_TIMEOUT_MS) {
+            return CHAMELEON_RESULT_NO_DEVICE;
+        }
+        first_probe = 0;
+        result = ops->probe(ops->context);
         if (result == CHAMELEON_RESULT_OK) {
             return result;
         }

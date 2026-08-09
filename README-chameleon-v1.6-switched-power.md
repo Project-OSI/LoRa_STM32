@@ -73,8 +73,8 @@ rail and avoids Variant A's low-VCC uncertainty.
 ## Acquisition behavior
 
 Each report starts with the selected rail OFF and PB13/PB14 in analog/no-pull
-state. Firmware turns the rail on, waits 100 ms, initializes a private I2C2 HAL
-handle, and probes address `0x08` with short transactions for at most 100 ms. It
+state. Firmware turns the rail on, waits 25 ms, initializes a private I2C2 HAL
+handle, and probes address `0x08` every 50 ms for at most 1500 ms. It
 then sends trigger command `0x40`, polls status command `0x41` every 50 ms for an
 absolute maximum of 2 s, and reads temperature, all raw and compensated
 resistances, and the eight-byte array ID with repeated-start transactions.

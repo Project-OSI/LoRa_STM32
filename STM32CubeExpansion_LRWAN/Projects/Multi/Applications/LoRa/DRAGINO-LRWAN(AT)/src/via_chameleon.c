@@ -49,12 +49,17 @@ chameleon_result_t via_chameleon_trigger(void)
 chameleon_result_t via_chameleon_wait_ready(uint32_t timeout_ms)
 {
     const uint32_t start = chameleon_board_millis();
+    int first_poll = 1;
 
     for (;;) {
         uint8_t status = 0U;
-        uint32_t elapsed;
+        uint32_t elapsed = elapsed_ms(start, chameleon_board_millis());
         uint32_t delay;
 
+        if (!first_poll && elapsed >= timeout_ms) {
+            return CHAMELEON_RESULT_MEASUREMENT_TIMEOUT;
+        }
+        first_poll = 0;
         if (read_register(CHAMELEON_CMD_STATUS, &status, 1U)
                 != CHAMELEON_I2C_OK) {
             return CHAMELEON_RESULT_STATUS_IO_FAILED;

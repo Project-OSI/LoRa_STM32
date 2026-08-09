@@ -153,6 +153,21 @@ static void test_transport_failure_gets_one_cold_retry(void)
     ASSERT_EQ(fake.measure_calls, 2U, "at most two measurements");
 }
 
+static void test_startup_probe_waits_for_delayed_ack(void)
+{
+    fake_hw_t fake = make_fake();
+    chameleon_lsn50_ops_t ops = make_ops(&fake);
+    chameleon_sample_t sample;
+    fake.first_probe = CHAMELEON_RESULT_NO_DEVICE;
+
+    ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
+              CHAMELEON_RESULT_OK, "delayed ACK succeeds");
+    ASSERT_STR(fake.trace,
+               "off,isolate,on,stabilize,init,probe,wait,probe,measure,deinit,isolate,off",
+               "bounded startup probing");
+    ASSERT_EQ(fake.probe_calls, 2U, "probe repeated after interval");
+}
+
 static void test_second_failure_still_cleans_up(void)
 {
     fake_hw_t fake = make_fake();
@@ -198,6 +213,7 @@ int main(void)
 {
     test_success_has_one_session_and_cleanup();
     test_transport_failure_gets_one_cold_retry();
+    test_startup_probe_waits_for_delayed_ack();
     test_second_failure_still_cleans_up();
     test_sentinel_flags_do_not_retry();
     test_i2c_init_failure_cleans_and_retries_once();

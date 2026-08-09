@@ -3013,7 +3013,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x08000000                g_pfnVectors
                 0x080000c0                        . = ALIGN (0x4)
 
-.text           0x080000c0    0x152bc
+.text           0x080000c0    0x152f4
                 0x080000c0                        . = ALIGN (0x4)
  *(.text)
  .text          0x080000c0       0x14 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_thumb1_case_uqi.o)
@@ -3068,7 +3068,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text          0x080003fc        0xe /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strlen.o)
                 0x080003fc                strlen
  *(.text*)
- *fill*         0x0800040a        0x2 
+ *fill*         0x0800040a        0x2
  .text.__do_global_dtors_aux
                 0x0800040c       0x28 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
  .text.frame_dummy
@@ -3100,7 +3100,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x080004a4                USART2_IRQHandler
                 0x080004a4                FLASH_IRQHandler
                 0x080004a4                LPTIM1_IRQHandler
- *fill*         0x080004a6        0x2 
+ *fill*         0x080004a6        0x2
  .text.EEPROM_program
                 0x080004a8       0x48 ./build/obj/chameleon-i2c2-5v-reg/flash_eraseprogram_078ea408.o
                 0x080004a8                EEPROM_program
@@ -3213,14 +3213,14 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.SX1276WriteFifo
                 0x08001780        0xe ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
                 0x08001780                SX1276WriteFifo
- *fill*         0x0800178e        0x2 
+ *fill*         0x0800178e        0x2
  .text.SX1276Send
                 0x08001790       0xec ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
                 0x08001790                SX1276Send
  .text.SX1276ReadFifo
                 0x0800187c        0xe ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
                 0x0800187c                SX1276ReadFifo
- *fill*         0x0800188a        0x2 
+ *fill*         0x0800188a        0x2
  .text.SX1276OnDio0Irq
                 0x0800188c      0x2fc ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
                 0x0800188c                SX1276OnDio0Irq
@@ -3281,7 +3281,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.DS18B20_ReadByte
                 0x080022fc       0x1e ./build/obj/chameleon-i2c2-5v-reg/ds18b20_8a272139.o
                 0x080022fc                DS18B20_ReadByte
- *fill*         0x0800231a        0x2 
+ *fill*         0x0800231a        0x2
  .text.DS18B20_WriteByte
                 0x0800231c       0x90 ./build/obj/chameleon-i2c2-5v-reg/ds18b20_8a272139.o
                 0x0800231c                DS18B20_WriteByte
@@ -3296,7 +3296,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x080023e4                DS18B20_IoDeInit
  .text.crcCalc  0x0800246c       0x32 ./build/obj/chameleon-i2c2-5v-reg/ds18b20_8a272139.o
                 0x0800246c                crcCalc
- *fill*         0x0800249e        0x2 
+ *fill*         0x0800249e        0x2
  .text.DS18B20_GetTemp_SkipRom
                 0x080024a0      0x108 ./build/obj/chameleon-i2c2-5v-reg/ds18b20_8a272139.o
                 0x080024a0                DS18B20_GetTemp_SkipRom
@@ -3348,7 +3348,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.ADC_Average
                 0x08002b32       0x1c ./build/obj/chameleon-i2c2-5v-reg/ult_3f609183.o
                 0x08002b32                ADC_Average
- *fill*         0x08002b4e        0x2 
+ *fill*         0x08002b4e        0x2
  .text.ULT_test
                 0x08002b50       0x48 ./build/obj/chameleon-i2c2-5v-reg/ult_3f609183.o
                 0x08002b50                ULT_test
@@ -3385,7 +3385,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.SX1276SetRfTxPower
                 0x08002d6a       0x50 ./build/obj/chameleon-i2c2-5v-reg/sx1276mb1las_a2dfe320.o
                 0x08002d6a                SX1276SetRfTxPower
- *fill*         0x08002dba        0x2 
+ *fill*         0x08002dba        0x2
  .text.SX1276IoInit
                 0x08002dbc       0x64 ./build/obj/chameleon-i2c2-5v-reg/sx1276mb1las_a2dfe320.o
                 0x08002dbc                SX1276IoInit
@@ -3411,7 +3411,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.HAL_SPI_MspInit
                 0x08003040        0x2 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_spi_0d710a1d.o
                 0x08003040                HAL_SPI_MspInit
- *fill*         0x08003042        0x2 
+ *fill*         0x08003042        0x2
  .text.HAL_SPI_Init
                 0x08003044       0x80 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_spi_0d710a1d.o
                 0x08003044                HAL_SPI_Init
@@ -3448,7 +3448,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x0800364c                HAL_UART_IRQHandler
  .text.UART_DMAAbortOnError
                 0x080037e0       0x16 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_uart_151166ad.o
- *fill*         0x080037f6        0x2 
+ *fill*         0x080037f6        0x2
  .text.UART_SetConfig
                 0x080037f8      0x280 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_uart_151166ad.o
                 0x080037f8                UART_SetConfig
@@ -3461,7 +3461,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.HAL_UART_Transmit
                 0x08003bac       0xca ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_uart_151166ad.o
                 0x08003bac                HAL_UART_Transmit
- *fill*         0x08003c76        0x2 
+ *fill*         0x08003c76        0x2
  .text.UART_CheckIdleState
                 0x08003c78       0x64 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_uart_151166ad.o
                 0x08003c78                UART_CheckIdleState
@@ -3475,7 +3475,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.HAL_ADC_MspInit
                 0x08003de4        0x2 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_adc_c7549bd9.o
                 0x08003de4                HAL_ADC_MspInit
- *fill*         0x08003de6        0x2 
+ *fill*         0x08003de6        0x2
  .text.HAL_ADC_Init
                 0x08003de8      0x1a4 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_adc_c7549bd9.o
                 0x08003de8                HAL_ADC_Init
@@ -3488,7 +3488,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.HAL_ADC_GetValue
                 0x080040a4        0x6 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_adc_c7549bd9.o
                 0x080040a4                HAL_ADC_GetValue
- *fill*         0x080040aa        0x2 
+ *fill*         0x080040aa        0x2
  .text.HAL_ADC_ConfigChannel
                 0x080040ac       0xa8 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_adc_c7549bd9.o
                 0x080040ac                HAL_ADC_ConfigChannel
@@ -3563,7 +3563,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.HAL_DMA_Start_IT
                 0x0800511c       0x56 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_dma_059f8871.o
                 0x0800511c                HAL_DMA_Start_IT
- *fill*         0x08005172        0x2 
+ *fill*         0x08005172        0x2
  .text.HAL_DMA_Abort_IT
                 0x08005174       0xa4 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_dma_059f8871.o
                 0x08005174                HAL_DMA_Abort_IT
@@ -3600,7 +3600,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.RTC_ByteToBcd2
                 0x0800570c       0x16 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_rtc_760a24a3.o
                 0x0800570c                RTC_ByteToBcd2
- *fill*         0x08005722        0x2 
+ *fill*         0x08005722        0x2
  .text.HAL_RTC_SetTime
                 0x08005724      0x10c ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_rtc_760a24a3.o
                 0x08005724                HAL_RTC_SetTime
@@ -3652,7 +3652,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.HAL_TIM_IC_MspDeInit
                 0x08005d98        0x2 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_tim_821fd5ef.o
                 0x08005d98                HAL_TIM_IC_MspDeInit
- *fill*         0x08005d9a        0x2 
+ *fill*         0x08005d9a        0x2
  .text.HAL_TIM_IC_DeInit
                 0x08005d9c       0x34 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_tim_821fd5ef.o
                 0x08005d9c                HAL_TIM_IC_DeInit
@@ -3697,7 +3697,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x080061f0                HAL_UARTEx_WakeupCallback
  .text.I2C_Flush_TXDR
                 0x080061f2       0x1c ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_i2c_d420655c.o
- *fill*         0x0800620e        0x2 
+ *fill*         0x0800620e        0x2
  .text.I2C_TransferConfig
                 0x08006210       0x24 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_i2c_d420655c.o
  .text.I2C_WaitOnFlagUntilTimeout
@@ -3712,7 +3712,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x080063ce       0x72 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_i2c_d420655c.o
  .text.I2C_WaitOnSTOPFlagUntilTimeout
                 0x08006440       0x56 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_i2c_d420655c.o
- *fill*         0x08006496        0x2 
+ *fill*         0x08006496        0x2
  .text.I2C_TransferConfig.constprop.0
                 0x08006498       0x24 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_i2c_d420655c.o
  .text.HAL_I2C_Init
@@ -3786,7 +3786,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.Error_Handler
                 0x080076a8        0x2 ./build/obj/chameleon-i2c2-5v-reg/debug_f8cb5e76.o
                 0x080076a8                Error_Handler
- *fill*         0x080076aa        0x2 
+ *fill*         0x080076aa        0x2
  .text.HW_GPIO_GetBitPos
                 0x080076ac       0x38 ./build/obj/chameleon-i2c2-5v-reg/hw_gpio_097d5577.o
  .text.HW_GPIO_Init
@@ -3801,7 +3801,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.HW_GPIO_Write
                 0x080077c8        0xa ./build/obj/chameleon-i2c2-5v-reg/hw_gpio_097d5577.o
                 0x080077c8                HW_GPIO_Write
- *fill*         0x080077d2        0x2 
+ *fill*         0x080077d2        0x2
  .text.HW_RTC_GetCalendarValue
                 0x080077d4       0xa4 ./build/obj/chameleon-i2c2-5v-reg/hw_rtc_40701610.o
  .text.HW_RTC_GetMinimumTimeout
@@ -3819,7 +3819,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.HW_RTC_GetTimerValue
                 0x080078b8        0xe ./build/obj/chameleon-i2c2-5v-reg/hw_rtc_40701610.o
                 0x080078b8                HW_RTC_GetTimerValue
- *fill*         0x080078c6        0x2 
+ *fill*         0x080078c6        0x2
  .text.HW_RTC_StopAlarm
                 0x080078c8       0x24 ./build/obj/chameleon-i2c2-5v-reg/hw_rtc_40701610.o
                 0x080078c8                HW_RTC_StopAlarm
@@ -3832,7 +3832,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.HW_RTC_DelayMs
                 0x08007a74       0x26 ./build/obj/chameleon-i2c2-5v-reg/hw_rtc_40701610.o
                 0x08007a74                HW_RTC_DelayMs
- *fill*         0x08007a9a        0x2 
+ *fill*         0x08007a9a        0x2
  .text.HW_RTC_SetTimerContext
                 0x08007a9c       0x1c ./build/obj/chameleon-i2c2-5v-reg/hw_rtc_40701610.o
                 0x08007a9c                HW_RTC_SetTimerContext
@@ -3845,7 +3845,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.HW_SPI_IoInit
                 0x08007b3c       0x62 ./build/obj/chameleon-i2c2-5v-reg/hw_spi_1d9ffd93.o
                 0x08007b3c                HW_SPI_IoInit
- *fill*         0x08007b9e        0x2 
+ *fill*         0x08007b9e        0x2
  .text.HW_SPI_Init
                 0x08007ba0       0x80 ./build/obj/chameleon-i2c2-5v-reg/hw_spi_1d9ffd93.o
                 0x08007ba0                HW_SPI_Init
@@ -3967,7 +3967,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.EXTI2_3_IRQHandler
                 0x080096a2       0x10 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_it_b362cb1e.o
                 0x080096a2                EXTI2_3_IRQHandler
- *fill*         0x080096b2        0x2 
+ *fill*         0x080096b2        0x2
  .text.EXTI4_15_IRQHandler
                 0x080096b4      0x108 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_it_b362cb1e.o
                 0x080096b4                EXTI4_15_IRQHandler
@@ -4052,14 +4052,14 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.at_DevEUI_get
                 0x08009ecc        0xe ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x08009ecc                at_DevEUI_get
- *fill*         0x08009eda        0x2 
+ *fill*         0x08009eda        0x2
  .text.at_DevEUI_set
                 0x08009edc       0x64 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x08009edc                at_DevEUI_set
  .text.at_AppEUI_get
                 0x08009f40        0xe ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x08009f40                at_AppEUI_get
- *fill*         0x08009f4e        0x2 
+ *fill*         0x08009f4e        0x2
  .text.at_AppEUI_set
                 0x08009f50       0x64 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x08009f50                at_AppEUI_set
@@ -4096,14 +4096,14 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.at_TransmitPower_get
                 0x0800a0d4       0x26 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800a0d4                at_TransmitPower_get
- *fill*         0x0800a0fa        0x2 
+ *fill*         0x0800a0fa        0x2
  .text.at_TransmitPower_set
                 0x0800a0fc       0x3c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800a0fc                at_TransmitPower_set
  .text.at_DataRate_get
                 0x0800a138       0x26 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800a138                at_DataRate_get
- *fill*         0x0800a15e        0x2 
+ *fill*         0x0800a15e        0x2
  .text.at_DataRate_set
                 0x0800a160       0x3c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800a160                at_DataRate_set
@@ -4134,28 +4134,28 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.at_Rx1Delay_get
                 0x0800a2f4       0x22 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800a2f4                at_Rx1Delay_get
- *fill*         0x0800a316        0x2 
+ *fill*         0x0800a316        0x2
  .text.at_Rx1Delay_set
                 0x0800a318       0x2c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800a318                at_Rx1Delay_set
  .text.at_Rx2Delay_get
                 0x0800a344       0x22 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800a344                at_Rx2Delay_get
- *fill*         0x0800a366        0x2 
+ *fill*         0x0800a366        0x2
  .text.at_Rx2Delay_set
                 0x0800a368       0x2c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800a368                at_Rx2Delay_set
  .text.at_JoinAcceptDelay1_get
                 0x0800a394       0x22 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800a394                at_JoinAcceptDelay1_get
- *fill*         0x0800a3b6        0x2 
+ *fill*         0x0800a3b6        0x2
  .text.at_JoinAcceptDelay1_set
                 0x0800a3b8       0x3c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800a3b8                at_JoinAcceptDelay1_set
  .text.at_JoinAcceptDelay2_get
                 0x0800a3f4       0x22 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800a3f4                at_JoinAcceptDelay2_get
- *fill*         0x0800a416        0x2 
+ *fill*         0x0800a416        0x2
  .text.at_JoinAcceptDelay2_set
                 0x0800a418       0x3c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800a418                at_JoinAcceptDelay2_set
@@ -4174,14 +4174,14 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.at_UplinkCounter_get
                 0x0800a518       0x22 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800a518                at_UplinkCounter_get
- *fill*         0x0800a53a        0x2 
+ *fill*         0x0800a53a        0x2
  .text.at_UplinkCounter_set
                 0x0800a53c       0x2c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800a53c                at_UplinkCounter_set
  .text.at_DownlinkCounter_get
                 0x0800a568       0x22 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800a568                at_DownlinkCounter_get
- *fill*         0x0800a58a        0x2 
+ *fill*         0x0800a58a        0x2
  .text.at_DownlinkCounter_set
                 0x0800a58c       0x2c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800a58c                at_DownlinkCounter_set
@@ -4252,14 +4252,14 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.at_application_port_get
                 0x0800ab00        0xe ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800ab00                at_application_port_get
- *fill*         0x0800ab0e        0x2 
+ *fill*         0x0800ab0e        0x2
  .text.at_CHS_set
                 0x0800ab10       0x38 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800ab10                at_CHS_set
  .text.at_CHS_get
                 0x0800ab48        0xe ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800ab48                at_CHS_get
- *fill*         0x0800ab56        0x2 
+ *fill*         0x0800ab56        0x2
  .text.at_symbtimeout1LSB_get
                 0x0800ab58       0x14 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800ab58                at_symbtimeout1LSB_get
@@ -4353,7 +4353,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.at_weightreset
                 0x0800b118        0xa ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800b118                at_weightreset
- *fill*         0x0800b122        0x2 
+ *fill*         0x0800b122        0x2
  .text.CMD_GetChar
                 0x0800b124       0x20 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
  .text.com_error
@@ -4369,7 +4369,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x0800b384                printf_all_config
  .text.McpsConfirm
                 0x0800b3c0        0x2 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
- *fill*         0x0800b3c2        0x2 
+ *fill*         0x0800b3c2        0x2
  .text.MlmeConfirm
                 0x0800b3c4       0x48 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
  .text.McpsIndication
@@ -4613,7 +4613,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.RegionCommonCalcBackOff
                 0x0800cb78       0x4a ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
                 0x0800cb78                RegionCommonCalcBackOff
- *fill*         0x0800cbc2        0x2 
+ *fill*         0x0800cbc2        0x2
  .text.VerifyTxFreq
                 0x0800cbc4       0xa0 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
  .text.RegionEU868GetPhyParam
@@ -4628,7 +4628,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.RegionEU868Verify
                 0x0800cde8       0x56 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
                 0x0800cde8                RegionEU868Verify
- *fill*         0x0800ce3e        0x2 
+ *fill*         0x0800ce3e        0x2
  .text.RegionEU868ChanMaskSet
                 0x0800ce40       0x2c ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
                 0x0800ce40                RegionEU868ChanMaskSet
@@ -4653,7 +4653,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.RegionEU868TxParamSetupReq
                 0x0800d390        0x6 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
                 0x0800d390                RegionEU868TxParamSetupReq
- *fill*         0x0800d396        0x2 
+ *fill*         0x0800d396        0x2
  .text.RegionEU868DlChannelReq
                 0x0800d398       0x3c ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
                 0x0800d398                RegionEU868DlChannelReq
@@ -4684,7 +4684,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.RegionEU868ApplyDrOffset
                 0x0800d744        0xe ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
                 0x0800d744                RegionEU868ApplyDrOffset
- *fill*         0x0800d752        0x2 
+ *fill*         0x0800d752        0x2
  .text.ResetMacParameters
                 0x0800d754       0xdc ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .text.ValidatePayloadLength
@@ -4764,7 +4764,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.LoRaMacPayloadDecrypt
                 0x08010114       0x1a ./build/obj/chameleon-i2c2-5v-reg/LoRaMacCrypto_5c88798c.o
                 0x08010114                LoRaMacPayloadDecrypt
- *fill*         0x0801012e        0x2 
+ *fill*         0x0801012e        0x2
  .text.LoRaMacJoinComputeMic
                 0x08010130       0x4c ./build/obj/chameleon-i2c2-5v-reg/LoRaMacCrypto_5c88798c.o
                 0x08010130                LoRaMacJoinComputeMic
@@ -4808,19 +4808,19 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.LPM_ExitOffMode
                 0x080105b0        0x2 ./build/obj/chameleon-i2c2-5v-reg/low_power_manager_062ac3e9.o
                 0x080105b0                LPM_ExitOffMode
- *fill*         0x080105b2        0x2 
+ *fill*         0x080105b2        0x2
  .text.LPM_EnterLowPower
                 0x080105b4       0x38 ./build/obj/chameleon-i2c2-5v-reg/low_power_manager_062ac3e9.o
                 0x080105b4                LPM_EnterLowPower
  .text.TimerSetTimeout
                 0x080105ec       0x2a ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
- *fill*         0x08010616        0x2 
+ *fill*         0x08010616        0x2
  .text.TimerInsertNewHeadTimer
                 0x08010618       0x1c ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
  .text.TimerInit
                 0x08010634        0xe ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
                 0x08010634                TimerInit
- *fill*         0x08010642        0x2 
+ *fill*         0x08010642        0x2
  .text.TimerStart
                 0x08010644       0x68 ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
                 0x08010644                TimerStart
@@ -4839,7 +4839,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.TimerGetElapsedTime
                 0x080107a2       0x18 ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
                 0x080107a2                TimerGetElapsedTime
- *fill*         0x080107ba        0x2 
+ *fill*         0x080107ba        0x2
  .text.rand1    0x080107bc       0x2c ./build/obj/chameleon-i2c2-5v-reg/utilities_06cf1bad.o
                 0x080107bc                rand1
  .text.srand1   0x080107e8        0xc ./build/obj/chameleon-i2c2-5v-reg/utilities_06cf1bad.o
@@ -4866,7 +4866,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .text.CircularQueue_Add
                 0x08010962      0x1f4 ./build/obj/chameleon-i2c2-5v-reg/queue_53f702e2.o
                 0x08010962                CircularQueue_Add
- *fill*         0x08010b56        0x2 
+ *fill*         0x08010b56        0x2
  .text.CircularQueue_Remove
                 0x08010b58       0xc0 ./build/obj/chameleon-i2c2-5v-reg/queue_53f702e2.o
                 0x08010b58                CircularQueue_Remove
@@ -4899,591 +4899,591 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x080113be       0x1c ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
                 0x080113be                via_chameleon_trigger
  .text.via_chameleon_wait_ready
-                0x080113da       0x5a ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
+                0x080113da       0x6c ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
                 0x080113da                via_chameleon_wait_ready
+ *fill*         0x08011446        0x2
  .text.via_chameleon_read_sample
-                0x08011434      0x150 ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
-                0x08011434                via_chameleon_read_sample
+                0x08011448      0x150 ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
+                0x08011448                via_chameleon_read_sample
  .text.via_chameleon_measure
-                0x08011584       0x24 ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
-                0x08011584                via_chameleon_measure
+                0x08011598       0x24 ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
+                0x08011598                via_chameleon_measure
  .text.put_u32_be
-                0x080115a8       0x10 ./build/obj/chameleon-i2c2-5v-reg/chameleon_payload.o
+                0x080115bc       0x10 ./build/obj/chameleon-i2c2-5v-reg/chameleon_payload.o
  .text.chameleon_payload_encode_v1
-                0x080115b8       0xa2 ./build/obj/chameleon-i2c2-5v-reg/chameleon_payload.o
-                0x080115b8                chameleon_payload_encode_v1
- *fill*         0x0801165a        0x2 
+                0x080115cc       0xa2 ./build/obj/chameleon-i2c2-5v-reg/chameleon_payload.o
+                0x080115cc                chameleon_payload_encode_v1
+ *fill*         0x0801166e        0x2
  .text.stm32_battery_mv
-                0x0801165c        0xc ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x08011670        0xc ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .text.stm32_delay_ms
-                0x08011668        0xa ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x0801167c        0xa ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .text.stm32_millis
-                0x08011672        0x8 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
- .text.stm32_measure
-                0x0801167a        0xc ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
- .text.stm32_probe
                 0x08011686        0x8 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
- *fill*         0x0801168e        0x2 
+ .text.stm32_measure
+                0x0801168e        0xc ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+ .text.stm32_probe
+                0x0801169a        0x8 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+ *fill*         0x080116a2        0x2
  .text.stm32_i2c_deinit
-                0x08011690       0x10 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x080116a4       0x10 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .text.stm32_i2c_init
-                0x080116a0       0x34 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x080116b4       0x34 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .text.stm32_rail_on
-                0x080116d4       0x14 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x080116e8       0x14 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .text.stm32_bus_isolate
-                0x080116e8       0x60 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x080116fc       0x60 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .text.stm32_rail_off
-                0x08011748       0x44 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x0801175c       0x44 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .text.chameleon_lsn50_run
-                0x0801178c      0x122 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
-                0x0801178c                chameleon_lsn50_run
- *fill*         0x080118ae        0x2 
+                0x080117a0      0x148 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x080117a0                chameleon_lsn50_run
  .text.chameleon_board_i2c_write
-                0x080118b0       0x40 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
-                0x080118b0                chameleon_board_i2c_write
+                0x080118e8       0x40 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x080118e8                chameleon_board_i2c_write
  .text.chameleon_board_i2c_write_read
-                0x080118f0       0x50 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
-                0x080118f0                chameleon_board_i2c_write_read
+                0x08011928       0x50 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x08011928                chameleon_board_i2c_write_read
  .text.chameleon_board_delay_ms
-                0x08011940        0x8 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
-                0x08011940                chameleon_board_delay_ms
+                0x08011978        0x8 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x08011978                chameleon_board_delay_ms
  .text.chameleon_board_millis
-                0x08011948        0x8 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
-                0x08011948                chameleon_board_millis
+                0x08011980        0x8 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x08011980                chameleon_board_millis
  .text.chameleon_lsn50_acquire
-                0x08011950       0x14 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
-                0x08011950                chameleon_lsn50_acquire
+                0x08011988       0x14 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x08011988                chameleon_lsn50_acquire
  .text.chameleon_lsn50_prepare_sleep
-                0x08011964       0x10 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
-                0x08011964                chameleon_lsn50_prepare_sleep
+                0x0801199c       0x10 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x0801199c                chameleon_lsn50_prepare_sleep
  .text.__muldi3
-                0x08011974       0x3e /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_muldi3.o)
-                0x08011974                __aeabi_lmul
-                0x08011974                __muldi3
+                0x080119ac       0x3e /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_muldi3.o)
+                0x080119ac                __aeabi_lmul
+                0x080119ac                __muldi3
  .text.__fixunssfsi
-                0x080119b2       0x2e /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_fixunssfsi.o)
-                0x080119b2                __aeabi_f2uiz
-                0x080119b2                __fixunssfsi
+                0x080119ea       0x2e /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_fixunssfsi.o)
+                0x080119ea                __aeabi_f2uiz
+                0x080119ea                __fixunssfsi
  .text.__fixunsdfsi
-                0x080119e0       0x38 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_fixunsdfsi.o)
-                0x080119e0                __fixunsdfsi
-                0x080119e0                __aeabi_d2uiz
+                0x08011a18       0x38 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_fixunsdfsi.o)
+                0x08011a18                __fixunsdfsi
+                0x08011a18                __aeabi_d2uiz
  .text.__udivmoddi4
-                0x08011a18       0xe0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
-                0x08011a18                __udivmoddi4
+                0x08011a50       0xe0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
+                0x08011a50                __udivmoddi4
  .text.__aeabi_fdiv
-                0x08011af8      0x200 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(divsf3.o)
-                0x08011af8                __aeabi_fdiv
- .text.__eqsf2  0x08011cf8       0x46 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(eqsf2.o)
-                0x08011cf8                __nesf2
-                0x08011cf8                __eqsf2
- .text.__gesf2  0x08011d3e       0x6c /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(gesf2.o)
-                0x08011d3e                __gtsf2
-                0x08011d3e                __gesf2
- .text.__lesf2  0x08011daa       0x6a /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(lesf2.o)
-                0x08011daa                __lesf2
-                0x08011daa                __ltsf2
+                0x08011b30      0x200 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(divsf3.o)
+                0x08011b30                __aeabi_fdiv
+ .text.__eqsf2  0x08011d30       0x46 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(eqsf2.o)
+                0x08011d30                __nesf2
+                0x08011d30                __eqsf2
+ .text.__gesf2  0x08011d76       0x6c /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(gesf2.o)
+                0x08011d76                __gtsf2
+                0x08011d76                __gesf2
+ .text.__lesf2  0x08011de2       0x6a /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(lesf2.o)
+                0x08011de2                __lesf2
+                0x08011de2                __ltsf2
  .text.__aeabi_fmul
-                0x08011e14      0x1f8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(mulsf3.o)
-                0x08011e14                __aeabi_fmul
+                0x08011e4c      0x1f8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(mulsf3.o)
+                0x08011e4c                __aeabi_fmul
  .text.__aeabi_fsub
-                0x0801200c      0x2fc /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(subsf3.o)
-                0x0801200c                __aeabi_fsub
+                0x08012044      0x2fc /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(subsf3.o)
+                0x08012044                __aeabi_fsub
  .text.__aeabi_f2iz
-                0x08012308       0x3c /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(fixsfsi.o)
-                0x08012308                __aeabi_f2iz
+                0x08012340       0x3c /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(fixsfsi.o)
+                0x08012340                __aeabi_f2iz
  .text.__aeabi_i2f
-                0x08012344       0x84 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatsisf.o)
-                0x08012344                __aeabi_i2f
+                0x0801237c       0x84 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatsisf.o)
+                0x0801237c                __aeabi_i2f
  .text.__aeabi_ui2f
-                0x080123c8       0x78 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatunsisf.o)
-                0x080123c8                __aeabi_ui2f
+                0x08012400       0x78 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatunsisf.o)
+                0x08012400                __aeabi_ui2f
  .text.__aeabi_dadd
-                0x08012440      0x598 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(adddf3.o)
-                0x08012440                __aeabi_dadd
+                0x08012478      0x598 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(adddf3.o)
+                0x08012478                __aeabi_dadd
  .text.__aeabi_ddiv
-                0x080129d8      0x534 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(divdf3.o)
-                0x080129d8                __aeabi_ddiv
- .text.__eqdf2  0x08012f0c       0x74 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(eqdf2.o)
-                0x08012f0c                __eqdf2
-                0x08012f0c                __nedf2
- .text.__gedf2  0x08012f80       0xc8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(gedf2.o)
-                0x08012f80                __gtdf2
-                0x08012f80                __gedf2
- .text.__ledf2  0x08013048       0xc8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(ledf2.o)
-                0x08013048                __ltdf2
-                0x08013048                __ledf2
+                0x08012a10      0x534 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(divdf3.o)
+                0x08012a10                __aeabi_ddiv
+ .text.__eqdf2  0x08012f44       0x74 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(eqdf2.o)
+                0x08012f44                __eqdf2
+                0x08012f44                __nedf2
+ .text.__gedf2  0x08012fb8       0xc8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(gedf2.o)
+                0x08012fb8                __gtdf2
+                0x08012fb8                __gedf2
+ .text.__ledf2  0x08013080       0xc8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(ledf2.o)
+                0x08013080                __ltdf2
+                0x08013080                __ledf2
  .text.__aeabi_dmul
-                0x08013110      0x444 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(muldf3.o)
-                0x08013110                __aeabi_dmul
+                0x08013148      0x444 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(muldf3.o)
+                0x08013148                __aeabi_dmul
  .text.__aeabi_dsub
-                0x08013554      0x5a4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(subdf3.o)
-                0x08013554                __aeabi_dsub
+                0x0801358c      0x5a4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(subdf3.o)
+                0x0801358c                __aeabi_dsub
  .text.__aeabi_d2iz
-                0x08013af8       0x68 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(fixdfsi.o)
-                0x08013af8                __aeabi_d2iz
+                0x08013b30       0x68 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(fixdfsi.o)
+                0x08013b30                __aeabi_d2iz
  .text.__aeabi_i2d
-                0x08013b60       0x50 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatsidf.o)
-                0x08013b60                __aeabi_i2d
+                0x08013b98       0x50 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatsidf.o)
+                0x08013b98                __aeabi_i2d
  .text.__aeabi_ui2d
-                0x08013bb0       0x40 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatunsidf.o)
-                0x08013bb0                __aeabi_ui2d
+                0x08013be8       0x40 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatunsidf.o)
+                0x08013be8                __aeabi_ui2d
  .text.__aeabi_f2d
-                0x08013bf0       0x84 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(extendsfdf2.o)
-                0x08013bf0                __aeabi_f2d
+                0x08013c28       0x84 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(extendsfdf2.o)
+                0x08013c28                __aeabi_f2d
  .text.__aeabi_d2f
-                0x08013c74       0xdc /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(truncdfsf2.o)
-                0x08013c74                __aeabi_d2f
- .text.atoi     0x08013d50        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-atoi.o)
-                0x08013d50                atoi
+                0x08013cac       0xdc /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(truncdfsf2.o)
+                0x08013cac                __aeabi_d2f
+ .text.atoi     0x08013d88        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-atoi.o)
+                0x08013d88                atoi
  .text._strtol_l.isra.0
-                0x08013d5c      0x108 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
+                0x08013d94      0x108 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
  .text._strtol_r
-                0x08013e64        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
-                0x08013e64                _strtol_r
- .text.strtol   0x08013e6c       0x18 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
-                0x08013e6c                strtol
- .text.sscanf   0x08013e84       0x54 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sscanf.o)
-                0x08013e84                sscanf
-                0x08013e84                siscanf
+                0x08013e9c        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
+                0x08013e9c                _strtol_r
+ .text.strtol   0x08013ea4       0x18 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
+                0x08013ea4                strtol
+ .text.sscanf   0x08013ebc       0x54 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sscanf.o)
+                0x08013ebc                sscanf
+                0x08013ebc                siscanf
  .text.__seofread
-                0x08013ed8        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-stdio.o)
-                0x08013ed8                __seofread
+                0x08013f10        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-stdio.o)
+                0x08013f10                __seofread
  .text._vsnprintf_r
-                0x08013edc       0x54 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
-                0x08013edc                _vsnprintf_r
-                0x08013edc                _vsniprintf_r
+                0x08013f14       0x54 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
+                0x08013f14                _vsnprintf_r
+                0x08013f14                _vsniprintf_r
  .text.vsnprintf
-                0x08013f30       0x18 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
-                0x08013f30                vsnprintf
-                0x08013f30                vsniprintf
- .text.memset   0x08013f48       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memset.o)
-                0x08013f48                memset
- .text.strncmp  0x08013f58       0x24 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strncmp.o)
-                0x08013f58                strncmp
- .text.__errno  0x08013f7c        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-errno.o)
-                0x08013f7c                __errno
+                0x08013f68       0x18 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
+                0x08013f68                vsnprintf
+                0x08013f68                vsniprintf
+ .text.memset   0x08013f80       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memset.o)
+                0x08013f80                memset
+ .text.strncmp  0x08013f90       0x24 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strncmp.o)
+                0x08013f90                strncmp
+ .text.__errno  0x08013fb4        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-errno.o)
+                0x08013fb4                __errno
  .text.__libc_init_array
-                0x08013f88       0x48 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-init.o)
-                0x08013f88                __libc_init_array
+                0x08013fc0       0x48 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-init.o)
+                0x08013fc0                __libc_init_array
  .text.__retarget_lock_acquire_recursive
-                0x08013fd0        0x2 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
-                0x08013fd0                __retarget_lock_acquire_recursive
+                0x08014008        0x2 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
+                0x08014008                __retarget_lock_acquire_recursive
  .text.__retarget_lock_release_recursive
-                0x08013fd2        0x2 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
-                0x08013fd2                __retarget_lock_release_recursive
- .text.memcpy   0x08013fd4       0x12 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memcpy-stub.o)
-                0x08013fd4                memcpy
- *fill*         0x08013fe6        0x2 
- .text._free_r  0x08013fe8       0x94 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-freer.o)
-                0x08013fe8                _free_r
+                0x0801400a        0x2 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
+                0x0801400a                __retarget_lock_release_recursive
+ .text.memcpy   0x0801400c       0x12 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memcpy-stub.o)
+                0x0801400c                memcpy
+ *fill*         0x0801401e        0x2
+ .text._free_r  0x08014020       0x94 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-freer.o)
+                0x08014020                _free_r
  .text.sbrk_aligned
-                0x0801407c       0x44 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
+                0x080140b4       0x44 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
  .text._malloc_r
-                0x080140c0      0x100 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
-                0x080140c0                _malloc_r
+                0x080140f8      0x100 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
+                0x080140f8                _malloc_r
  .text.__malloc_lock
-                0x080141c0       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
-                0x080141c0                __malloc_lock
+                0x080141f8       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
+                0x080141f8                __malloc_lock
  .text.__malloc_unlock
-                0x080141d0       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
-                0x080141d0                __malloc_unlock
+                0x08014208       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
+                0x08014208                __malloc_unlock
  .text.__ssputs_r
-                0x080141e0       0xc4 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
-                0x080141e0                __ssputs_r
+                0x08014218       0xc4 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
+                0x08014218                __ssputs_r
  .text._svfprintf_r
-                0x080142a4      0x1e8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
-                0x080142a4                _svfprintf_r
-                0x080142a4                _svfiprintf_r
+                0x080142dc      0x1e8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
+                0x080142dc                _svfprintf_r
+                0x080142dc                _svfiprintf_r
  .text._sungetc_r
-                0x0801448c       0x78 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
-                0x0801448c                _sungetc_r
+                0x080144c4       0x78 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x080144c4                _sungetc_r
  .text.__ssrefill_r
-                0x08014504       0x3e /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
-                0x08014504                __ssrefill_r
- *fill*         0x08014542        0x2 
+                0x0801453c       0x3e /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x0801453c                __ssrefill_r
+ *fill*         0x0801457a        0x2
  .text.__ssvfscanf_r
-                0x08014544      0x2b0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
-                0x08014544                __ssvfscanf_r
-                0x08014544                __ssvfiscanf_r
+                0x0801457c      0x2b0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x0801457c                __ssvfscanf_r
+                0x0801457c                __ssvfiscanf_r
  .text._printf_common
-                0x080147f4       0xda /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
-                0x080147f4                _printf_common
- *fill*         0x080148ce        0x2 
+                0x0801482c       0xda /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x0801482c                _printf_common
+ *fill*         0x08014906        0x2
  .text._printf_i
-                0x080148d0      0x21c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
-                0x080148d0                _printf_i
+                0x08014908      0x21c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x08014908                _printf_i
  .text._scanf_chars
-                0x08014aec       0xc0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
-                0x08014aec                _scanf_chars
+                0x08014b24       0xc0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x08014b24                _scanf_chars
  .text._scanf_i
-                0x08014bac      0x1f0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
-                0x08014bac                _scanf_i
- .text.__sccl   0x08014d9c       0x7a /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sccl.o)
-                0x08014d9c                __sccl
- *fill*         0x08014e16        0x2 
+                0x08014be4      0x1f0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x08014be4                _scanf_i
+ .text.__sccl   0x08014dd4       0x7a /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sccl.o)
+                0x08014dd4                __sccl
+ *fill*         0x08014e4e        0x2
  .text.__submore
-                0x08014e18       0x7c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ungetc.o)
-                0x08014e18                __submore
- .text.memmove  0x08014e94       0x28 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memmove.o)
-                0x08014e94                memmove
- .text._sbrk_r  0x08014ebc       0x24 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sbrkr.o)
-                0x08014ebc                _sbrk_r
- .text.memchr   0x08014ee0       0x16 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memchr-stub.o)
-                0x08014ee0                memchr
+                0x08014e50       0x7c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ungetc.o)
+                0x08014e50                __submore
+ .text.memmove  0x08014ecc       0x28 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memmove.o)
+                0x08014ecc                memmove
+ .text._sbrk_r  0x08014ef4       0x24 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sbrkr.o)
+                0x08014ef4                _sbrk_r
+ .text.memchr   0x08014f18       0x16 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memchr-stub.o)
+                0x08014f18                memchr
  .text._realloc_r
-                0x08014ef6       0x5e /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-reallocr.o)
-                0x08014ef6                _realloc_r
+                0x08014f2e       0x5e /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-reallocr.o)
+                0x08014f2e                _realloc_r
  .text._strtoul_l.isra.0
-                0x08014f54      0x100 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
+                0x08014f8c      0x100 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
  .text._strtoul_r
-                0x08015054        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
-                0x08015054                _strtoul_r
+                0x0801508c        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
+                0x0801508c                _strtoul_r
  .text._malloc_usable_size_r
-                0x0801505c       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-msizer.o)
-                0x0801505c                _malloc_usable_size_r
- .text._sbrk    0x0801506c       0x1c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libnosys.a(sbrk.o)
-                0x0801506c                _sbrk
- .text.ceil     0x08015088      0x118 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_ceil.o)
-                0x08015088                ceil
- .text.floor    0x080151a0      0x124 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_floor.o)
-                0x080151a0                floor
- .text.round    0x080152c4       0xa0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_round.o)
-                0x080152c4                round
+                0x08015094       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-msizer.o)
+                0x08015094                _malloc_usable_size_r
+ .text._sbrk    0x080150a4       0x1c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libnosys.a(sbrk.o)
+                0x080150a4                _sbrk
+ .text.ceil     0x080150c0      0x118 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_ceil.o)
+                0x080150c0                ceil
+ .text.floor    0x080151d8      0x124 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_floor.o)
+                0x080151d8                floor
+ .text.round    0x080152fc       0xa0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_round.o)
+                0x080152fc                round
  *(.glue_7)
- .glue_7        0x08015364        0x0 linker stubs
+ .glue_7        0x0801539c        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x08015364        0x0 linker stubs
+ .glue_7t       0x0801539c        0x0 linker stubs
  *(.eh_frame)
- .eh_frame      0x08015364        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
+ .eh_frame      0x0801539c        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
  *(.init)
- .init          0x08015364        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crti.o
-                0x08015364                _init
- .init          0x08015368        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
+ .init          0x0801539c        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crti.o
+                0x0801539c                _init
+ .init          0x080153a0        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  *(.fini)
- .fini          0x08015370        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crti.o
-                0x08015370                _fini
- .fini          0x08015374        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
-                0x0801537c                        . = ALIGN (0x4)
-                0x0801537c                        _etext = .
+ .fini          0x080153a8        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crti.o
+                0x080153a8                _fini
+ .fini          0x080153ac        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
+                0x080153b4                        . = ALIGN (0x4)
+                0x080153b4                        _etext = .
 
-.vfp11_veneer   0x0801537c        0x0
- .vfp11_veneer  0x0801537c        0x0 linker stubs
+.vfp11_veneer   0x080153b4        0x0
+ .vfp11_veneer  0x080153b4        0x0 linker stubs
 
-.v4_bx          0x0801537c        0x0
- .v4_bx         0x0801537c        0x0 linker stubs
+.v4_bx          0x080153b4        0x0
+ .v4_bx         0x080153b4        0x0 linker stubs
 
-.iplt           0x0801537c        0x0
- .iplt          0x0801537c        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
+.iplt           0x080153b4        0x0
+ .iplt          0x080153b4        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
 
-.rodata         0x08015380     0x26a8
-                0x08015380                        . = ALIGN (0x4)
+.rodata         0x080153b8     0x26a8
+                0x080153b8                        . = ALIGN (0x4)
  *(.rodata)
- .rodata        0x08015380        0xb ./build/obj/chameleon-i2c2-5v-reg/tfsensor_f8521127.o
- *fill*         0x0801538b        0x1 
- .rodata        0x0801538c       0x24 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
- .rodata        0x080153b0        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+ .rodata        0x080153b8        0xb ./build/obj/chameleon-i2c2-5v-reg/tfsensor_f8521127.o
+ *fill*         0x080153c3        0x1
+ .rodata        0x080153c4       0x24 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+ .rodata        0x080153e8        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
  *(.rodata*)
  .rodata.EEPROM_program.str1.1
-                0x080153bc     0x1a90 ./build/obj/chameleon-i2c2-5v-reg/flash_eraseprogram_078ea408.o
+                0x080153f4     0x1a90 ./build/obj/chameleon-i2c2-5v-reg/flash_eraseprogram_078ea408.o
                                  0x1d (size before relaxing)
  .rodata.EEPROM_erase_one_address.str1.1
-                0x08016e4c        0x0 ./build/obj/chameleon-i2c2-5v-reg/flash_eraseprogram_078ea408.o
+                0x08016e84        0x0 ./build/obj/chameleon-i2c2-5v-reg/flash_eraseprogram_078ea408.o
                                  0x22 (size before relaxing)
  .rodata.SX1276OnDio0Irq.str1.1
-                0x08016e4c        0x0 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
+                0x08016e84        0x0 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
                                  0x31 (size before relaxing)
  .rodata.SX1276OnDio1Irq.str1.1
-                0x08016e4c        0x0 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
+                0x08016e84        0x0 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
                                   0xc (size before relaxing)
- *fill*         0x08016e4c        0x4 
+ *fill*         0x08016e84        0x4
  .rodata.CSWTCH.94
-                0x08016e50       0x18 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
+                0x08016e88       0x18 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
  .rodata.FskBandwidths
-                0x08016e68       0xb0 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
-                0x08016e68                FskBandwidths
+                0x08016ea0       0xb0 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
+                0x08016ea0                FskBandwidths
  .rodata.RadioRegsInit
-                0x08016f18       0x30 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
-                0x08016f18                RadioRegsInit
+                0x08016f50       0x30 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
+                0x08016f50                RadioRegsInit
  .rodata.waitbusy.str1.1
-                0x08016f48        0x0 ./build/obj/chameleon-i2c2-5v-reg/lidar_lite_v3hp_29c3a030.o
+                0x08016f80        0x0 ./build/obj/chameleon-i2c2-5v-reg/lidar_lite_v3hp_29c3a030.o
                                   0x2 (size before relaxing)
  .rodata.LidarLite_init.str1.1
-                0x08016f48        0x0 ./build/obj/chameleon-i2c2-5v-reg/lidar_lite_v3hp_29c3a030.o
+                0x08016f80        0x0 ./build/obj/chameleon-i2c2-5v-reg/lidar_lite_v3hp_29c3a030.o
                                   0x7 (size before relaxing)
  .rodata.LidarLite.str1.1
-                0x08016f48        0x0 ./build/obj/chameleon-i2c2-5v-reg/lidar_lite_v3hp_29c3a030.o
+                0x08016f80        0x0 ./build/obj/chameleon-i2c2-5v-reg/lidar_lite_v3hp_29c3a030.o
                                   0x2 (size before relaxing)
- .rodata.Radio  0x08016f48       0x68 ./build/obj/chameleon-i2c2-5v-reg/sx1276mb1las_a2dfe320.o
-                0x08016f48                Radio
+ .rodata.Radio  0x08016f80       0x68 ./build/obj/chameleon-i2c2-5v-reg/sx1276mb1las_a2dfe320.o
+                0x08016f80                Radio
  .rodata.PLLMulTable
-                0x08016fb0        0x9 ./build/obj/chameleon-i2c2-5v-reg/system_stm32l0xx_d1d9d34c.o
-                0x08016fb0                PLLMulTable
+                0x08016fe8        0x9 ./build/obj/chameleon-i2c2-5v-reg/system_stm32l0xx_d1d9d34c.o
+                0x08016fe8                PLLMulTable
  .rodata.APBPrescTable
-                0x08016fb9        0x8 ./build/obj/chameleon-i2c2-5v-reg/system_stm32l0xx_d1d9d34c.o
-                0x08016fb9                APBPrescTable
+                0x08016ff1        0x8 ./build/obj/chameleon-i2c2-5v-reg/system_stm32l0xx_d1d9d34c.o
+                0x08016ff1                APBPrescTable
  .rodata.AHBPrescTable
-                0x08016fc1       0x10 ./build/obj/chameleon-i2c2-5v-reg/system_stm32l0xx_d1d9d34c.o
-                0x08016fc1                AHBPrescTable
+                0x08016ff9       0x10 ./build/obj/chameleon-i2c2-5v-reg/system_stm32l0xx_d1d9d34c.o
+                0x08016ff9                AHBPrescTable
  .rodata.BSP_sensor_Read.str1.1
-                0x08016fd1        0x0 ./build/obj/chameleon-i2c2-5v-reg/bsp_fc5dfbea.o
+                0x08017009        0x0 ./build/obj/chameleon-i2c2-5v-reg/bsp_fc5dfbea.o
                                 0x1e9 (size before relaxing)
  .rodata.BSP_sensor_Init.str1.1
-                0x08016fd1        0x0 ./build/obj/chameleon-i2c2-5v-reg/bsp_fc5dfbea.o
+                0x08017009        0x0 ./build/obj/chameleon-i2c2-5v-reg/bsp_fc5dfbea.o
                                  0xe3 (size before relaxing)
  .rodata.DaysInMonthLeapYear
-                0x08016fd1        0xc ./build/obj/chameleon-i2c2-5v-reg/hw_rtc_40701610.o
+                0x08017009        0xc ./build/obj/chameleon-i2c2-5v-reg/hw_rtc_40701610.o
  .rodata.DaysInMonth
-                0x08016fdd        0xc ./build/obj/chameleon-i2c2-5v-reg/hw_rtc_40701610.o
+                0x08017015        0xc ./build/obj/chameleon-i2c2-5v-reg/hw_rtc_40701610.o
  .rodata.LORA_ConfirmClass.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
                                  0x1e (size before relaxing)
  .rodata.LORA_RxData.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
                                  0x4a (size before relaxing)
  .rodata.LORA_HasJoined.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
                                   0x9 (size before relaxing)
  .rodata.main.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
                                  0x1e (size before relaxing)
  .rodata.at_tfmini_data_receive.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/vcom_81525599.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/vcom_81525599.o
                                   0x6 (size before relaxing)
  .rodata.print_8_02x.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x2a (size before relaxing)
  .rodata.print_16_02x.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x52 (size before relaxing)
  .rodata.print_d.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x5 (size before relaxing)
  .rodata.print_u.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x5 (size before relaxing)
  .rodata.changeform.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x28 (size before relaxing)
  .rodata.sscanf_16_hhx.part.0.isra.0.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x50 (size before relaxing)
  .rodata.at_DEBUG_run.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x13 (size before relaxing)
  .rodata.at_FDR.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x5 (size before relaxing)
  .rodata.at_DevEUI_set.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x28 (size before relaxing)
  .rodata.at_DevAddr_set.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x14 (size before relaxing)
  .rodata.at_TransmitPower_set.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x2c (size before relaxing)
  .rodata.at_DutyCycle_get.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x8 (size before relaxing)
  .rodata.at_Rx2Frequency_set.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x4 (size before relaxing)
  .rodata.at_JoinAcceptDelay1_set.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x22 (size before relaxing)
  .rodata.at_NetworkID_get.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x16 (size before relaxing)
  .rodata.at_DeviceClass_get.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x5 (size before relaxing)
  .rodata.at_SendBinary.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x29 (size before relaxing)
  .rodata.at_ReceiveBinary.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0xd (size before relaxing)
  .rodata.at_Receive.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x3 (size before relaxing)
  .rodata.at_RJTDC_set.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x20 (size before relaxing)
  .rodata.at_RPL_set.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x28 (size before relaxing)
  .rodata.at_version_get.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x8 (size before relaxing)
  .rodata.at_ack_set.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x9 (size before relaxing)
  .rodata.at_ack_get.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0xb (size before relaxing)
  .rodata.at_CFG_run.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x53 (size before relaxing)
  .rodata.at_TDC_set.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x23 (size before relaxing)
  .rodata.at_MOD_set.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x1a (size before relaxing)
  .rodata.at_INTMOD1_set.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x1e (size before relaxing)
  .rodata.at_INTMOD2_set.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x1e (size before relaxing)
  .rodata.at_INTMOD3_set.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x1e (size before relaxing)
  .rodata.at_weight_GapValue_set.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x6 (size before relaxing)
  .rodata.at_weight_GapValue_get.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x8 (size before relaxing)
  .rodata.at_SETCNT_set.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x7 (size before relaxing)
  .rodata.at_downlink_detect_set.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x2d (size before relaxing)
  .rodata.at_setmaxnbtrans_set.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x6 (size before relaxing)
  .rodata.at_setmaxnbtrans_get.str1.1
-                0x08016fe9        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x8 (size before relaxing)
  .rodata.CSWTCH.109
-                0x08016fe9        0xd ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017021        0xd ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
  .rodata.CMD_Process.str1.1
-                0x08016ff6        0x0 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
+                0x0801702e        0x0 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
                                  0xe3 (size before relaxing)
  .rodata.printf_all_config.str1.1
-                0x08016ff6        0x0 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
+                0x0801702e        0x0 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
                                   0x6 (size before relaxing)
  .rodata.str1.1
-                0x08016ff6        0x0 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
+                0x0801702e        0x0 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
                                 0xfcb (size before relaxing)
- *fill*         0x08016ff6        0x2 
+ *fill*         0x0801702e        0x2
  .rodata.ATCommand
-                0x08016ff8      0x588 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
+                0x08017030      0x588 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
  .rodata.ATError_description
-                0x08017580       0x28 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
+                0x080175b8       0x28 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
  .rodata.region_printf.str1.1
-                0x080175a8        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x080175e0        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
                                   0x8 (size before relaxing)
  .rodata.key_printf.str1.1
-                0x080175a8        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x080175e0        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
                                  0x32 (size before relaxing)
  .rodata.lora_config_devaddr_get.str1.1
-                0x080175a8        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x080175e0        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
                                   0x9 (size before relaxing)
  .rodata.EEPROM_Store_Config.str1.1
-                0x080175a8        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x080175e0        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
                                  0x17 (size before relaxing)
  .rodata.LORA_Init.str1.1
-                0x080175a8        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x080175e0        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
                                  0x92 (size before relaxing)
  .rodata.string_touint.str1.1
-                0x080175a8        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x080175e0        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
                                   0x7 (size before relaxing)
  .rodata.RegionEU868RxConfig.str1.1
-                0x080175a8        0x0 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x080175e0        0x0 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
                                  0x42 (size before relaxing)
  .rodata.RegionEU868TxConfig.str1.1
-                0x080175a8        0x0 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x080175e0        0x0 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
                                  0x3c (size before relaxing)
  .rodata.MaxPayloadOfDatarateRepeaterEU868
-                0x080175a8        0x8 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x080175e0        0x8 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
  .rodata.MaxPayloadOfDatarateEU868
-                0x080175b0        0x8 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x080175e8        0x8 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
  .rodata.BandwidthsEU868
-                0x080175b8       0x20 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x080175f0       0x20 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
  .rodata.DataratesEU868
-                0x080175d8        0x8 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x08017610        0x8 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
  .rodata.ProcessMacCommands.str1.1
-                0x080175e0        0x0 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x08017618        0x0 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
                                  0xad (size before relaxing)
  .rodata.printf_joinmessage.str1.1
-                0x080175e0        0x0 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x08017618        0x0 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
                                  0x5f (size before relaxing)
  .rodata.SendFrameOnChannel.str1.1
-                0x080175e0        0x0 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x08017618        0x0 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
                                  0x52 (size before relaxing)
  .rodata.LoRaMacMaxEirpTable
-                0x080175e0       0x10 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x08017618       0x10 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .rodata.OnCertifTxNextPacketTimerEvent.str1.1
-                0x080175f0        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora-test_9d43f367.o
+                0x08017628        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora-test_9d43f367.o
                                  0x1a (size before relaxing)
  .rodata.gfm3_sbox
-                0x080175f0      0x100 ./build/obj/chameleon-i2c2-5v-reg/aes_fc1b9773.o
+                0x08017628      0x100 ./build/obj/chameleon-i2c2-5v-reg/aes_fc1b9773.o
  .rodata.gfm2_sbox
-                0x080176f0      0x100 ./build/obj/chameleon-i2c2-5v-reg/aes_fc1b9773.o
- .rodata.sbox   0x080177f0      0x100 ./build/obj/chameleon-i2c2-5v-reg/aes_fc1b9773.o
+                0x08017728      0x100 ./build/obj/chameleon-i2c2-5v-reg/aes_fc1b9773.o
+ .rodata.sbox   0x08017828      0x100 ./build/obj/chameleon-i2c2-5v-reg/aes_fc1b9773.o
  .rodata.commands.0
-                0x080178f0        0x8 ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
+                0x08017928        0x8 ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
  .rodata.stm32_ops
-                0x080178f8       0x2c ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x08017930       0x2c ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .rodata._ctype_
-                0x08017924      0x101 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ctype_.o)
-                0x08017924                _ctype_
+                0x0801795c      0x101 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ctype_.o)
+                0x0801795c                _ctype_
  .rodata._svfprintf_r.str1.1
-                0x08017a25        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
+                0x08017a5d        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
                                  0x11 (size before relaxing)
  .rodata.__ssvfscanf_r.str1.1
-                0x08017a25        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x08017a5d        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
                                   0x4 (size before relaxing)
  .rodata._printf_i.str1.1
-                0x08017a25        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x08017a5d        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
                                  0x22 (size before relaxing)
  .rodata._scanf_i.str1.1
-                0x08017a25        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x08017a5d        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
                                  0x12 (size before relaxing)
  .rodata.str1.1
-                0x08017a25        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x08017a5d        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
                                   0x9 (size before relaxing)
-                0x08017a28                        . = ALIGN (0x4)
- *fill*         0x08017a25        0x3 
+                0x08017a60                        . = ALIGN (0x4)
+ *fill*         0x08017a5d        0x3
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
-.ARM            0x08017a28        0x8
-                0x08017a28                        __exidx_start = .
+.ARM            0x08017a60        0x8
+                0x08017a60                        __exidx_start = .
  *(.ARM.exidx*)
  .ARM.exidx.text.__udivmoddi4
-                0x08017a28        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
-                0x08017a30                        __exidx_end = .
+                0x08017a60        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
+                0x08017a68                        __exidx_end = .
 
-.rel.dyn        0x08017a30        0x0
- .rel.iplt      0x08017a30        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
+.rel.dyn        0x08017a68        0x0
+ .rel.iplt      0x08017a68        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
 
-.preinit_array  0x08017a30        0x0
-                0x08017a30                        PROVIDE (__preinit_array_start = .)
+.preinit_array  0x08017a68        0x0
+                0x08017a68                        PROVIDE (__preinit_array_start = .)
  *(.preinit_array*)
-                0x08017a30                        PROVIDE (__preinit_array_end = .)
+                0x08017a68                        PROVIDE (__preinit_array_end = .)
 
-.init_array     0x08017a30        0x4
-                0x08017a30                        PROVIDE (__init_array_start = .)
+.init_array     0x08017a68        0x4
+                0x08017a68                        PROVIDE (__init_array_start = .)
  *(SORT_BY_NAME(.init_array.*))
  *(.init_array*)
- .init_array    0x08017a30        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
-                0x08017a34                        PROVIDE (__init_array_end = .)
+ .init_array    0x08017a68        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
+                0x08017a6c                        PROVIDE (__init_array_end = .)
 
-.fini_array     0x08017a34        0x4
-                0x08017a34                        PROVIDE (__fini_array_start = .)
+.fini_array     0x08017a6c        0x4
+                0x08017a6c                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_NAME(.fini_array.*))
  *(.fini_array*)
- .fini_array    0x08017a34        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
-                0x08017a38                        PROVIDE (__fini_array_end = .)
-                0x08017a38                        _sidata = LOADADDR (.data)
+ .fini_array    0x08017a6c        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
+                0x08017a70                        PROVIDE (__fini_array_end = .)
+                0x08017a70                        _sidata = LOADADDR (.data)
 
-.data           0x20000000      0x1ac load address 0x08017a38
+.data           0x20000000      0x1ac load address 0x08017a70
                 0x20000000                        . = ALIGN (0x4)
                 0x20000000                        _sdata = .
  *(.data)
@@ -5509,7 +5509,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .data.REJOIN_TX_DUTYCYCLE
                 0x20000064        0x2 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
                 0x20000064                REJOIN_TX_DUTYCYCLE
- *fill*         0x20000066        0x2 
+ *fill*         0x20000066        0x2
  .data.APP_TX_DUTYCYCLE
                 0x20000068        0x4 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
                 0x20000068                APP_TX_DUTYCYCLE
@@ -5536,7 +5536,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .data.TracePeripheralReady
                 0x20000158        0x1 ./build/obj/chameleon-i2c2-5v-reg/trace_0f7c981b.o
                 0x20000158                TracePeripheralReady
- *fill*         0x20000159        0x3 
+ *fill*         0x20000159        0x3
  .data._impure_ptr
                 0x2000015c        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-impure.o)
                 0x2000015c                _impure_ptr
@@ -5546,10 +5546,10 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x200001ac                        . = ALIGN (0x4)
                 0x200001ac                        _edata = .
 
-.igot.plt       0x200001ac        0x0 load address 0x08017be4
+.igot.plt       0x200001ac        0x0 load address 0x08017c1c
  .igot.plt      0x200001ac        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
 
-.bss            0x200001ac     0x16c4 load address 0x08017be4
+.bss            0x200001ac     0x16c4 load address 0x08017c1c
                 0x200001ac                        . = ALIGN (0x4)
                 0x200001ac                        _sbss = .
                 0x200001ac                        __bss_start__ = _sbss
@@ -5557,7 +5557,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  *(.bss*)
  .bss.completed.1
                 0x200001ac        0x1 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
- *fill*         0x200001ad        0x3 
+ *fill*         0x200001ad        0x3
  .bss.object.0  0x200001b0       0x18 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
  .bss.data32    0x200001c8        0x4 ./build/obj/chameleon-i2c2-5v-reg/flash_eraseprogram_078ea408.o
                 0x200001c8                data32
@@ -5602,7 +5602,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .bss.htim3     0x20000420       0x38 ./build/obj/chameleon-i2c2-5v-reg/ult_3f609183.o
                 0x20000420                htim3
  .bss.ms_sum    0x20000458        0x2 ./build/obj/chameleon-i2c2-5v-reg/ult_3f609183.o
- *fill*         0x2000045a        0x2 
+ *fill*         0x2000045a        0x2
  .bss.Weight_Maopi
                 0x2000045c        0x4 ./build/obj/chameleon-i2c2-5v-reg/weight_b45b8a79.o
                 0x2000045c                Weight_Maopi
@@ -5611,7 +5611,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x20000460                HX711_Buffer
  .bss.RadioIsActive
                 0x20000464        0x1 ./build/obj/chameleon-i2c2-5v-reg/sx1276mb1las_a2dfe320.o
- *fill*         0x20000465        0x3 
+ *fill*         0x20000465        0x3
  .bss.uwTick    0x20000468        0x4 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_48c60b3a.o
                 0x20000468                uwTick
  .bss.pFlash    0x2000046c       0x18 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hal_flash_20ada424.o
@@ -5624,7 +5624,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .bss.mode2_flag
                 0x200004c0        0x1 ./build/obj/chameleon-i2c2-5v-reg/bsp_fc5dfbea.o
                 0x200004c0                mode2_flag
- *fill*         0x200004c1        0x3 
+ *fill*         0x200004c1        0x3
  .bss.GpioIrq   0x200004c4       0x40 ./build/obj/chameleon-i2c2-5v-reg/hw_gpio_097d5577.o
  .bss.RtcTimerContext
                 0x20000504       0x1c ./build/obj/chameleon-i2c2-5v-reg/hw_rtc_40701610.o
@@ -5636,7 +5636,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x2000056c        0x2 ./build/obj/chameleon-i2c2-5v-reg/hw_rtc_40701610.o
  .bss.HW_RTC_Initalized
                 0x2000056e        0x1 ./build/obj/chameleon-i2c2-5v-reg/hw_rtc_40701610.o
- *fill*         0x2000056f        0x1 
+ *fill*         0x2000056f        0x1
  .bss.hspi      0x20000570       0x58 ./build/obj/chameleon-i2c2-5v-reg/hw_spi_1d9ffd93.o
  .bss.UnconfirmedUplinkChangeToConfirmedUplinkTimeoutTimer
                 0x200005c8       0x14 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
@@ -5679,7 +5679,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .bss.downlink_received_status
                 0x2000065c        0x1 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
                 0x2000065c                downlink_received_status
- *fill*         0x2000065d        0x1 
+ *fill*         0x2000065d        0x1
  .bss.downlink_detect_timeout
                 0x2000065e        0x2 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
                 0x2000065e                downlink_detect_timeout
@@ -5754,7 +5754,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x20000677                join_flag
  .bss.TDC_flag  0x20000678        0x1 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
                 0x20000678                TDC_flag
- *fill*         0x20000679        0x3 
+ *fill*         0x20000679        0x3
  .bss.COUNT2    0x2000067c        0x4 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
                 0x2000067c                COUNT2
  .bss.COUNT     0x20000680        0x4 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
@@ -5804,7 +5804,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x200007d4        0x1 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hw_492d4781.o
  .bss.AdcInitialized
                 0x200007d5        0x1 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hw_492d4781.o
- *fill*         0x200007d6        0x2 
+ *fill*         0x200007d6        0x2
  .bss.hadc      0x200007d8       0x60 ./build/obj/chameleon-i2c2-5v-reg/stm32l0xx_hw_492d4781.o
  .bss.hdma_tx.0
                 0x20000838       0x40 ./build/obj/chameleon-i2c2-5v-reg/vcom_81525599.o
@@ -5838,7 +5838,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x20000928                UartHandle
  .bss.ReceivedDataPort
                 0x20000998        0x1 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
- *fill*         0x20000999        0x3 
+ *fill*         0x20000999        0x3
  .bss.ReceivedDataSize
                 0x2000099c        0x4 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
  .bss.ReceivedData
@@ -5869,7 +5869,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x20000ae7                debug_flags
  .bss.IsCharReceived
                 0x20000ae8        0x1 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
- *fill*         0x20000ae9        0x3 
+ *fill*         0x20000ae9        0x3
  .bss.i         0x20000aec        0x4 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
  .bss.command   0x20000af0       0x80 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
  .bss.LoRaMainCallbacks
@@ -5921,7 +5921,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .bss.RX2DR_setting_status
                 0x20000cba        0x1 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
                 0x20000cba                RX2DR_setting_status
- *fill*         0x20000cbb        0x1 
+ *fill*         0x20000cbb        0x1
  .bss.ChannelsDefaultMask
                 0x20000cbc        0x2 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
  .bss.ChannelsMask
@@ -5931,7 +5931,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x20000d80        0x1 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
                 0x20000d80                LoRaMacFlags
  .bss.RxSlot    0x20000d81        0x1 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
- *fill*         0x20000d82        0x2 
+ *fill*         0x20000d82        0x2
  .bss.MlmeConfirm
                 0x20000d84        0xc ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .bss.McpsConfirm
@@ -5942,13 +5942,13 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x20000dbc        0x1 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .bss.JoinRequestTrials
                 0x20000dbd        0x1 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
- *fill*         0x20000dbe        0x2 
+ *fill*         0x20000dbe        0x2
  .bss.TxTimeOnAir
                 0x20000dc0        0x4 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
                 0x20000dc0                TxTimeOnAir
  .bss.AckTimeoutRetry
                 0x20000dc4        0x1 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
- *fill*         0x20000dc5        0x3 
+ *fill*         0x20000dc5        0x3
  .bss.AckTimeoutTimer
                 0x20000dc8       0x14 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
                 0x20000dc8                AckTimeoutTimer
@@ -6020,7 +6020,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x2000100b        0x1 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .bss.NodeAckRequested
                 0x2000100c        0x1 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
- *fill*         0x2000100d        0x3 
+ *fill*         0x2000100d        0x3
  .bss.AdrAckCounter
                 0x20001010        0x4 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .bss.AdrCtrlOn
@@ -6029,7 +6029,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x20001015        0x1 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .bss.IsUpLinkCounterFixed
                 0x20001016        0x1 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
- *fill*         0x20001017        0x1 
+ *fill*         0x20001017        0x1
  .bss.DownLinkCounter
                 0x20001018        0x4 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .bss.UpLinkCounter
@@ -6060,7 +6060,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x20001232       0x10 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .bss.LoRaMacNwkSKey
                 0x20001242       0x10 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
- *fill*         0x20001252        0x2 
+ *fill*         0x20001252        0x2
  .bss.LoRaMacAppKey
                 0x20001254        0x4 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .bss.LoRaMacAppEui
@@ -6069,7 +6069,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x2000125c        0x4 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .bss.LoRaMacRegion
                 0x20001260        0x1 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
- *fill*         0x20001261        0x3 
+ *fill*         0x20001261        0x3
  .bss.payload_record
                 0x20001264        0x4 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .bss.pktHeaderLen_record
@@ -6088,7 +6088,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x2000126d                DR_small
  .bss.ser_ack   0x2000126e        0x1 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
                 0x2000126e                ser_ack
- *fill*         0x2000126f        0x1 
+ *fill*         0x2000126f        0x1
  .bss.AesCmacCtx
                 0x20001270      0x118 ./build/obj/chameleon-i2c2-5v-reg/LoRaMacCrypto_5c88798c.o
  .bss.AesContext
@@ -6099,7 +6099,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x20001499        0x1 ./build/obj/chameleon-i2c2-5v-reg/lora-test_9d43f367.o
  .bss.IsTxConfirmed
                 0x2000149a        0x1 ./build/obj/chameleon-i2c2-5v-reg/lora-test_9d43f367.o
- *fill*         0x2000149b        0x1 
+ *fill*         0x2000149b        0x1
  .bss.certifParam
                 0x2000149c       0xfc ./build/obj/chameleon-i2c2-5v-reg/lora-test_9d43f367.o
  .bss.CertifTxNextPacketTimer
@@ -6123,7 +6123,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  .bss.__lock___malloc_recursive_mutex
                 0x20001860        0x1 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
                 0x20001860                __lock___malloc_recursive_mutex
- *fill*         0x20001861        0x3 
+ *fill*         0x20001861        0x3
  .bss.__malloc_sbrk_start
                 0x20001864        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
                 0x20001864                __malloc_sbrk_start
@@ -6138,14 +6138,14 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x20001870                        __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x20001870      0x800 load address 0x08017be4
+                0x20001870      0x800 load address 0x08017c1c
                 0x20001870                        . = ALIGN (0x8)
                 0x20001870                        PROVIDE (end = .)
                 [!provide]                        PROVIDE (_end = .)
                 0x20001c70                        . = (. + 0x400)
- *fill*         0x20001870      0x400 
+ *fill*         0x20001870      0x400
                 0x20002070                        . = (. + 0x400)
- *fill*         0x20001c70      0x400 
+ *fill*         0x20001c70      0x400
                 0x20002070                        . = ALIGN (0x8)
 
 /DISCARD/

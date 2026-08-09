@@ -293,5 +293,9 @@ echo "LINK"
 arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T./build/stm32l072cz.ld -Wl,--gc-sections -Wl,-Map="./build/${TARGET_BASENAME}.map" --specs=nano.specs --specs=nosys.specs $OBJS -o "./build/${TARGET_BASENAME}.elf"
 arm-none-eabi-objcopy -O ihex "./build/${TARGET_BASENAME}.elf" "./build/${TARGET_BASENAME}.hex"
 arm-none-eabi-objcopy -O binary "./build/${TARGET_BASENAME}.elf" "./build/${TARGET_BASENAME}.bin"
+# Keep tracked text artifacts stable across objcopy/linker versions and make
+# repository whitespace checks useful after a clean rebuild.
+sed -i 's/\r$//' "./build/${TARGET_BASENAME}.hex"
+sed -i 's/[[:blank:]]*$//' "./build/${TARGET_BASENAME}.map"
 arm-none-eabi-size "./build/${TARGET_BASENAME}.elf"
 echo "BUILD OK"

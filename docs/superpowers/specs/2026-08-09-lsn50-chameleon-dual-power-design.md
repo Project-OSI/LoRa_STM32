@@ -115,9 +115,9 @@ The acquisition invariant is:
 ```text
 rail off + bus high impedance
   -> rail on
-  -> short stabilization delay
+  -> 25 ms stabilization delay
   -> I2C2 initialize
-  -> bounded address probe
+  -> address probe every 50 ms to a 1500 ms deadline
   -> trigger and bounded ready polling
   -> register reads and validation
   -> HAL I2C2 deinitialize
@@ -224,4 +224,3 @@ Run 100 rapid acquisition cycles, then a 12-24 hour test at the normal report
 interval. Repeat with an unplugged reader, each open channel, removed DS18B20,
 an induced bus fault, and reduced battery voltage. Variant B is tested first
 because its regulated reader rail avoids the low-VCC uncertainty in Variant A.
-
