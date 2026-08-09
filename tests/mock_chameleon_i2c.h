@@ -35,5 +35,6 @@ void mock_chameleon_fail_command(uint8_t cmd);
 size_t mock_chameleon_trigger_count(void);
 size_t mock_chameleon_status_poll_count(void);
 size_t mock_chameleon_total_delay_ms(void);
+size_t mock_chameleon_comp_read_count(uint8_t channel);
 
 #endif /* MOCK_CHAMELEON_I2C_H */

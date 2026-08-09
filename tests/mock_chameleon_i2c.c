@@ -81,6 +81,9 @@ void mock_chameleon_fail_command(uint8_t cmd)            { g_fail_command = cmd;
 size_t mock_chameleon_trigger_count(void)        { return g_trigger_count; }
 size_t mock_chameleon_status_poll_count(void)    { return g_status_poll_count; }
 size_t mock_chameleon_total_delay_ms(void)       { return g_total_delay_ms; }
+size_t mock_chameleon_comp_read_count(uint8_t ch) {
+    return ch < 3U ? g_res_comp_reads[ch] : 0U;
+}
 
 chameleon_i2c_status_t chameleon_board_i2c_write(uint8_t addr7,
                                                  const uint8_t *data,

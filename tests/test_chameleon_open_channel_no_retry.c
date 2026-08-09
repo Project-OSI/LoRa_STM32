@@ -35,16 +35,15 @@ static void test_open_channel_skips_retry(void) {
     ASSERT_TRUE(ok, "acquire ok");
 
     ASSERT_TRUE(s.status_flags & CHAMELEON_FLAG_CH2_OPEN, "CH2_OPEN set");
-    ASSERT_EQ_U32((uint32_t)(s.status_flags & CHAMELEON_FLAG_COMP_PENDING),
-                  0U, "COMP_PENDING NOT set for open channel");
+    ASSERT_EQ_U32((uint32_t)(s.status_flags & 0x80U), 0U,
+                  "reserved bit 7 remains clear");
 
     /* CH1 and CH3 healthy — their compensation values stay distinct from raw. */
     ASSERT_EQ_U32(s.r1_ohm_comp, 1100U,   "r1 comp untouched");
     ASSERT_EQ_U32(s.r3_ohm_comp, 101200U, "r3 comp untouched");
 
-    /* Total delay is JUST the settle (250 ms), no retry for the open channel. */
-    ASSERT_EQ_U32((uint32_t)mock_chameleon_total_delay_ms(), 250U,
-                  "delay = 250 ms (settle only, no retry)");
+    ASSERT_EQ_U32(mock_chameleon_total_delay_ms(), 0U,
+                  "no post-ready delay or retry");
 }
 
 int main(void) {

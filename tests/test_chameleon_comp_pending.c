@@ -20,43 +20,33 @@
     }                                                                           \
 } while (0)
 
-/* Channel 3 keeps returning CAL == RAW on every read (peripheral never
- * computed compensation for it). Channels 1 and 2 are healthy. */
-static void test_comp_pending_when_retry_exhausted(void) {
+/* The vendor example contains equal raw and calibrated values on all three
+ * connected channels. Equality is a valid result, not a pending state. */
+static void test_vendor_equal_values_are_valid(void) {
     mock_chameleon_reset();
-
-    /* CH1: defaults — comp 1100, raw 1200 (distinct). */
-    /* CH2: defaults — comp 10100, raw 10200 (distinct). */
-
-    /* CH3: comp and raw both 102200, every read. */
-    mock_chameleon_set_resistance_raw(2, 102200U);
-    mock_chameleon_set_resistance_comp(2, 102200U);
+    mock_chameleon_set_resistance(0, 1100U);
+    mock_chameleon_set_resistance(1, 10100U);
+    mock_chameleon_set_resistance(2, 101200U);
 
     chameleon_sample_t s;
     int ok = via_chameleon_acquire(&s, CHAMELEON_DEFAULT_TIMEOUT_MS);
     ASSERT_TRUE(ok, "acquire ok");
 
-    /* CH1 and CH2 are still properly compensated. */
-    ASSERT_EQ_U32(s.r1_ohm_comp, 1100U,  "r1 comp");
+    ASSERT_EQ_U32(s.r1_ohm_comp, 1100U, "r1 comp");
+    ASSERT_EQ_U32(s.r1_ohm_raw, 1100U, "r1 raw");
     ASSERT_EQ_U32(s.r2_ohm_comp, 10100U, "r2 comp");
-
-    /* CH3 comp == raw — we did NOT overwrite with garbage; the value is
-     * the (still-uncompensated) read. */
-    ASSERT_EQ_U32(s.r3_ohm_comp, 102200U, "r3 comp == raw");
-    ASSERT_EQ_U32(s.r3_ohm_raw,  102200U, "r3 raw");
-
-    /* COMP_PENDING is set because at least one non-open channel finished
-     * with CAL == RAW. */
-    ASSERT_TRUE(s.status_flags & CHAMELEON_FLAG_COMP_PENDING,
-                "COMP_PENDING set");
-
-    /* No other flags spuriously set (no I2C_MISSING, TIMEOUT, etc.). */
-    ASSERT_EQ_U32((uint32_t)(s.status_flags & ~CHAMELEON_FLAG_COMP_PENDING),
-                  0U, "no other flags");
+    ASSERT_EQ_U32(s.r2_ohm_raw, 10100U, "r2 raw");
+    ASSERT_EQ_U32(s.r3_ohm_comp, 101200U, "r3 comp");
+    ASSERT_EQ_U32(s.r3_ohm_raw, 101200U, "r3 raw");
+    ASSERT_EQ_U32(s.status_flags, 0U, "no flags");
+    ASSERT_EQ_U32(mock_chameleon_comp_read_count(0), 1U, "one CAL1 read");
+    ASSERT_EQ_U32(mock_chameleon_comp_read_count(1), 1U, "one CAL2 read");
+    ASSERT_EQ_U32(mock_chameleon_comp_read_count(2), 1U, "one CAL3 read");
+    ASSERT_EQ_U32(mock_chameleon_total_delay_ms(), 0U, "no unsupported delay");
 }
 
 int main(void) {
-    test_comp_pending_when_retry_exhausted();
+    test_vendor_equal_values_are_valid();
     printf("test_chameleon_comp_pending OK\n");
     return 0;
 }
