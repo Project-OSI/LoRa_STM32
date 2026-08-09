@@ -55,6 +55,8 @@ int main(void)
     require_text(bsp, "#include \"chameleon_lsn50_hw.h\"", "lifecycle include");
     require_text(bsp, "chameleon_lsn50_acquire(&g_chameleon_last_sample",
                  "MOD3 lifecycle acquisition");
+    require_text(bsp, "Chameleon result:%s attempts:%u flags:0x%02x",
+                 "exact serial result and attempt diagnostics");
     forbid_text(bsp, "chameleon_i2c1_init_400khz", "Chameleon I2C1 init");
     forbid_text(bsp, "chameleon_board_i2c_write(", "board adapter in BSP");
     require_text(bsp,

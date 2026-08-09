@@ -108,7 +108,8 @@ build script, EU868 LoRaMAC configuration.
 6. Enforce exactly one of `CHAMELEON_POWER_EXTERNAL_PMOS` and
    `CHAMELEON_POWER_LSN50_5V` at compile time.
 7. Implement PB12 open-drain/released OFF and LOW ON for the P-MOS backend.
-   Implement PB5 HIGH OFF and LOW ON for the switched-5 V backend.
+   Preserve stock PB5 open-drain/pull-up semantics: released/high OFF and LOW
+   ON for the switched-5 V backend.
 8. Use a private static I2C2 handle. After 25 ms rail stabilization, probe at
    50 ms intervals to a 1500 ms absolute startup deadline. Use short ACK
    transaction timeouts and never assign HAL's internal state field.

@@ -359,13 +359,16 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
 #ifdef USE_CHAMELEON
     if(mode==3)
     {
+        chameleon_result_t chameleon_result;
         /* Keep stock MOD=3 ADC values in sensor_data, then append the
          * Chameleon I2C sample for main.c to encode in the same uplink. */
-        (void)chameleon_lsn50_acquire(&g_chameleon_last_sample,
-                                      CHAMELEON_DEFAULT_TIMEOUT_MS);
+        chameleon_result = chameleon_lsn50_acquire(&g_chameleon_last_sample,
+                                                   CHAMELEON_DEFAULT_TIMEOUT_MS);
         if(message==1)
         {
-            PPRINTF("Chameleon flags:0x%02x temp:%d comp:%lu/%lu/%lu raw:%lu/%lu/%lu\r\n",
+            PPRINTF("Chameleon result:%s attempts:%u flags:0x%02x temp:%d comp:%lu/%lu/%lu raw:%lu/%lu/%lu\r\n",
+                    chameleon_result_name(chameleon_result),
+                    chameleon_lsn50_last_attempts(),
                     g_chameleon_last_sample.status_flags,
                     (int)g_chameleon_last_sample.soil_temp_c_x100,
                     (unsigned long)g_chameleon_last_sample.r1_ohm_comp,

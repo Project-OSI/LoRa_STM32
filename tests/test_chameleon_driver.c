@@ -82,6 +82,29 @@ static void test_status_transport_failure_is_not_busy_timeout(void) {
     ASSERT_EQ_U32(mock_chameleon_total_delay_ms(), 0U, "transport fails promptly");
 }
 
+static void test_trigger_transport_failure_is_exact(void) {
+    mock_chameleon_reset();
+    mock_chameleon_fail_command(CHAMELEON_CMD_TRIGGER);
+    ASSERT_EQ_U32(via_chameleon_trigger(), CHAMELEON_RESULT_TRIGGER_FAILED,
+                  "trigger transport result");
+}
+
+static void test_status_deadline_includes_transaction_time(void) {
+    mock_chameleon_reset();
+    mock_chameleon_set_status_after_trigger(0x00);
+    mock_chameleon_set_transaction_ms(10U);
+    ASSERT_EQ_U32(via_chameleon_trigger(), CHAMELEON_RESULT_OK, "trigger ok");
+    ASSERT_EQ_U32(via_chameleon_wait_ready(200U),
+                  CHAMELEON_RESULT_MEASUREMENT_TIMEOUT,
+                  "transaction-aware deadline");
+    ASSERT_EQ_U32(mock_chameleon_status_poll_count(), 4U,
+                  "transaction time reduces available polling");
+    ASSERT_EQ_U32(mock_chameleon_total_delay_ms(), 160U,
+                  "only bounded waits are delayed");
+    ASSERT_EQ_U32(mock_chameleon_now_ms(), 210U,
+                  "wall clock includes trigger and status transactions");
+}
+
 static void test_register_read_failure_sets_fault_flag(void) {
     mock_chameleon_reset();
     mock_chameleon_fail_command(CHAMELEON_CMD_RES_RAW2);
@@ -136,6 +159,8 @@ int main(void) {
     test_status_polled_until_ready();
     test_status_timeout();
     test_status_transport_failure_is_not_busy_timeout();
+    test_trigger_transport_failure_is_exact();
+    test_status_deadline_includes_transaction_time();
     test_register_read_failure_sets_fault_flag();
     test_short_read_is_partial_sample();
     test_sentinel_temperature();

@@ -21,7 +21,7 @@
 } while (0)
 
 typedef struct {
-    char trace[512];
+    char trace[2048];
     size_t length;
     uint32_t now_ms;
     unsigned probe_calls;
@@ -32,6 +32,7 @@ typedef struct {
     chameleon_result_t first_measure;
     chameleon_result_t second_measure;
     uint8_t measure_flags;
+    int probe_always_fails;
 } fake_hw_t;
 
 static void event(fake_hw_t *fake, const char *name)
@@ -68,8 +69,9 @@ static uint32_t millis(void *context)
 static chameleon_result_t probe(void *context)
 {
     fake_hw_t *fake = context;
-    chameleon_result_t result = fake->probe_calls == 0U
-        ? fake->first_probe : fake->second_probe;
+    chameleon_result_t result = fake->probe_always_fails
+        ? CHAMELEON_RESULT_NO_DEVICE
+        : (fake->probe_calls == 0U ? fake->first_probe : fake->second_probe);
     fake->probe_calls++;
     event(fake, "probe");
     return result;
@@ -135,6 +137,7 @@ static void test_success_has_one_session_and_cleanup(void)
                "off,isolate,on,stabilize,init,probe,measure,deinit,isolate,off",
                "success lifecycle");
     ASSERT_EQ(fake.measure_calls, 1U, "one measurement");
+    ASSERT_EQ(chameleon_lsn50_last_attempts(), 1U, "one attempt reported");
     ASSERT_EQ(sample.battery_mv, 3210U, "battery retained");
 }
 
@@ -151,6 +154,7 @@ static void test_transport_failure_gets_one_cold_retry(void)
                "off,isolate,on,stabilize,init,probe,measure,deinit,isolate,off,wait,off,isolate,on,stabilize,init,probe,measure,deinit,isolate,off",
                "cold retry lifecycle");
     ASSERT_EQ(fake.measure_calls, 2U, "at most two measurements");
+    ASSERT_EQ(chameleon_lsn50_last_attempts(), 2U, "retry count reported");
 }
 
 static void test_startup_probe_waits_for_delayed_ack(void)
@@ -183,6 +187,68 @@ static void test_second_failure_still_cleans_up(void)
                "deinit,isolate,off", "failure cleanup suffix");
 }
 
+static void test_startup_probe_timeout_is_bounded_and_retried_once(void)
+{
+    fake_hw_t fake = make_fake();
+    chameleon_lsn50_ops_t ops = make_ops(&fake);
+    chameleon_sample_t sample;
+    fake.probe_always_fails = 1;
+
+    ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
+              CHAMELEON_RESULT_NO_DEVICE, "startup timeout result");
+    ASSERT_EQ(fake.probe_calls, 60U, "30 bounded probes per session");
+    ASSERT_EQ(fake.measure_calls, 0U, "missing reader is not measured");
+    ASSERT_EQ(fake.now_ms, 3250U, "two 1.5 second probe windows");
+    ASSERT_EQ(chameleon_lsn50_last_attempts(), 2U,
+              "startup timeout retry count");
+    ASSERT_STR(fake.trace + fake.length - strlen("deinit,isolate,off"),
+               "deinit,isolate,off", "startup timeout cleanup suffix");
+}
+
+static void test_every_measurement_failure_gets_one_cold_retry(void)
+{
+    static const chameleon_result_t failures[] = {
+        CHAMELEON_RESULT_TRIGGER_FAILED,
+        CHAMELEON_RESULT_STATUS_IO_FAILED,
+        CHAMELEON_RESULT_MEASUREMENT_TIMEOUT,
+        CHAMELEON_RESULT_READ_FAILED,
+        CHAMELEON_RESULT_PARTIAL_SAMPLE
+    };
+    size_t i;
+
+    for (i = 0U; i < sizeof(failures) / sizeof(failures[0]); ++i) {
+        fake_hw_t fake = make_fake();
+        chameleon_lsn50_ops_t ops = make_ops(&fake);
+        chameleon_sample_t sample;
+        fake.first_measure = failures[i];
+
+        ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
+                  CHAMELEON_RESULT_OK, "recoverable failure retries");
+        ASSERT_EQ(fake.measure_calls, 2U, "failure uses two sessions");
+        ASSERT_EQ(chameleon_lsn50_last_attempts(), 2U,
+                  "failure attempt count reported");
+    }
+}
+
+static void test_result_names_are_exact(void)
+{
+    ASSERT_STR(chameleon_result_name(CHAMELEON_RESULT_OK), "ok", "ok name");
+    ASSERT_STR(chameleon_result_name(CHAMELEON_RESULT_I2C_INIT_FAILED),
+               "i2c_init_failed", "init name");
+    ASSERT_STR(chameleon_result_name(CHAMELEON_RESULT_NO_DEVICE),
+               "no_device", "missing name");
+    ASSERT_STR(chameleon_result_name(CHAMELEON_RESULT_TRIGGER_FAILED),
+               "trigger_failed", "trigger name");
+    ASSERT_STR(chameleon_result_name(CHAMELEON_RESULT_STATUS_IO_FAILED),
+               "status_io_failed", "status name");
+    ASSERT_STR(chameleon_result_name(CHAMELEON_RESULT_MEASUREMENT_TIMEOUT),
+               "measurement_timeout", "timeout name");
+    ASSERT_STR(chameleon_result_name(CHAMELEON_RESULT_READ_FAILED),
+               "read_failed", "read name");
+    ASSERT_STR(chameleon_result_name(CHAMELEON_RESULT_PARTIAL_SAMPLE),
+               "partial_sample", "partial name");
+}
+
 static void test_sentinel_flags_do_not_retry(void)
 {
     fake_hw_t fake = make_fake();
@@ -193,6 +259,8 @@ static void test_sentinel_flags_do_not_retry(void)
     ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
               CHAMELEON_RESULT_OK, "sentinel sample valid");
     ASSERT_EQ(fake.measure_calls, 1U, "sentinel does not retry");
+    ASSERT_EQ(chameleon_lsn50_last_attempts(), 1U,
+              "sentinel attempt count reported");
 }
 
 static void test_i2c_init_failure_cleans_and_retries_once(void)
@@ -215,6 +283,9 @@ int main(void)
     test_transport_failure_gets_one_cold_retry();
     test_startup_probe_waits_for_delayed_ack();
     test_second_failure_still_cleans_up();
+    test_startup_probe_timeout_is_bounded_and_retried_once();
+    test_every_measurement_failure_gets_one_cold_retry();
+    test_result_names_are_exact();
     test_sentinel_flags_do_not_retry();
     test_i2c_init_failure_cleans_and_retries_once();
     printf("test_chameleon_lifecycle OK\n");

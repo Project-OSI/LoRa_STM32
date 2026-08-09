@@ -29,6 +29,8 @@ typedef struct {
 chameleon_result_t chameleon_lsn50_run(const chameleon_lsn50_ops_t *ops,
                                        chameleon_sample_t *sample,
                                        uint32_t measurement_timeout_ms);
+uint8_t chameleon_lsn50_last_attempts(void);
+const char *chameleon_result_name(chameleon_result_t result);
 
 #ifndef CHAMELEON_HOST_TEST
 chameleon_result_t chameleon_lsn50_acquire(chameleon_sample_t *sample,

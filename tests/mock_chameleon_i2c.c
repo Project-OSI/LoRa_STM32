@@ -19,6 +19,8 @@ static uint8_t  g_short_command            = 0;
 static size_t   g_trigger_count            = 0;
 static size_t   g_status_poll_count        = 0;
 static size_t   g_total_delay_ms           = 0;
+static uint32_t g_now_ms                   = 0;
+static uint32_t g_transaction_ms           = 0;
 
 void mock_chameleon_reset(void) {
     g_present                  = 1;
@@ -41,6 +43,8 @@ void mock_chameleon_reset(void) {
     g_trigger_count            = 0;
     g_status_poll_count        = 0;
     g_total_delay_ms           = 0;
+    g_now_ms                   = 0;
+    g_transaction_ms           = 0;
 }
 
 void mock_chameleon_set_present(int present)             { g_present = present; }
@@ -80,10 +84,12 @@ void mock_chameleon_set_id(const uint8_t id[8])          { memcpy(g_id, id, 8); 
 void mock_chameleon_set_battery_mv(uint16_t v)           { g_battery_mv = v; }
 void mock_chameleon_fail_command(uint8_t cmd)            { g_fail_command = cmd; }
 void mock_chameleon_short_command(uint8_t cmd)           { g_short_command = cmd; }
+void mock_chameleon_set_transaction_ms(uint32_t ms)       { g_transaction_ms = ms; }
 
 size_t mock_chameleon_trigger_count(void)        { return g_trigger_count; }
 size_t mock_chameleon_status_poll_count(void)    { return g_status_poll_count; }
 size_t mock_chameleon_total_delay_ms(void)       { return g_total_delay_ms; }
+uint32_t mock_chameleon_now_ms(void)              { return g_now_ms; }
 size_t mock_chameleon_comp_read_count(uint8_t ch) {
     return ch < 3U ? g_res_comp_reads[ch] : 0U;
 }
@@ -91,9 +97,11 @@ size_t mock_chameleon_comp_read_count(uint8_t ch) {
 chameleon_i2c_status_t chameleon_board_i2c_write(uint8_t addr7,
                                                  const uint8_t *data,
                                                  size_t len) {
+    g_now_ms += g_transaction_ms;
     if (!g_present) return CHAMELEON_I2C_ERR_NACK;
     if (addr7 != CHAMELEON_I2C_ADDR_7BIT) return CHAMELEON_I2C_ERR_NACK;
     if (len == 0) return CHAMELEON_I2C_OK;
+    if (len == 1 && data[0] == g_fail_command) return CHAMELEON_I2C_ERR_BUS;
     if (len == 1 && data[0] == CHAMELEON_CMD_TRIGGER) {
         g_trigger_count++;
         g_status_polls_seen = 0;
@@ -107,6 +115,7 @@ chameleon_i2c_status_t chameleon_board_i2c_write_read(uint8_t addr7,
                                                       size_t wlen,
                                                       uint8_t *rdata,
                                                       size_t rlen) {
+    g_now_ms += g_transaction_ms;
     if (!g_present) return CHAMELEON_I2C_ERR_NACK;
     if (addr7 != CHAMELEON_I2C_ADDR_7BIT) return CHAMELEON_I2C_ERR_NACK;
     if (wlen != 1) return CHAMELEON_I2C_ERR_BUS;
@@ -167,8 +176,11 @@ chameleon_i2c_status_t chameleon_board_i2c_write_read(uint8_t addr7,
     }
 }
 
-void chameleon_board_delay_ms(uint32_t ms) { g_total_delay_ms += ms; }
+void chameleon_board_delay_ms(uint32_t ms) {
+    g_total_delay_ms += ms;
+    g_now_ms += ms;
+}
 
-uint32_t chameleon_board_millis(void) { return (uint32_t)g_total_delay_ms; }
+uint32_t chameleon_board_millis(void) { return g_now_ms; }
 
 uint16_t chameleon_board_battery_mv(void) { return g_battery_mv; }

@@ -32,10 +32,12 @@ void mock_chameleon_set_id(const uint8_t id[8]);
 void mock_chameleon_set_battery_mv(uint16_t v);
 void mock_chameleon_fail_command(uint8_t cmd);
 void mock_chameleon_short_command(uint8_t cmd);
+void mock_chameleon_set_transaction_ms(uint32_t ms);
 
 size_t mock_chameleon_trigger_count(void);
 size_t mock_chameleon_status_poll_count(void);
 size_t mock_chameleon_total_delay_ms(void);
+uint32_t mock_chameleon_now_ms(void);
 size_t mock_chameleon_comp_read_count(uint8_t channel);
 
 #endif /* MOCK_CHAMELEON_I2C_H */

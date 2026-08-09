@@ -31,6 +31,9 @@ int main(void)
 {
     char *script = read_file("../build/build.sh");
     char *flags = read_file("../build/cflags.rsp");
+    char *hardware = read_file(
+        "../STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/"
+        "DRAGINO-LRWAN(AT)/src/chameleon_lsn50_hw.c");
 
     if (strstr(script, "/home/") || strstr(flags, "/home/")) {
         fprintf(stderr, "FAIL build inputs contain absolute checkout paths\n");
@@ -44,9 +47,16 @@ int main(void)
     require(script, "LSN50-chameleon-i2c2-5v-reg");
     require(script, "OBJDIR=\"./build/obj/${TARGET_VARIANT}\"");
     require(script, "src/chameleon_lsn50_hw.c");
+    if (strstr(hardware, "GPIO_MODE_OUTPUT_PP") != 0) {
+        fprintf(stderr, "FAIL PB5 must not use push-pull drive\n");
+        return 1;
+    }
+    require(hardware, "gpio.Mode = GPIO_MODE_OUTPUT_OD;");
+    require(hardware, "gpio.Pull = GPIO_PULLUP;");
 
     free(script);
     free(flags);
+    free(hardware);
     puts("test_chameleon_build_script OK");
     return 0;
 }

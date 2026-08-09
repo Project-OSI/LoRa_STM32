@@ -39,9 +39,13 @@ They establish the following constraints:
 
 - Chameleon address is 7-bit `0x08`; nominal bus speed is 400 kHz.
 - PB13 is I2C2 SCL and PB14 is I2C2 SDA using AF5.
-- PB5 LOW enables the LSN50 +5 V output; PB5 HIGH disables it.
+- PB5 LOW enables the LSN50 +5 V output; releasing the stock open-drain output
+  lets its pull-up establish the HIGH/OFF state.
 - PB14 is also the stock digital-interrupt input and has a board-level R14/C1
   network. Chameleon firmware must own PB14 while built with `USE_CHAMELEON`.
+- The LSN50-V2 manual section 2.4.5 specifies a 0.1 uF C1 for an older-board
+  PB14 interrupt retrofit. Its actual population must be inspected; if fitted,
+  it must be removed or isolated before PB14 can be used for SDA.
 - PB6/PB7 have fixed pull-ups to the always-powered LSN50 rail and cannot be
   used with a power-cycled reader.
 - The reader performs a measurement at power-up, but the master still sends
@@ -135,10 +139,10 @@ I2C1 retains its stock PB6/PB7 behavior. I2C2 configures PB13/PB14 AF5,
 open-drain, with no MCU pull-ups. The firmware never writes HAL's internal
 state field.
 
-Chameleon builds compile out stock PB14 EXTI initialization and ignore
-requests that would re-arm EXTI14. The MOD3 Chameleon payload path does not
-read PB14 as a digital input. Other firmware modes keep their existing PB14
-behavior.
+The two Chameleon images are dedicated to MOD3. They compile out stock PB14
+EXTI initialization, ignore requests that would re-arm EXTI14, and never read
+PB14 as a digital input. Separate non-Chameleon firmware builds keep their
+existing PB14 behavior; other modes must not be selected in these images.
 
 ### Power backends
 
@@ -154,9 +158,10 @@ Exactly one backend must be selected at compile time.
 
 `CHAMELEON_POWER_LSN50_5V`:
 
-- hold PB5 HIGH initially;
+- preserve the stock open-drain plus pull-up configuration and release PB5
+  initially;
 - drive PB5 LOW to enable +5 V before initializing I2C2;
-- drive PB5 HIGH after I2C2 shutdown and bus isolation;
+- release PB5 after I2C2 shutdown and bus isolation;
 - bypass generic `power_time`/`AT+5VT` timing only for Chameleon acquisition,
   so the backend has deterministic ownership of the rail.
 

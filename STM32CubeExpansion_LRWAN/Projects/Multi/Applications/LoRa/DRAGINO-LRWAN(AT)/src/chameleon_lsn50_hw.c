@@ -2,6 +2,28 @@
 
 #include <string.h>
 
+static uint8_t last_attempts;
+
+uint8_t chameleon_lsn50_last_attempts(void)
+{
+    return last_attempts;
+}
+
+const char *chameleon_result_name(chameleon_result_t result)
+{
+    switch (result) {
+    case CHAMELEON_RESULT_OK: return "ok";
+    case CHAMELEON_RESULT_I2C_INIT_FAILED: return "i2c_init_failed";
+    case CHAMELEON_RESULT_NO_DEVICE: return "no_device";
+    case CHAMELEON_RESULT_TRIGGER_FAILED: return "trigger_failed";
+    case CHAMELEON_RESULT_STATUS_IO_FAILED: return "status_io_failed";
+    case CHAMELEON_RESULT_MEASUREMENT_TIMEOUT: return "measurement_timeout";
+    case CHAMELEON_RESULT_READ_FAILED: return "read_failed";
+    case CHAMELEON_RESULT_PARTIAL_SAMPLE: return "partial_sample";
+    default: return "unknown";
+    }
+}
+
 static int ops_valid(const chameleon_lsn50_ops_t *ops)
 {
     return ops != 0
@@ -104,10 +126,13 @@ chameleon_result_t chameleon_lsn50_run(const chameleon_lsn50_ops_t *ops,
     unsigned attempt;
 
     if (!ops_valid(ops) || sample == 0) {
+        last_attempts = 0U;
         return CHAMELEON_RESULT_I2C_INIT_FAILED;
     }
 
+    last_attempts = 0U;
     for (attempt = 0U; attempt < 2U; ++attempt) {
+        last_attempts = (uint8_t)(attempt + 1U);
         memset(sample, 0, sizeof(*sample));
         result = run_one_session(ops, sample, measurement_timeout_ms);
         if (result == CHAMELEON_RESULT_OK) {
@@ -154,12 +179,12 @@ static void stm32_rail_off(void *context)
     HAL_GPIO_WritePin(GPIOB, CHAMELEON_POWER_PIN, GPIO_PIN_SET);
     memset(&gpio, 0, sizeof(gpio));
     gpio.Pin = CHAMELEON_POWER_PIN;
-#if defined(CHAMELEON_POWER_EXTERNAL_PMOS)
     gpio.Mode = GPIO_MODE_OUTPUT_OD;
+#if defined(CHAMELEON_POWER_LSN50_5V)
+    gpio.Pull = GPIO_PULLUP;
 #else
-    gpio.Mode = GPIO_MODE_OUTPUT_PP;
-#endif
     gpio.Pull = GPIO_NOPULL;
+#endif
     gpio.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOB, &gpio);
 }
