@@ -20,9 +20,9 @@
     }                                                                           \
 } while (0)
 
-/* Channel 2 is disconnected — both CAL2 and RAW2 return the open sentinel.
- * Verify that no retry is attempted for this channel and COMP_PENDING is
- * NOT set (open is not pending, it's a hardware condition). */
+/* Channel 2 is disconnected, so both CAL2 and RAW2 return the open sentinel.
+ * Verify that the condition remains a valid protocol response and does not
+ * consume reserved payload bit 7. */
 static void test_open_channel_skips_retry(void) {
     mock_chameleon_reset();
 
