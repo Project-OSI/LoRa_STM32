@@ -30,6 +30,7 @@ make_fixture() {
   chmod +x "$fixture_dir/fixture/tests/host/run_ml3_host_suite.sh"
 
   write_stage "$fixture_dir/fixture/tests/host/ml3_readiness_cohesion_contract.sh" ':'
+  write_stage "$fixture_dir/fixture/tests/host/ml3_target_integration_contract.sh" ':'
   if [ "$artifact_mode" = "early-artifact" ]; then
     write_stage "$fixture_dir/fixture/tests/host/run_ml3_host_tests.sh" 'fixture_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 printf "%s\n" "EARLY artifact produced by fixture stage" >"$fixture_root/early-suite-artifact.txt"'
