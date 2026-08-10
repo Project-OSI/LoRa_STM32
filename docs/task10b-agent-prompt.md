@@ -59,7 +59,7 @@ The owner has ruled: the trial powers the ML3 from the **LSN50v2's own switched 
 Consequences you must respect:
 
 - The engine's warm-up sequencing, V5 monitoring via PA4, and discharge verification are all **live and load-bearing**. Wire them fully; do not stub them.
-- The V5 limit, divider-ratio and discharge macros need **real measured values** (see Phase 2). Do not guess them. If the measurements are not yet in the Gate 0 records when you reach Phase 2, **stop and report** rather than inventing figures — an invented discharge threshold either hangs the state machine or lets it proceed with the rail still live.
+- The V5 limit, divider-ratio and discharge macros are supplied as **nominal values in Phase 2**, on the owner's hardware observation rather than a bench measurement. Use exactly those; do not substitute your own figures, and do not present them in comments or reports as measured.
 - The **brownout rail check becomes a prerequisite before field installation** (not before your code). It is deferred at the owner's discretion, but the trial now depends on the rail behaving during a dying battery. Note this in your bring-up checklist.
 
 ## The work — phases, stop for review between them
@@ -71,7 +71,16 @@ Consequences you must respect:
 - Common-mode envelope: LO leg observed **5.0–7.2 mV** across air, damp and water — derive min/max with stated margin.
 - Signal ceiling: must accommodate the observed **1110 mV** (above the 1 V nominal).
 - Warm-up: **1500 ms** provisional (manufacturer 0.5–1 s plus margin).
-- V5 limits, `ML3_CONFIG_V5_DIVIDER_RATIO_PPM`, discharge threshold and timeout: **measured values required, from the PB5-powered rail with the probe attached as its load.** These were not captured during Gate 0 §3/§4 (that work used a bench supply and left PA4 floating). If they are absent from the Gate 0 records when you reach this point, stop and report — see the power-source section.
+- **V5 monitoring and discharge — use the nominal values below.** These are *not* bench-measured. The owner ruled on 2026-08-09, from direct experience with this hardware, that the board's 5 V output is stable at 5 V and shuts off completely, and that a bench session to measure it was not worth the time. Record each one's basis in the config comment as **owner hardware observation, not a bench record** — do not present them as measured.
+
+| Macro | Value | Basis |
+|---|---|---|
+| `ML3_CONFIG_V5_MINIMUM_MV` | `4500` | Presence/sanity check, not spec enforcement: catches a dead or collapsed rail while tolerating normal variation and divider tolerance. The ML3's own minimum is 5.0 V; enforcing that precisely is not possible from a nominal-ratio divider. |
+| `ML3_CONFIG_V5_MAXIMUM_MV` | `5500` | Upper sanity bound on the same basis. |
+| `ML3_CONFIG_V5_DIVIDER_RATIO_PPM` | `500000` (ratio 0.5) | Two equal 1 kΩ resistors are fitted on the bench node, `+5V (14) → PA4 (26) → GND (15)`. Ratio is nominal; resistor tolerance gives a couple of percent, which is ample for a presence check. **The divider is required** — without it PA4 floats near zero and would be read as a failed supply, invalidating good measurements. |
+| `ML3_CONFIG_DISCHARGE_THRESHOLD_MV` | `500` | Generous threshold below which the rail counts as collapsed. Owner reports the rail shuts off completely. |
+| `ML3_CONFIG_DISCHARGE_TIMEOUT_MS` | `2000` | Generous. **Nothing in this trial depends on it** — discharge verification exists to guarantee the probe is unpowered before a thermistor read, and the thermistor is out of scope. |
+
 - Region/DR/airtime: from the bench gateway's actual configuration — ask if not recorded.
 
 **Phase 3 — service wiring.** Replace the no-op body of `BSP_ML3_Service` per spec §5: instantiate the port struct once, initialise the engine from existing settings, drive `ml3_measurement_step` to completion across service calls, keep `ml3_active` true so the main loop blocks low-power mode during acquisition, route `BSP_ML3_Abort` to `ml3_measurement_abort`. Report soil temperature unavailable; set `calibration_id = 0`.
@@ -92,6 +101,10 @@ Consequences you must respect:
 1. Code in phase-sized commits, conventional-commit subjects. Do not push.
 2. A report per phase: what changed and where, your VREFINT guard choice and reasoning, per-macro citations, the power-source answer, and all gate evidence.
 3. **A bring-up checklist** for the owner, in plain accessible language, one step at a time, with the expected observation and an explicit stop condition per step. Assume a multimeter and a serial console (`picocom -b 9600 /dev/ttyUSB0`; note `AT+ML3VER?` takes no `=`), flashing via STM32CubeProgrammer's GUI. Sequence it so the node is verified healthy in stock mode **before** `AT+MOD=10` is issued, and so the rail is confirmed safe before any probe is attached.
+
+   Include these two specific checks:
+   - **Probe unpowered, rail off:** meter PA0 (terminal 2) and PA1 (terminal 3) against ground; both should sit at essentially zero. This closes out a backpowering question and fills the missing "unpowered" row in the §3 envelope record.
+   - **Do not use `AT+5VT`.** It corrupts the stack and resets the node: `at_5Vtime_set` (`src/at.c:1937`) passes a `uint16_t*` to a `%d` conversion that stores through an `int*` (`src/tiny_sscanf.c:820`), a four-byte write into a two-byte slot. Confirmed on hardware 2026-08-09 in the GCC build. It is a pre-existing vendor defect, out of scope to fix, and irrelevant to ML3 mode where the engine drives the rail directly — but it must not appear in any procedure you write.
 
 ## What not to do
 
