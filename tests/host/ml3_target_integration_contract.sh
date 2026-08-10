@@ -5,6 +5,7 @@ ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 APP_DIR="$ROOT_DIR/STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)"
 CONFIG="$APP_DIR/inc/ml3_config.h"
 BSP="$APP_DIR/src/bsp.c"
+MEASUREMENT_C="$APP_DIR/src/ml3_measurement.c"
 AT="$APP_DIR/src/at.c"
 COMMAND="$APP_DIR/src/command.c"
 MAIN="$APP_DIR/src/main.c"
@@ -18,11 +19,22 @@ ADC_PORT_C=${ML3_ADC_PORT_C:-"$APP_DIR/src/ml3_stm32_adc_port.c"}
 ADC_PORT_H="$APP_DIR/inc/ml3_stm32_adc_port.h"
 GCC_MAKEFILE_DIR="$APP_DIR/gcc"
 GCC_MAKEFILE="$GCC_MAKEFILE_DIR/Makefile"
+contract_tmp=''
+default_bsp_object=''
 failures=0
 
 fail() {
   printf 'ml3 target integration: %s\n' "$1"
   failures=$((failures + 1))
+}
+
+cleanup_contract_temporary_files() {
+  if [ -n "$default_bsp_object" ]; then
+    rm -f -- "$default_bsp_object"
+  fi
+  if [ -n "$contract_tmp" ]; then
+    rm -rf -- "$contract_tmp"
+  fi
 }
 
 require() {
@@ -72,6 +84,223 @@ extract_port_function() {
         }
       }
     ' "$ADC_PORT_C"
+}
+
+extract_bsp_function() {
+  local function_name=$1
+  awk -v function_name="$function_name" '
+      function opening_braces(line, copy) {
+        copy = line
+        gsub(/[^{]/, "", copy)
+        return length(copy)
+      }
+      function closing_braces(line, copy) {
+        copy = line
+        gsub(/[^}]/, "", copy)
+        return length(copy)
+      }
+      !capturing &&
+          $0 ~ "^[[:space:]]*[^;]*[[:space:]]" \
+            function_name "[[:space:]]*\\(" {
+        capturing = 1
+      }
+      capturing {
+        print
+        opening = opening_braces($0)
+        if (opening > 0) {
+          saw_opening = 1
+        }
+        depth += opening - closing_braces($0)
+        if (saw_opening && depth == 0) {
+          exit
+        }
+      }
+    ' "$BSP"
+}
+
+compile_default_bsp() {
+  local output_object=$1
+
+  (
+    cd "$GCC_MAKEFILE_DIR" || exit 1
+    arm-none-eabi-gcc \
+      -mcpu=cortex-m0plus -mthumb -std=c99 -Os -g \
+      -ffunction-sections -fdata-sections -fno-common \
+      -I../inc \
+      -I../../../../../../Drivers/BSP/STM32L0xx_Nucleo \
+      -I../../../../../../Drivers/STM32L0xx_HAL_Driver/Inc \
+      -I../../../../../../Drivers/CMSIS/Device/ST/STM32L0xx/Include \
+      -I../../../../../../Drivers/CMSIS/Include \
+      -I../../../../../../Middlewares/Third_Party/Lora/Crypto \
+      -I../../../../../../Middlewares/Third_Party/Lora/Mac \
+      -I../../../../../../Middlewares/Third_Party/Lora/Phy \
+      -I../../../../../../Middlewares/Third_Party/Lora/Utilities \
+      -I../../../../../../Middlewares/Third_Party/Lora/Core \
+      -I../../../../../../Drivers/BSP/Components/Common \
+      -I../../../../../../Drivers/BSP/Components/sx1276 \
+      -I../../../../../../Drivers/BSP/sx1276mb1las \
+      -I../../../../../../Drivers/BSP/Components/flash_eraseprogram \
+      -I../../../../../../Drivers/BSP/Components/ds18b20 \
+      -I../../../../../../Drivers/BSP/Components/gpio_exti \
+      -I../../../../../../Drivers/BSP/Components/oil_float \
+      -I../../../../../../Drivers/BSP/Components/sht20 \
+      -I../../../../../../Drivers/BSP/Components/pwr_out \
+      -I../../../../../../Drivers/BSP/Components/sht31 \
+      -I../../../../../../Drivers/BSP/Components/ult \
+      -I../../../../../../Drivers/BSP/Components/lidar_lite_v3hp \
+      -I../../../../../../Drivers/BSP/Components/weight \
+      -I../../../../../../Drivers/BSP/Components/iwdg \
+      -I../../../../../../Drivers/BSP/Components/bh1750 \
+      -I../../../../../../Drivers/BSP/Components/tfsensor \
+      -I. -DSTM32L072xx -DUSE_STM32L0XX_NUCLEO -DUSE_HAL_DRIVER \
+      -DUSE_SHT -DREGION_EU868 -include gcc_compat.h -Wall -c ../src/bsp.c \
+      -o "$output_object"
+  )
+}
+
+extract_target_bsp_make_flags() {
+  make -C "$GCC_MAKEFILE_DIR" -Bn | awk '
+    /arm-none-eabi-gcc/ && /-c \.\.\/src\/bsp\.c/ {
+      for (field_index = 1; field_index <= NF; ++field_index) {
+        if ($field_index ~ /^-I/ || $field_index ~ /^-D/) {
+          print $field_index
+        } else if ($field_index == "-include" && (field_index + 1) <= NF) {
+          print $field_index
+          print $(field_index + 1)
+          ++field_index
+        }
+      }
+      exit
+    }
+  '
+}
+
+write_enabled_phase3_harness() {
+  local harness_source=$1
+
+  # This translation unit intentionally contains source extracts rather than
+  # retyped target code.  Keep the markers below checked so a source movement
+  # cannot silently drop one of the guarded lifecycle or setting paths.
+  {
+    printf '%s\n' '/* phase3-extract: includes */'
+    sed -n '47,64p' "$BSP"
+    printf '%s\n' '/* phase3-extract-end: includes */'
+    printf '%s\n' '/* phase3-extract: target-dependencies */'
+    sed -n '67,80p' "$BSP"
+    printf '%s\n' '/* phase3-extract-end: target-dependencies */'
+    printf '%s\n' '/* phase3-extract: ml3-state */'
+    sed -n '118,125p' "$BSP"
+    sed -n '127,129p' "$BSP"
+    sed -n '/^extern uint8_t mode;/p' "$BSP"
+    printf '%s\n' '/* phase3-extract-end: ml3-state */'
+    printf '%s\n' '/* phase3-extract: guarded-target */'
+    printf '%s\n' '#if ML3_CONFIG_ACQUISITION_READY'
+    awk '
+      /^#if ML3_CONFIG_ACQUISITION_READY$/ { in_block = 1; next }
+      in_block && $0 == "#endif /* ML3_CONFIG_ACQUISITION_READY */" { exit }
+      in_block { print }
+    ' "$BSP"
+    printf '%s\n' '#endif /* ML3_CONFIG_ACQUISITION_READY */'
+    printf '%s\n' '/* phase3-extract-end: guarded-target */'
+    printf '%s\n' '/* phase3-extract: mode-selected */'
+    extract_bsp_function 'ml3_mode_selected'
+    printf '%s\n' '/* phase3-extract-end: mode-selected */'
+    for function_name in \
+        BSP_ML3_Init BSP_ML3_Service BSP_ML3_Abort BSP_ML3_RequestRoutine \
+        BSP_ML3_RequestDiagnostic BSP_ML3_SetWarmup BSP_ML3_SetCycles \
+        BSP_ML3_SetRaw; do
+      printf '/* phase3-extract: %s */\n' "$function_name"
+      extract_bsp_function "$function_name"
+      printf '/* phase3-extract-end: %s */\n' "$function_name"
+    done
+  } > "$harness_source"
+}
+
+validate_enabled_phase3_harness() {
+  local harness_source=$1
+  local source_guard_count
+  local harness_guard_count
+  local region
+
+  for region in includes target-dependencies ml3-state guarded-target mode-selected \
+      BSP_ML3_Init BSP_ML3_Service BSP_ML3_Abort BSP_ML3_RequestRoutine \
+      BSP_ML3_RequestDiagnostic BSP_ML3_SetWarmup BSP_ML3_SetCycles \
+      BSP_ML3_SetRaw; do
+    if [ "$(grep -Fc "phase3-extract: $region" "$harness_source" || true)" -ne 1 ] \
+        || [ "$(grep -Fc "phase3-extract-end: $region" "$harness_source" || true)" -ne 1 ]; then
+      return 1
+    fi
+  done
+  source_guard_count=$(grep -Ec '^#if ML3_CONFIG_ACQUISITION_READY$' "$BSP" || true)
+  harness_guard_count=$(grep -Ec '^#if ML3_CONFIG_ACQUISITION_READY$' "$harness_source" || true)
+  if [ "$source_guard_count" -ne 7 ] || [ "$harness_guard_count" -ne "$source_guard_count" ]; then
+    return 1
+  fi
+  for required_source_evidence in \
+      'ml3_stm32_adc_port_init' 'Radio.Sleep()' 'LORA_send' \
+      'ml3_measurement_abort(&ml3_measurement_context)' \
+      'ml3_measurement_context.config.warmup_ms' \
+      'ml3_measurement_context.config.abba_cycles'; do
+    if ! grep -Fq "$required_source_evidence" "$harness_source"; then
+      return 1
+    fi
+  done
+}
+
+compile_enabled_phase3_harness() {
+  local config_overlay=$1
+  local harness_source=$2
+  local output_object=$3
+  local flag
+  local -a make_flags
+  local -a phase3_flags
+  local -a compiler_command
+
+  mapfile -t make_flags < <(extract_target_bsp_make_flags)
+  if [ "${#make_flags[@]}" -eq 0 ]; then
+    return 2
+  fi
+  for flag in "${make_flags[@]}"; do
+    case "$flag" in
+      -I../inc|-I.) phase3_flags+=("$flag") ;;
+      -I*) phase3_flags+=(-isystem "${flag#-I}") ;;
+      *) phase3_flags+=("$flag") ;;
+    esac
+  done
+  compiler_command=(
+    arm-none-eabi-gcc
+    -mcpu=cortex-m0plus -mthumb -std=c99 -Os -g
+    -ffunction-sections -fdata-sections -fno-common
+    "${phase3_flags[@]}" -include "$config_overlay"
+    -Wall -Wextra -Werror -Wpedantic -Wshadow -Wconversion -Wvla
+    -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wundef
+    -c "$harness_source" -o "$output_object"
+  )
+  (
+    cd "$GCC_MAKEFILE_DIR" || exit 1
+    printf '%q ' "${compiler_command[@]}"
+    printf '\n'
+    "${compiler_command[@]}"
+  )
+}
+
+extract_object_function() {
+  local object_file=$1
+  local function_name=$2
+
+  arm-none-eabi-objdump -dr "$object_file" | awk \
+    -v function_name="$function_name" '
+      $0 ~ "^[0-9a-f]+ <" function_name ">:$" {
+        capturing = 1
+      }
+      capturing {
+        print
+        if ($0 ~ /^[0-9a-f]+ <[^>]+>:/ &&
+            $0 !~ "<" function_name ">:$") {
+          exit
+        }
+      }
+    '
 }
 
 require_port_function_line() {
@@ -211,6 +440,25 @@ do
 done
 require '^#define[[:space:]]+ML3_CONFIG_ACQUISITION_READY' "$CONFIG" \
   'acquisition readiness definition is missing'
+if ! awk '
+    /^#define[[:space:]]+ML3_CONFIG_ACQUISITION_READY[[:space:]]*\\$/ {
+      getline
+      if ($0 ~ /^[[:space:]]+ML3_CONFIG_GATE0_READINESS$/) {
+        valid = 1
+      }
+      exit
+    }
+    END { exit(valid ? 0 : 1) }
+  ' "$CONFIG"; then
+  fail 'acquisition readiness must expand only ML3_CONFIG_GATE0_READINESS'
+fi
+if awk '
+    /^#define[[:space:]]+ML3_CONFIG_ACQUISITION_READY/ { in_definition = 1 }
+    in_definition { print }
+    in_definition && $0 !~ /\\\\$/ { exit }
+  ' "$CONFIG" | grep -q 'ML3_CONFIG_CAL_'; then
+  fail 'acquisition readiness must not include calibration flags'
+fi
 if grep -Fq 'AT+5V''T' "$RAIL_PROCEDURE"; then
   fail 'rail procedure contains the prohibited rail-time command'
 fi
@@ -222,7 +470,7 @@ if ! contract_tmp=$(mktemp -d "${TMPDIR:-/tmp}/ml3-target-integration.XXXXXX"); 
   fail 'cannot create temporary directory for build-only gate contract'
   exit 1
 fi
-trap 'rm -rf "$contract_tmp"' EXIT
+trap cleanup_contract_temporary_files EXIT
 if ! printf '%s\n' \
   '#include "ml3_config.h"' \
   'typedef char thermistor_adc_is_pa2[(ML3_CONFIG_THERMISTOR_ADC_CHANNEL == 2U) ? 1 : -1];' \
@@ -292,6 +540,12 @@ require_file "$ADC_PORT_H" 'inc/ml3_stm32_adc_port.h is missing'
 require '^bool ml3_stm32_adc_port_init\(ml3_stm32_adc_port_context_t \*context\);' \
   "$ADC_PORT_H" \
   'ADC port init must report whether it accepted a non-NULL context'
+require '^uint32_t ml3_stm32_adc_port_now_ms\(void \*port_ctx\);' \
+  "$ADC_PORT_H" \
+  'ADC port elapsed-time function is not public'
+require '^uint32_t ml3_stm32_adc_port_now_ms\(void \*port_ctx\) \{' \
+  "$ADC_PORT_C" \
+  'ADC port elapsed-time definition is not public'
 require '^TARGET_ADAPTER_SRCS[[:space:]]*:=' "$GCC_MAKEFILE" \
   'GCC target-adapter source list is missing'
 adapter_gcc_count=$(grep -Fc '$(APP_ROOT)/src/ml3_stm32_adc_port.c' "$GCC_MAKEFILE" || true)
@@ -452,10 +706,10 @@ ml3_stm32_adc_port_read_raw
 EOF
 
   runtime_reference_files=$(find "$APP_DIR/src" -maxdepth 1 -type f \
-    -name '*.c' ! -name 'ml3_stm32_adc_port.c' \
+    -name '*.c' ! -name 'ml3_stm32_adc_port.c' ! -name 'bsp.c' \
     -exec grep -l 'ml3_stm32_adc_port' {} + || true)
   if [ -n "$runtime_reference_files" ]; then
-    fail "unregistered ADC port is referenced by runtime source: $runtime_reference_files"
+    fail "ADC port is referenced outside its guarded BSP integration: $runtime_reference_files"
   fi
 
   callback_total=$(awk '
@@ -650,6 +904,491 @@ EOF
     fail 'ADC port must not enable continuous conversion or DMA in CFGR1'
   fi
 fi
+
+# --- Guarded STM32L072 measurement service (Task 10B / Phase 3) ---
+# All target-specific acquisition paths live under this preprocessor fence so
+# the current false Gate 0 build retains the inert public ML3 API.
+require '^#if ML3_CONFIG_ACQUISITION_READY$' "$BSP" \
+  'BSP lacks the acquisition-readiness implementation guard'
+if ! grep -Fxq '#endif /* ML3_CONFIG_ACQUISITION_READY */' "$BSP"; then
+  fail 'BSP lacks the acquisition-readiness implementation guard terminator'
+fi
+phase3_block=$(awk '
+    /^#if ML3_CONFIG_ACQUISITION_READY$/ { in_block = 1; next }
+    in_block && $0 == "#endif /* ML3_CONFIG_ACQUISITION_READY */" { exit }
+    in_block { print }
+  ' "$BSP")
+if [ -z "$phase3_block" ]; then
+  fail 'BSP guarded acquisition implementation is empty'
+else
+  for declaration in \
+      'ml3_stm32_adc_port_context_t' \
+      'adc_precision_context_t' \
+      'ml3_measurement_ctx_t' \
+      'ml3_quality_result_t' \
+      'ML3_PAYLOAD_ROUTINE_LENGTH'; do
+    if ! printf '%s\n' "$phase3_block" | grep -Fq "$declaration"; then
+      fail "BSP guarded service lacks required local state: $declaration"
+    fi
+  done
+  for physical_symbol in \
+      'ml3_stm32_adc_port_init' \
+      'Radio.Sleep' \
+      'LORA_send'; do
+    total=$(grep -Fc "$physical_symbol" "$BSP" || true)
+    guarded=$(printf '%s\n' "$phase3_block" | grep -Fc "$physical_symbol" || true)
+    if [ "$total" -ne 1 ] || [ "$guarded" -ne 1 ]; then
+      fail "$physical_symbol must have one guarded BSP acquisition use"
+    fi
+  done
+  if ! printf '%s\n' "$phase3_block" | grep -Fq \
+      'HAL_GPIO_WritePin(PWR_OUT_PORT, PWR_OUT_PIN,'; then
+    fail 'guarded BSP service lacks PB5 power control'
+  fi
+  for forbidden in 'PB4' 'GPIO_PIN_2' 'vcom_IoDeInit' \
+      'ml3_thermistor_convert'; do
+    if printf '%s\n' "$phase3_block" | grep -Fq "$forbidden"; then
+      fail "guarded BSP service contains forbidden thermistor/UART operation: $forbidden"
+    fi
+  done
+fi
+
+bsp_init_body=$(extract_bsp_function 'BSP_ML3_Init')
+bsp_service_body=$(extract_bsp_function 'BSP_ML3_Service')
+bsp_abort_body=$(extract_bsp_function 'BSP_ML3_Abort')
+bsp_routine_request_body=$(extract_bsp_function 'BSP_ML3_RequestRoutine')
+bsp_diagnostic_request_body=$(extract_bsp_function 'BSP_ML3_RequestDiagnostic')
+bsp_set_warmup_body=$(extract_bsp_function 'BSP_ML3_SetWarmup')
+bsp_set_cycles_body=$(extract_bsp_function 'BSP_ML3_SetCycles')
+bsp_set_raw_body=$(extract_bsp_function 'BSP_ML3_SetRaw')
+ml3_service_code=$(printf '%s\n%s\n%s\n%s\n%s\n%s\n' \
+  "$phase3_block" "$bsp_init_body" "$bsp_service_body" "$bsp_abort_body" \
+  "$bsp_routine_request_body" "$bsp_diagnostic_request_body")
+for additional_ml3_function in \
+    BSP_ML3_IsActive BSP_ML3_GetBatteryLevel BSP_ML3_GetTemperatureLevel \
+    BSP_ML3_GetSettings BSP_ML3_SetWarmup BSP_ML3_SetCycles BSP_ML3_SetRaw \
+    BSP_ML3_CalibrationChunk BSP_ML3_CalibrationClear; do
+  ml3_service_code=$(printf '%s\n%s\n' "$ml3_service_code" \
+    "$(extract_bsp_function "$additional_ml3_function")")
+done
+for forbidden_service_operation in \
+    'PB4' 'GPIO_PIN_4' 'GPIOB->' 'PA2' 'GPIO_PIN_2' 'MODER2' \
+    'GPIO_MODER_MODER2' 'vcom_IoDeInit' 'ml3_thermistor_convert'; do
+  if printf '%s\n' "$ml3_service_code" | grep -Fq "$forbidden_service_operation"; then
+    fail "ML3 BSP service contains forbidden pin/thermistor operation: $forbidden_service_operation"
+  fi
+done
+if ! printf '%s\n' "$bsp_service_body" | grep -Fq \
+    'if (!ML3_CONFIG_ACQUISITION_READY)'; then
+  fail 'BSP_ML3_Service no longer preserves its false-gate return'
+fi
+default_gate_body=$(printf '%s\n' "$bsp_service_body" | awk '
+    /^[[:space:]]*if \(!ML3_CONFIG_ACQUISITION_READY\)$/ { capturing = 1 }
+    capturing {
+      print
+      opening = $0
+      gsub(/[^{]/, "", opening)
+      closing = $0
+      gsub(/[^}]/, "", closing)
+      if (length(opening) > 0) {
+        saw_opening = 1
+      }
+      depth += length(opening) - length(closing)
+      if (saw_opening && depth == 0) {
+        exit
+      }
+    }
+  ')
+if [ -z "$default_gate_body" ] \
+    || ! printf '%s\n' "$default_gate_body" | grep -Fxq '    return;'; then
+  fail 'BSP_ML3_Service lacks a complete false-readiness runtime return'
+fi
+default_bsp_object=$(mktemp "${TMPDIR:-/tmp}/ml3-target-contract-bsp.XXXXXX")
+if ! compile_default_bsp "$default_bsp_object" >/dev/null 2>&1; then
+  fail 'default BSP service object did not compile for reachability inspection'
+else
+  for public_ml3_function in \
+      BSP_ML3_Init BSP_ML3_Service BSP_ML3_Abort BSP_ML3_RequestRoutine \
+      BSP_ML3_RequestDiagnostic BSP_ML3_IsActive BSP_ML3_GetBatteryLevel \
+      BSP_ML3_GetTemperatureLevel BSP_ML3_GetSettings BSP_ML3_SetWarmup \
+      BSP_ML3_SetCycles BSP_ML3_SetRaw BSP_ML3_CalibrationChunk \
+      BSP_ML3_CalibrationClear; do
+    default_function_disassembly=$(extract_object_function \
+      "$default_bsp_object" "$public_ml3_function")
+    if [ -z "$default_function_disassembly" ]; then
+      fail "default BSP object does not expose $public_ml3_function for inspection"
+      continue
+    fi
+    for unreachable_symbol in \
+        'ml3_stm32_adc_port_init' 'LORA_send' 'HAL_GPIO_WritePin' 'Radio'; do
+      if printf '%s\n' "$default_function_disassembly" | grep -Fq \
+          "$unreachable_symbol"; then
+        fail "default false-readiness $public_ml3_function reaches $unreachable_symbol"
+      fi
+    done
+  done
+fi
+enabled_config_overlay="$contract_tmp/ml3_config.h"
+enabled_phase3_harness="$contract_tmp/ml3-enabled-phase3.c"
+enabled_phase3_object="$contract_tmp/ml3-enabled-phase3.o"
+enabled_phase3_log="$contract_tmp/ml3-enabled-phase3.log"
+if ! printf '%s\n' \
+    "#include \"$CONFIG\"" \
+    '#undef ML3_CONFIG_ACQUISITION_READY' \
+    '#define ML3_CONFIG_ACQUISITION_READY 1U' \
+    > "$enabled_config_overlay"; then
+  fail 'cannot create temporary enabled-acquisition configuration overlay'
+elif ! write_enabled_phase3_harness "$enabled_phase3_harness"; then
+  fail 'cannot extract the guarded Phase 3 target translation unit'
+elif ! validate_enabled_phase3_harness "$enabled_phase3_harness"; then
+  fail 'guarded Phase 3 translation-unit extraction is incomplete'
+elif ! compile_enabled_phase3_harness "$enabled_config_overlay" \
+    "$enabled_phase3_harness" "$enabled_phase3_object" \
+    > "$enabled_phase3_log" 2>&1; then
+  cat "$enabled_phase3_log"
+  fail 'enabled guarded Phase 3 target code does not compile with strict warnings'
+else
+  for strict_flag in -Wall -Wextra -Werror -Wpedantic -Wshadow -Wconversion \
+      -Wvla -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
+      -Wundef; do
+    if ! grep -Fq -- "$strict_flag" "$enabled_phase3_log"; then
+      fail "enabled guarded Phase 3 compile omits strict flag $strict_flag"
+    fi
+  done
+fi
+if ! printf '%s\n' "$bsp_service_body" | grep -Fq \
+    'ml3_measurement_start(&ml3_measurement_context)'; then
+  fail 'BSP_ML3_Service does not start one pending measurement'
+fi
+if ! printf '%s\n' "$bsp_service_body" | grep -Fq \
+    'ml3_measurement_step(&ml3_measurement_context)'; then
+  fail 'BSP_ML3_Service does not advance the core once per invocation'
+fi
+if ! printf '%s\n' "$bsp_service_body" | grep -Fq \
+    'ml3_active = ml3_measurement_context.active;'; then
+  fail 'BSP_ML3_Service does not mirror core activity'
+fi
+if ! printf '%s\n' "$bsp_service_body" | grep -Eq \
+    'step[[:space:]]*==[[:space:]]*ML3_MEASUREMENT_STEP_DONE'; then
+  fail 'BSP_ML3_Service does not clear pending work at DONE'
+fi
+if ! printf '%s\n' "$bsp_service_body" | grep -Eq \
+    'step[[:space:]]*==[[:space:]]*ML3_MEASUREMENT_STEP_ERROR'; then
+  fail 'BSP_ML3_Service does not clear pending work at ERROR'
+fi
+if ! printf '%s\n' "$bsp_abort_body" | awk '
+    /ml3_measurement_abort\(&ml3_measurement_context\);/ { abort_line = NR }
+    /ml3_active = false;/ && clear_line == 0 { clear_line = NR }
+    END { exit((abort_line > 0 && clear_line > abort_line) ? 0 : 1) }
+  '; then
+  fail 'BSP_ML3_Abort must abort the core before clearing public state'
+fi
+mode_loss_body=$(printf '%s\n' "$bsp_service_body" | awk '
+    /^[[:space:]]*if \(!ml3_mode_selected\(\)\)$/ { capturing = 1 }
+    capturing {
+      print
+      opening = $0
+      gsub(/[^{]/, "", opening)
+      closing = $0
+      gsub(/[^}]/, "", closing)
+      if (length(opening) > 0) {
+        saw_opening = 1
+      }
+      depth += length(opening) - length(closing)
+      if (saw_opening && depth == 0) {
+        exit
+      }
+    }
+  ')
+if [ -z "$mode_loss_body" ]; then
+  fail 'BSP_ML3_Service has no dedicated mode-loss cleanup branch'
+else
+  for active_evidence in \
+      'ml3_measurement_context.active' \
+      'ml3_active' \
+      'ml3_request_pending'; do
+    if ! printf '%s\n' "$mode_loss_body" | grep -Fq "$active_evidence"; then
+      fail "BSP mode-loss cleanup does not consider $active_evidence"
+    fi
+  done
+  if ! printf '%s\n' "$mode_loss_body" | awk '
+      /ml3_measurement_abort\(&ml3_measurement_context\);/ { abort_line = NR }
+      /ml3_active = false;/ && active_clear == 0 { active_clear = NR }
+      /ml3_request_pending = false;/ && pending_clear == 0 { pending_clear = NR }
+      END {
+        exit((abort_line > 0) && (active_clear > abort_line) &&
+          (pending_clear > abort_line) ? 0 : 1)
+      }
+    '; then
+    fail 'BSP mode-loss cleanup must abort the core before clearing public state'
+  fi
+fi
+if ! printf '%s\n' "$bsp_service_body" | awk '
+    /^#if ML3_CONFIG_ACQUISITION_READY$/ { guarded = 1; next }
+    guarded && /^#endif/ { guarded = 0; next }
+    guarded && /ml3_measurement_abort\(&ml3_measurement_context\);/ { found = 1 }
+    END { exit(found ? 0 : 1) }
+  '; then
+  fail 'BSP mode-loss cleanup reaches core abort outside the acquisition guard'
+fi
+if ! awk '
+    /^void ml3_measurement_abort\(/ { capturing = 1 }
+    capturing && /ml3_measurement_cleanup_controls\(ctx\)/ { cleaned = 1 }
+    capturing && /^}/ { exit(cleaned ? 0 : 1) }
+    END { exit(cleaned ? 0 : 1) }
+  ' "$MEASUREMENT_C" \
+  || ! grep -Fq 'ctx->port.set_power_5v(ctx->port.context, false)' "$MEASUREMENT_C"; then
+  fail 'mode-loss core abort no longer proves cleanup invokes the PB5-off callback'
+fi
+
+if ! printf '%s\n' "$bsp_init_body" | grep -Fq \
+    'ml3_measurement_config_t config = {'; then
+  fail 'BSP_ML3_Init must use an automatic mutable measurement config'
+fi
+if printf '%s\n' "$bsp_init_body" | grep -Eq \
+    'static[[:space:]].*ml3_measurement_config_t'; then
+  fail 'BSP_ML3_Init must not dereference factory VREF in a static initializer'
+fi
+if ! grep -Fq \
+    'static uint16_t ml3_warmup_ms = (uint16_t)ML3_CONFIG_WARMUP_TIME_MS;' \
+    "$BSP" \
+  || ! grep -Fq 'static uint8_t ml3_cycles = 4U;' "$BSP"; then
+  fail 'BSP ML3 settings do not default to 1500 ms and four ABBA cycles'
+fi
+if printf '%s\n' "$bsp_init_body" | grep -Fq \
+    'ml3_warmup_ms = (uint16_t)ML3_CONFIG_WARMUP_TIME_MS;' \
+  || printf '%s\n' "$bsp_init_body" | grep -Fq 'ml3_cycles = 4U;'; then
+  fail 'BSP_ML3_Init resets selected ML3 settings before core configuration'
+fi
+for init_requirement in \
+    '0U, 1U, 4U, 2U, (uint16_t)ml3_cycles,' \
+    '(uint32_t)ml3_warmup_ms' \
+    'ML3_CONFIG_DISCHARGE_THRESHOLD_MV / 2U' \
+    'ML3_CONFIG_DISCHARGE_TIMEOUT_MS' \
+    'config.vrefint_calibration_word = *ML3_TARGET_VREFINT_CAL_ADDR;' \
+    'adc_precision_default_timeouts(&ml3_adc_timeouts)' \
+    'ml3_adc_timeouts.conversion_ms = 10U;' \
+    'ml3_measurement_init(&ml3_measurement_context'; do
+  if ! printf '%s\n' "$bsp_init_body" | grep -Fq "$init_requirement"; then
+    fail "BSP_ML3_Init lacks required service configuration: $init_requirement"
+  fi
+done
+for setter_contract in \
+    'ml3_warmup_ms = warmup_ms;' \
+    'ml3_measurement_context.config.warmup_ms = (uint32_t)warmup_ms;'; do
+  if ! printf '%s\n' "$bsp_set_warmup_body" | grep -Fq "$setter_contract"; then
+    fail "BSP_ML3_SetWarmup does not propagate selected warmup: $setter_contract"
+  fi
+done
+for setter_contract in \
+    'ml3_cycles = cycles;' \
+    'ml3_measurement_context.config.abba_cycles = (uint16_t)cycles;'; do
+  if ! printf '%s\n' "$bsp_set_cycles_body" | grep -Fq "$setter_contract"; then
+    fail "BSP_ML3_SetCycles does not propagate selected cycle count: $setter_contract"
+  fi
+done
+if ! printf '%s\n' "$bsp_set_raw_body" | grep -Fq \
+    'if ((raw_enabled != 0U) || ml3_active)' \
+  || ! printf '%s\n' "$bsp_set_raw_body" | grep -Fq \
+    'ml3_raw_enabled = 0U;'; then
+  fail 'BSP_ML3_SetRaw must reject unsupported raw diagnostic enablement'
+fi
+if printf '%s\n' "$bsp_set_raw_body" | grep -Fq \
+    'ml3_raw_enabled = raw_enabled'; then
+  fail 'BSP_ML3_SetRaw accepts a raw diagnostic state without a payload path'
+fi
+if printf '%s\n' "$ml3_service_code" | grep -Fq \
+    'ml3_payload_build_diagnostic'; then
+  fail 'BSP target service must not add a diagnostic payload path in Phase 3'
+fi
+require '^#define ML3_TARGET_VREFINT_CAL_ADDR[[:space:]]+\\$' "$BSP" \
+  'BSP does not define the VREFINT factory-address macro locally'
+require '0x1FF80078UL' "$BSP" \
+  'BSP VREFINT factory address is not STM32L072 0x1FF80078UL'
+
+for required_callback in \
+    'static bool ml3_target_configure_analog_pins(void *context)' \
+    'static bool ml3_target_set_power_5v(void *context, bool enabled)' \
+    'static bool ml3_target_set_thermistor_excitation(void *context, bool enabled)' \
+    'static bool ml3_target_request_radio_sleep(void *context)' \
+    'static bool ml3_target_watchdog_refresh(void *context)' \
+    'static uint32_t ml3_target_read_reset_cause(void *context)' \
+    'static bool ml3_target_on_process(void *context,' \
+    'static bool ml3_target_on_build_payload(void *context,' \
+    'static bool ml3_target_on_queue(void *context,'; do
+  if ! printf '%s\n' "$phase3_block" | grep -Fq "$required_callback"; then
+    fail "guarded BSP service lacks callback: $required_callback"
+  fi
+done
+require 'ml3_stm32_adc_port_now_ms' "$BSP" \
+  'BSP service does not reuse the ADC port elapsed-time function'
+if ! grep -Fq \
+    'ml3_stm32_adc_port_init((ml3_stm32_adc_port_context_t *)context)' "$BSP"; then
+  fail 'BSP analog setup does not delegate to the STM32 ADC port'
+fi
+if ! grep -Fq 'enabled ? GPIO_PIN_RESET : GPIO_PIN_SET' "$BSP"; then
+  fail 'BSP PB5 power callback is not active low'
+fi
+radio_sleep_body=$(extract_bsp_function 'ml3_target_request_radio_sleep')
+if ! printf '%s\n' "$radio_sleep_body" | awk '
+    /LoRaMacState/ { state_line = NR }
+    /Radio\.Sleep\(\);/ { sleep_line = NR }
+    END { exit((state_line > 0 && sleep_line > state_line) ? 0 : 1) }
+  '; then
+  fail 'BSP radio sleep must reject an active LoRaMacState before Radio.Sleep'
+fi
+if ! printf '%s\n' "$radio_sleep_body" | grep -Fq \
+    'ML3_TARGET_LORAMAC_BUSY_MASK' \
+    || ! grep -Fq 'UINT32_C(0x00000001)' "$BSP" \
+    || ! grep -Fq 'UINT32_C(0x00000010)' "$BSP"; then
+  fail 'BSP radio sleep does not reject both active LoRaMacState busy bits'
+fi
+if ! grep -Fq 'IWDG_Refresh();' "$BSP"; then
+  fail 'BSP watchdog callback does not refresh the watchdog'
+fi
+require 'return RCC->CSR;' "$BSP" \
+  'BSP reset callback does not snapshot RCC->CSR without clearing it'
+
+process_body=$(extract_bsp_function 'ml3_target_on_process')
+payload_body=$(extract_bsp_function 'ml3_target_on_build_payload')
+queue_body=$(extract_bsp_function 'ml3_target_on_queue')
+quality_input_body=$(extract_bsp_function 'ml3_target_fill_quality_input')
+die_temp_body=$(extract_bsp_function 'ml3_target_die_temp_centic')
+v5_values_body=$(extract_bsp_function 'ml3_target_v5_values')
+if ! printf '%s\n' "$process_body" | grep -Fq \
+    'ml3_target_fill_quality_input(result, &quality_input)'; then
+  fail 'BSP process callback does not reject incomplete measurement evidence'
+fi
+for process_requirement in \
+    'ADC_PRECISION_OVERSAMPLING_SCALE' \
+    'ML3_TARGET_TEMPSENSOR_CAL1_ADDR' \
+    'ML3_TARGET_TEMPSENSOR_CAL2_ADDR' \
+    'ML3_CONFIG_V5_DIVIDER_RATIO_PPM' \
+    'ml3_quality_thresholds_from_config' \
+    'ml3_quality_evaluate' \
+    'quality_input->has_calibration_status = true;' \
+    'quality_input->calibration_valid = true;' \
+    'quality_input->has_thermistor_status = true;' \
+    'quality_input->thermistor_valid = true;'; do
+  if ! printf '%s\n' "$phase3_block" | grep -Fq "$process_requirement"; then
+    fail "BSP process callback lacks required evidence handling: $process_requirement"
+  fi
+done
+if printf '%s\n' "$phase3_block" | grep -Fq 'ml3_thermistor_convert'; then
+  fail 'BSP process callback must not convert the unready thermistor table'
+fi
+
+# A complete four-cycle burst has eight retained rail samples.  The production
+# predicate must reject 3-of-4 valid-cycle evidence by itself—not only when a
+# separate fault flag is also present—and it must do so before rail evidence is
+# published to quality evaluation.
+if ! printf '%s\n' "$quality_input_body" | awk '
+    /^[[:space:]]*\|\| \(result->valid_cycle_count != result->abba_raw_cycle_count\)[[:space:]]*$/ {
+      standalone_evidence_guard = NR
+    }
+    /quality_input->has_rail_samples = true;/ { rail_samples = NR }
+    END {
+      exit((standalone_evidence_guard > 0) &&
+        (rail_samples > standalone_evidence_guard) ? 0 : 1)
+    }
+  '; then
+  fail 'BSP quality input lacks unconditional 3-of-4 rejection before rail samples'
+fi
+if ! printf '%s\n' "$quality_input_body" | grep -Fq \
+    'result->abba_raw_cycle_count != (uint16_t)ml3_cycles'; then
+  fail 'BSP quality input does not require the selected ABBA cycle count'
+fi
+if printf '%s\n' "$quality_input_body" | grep -Fq \
+    'result->abba_raw_cycle_count != 4U'; then
+  fail 'BSP quality input is fixed to four cycles despite the accepted 3-8 range'
+fi
+
+# All H1/H2/L1/L2 values are contemporaneous with the pre-VREF VDDA.  PA4 is
+# sampled before and after the burst, so its two raw codes must use their own
+# respective VDDAs rather than a shared or post-only value.
+for retained_raw in abba_h1_raw abba_h2_raw abba_l1_raw abba_l2_raw; do
+  if ! printf '%s\n' "$quality_input_body" | grep -Fq \
+      "result->$retained_raw[index],"; then
+    fail "BSP quality input omits retained raw rail evidence: $retained_raw"
+  fi
+done
+pre_vdda_raw_uses=$(printf '%s\n' "$quality_input_body" | \
+  grep -Fc 'result->vdda_pre_uv,' || true)
+if [ "$pre_vdda_raw_uses" -ne 4 ]; then
+  fail 'BSP quality input does not scale every retained raw rail sample by pre-VREF VDDA'
+fi
+if ! printf '%s\n' "$v5_values_body" | awk '
+    /result->pre_v5_raw,/ { expect_vdda = "pre"; next }
+    expect_vdda == "pre" {
+      matched = ($0 ~ /result->vdda_pre_uv,/)
+      exit
+    }
+    END { exit(matched ? 0 : 1) }
+  '; then
+  fail 'BSP pre-PA4 sample is not scaled by pre-VREF VDDA'
+fi
+if ! printf '%s\n' "$v5_values_body" | awk '
+    /result->post_v5_raw,/ { expect_vdda = "post"; next }
+    expect_vdda == "post" {
+      matched = ($0 ~ /result->vdda_post_uv,/)
+      exit
+    }
+    END { exit(matched ? 0 : 1) }
+  '; then
+  fail 'BSP post-PA4 sample is not scaled by post-VREF VDDA'
+fi
+
+# The STM32L072 temperature factory words are 12-bit values characterized at
+# 3.0 V.  The retained ADC code is x16 oversampled, so a 3.3-V raw sample must
+# first be normalized by VDDA / 3.0 V, then be reduced to 12 bits.  This
+# non-3.0-V fixture distinguishes that direction from the inverse ratio.
+die_temp_raw=32000
+die_temp_vdda_uv=3300000
+die_temp_cal1=2000
+die_temp_cal2=3000
+die_temp_correct_normalized=$((
+  die_temp_raw * die_temp_vdda_uv / 3000000 / 16))
+die_temp_inverse_normalized=$((
+  die_temp_raw * 3000000 / die_temp_vdda_uv / 16))
+die_temp_correct_centic=$((3000 +
+  (die_temp_correct_normalized - die_temp_cal1) * 10000 /
+    (die_temp_cal2 - die_temp_cal1)))
+die_temp_inverse_centic=$((3000 +
+  (die_temp_inverse_normalized - die_temp_cal1) * 10000 /
+    (die_temp_cal2 - die_temp_cal1)))
+if [ "$die_temp_correct_centic" -ne 5000 ]; then
+  fail 'die-temperature normalization fixture no longer computes 50.00 C at 3.3 V'
+fi
+if [ "$die_temp_inverse_centic" -eq "$die_temp_correct_centic" ]; then
+  fail 'die-temperature normalization fixture does not distinguish the inverse VDDA ratio'
+fi
+if ! printf '%s\n' "$die_temp_body" | grep -Fq \
+    '(uint64_t)result->die_temp_raw * (uint64_t)result->vdda_post_uv'; then
+  fail 'BSP die-temperature normalization does not scale raw code by VDDA'
+fi
+if ! printf '%s\n' "$die_temp_body" | grep -Fq \
+    '/ ML3_TARGET_TEMPSENSOR_CAL_VDDA_UV;'; then
+  fail 'BSP die-temperature normalization does not divide by the 3.0-V factory supply'
+fi
+
+for payload_requirement in \
+    'payload.corrected_diff_available = false;' \
+    'payload.soil_temperature_available = false;' \
+    'payload.calibration_id = 0U;' \
+    'ml3_payload_build_routine(&payload, ml3_routine_frame,' \
+    'ML3_PAYLOAD_ROUTINE_LENGTH, ML3_PAYLOAD_ROUTINE_LENGTH,'; do
+  if ! printf '%s\n' "$payload_body" | grep -Fq "$payload_requirement"; then
+    fail "BSP routine payload callback lacks required contract: $payload_requirement"
+  fi
+done
+for queue_requirement in \
+    'app_data.Port = ML3_CONFIG_FPORT;' \
+    'LORA_send(&app_data, LORAWAN_UNCONFIRMED_MSG)' \
+    'LORA_SUCCESS'; do
+  if ! printf '%s\n' "$queue_body" | grep -Fq "$queue_requirement"; then
+    fail "BSP routine queue callback lacks required contract: $queue_requirement"
+  fi
+done
 
 # --- Bench-only ADC readout tool (Task B2 / Gate 0 Section 4, AT+ML3ADC) ---
 # Pins down: the bench module exists with its entry point declared/defined;

@@ -47,6 +47,7 @@
   /* Includes ------------------------------------------------------------------*/
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "hw.h"
 #include "timeServer.h"
 #include "bsp.h"
@@ -54,8 +55,13 @@
 #include "delay.h"
 #include "vcom.h"
 #include "lora.h"
+#include "radio.h"
+#include "adc_precision.h"
 #include "ml3_measurement.h"
 #include "ml3_calibration.h"
+#include "ml3_payload.h"
+#include "ml3_quality.h"
+#include "ml3_stm32_adc_port.h"
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #if defined(LoRa_Sensor_Node)
@@ -114,13 +120,336 @@ static bool ml3_active;
 static bool ml3_request_pending;
 static bool ml3_battery_valid;
 static uint8_t ml3_battery_level;
-static uint16_t ml3_warmup_ms;
-static uint8_t ml3_cycles;
+static uint16_t ml3_warmup_ms = (uint16_t)ML3_CONFIG_WARMUP_TIME_MS;
+static uint8_t ml3_cycles = 4U;
 static uint8_t ml3_raw_enabled;
 static uint8_t ml3_calibration_staging[ML3_AT_CALIBRATION_MAX_RECORD_LENGTH];
 static uint16_t ml3_calibration_total;
 static uint16_t ml3_calibration_next_offset;
 static bool ml3_calibration_staging_active;
+
+#if ML3_CONFIG_ACQUISITION_READY
+
+#define ML3_TARGET_VREFINT_CAL_ADDR \
+  ((const uint16_t *)(uint32_t)0x1FF80078UL)
+#define ML3_TARGET_TEMPSENSOR_CAL1_ADDR \
+  ((const uint16_t *)(uint32_t)0x1FF8007AUL)
+#define ML3_TARGET_TEMPSENSOR_CAL2_ADDR \
+  ((const uint16_t *)(uint32_t)0x1FF8007EUL)
+#define ML3_TARGET_TEMPSENSOR_CAL_VDDA_UV UINT32_C(3000000)
+#define ML3_TARGET_LORAMAC_BUSY_MASK \
+  (UINT32_C(0x00000001) | UINT32_C(0x00000010))
+
+static ml3_stm32_adc_port_context_t ml3_adc_port_context;
+static adc_precision_context_t ml3_adc_precision_context;
+static ml3_measurement_ctx_t ml3_measurement_context;
+static ml3_quality_result_t ml3_quality_result;
+static uint8_t ml3_routine_frame[ML3_PAYLOAD_ROUTINE_LENGTH];
+static size_t ml3_routine_frame_length;
+
+extern uint32_t LoRaMacState;
+
+static bool ml3_target_configure_analog_pins(void *context)
+{
+  return ml3_stm32_adc_port_init((ml3_stm32_adc_port_context_t *)context);
+}
+
+static bool ml3_target_set_power_5v(void *context, bool enabled)
+{
+  (void)context;
+  HAL_GPIO_WritePin(PWR_OUT_PORT, PWR_OUT_PIN,
+    enabled ? GPIO_PIN_RESET : GPIO_PIN_SET);
+  return true;
+}
+
+static bool ml3_target_set_thermistor_excitation(void *context, bool enabled)
+{
+  (void)context;
+  (void)enabled;
+  return true;
+}
+
+static bool ml3_target_request_radio_sleep(void *context)
+{
+  (void)context;
+  if ((LoRaMacState & ML3_TARGET_LORAMAC_BUSY_MASK) != 0U)
+  {
+    return false;
+  }
+  Radio.Sleep();
+  return true;
+}
+
+static bool ml3_target_watchdog_refresh(void *context)
+{
+  (void)context;
+  IWDG_Refresh();
+  return true;
+}
+
+static uint32_t ml3_target_read_reset_cause(void *context)
+{
+  (void)context;
+  return RCC->CSR;
+}
+
+static bool ml3_target_raw_to_uv(
+  uint16_t raw_code,
+  uint32_t vdda_uv,
+  int64_t *out_uv)
+{
+  uint32_t uv;
+
+  if ((out_uv == NULL) || (vdda_uv == 0U))
+  {
+    return false;
+  }
+  if (adc_precision_compute_channel_uv(
+        (uint32_t)raw_code,
+        vdda_uv,
+        &uv) != ADC_PRECISION_OK)
+  {
+    return false;
+  }
+  *out_uv = (int64_t)uv;
+  return true;
+}
+
+static bool ml3_target_v5_values(
+  const ml3_measurement_result_t *result,
+  uint64_t *pre_v5_uv,
+  uint64_t *post_v5_uv)
+{
+  uint32_t pre_pa4_uv;
+  uint32_t post_pa4_uv;
+
+  if ((result == NULL) || (pre_v5_uv == NULL) || (post_v5_uv == NULL)
+      || !result->has_pre_v5_raw || !result->has_post_v5_raw
+      || !result->has_vdda_pre_uv || !result->has_vdda_post_uv
+      || (result->vdda_pre_uv == 0U) || (result->vdda_post_uv == 0U)
+      || (ML3_CONFIG_V5_DIVIDER_RATIO_PPM == 0U))
+  {
+    return false;
+  }
+  if ((adc_precision_compute_channel_uv(
+         (uint32_t)result->pre_v5_raw,
+         result->vdda_pre_uv,
+         &pre_pa4_uv) != ADC_PRECISION_OK)
+      || (adc_precision_compute_channel_uv(
+         (uint32_t)result->post_v5_raw,
+         result->vdda_post_uv,
+         &post_pa4_uv) != ADC_PRECISION_OK))
+  {
+    return false;
+  }
+  *pre_v5_uv = ((uint64_t)pre_pa4_uv * UINT64_C(1000000))
+    / (uint64_t)ML3_CONFIG_V5_DIVIDER_RATIO_PPM;
+  *post_v5_uv = ((uint64_t)post_pa4_uv * UINT64_C(1000000))
+    / (uint64_t)ML3_CONFIG_V5_DIVIDER_RATIO_PPM;
+  return true;
+}
+
+static bool ml3_target_die_temp_centic(
+  const ml3_measurement_result_t *result,
+  int32_t *out_centic)
+{
+  const uint16_t cal1 = *ML3_TARGET_TEMPSENSOR_CAL1_ADDR;
+  const uint16_t cal2 = *ML3_TARGET_TEMPSENSOR_CAL2_ADDR;
+  uint64_t normalized_oversampled_code;
+  int64_t normalized_code;
+  int64_t centic;
+
+  if ((result == NULL) || (out_centic == NULL) || !result->has_die_temp_raw
+      || !result->has_vdda_post_uv || (result->vdda_post_uv == 0U)
+      || (cal2 <= cal1))
+  {
+    return false;
+  }
+  normalized_oversampled_code =
+    ((uint64_t)result->die_temp_raw * (uint64_t)result->vdda_post_uv)
+    / ML3_TARGET_TEMPSENSOR_CAL_VDDA_UV;
+  normalized_code = (int64_t)(normalized_oversampled_code
+    / (uint64_t)ADC_PRECISION_OVERSAMPLING_SCALE);
+  centic = INT64_C(3000) + ((normalized_code - (int64_t)cal1)
+    * INT64_C(10000)) / ((int64_t)cal2 - (int64_t)cal1);
+  if ((centic < (int64_t)INT32_MIN) || (centic > (int64_t)INT32_MAX))
+  {
+    return false;
+  }
+  *out_centic = (int32_t)centic;
+  return true;
+}
+
+static bool ml3_target_fill_quality_input(
+  const ml3_measurement_result_t *result,
+  ml3_quality_input_t *quality_input)
+{
+  uint64_t pre_v5_uv;
+  uint64_t post_v5_uv;
+  int32_t die_temp_centic;
+  size_t index;
+
+  if ((result == NULL) || (quality_input == NULL)
+      || !result->has_abba_raw || !result->has_valid_cycle_count
+      || !result->has_mean_hi_uv || !result->has_mean_lo_uv
+      || !result->has_median_diff_uv || !result->has_sd_uv
+      || !result->has_drift_uv || !result->has_vdda_pre_uv
+      || !result->has_vdda_post_uv
+      || (result->abba_raw_cycle_count != (uint16_t)ml3_cycles)
+      || (result->valid_cycle_count != result->abba_raw_cycle_count)
+      || (result->sd_uv < 0))
+  {
+    return false;
+  }
+  if (!ml3_target_v5_values(result, &pre_v5_uv, &post_v5_uv)
+      || !ml3_target_die_temp_centic(result, &die_temp_centic))
+  {
+    return false;
+  }
+
+  (void)memset(quality_input, 0, sizeof(*quality_input));
+  quality_input->seed_flags = result->has_faults ? result->fault_flags : 0U;
+  quality_input->valid_cycles = (uint8_t)result->valid_cycle_count;
+  quality_input->burst_cycles = (uint8_t)result->abba_raw_cycle_count;
+  quality_input->has_rail_samples = true;
+  quality_input->rail_sample_count =
+    (uint8_t)(result->abba_raw_cycle_count * 2U);
+  for (index = 0U; index < result->abba_raw_cycle_count; ++index)
+  {
+    const size_t sample_index = index * 2U;
+
+    if (!ml3_target_raw_to_uv(result->abba_h1_raw[index],
+          result->vdda_pre_uv, &quality_input->hi_samples_uv[sample_index])
+        || !ml3_target_raw_to_uv(result->abba_h2_raw[index],
+          result->vdda_pre_uv, &quality_input->hi_samples_uv[sample_index + 1U])
+        || !ml3_target_raw_to_uv(result->abba_l1_raw[index],
+          result->vdda_pre_uv, &quality_input->lo_samples_uv[sample_index])
+        || !ml3_target_raw_to_uv(result->abba_l2_raw[index],
+          result->vdda_pre_uv, &quality_input->lo_samples_uv[sample_index + 1U]))
+    {
+      return false;
+    }
+  }
+  quality_input->has_mean_hi_uv = true;
+  quality_input->mean_hi_uv = result->mean_hi_uv;
+  quality_input->has_median_diff_uv = true;
+  quality_input->median_diff_uv = result->median_diff_uv;
+  quality_input->has_mean_lo_uv = true;
+  quality_input->mean_lo_uv = result->mean_lo_uv;
+  quality_input->has_noise_sd_uv = true;
+  quality_input->noise_sd_uv = (uint64_t)result->sd_uv;
+  quality_input->has_warmup_drift_uv = true;
+  quality_input->warmup_drift_uv = result->drift_uv;
+  quality_input->has_vdda_uv = true;
+  quality_input->vdda_pre_uv = result->vdda_pre_uv;
+  quality_input->vdda_post_uv = result->vdda_post_uv;
+  quality_input->has_v5_uv = true;
+  quality_input->v5_pre_uv = pre_v5_uv;
+  quality_input->v5_post_uv = post_v5_uv;
+  quality_input->has_die_temp_centic = true;
+  quality_input->die_temp_centic = die_temp_centic;
+  quality_input->has_calibration_status = true;
+  quality_input->calibration_valid = true;
+  quality_input->has_thermistor_status = true;
+  quality_input->thermistor_valid = true;
+  return true;
+}
+
+static bool ml3_target_on_process(void *context,
+  const ml3_measurement_result_t *result)
+{
+  ml3_quality_input_t quality_input;
+  ml3_quality_thresholds_t thresholds;
+
+  (void)context;
+  if (!ml3_target_fill_quality_input(result, &quality_input))
+  {
+    return false;
+  }
+  if (ml3_quality_thresholds_from_config(&thresholds) != ML3_QUALITY_STATUS_OK)
+  {
+    return false;
+  }
+  return ml3_quality_evaluate(&quality_input, &thresholds,
+    &ml3_quality_result) == ML3_QUALITY_STATUS_OK;
+}
+
+static bool ml3_target_on_build_payload(void *context,
+  const ml3_measurement_result_t *result)
+{
+  ml3_payload_routine_t payload;
+  uint64_t pre_v5_uv;
+  uint64_t post_v5_uv;
+  int32_t die_temp_centic;
+
+  (void)context;
+  if ((result == NULL) || !result->has_sequence || !result->has_mean_hi_uv
+      || !result->has_mean_lo_uv || !result->has_vdda_pre_uv
+      || !result->has_sd_uv || (result->sd_uv < 0)
+      || !ml3_target_v5_values(result, &pre_v5_uv, &post_v5_uv)
+      || !ml3_target_die_temp_centic(result, &die_temp_centic))
+  {
+    return false;
+  }
+
+  (void)memset(&payload, 0, sizeof(payload));
+  payload.status_flags = ml3_quality_result.flags;
+  payload.sequence = result->sequence;
+  payload.corrected_diff_available = false;
+  payload.mean_hi_available = true;
+  payload.mean_hi_uncalibrated_uv = result->mean_hi_uv;
+  payload.mean_lo_available = true;
+  payload.mean_lo_uncalibrated_uv = result->mean_lo_uv;
+  payload.vdda_available = true;
+  payload.vdda_uv = (int64_t)result->vdda_pre_uv;
+  payload.v5_available = true;
+  payload.v5_uv = (int64_t)pre_v5_uv;
+  payload.noise_available = true;
+  payload.noise_uv = result->sd_uv;
+  payload.die_temperature_available = true;
+  payload.die_temperature_millic = (int64_t)die_temp_centic * INT64_C(10);
+  payload.soil_temperature_available = false;
+  payload.quality_state = ml3_quality_result.state;
+  payload.valid_cycle_count = (uint8_t)result->valid_cycle_count;
+  payload.calibration_id = 0U;
+  (void)post_v5_uv;
+  return ml3_payload_build_routine(&payload, ml3_routine_frame,
+    ML3_PAYLOAD_ROUTINE_LENGTH, ML3_PAYLOAD_ROUTINE_LENGTH,
+    &ml3_routine_frame_length) == ML3_PAYLOAD_OK;
+}
+
+static bool ml3_target_on_queue(void *context,
+  const ml3_measurement_result_t *result)
+{
+  lora_AppData_t app_data;
+
+  (void)context;
+  (void)result;
+  if (ml3_routine_frame_length != ML3_PAYLOAD_ROUTINE_LENGTH)
+  {
+    return false;
+  }
+  app_data.Buff = ml3_routine_frame;
+  app_data.BuffSize = (uint8_t)ml3_routine_frame_length;
+  app_data.Port = ML3_CONFIG_FPORT;
+  return LORA_send(&app_data, LORAWAN_UNCONFIRMED_MSG) == LORA_SUCCESS;
+}
+
+static const ml3_measurement_port_t ml3_target_measurement_port = {
+  .context = &ml3_adc_port_context,
+  .now_ms = ml3_stm32_adc_port_now_ms,
+  .read_reset_cause = ml3_target_read_reset_cause,
+  .request_radio_sleep = ml3_target_request_radio_sleep,
+  .configure_analog_pins = ml3_target_configure_analog_pins,
+  .set_power_5v = ml3_target_set_power_5v,
+  .set_thermistor_excitation = ml3_target_set_thermistor_excitation,
+  .watchdog_refresh = ml3_target_watchdog_refresh,
+  .on_process = ml3_target_on_process,
+  .on_build_payload = ml3_target_on_build_payload,
+  .on_queue = ml3_target_on_queue
+};
+
+#endif /* ML3_CONFIG_ACQUISITION_READY */
 
 static bool ml3_mode_selected(void)
 {
@@ -178,16 +507,54 @@ void BSP_ML3_Init(void)
   ml3_request_pending = false;
   ml3_battery_valid = false;
   ml3_battery_level = UINT8_C(0xFF);
-  ml3_warmup_ms = (uint16_t)ML3_CONFIG_WARMUP_TIME_MS;
-  ml3_cycles = 0U;
   ml3_raw_enabled = 0U;
   ml3_calibration_total = 0U;
   ml3_calibration_next_offset = 0U;
   ml3_calibration_staging_active = false;
+#if ML3_CONFIG_ACQUISITION_READY
+  ml3_measurement_config_t config = {
+    0U, 1U, 4U, 2U, (uint16_t)ml3_cycles,
+    0U,
+    (uint32_t)ml3_warmup_ms,
+    ML3_CONFIG_DISCHARGE_THRESHOLD_MV / 2U,
+    ML3_CONFIG_DISCHARGE_TIMEOUT_MS,
+    1U
+  };
+  adc_precision_timeouts_t ml3_adc_timeouts;
+
+  config.vrefint_calibration_word = *ML3_TARGET_VREFINT_CAL_ADDR;
+  if (adc_precision_default_timeouts(&ml3_adc_timeouts) != ADC_PRECISION_OK)
+  {
+    ml3_initialized = false;
+    return;
+  }
+  ml3_adc_timeouts.conversion_ms = 10U;
+  adc_precision_init(&ml3_adc_precision_context,
+    ml3_stm32_adc_port_get(), &ml3_adc_port_context);
+  if (ml3_measurement_init(&ml3_measurement_context, &config,
+      &ml3_target_measurement_port, &ml3_adc_precision_context,
+      &ml3_adc_timeouts) != ML3_MEASUREMENT_OK)
+  {
+    ml3_initialized = false;
+  }
+  ml3_routine_frame_length = 0U;
+#endif
 }
 
 void BSP_ML3_Service(void)
 {
+#if ML3_CONFIG_ACQUISITION_READY
+  if (!ml3_mode_selected())
+  {
+    if (ml3_measurement_context.active || ml3_active || ml3_request_pending)
+    {
+      ml3_measurement_abort(&ml3_measurement_context);
+      ml3_active = false;
+      ml3_request_pending = false;
+    }
+    return;
+  }
+#endif
   if (!ml3_mode_selected() || !ml3_initialized)
   {
     return;
@@ -203,10 +570,33 @@ void BSP_ML3_Service(void)
     return;
   }
 
-  /* The direct ADC/measurement port is added when the hardware gate supplies
-   * its channels, rail guard, and timing values. */
-  ml3_active = false;
-  ml3_request_pending = false;
+#if ML3_CONFIG_ACQUISITION_READY
+  ml3_measurement_step_t step;
+
+  if (ml3_request_pending && !ml3_measurement_context.active)
+  {
+    if (ml3_measurement_start(&ml3_measurement_context) != ML3_MEASUREMENT_OK)
+    {
+      ml3_active = false;
+      ml3_request_pending = false;
+      return;
+    }
+  }
+  if (!ml3_measurement_context.active)
+  {
+    ml3_active = false;
+    return;
+  }
+
+  step = ml3_measurement_step(&ml3_measurement_context);
+  ml3_active = ml3_measurement_context.active;
+  if ((step == ML3_MEASUREMENT_STEP_DONE)
+      || (step == ML3_MEASUREMENT_STEP_ERROR))
+  {
+    ml3_request_pending = false;
+    ml3_active = false;
+  }
+#endif
 }
 
 bool BSP_ML3_IsActive(void)
@@ -235,6 +625,9 @@ bool BSP_ML3_RequestDiagnostic(void)
 
 void BSP_ML3_Abort(void)
 {
+#if ML3_CONFIG_ACQUISITION_READY
+  ml3_measurement_abort(&ml3_measurement_context);
+#endif
   ml3_active = false;
   ml3_request_pending = false;
   ml3_battery_valid = false;
@@ -281,6 +674,12 @@ bool BSP_ML3_SetWarmup(uint16_t warmup_ms)
     return false;
   }
   ml3_warmup_ms = warmup_ms;
+#if ML3_CONFIG_ACQUISITION_READY
+  if (ml3_initialized)
+  {
+    ml3_measurement_context.config.warmup_ms = (uint32_t)warmup_ms;
+  }
+#endif
   return true;
 }
 
@@ -293,16 +692,22 @@ bool BSP_ML3_SetCycles(uint8_t cycles)
     return false;
   }
   ml3_cycles = cycles;
+#if ML3_CONFIG_ACQUISITION_READY
+  if (ml3_initialized)
+  {
+    ml3_measurement_context.config.abba_cycles = (uint16_t)cycles;
+  }
+#endif
   return true;
 }
 
 bool BSP_ML3_SetRaw(uint8_t raw_enabled)
 {
-  if ((raw_enabled > 1U) || ml3_active)
+  if ((raw_enabled != 0U) || ml3_active)
   {
     return false;
   }
-  ml3_raw_enabled = raw_enabled;
+  ml3_raw_enabled = 0U;
   return true;
 }
 

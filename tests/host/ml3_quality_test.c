@@ -95,7 +95,7 @@ static void test_public_contract(void)
   CHECK(ML3_QUALITY_INVALIDATING_MASK == UINT16_C(0x027f));
   CHECK(ML3_QUALITY_HI_MARGIN_UV == UINT64_C(100000));
   CHECK(ML3_QUALITY_DIFF_MIN_UV == INT64_C(-20000));
-  CHECK(ML3_QUALITY_DIFF_MAX_UV == INT64_C(1100000));
+  CHECK(ML3_QUALITY_DIFF_MAX_UV == INT64_C(1200000));
 
   CHECK(ML3_QUALITY_STATE_VALID == 0);
   CHECK(ML3_QUALITY_STATE_DEGRADED == 1);
@@ -469,7 +469,8 @@ static void test_differential_and_common_mode_endpoints(void)
         ML3_QUALITY_STATUS_OK);
   CHECK((result.flags & ML3_QUALITY_FLAG_DIFF_RANGE) == 0U);
 
-  input.median_diff_uv = ML3_QUALITY_DIFF_MAX_UV;
+  /* The owner-approved 1.2 V ceiling is accepted; the next microvolt is not. */
+  input.median_diff_uv = INT64_C(1200000);
   CHECK(ml3_quality_evaluate(&input, &thresholds, &result) ==
         ML3_QUALITY_STATUS_OK);
   CHECK((result.flags & ML3_QUALITY_FLAG_DIFF_RANGE) == 0U);
@@ -480,7 +481,7 @@ static void test_differential_and_common_mode_endpoints(void)
   CHECK((result.flags & ML3_QUALITY_FLAG_DIFF_RANGE) != 0U);
   CHECK(result.state == ML3_QUALITY_STATE_INVALID);
 
-  input.median_diff_uv = ML3_QUALITY_DIFF_MAX_UV + INT64_C(1);
+  input.median_diff_uv = INT64_C(1200001);
   CHECK(ml3_quality_evaluate(&input, &thresholds, &result) ==
         ML3_QUALITY_STATUS_OK);
   CHECK((result.flags & ML3_QUALITY_FLAG_DIFF_RANGE) != 0U);

@@ -18,6 +18,7 @@ typedef struct {
 
 const adc_precision_port_t *ml3_stm32_adc_port_get(void);
 bool ml3_stm32_adc_port_init(ml3_stm32_adc_port_context_t *context);
+uint32_t ml3_stm32_adc_port_now_ms(void *port_ctx);
 
 #ifdef __cplusplus
 }

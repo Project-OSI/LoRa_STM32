@@ -55,7 +55,7 @@ static uint32_t ml3_stm32_adc_port_channel_bit(uint16_t channel) {
   }
 }
 
-static uint32_t ml3_stm32_adc_port_now_ms(void *port_ctx) {
+uint32_t ml3_stm32_adc_port_now_ms(void *port_ctx) {
   ml3_stm32_adc_port_context_t *context =
     (ml3_stm32_adc_port_context_t *)port_ctx;
   uint32_t now_tick = HW_RTC_GetTimerValue();
