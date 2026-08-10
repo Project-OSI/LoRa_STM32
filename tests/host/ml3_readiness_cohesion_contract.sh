@@ -34,10 +34,23 @@ require_defined_value() {
       $3 = ""
       trailing = $0
       sub(/^[[:space:]]*/, "", trailing)
-      if ((trailing == "") ||
-          (trailing ~ /^\/\*.*\*\/[[:space:]]*$/) ||
-          (trailing ~ /^\/\/.*$/)) {
+      if (trailing == "") {
         valid_definitions++
+        next
+      }
+      if (substr(trailing, 1, 2) == "//") {
+        valid_definitions++
+        next
+      }
+      if (substr(trailing, 1, 2) == "/*") {
+        comment_end = index(trailing, "*/")
+        if (comment_end != 0) {
+          after_comment = substr(trailing, comment_end + 2)
+          sub(/^[[:space:]]*/, "", after_comment)
+          if (after_comment == "") {
+            valid_definitions++
+          }
+        }
       }
     }
     END {
