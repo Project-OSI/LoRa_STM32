@@ -2,7 +2,7 @@
 set -u
 
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-CONFIG="$ROOT_DIR/STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/inc/ml3_config.h"
+CONFIG="${ML3_CONFIG_PATH:-$ROOT_DIR/STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/inc/ml3_config.h}"
 
 failures=0
 
@@ -23,7 +23,27 @@ require_defined_value() {
   local macro=$1
   local value=$2
   local description=$3
-  if ! grep -Eq "^#define[[:space:]]+$macro[[:space:]]+$value" "$CONFIG"; then
+  if ! awk -v macro="$macro" -v value="$value" '
+    $1 == "#define" && $2 == macro {
+      definitions++
+      if ($3 != value) {
+        next
+      }
+      $1 = ""
+      $2 = ""
+      $3 = ""
+      trailing = $0
+      sub(/^[[:space:]]*/, "", trailing)
+      if ((trailing == "") ||
+          (trailing ~ /^\/\*.*\*\/[[:space:]]*$/) ||
+          (trailing ~ /^\/\/.*$/)) {
+        valid_definitions++
+      }
+    }
+    END {
+      exit((definitions == 1) && (valid_definitions == 1) ? 0 : 1)
+    }
+  ' "$CONFIG"; then
     fail "missing or wrong value: $description"
   fi
 }

@@ -2,7 +2,15 @@
 
 **Goal:** Record the Task 10B electrical configuration values without enabling acquisition, service wiring, thermistor support, or transmission.
 
-**Scope:** Change `inc/ml3_config.h` and the existing target integration contract only. Do not change vendor code, the seven protected ML3 modules, BSP service wiring, readiness expressions, or the rail procedure.
+**Scope:** Change these five Phase 2 paths:
+
+- `inc/ml3_config.h`
+- `tests/host/ml3_target_integration_contract.sh`
+- `tests/host/ml3_contract_test.c`
+- `tests/host/ml3_readiness_cohesion_contract.sh`
+- this plan
+
+The two host configuration-contract updates replace only stale zero expectations that contradict the updated Task 10B brief. They keep every readiness, acquisition, deployment, and thermistor value gated off. Do not change vendor code, the seven protected ML3 modules, BSP service wiring, readiness expressions, or the rail procedure.
 
 ## Inputs and decisions
 
@@ -21,9 +29,10 @@
 
 ## Execution
 
-1. Extend `tests/host/ml3_target_integration_contract.sh` with exact expected values for this phase and assertions that the related readiness flags and `ML3_CONFIG_ACQUISITION_READY` remain zero. Run it first and observe RED against the existing all-zero configuration.
-2. Update `inc/ml3_config.h` with the cited values and pending/readiness comments above. Do not add an unused signal-ceiling macro.
-3. Run the target integration contract, full host suite, default GCC build, BENCH GCC build, and `git diff --check`. Commit the phase with a conventional `feat:` subject and do not push.
+1. Extend `tests/host/ml3_target_integration_contract.sh` with exact expected values and with false assertions for related readiness flags and `ML3_CONFIG_ACQUISITION_READY`. Run it first and observe RED against the all-zero configuration.
+2. Replace only the stale base-value-zero expectations in `ml3_contract_test.c` and `ml3_readiness_cohesion_contract.sh`. Keep their readiness-zero checks, and leave all protected module behavior unchanged.
+3. Update `inc/ml3_config.h` with the cited values and pending/readiness comments above. Do not add an unused signal-ceiling macro.
+4. Run the target integration contract, full host suite, default GCC build, BENCH GCC build, and `git diff --check`. Commit the phase with a conventional `feat:` subject and do not push.
 
 ## Host-contract boundary
 
