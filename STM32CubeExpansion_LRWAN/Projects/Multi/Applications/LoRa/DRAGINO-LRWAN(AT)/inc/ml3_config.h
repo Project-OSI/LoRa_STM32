@@ -67,21 +67,40 @@ extern "C" {
 #define ML3_CONFIG_THERMISTOR_SETTLE_TIME_READY 0U /* PHASE2-PENDING (§3.3) */
 #define ML3_CONFIG_THERMISTOR_TABLE_POINT_COUNT 0U /* PHASE2-PENDING (§3.3) */
 #define ML3_CONFIG_THERMISTOR_TABLE_READY      0U /* PHASE2-PENDING (§3.3) */
-#define ML3_CONFIG_NOISE_WARN_UV               0U /* PHASE2-PENDING (§4.2) */
-#define ML3_CONFIG_NOISE_WARN_READY            0U /* PHASE2-PENDING (§4.2) */
-#define ML3_CONFIG_NOISE_INVALID_UV            0U /* PHASE2-PENDING (§4.2) */
-#define ML3_CONFIG_NOISE_INVALID_READY         0U /* PHASE2-PENDING (§4.2) */
-#define ML3_CONFIG_WARMUP_DRIFT_WARN_UV        0U /* PHASE2-PENDING (§4.2) */
-#define ML3_CONFIG_WARMUP_DRIFT_WARN_READY     0U /* PHASE2-PENDING (§4.2) */
-#define ML3_CONFIG_WARMUP_DRIFT_INVALID_UV     0U /* PHASE2-PENDING (§4.2) */
-#define ML3_CONFIG_WARMUP_DRIFT_INVALID_READY  0U /* PHASE2-PENDING (§4.2) */
-#define ML3_CONFIG_VDDA_DRIFT_WARN_PPM         0U /* PHASE2-PENDING (§4.2) */
-#define ML3_CONFIG_VDDA_DRIFT_WARN_READY       0U /* PHASE2-PENDING (§4.2) */
-#define ML3_CONFIG_VDDA_DRIFT_INVALID_PPM      0U /* PHASE2-PENDING (§4.2) */
-#define ML3_CONFIG_VDDA_DRIFT_INVALID_READY    0U /* PHASE2-PENDING (§4.2) */
-#define ML3_CONFIG_DIE_TEMP_MIN_CENTIC         0U /* PHASE2-PENDING (§3.7) */
-#define ML3_CONFIG_DIE_TEMP_MAX_CENTIC         0U /* PHASE2-PENDING (§3.7) */
-#define ML3_CONFIG_DIE_TEMP_RANGE_READY        0U /* PHASE2-PENDING (§3.7) */
+/*
+ * task-F1 (2026-08) trial decision: Phase 2 qualification never ran, so no
+ * measured noise, drift, or die-temperature threshold exists. Rather than
+ * invent plausible-looking numbers and present them as qualification data,
+ * every threshold below that ml3_quality_thresholds_from_config requires
+ * (noise, warm-up drift, VDDA drift, die-temperature range) is set beyond
+ * any physically achievable reading on this circuit, so it can never fire
+ * on its own. This trial sends raw microvolts to a backend that performs
+ * the soil conversion and any judgement of data quality; firmware-side
+ * noise/drift flagging adds little here, while thresholds guessed without
+ * qualification data would produce spurious flags - and a flag that cries
+ * wolf is worse than no flag, because it trains operators to ignore it.
+ * The invalidating conditions that genuinely matter - the below-floor
+ * cycle-count check, ADC fault flags, and the V5 supply range (owner
+ * hardware observation, ML3_CONFIG_V5_MINIMUM_MV/MAXIMUM_MV above) - are
+ * enforced independently of these thresholds and remain fully active.
+ * Each value/readiness pair below is marked so a future qualification
+ * pass cannot mistake it for a measurement.
+ */
+#define ML3_CONFIG_NOISE_WARN_UV               4000000U /* Trial: flagging disabled pending Phase 2 qualification; not a measured value. */
+#define ML3_CONFIG_NOISE_WARN_READY            1U /* Trial: flagging disabled pending Phase 2 qualification; not a measured value. */
+#define ML3_CONFIG_NOISE_INVALID_UV            4200000U /* Trial: flagging disabled pending Phase 2 qualification; not a measured value. */
+#define ML3_CONFIG_NOISE_INVALID_READY         1U /* Trial: flagging disabled pending Phase 2 qualification; not a measured value. */
+#define ML3_CONFIG_WARMUP_DRIFT_WARN_UV        4000000U /* Trial: flagging disabled pending Phase 2 qualification; not a measured value. */
+#define ML3_CONFIG_WARMUP_DRIFT_WARN_READY     1U /* Trial: flagging disabled pending Phase 2 qualification; not a measured value. */
+#define ML3_CONFIG_WARMUP_DRIFT_INVALID_UV     4200000U /* Trial: flagging disabled pending Phase 2 qualification; not a measured value. */
+#define ML3_CONFIG_WARMUP_DRIFT_INVALID_READY  1U /* Trial: flagging disabled pending Phase 2 qualification; not a measured value. */
+#define ML3_CONFIG_VDDA_DRIFT_WARN_PPM         900000U /* Trial: flagging disabled pending Phase 2 qualification; not a measured value. */
+#define ML3_CONFIG_VDDA_DRIFT_WARN_READY       1U /* Trial: flagging disabled pending Phase 2 qualification; not a measured value. */
+#define ML3_CONFIG_VDDA_DRIFT_INVALID_PPM      950000U /* Trial: flagging disabled pending Phase 2 qualification; not a measured value. */
+#define ML3_CONFIG_VDDA_DRIFT_INVALID_READY    1U /* Trial: flagging disabled pending Phase 2 qualification; not a measured value. */
+#define ML3_CONFIG_DIE_TEMP_MIN_CENTIC         (-50000) /* Trial: flagging disabled pending Phase 2 qualification; not a measured value. */
+#define ML3_CONFIG_DIE_TEMP_MAX_CENTIC         50000 /* Trial: flagging disabled pending Phase 2 qualification; not a measured value. */
+#define ML3_CONFIG_DIE_TEMP_RANGE_READY        1U /* Trial: flagging disabled pending Phase 2 qualification; not a measured value. */
 #define ML3_CONFIG_CAL_OFFSET_UV               0U /* PHASE2-PENDING (§3.10) */
 #define ML3_CONFIG_CAL_OFFSET_TEMPCO_UV_PER_C  0U /* PHASE2-PENDING (§3.10) */
 #define ML3_CONFIG_CAL_GAIN_PPM                0U /* PHASE2-PENDING (§3.10) */

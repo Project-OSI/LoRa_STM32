@@ -19,12 +19,15 @@
  * shape below is real, host-executed evidence for the redesigned bsp.c
  * logic - not a re-implementation of it.
  *
- * Thresholds here are a fixed synthetic baseline, independent of
- * ml3_config.h: these tests are about the no-suppression contract, which
- * must hold regardless of what the eventual threshold values are. (A
- * separate test reading ml3_config.h's actual trial values directly is
- * added alongside the Step 3 config change that picks them.)
+ * Thresholds for the no-suppression scenarios below are a fixed synthetic
+ * baseline, independent of ml3_config.h: that contract must hold
+ * regardless of what the eventual threshold values are. The Step 3 trial
+ * decision itself - noise/drift/die-temperature thresholds set beyond any
+ * physically plausible reading so they never fire, while the fixed checks
+ * (cycle floor, ADC fault flags, V5 range) keep functioning - is pinned
+ * separately below by reading ml3_config.h's actual values directly.
  */
+#include "ml3_config.h"
 #include "ml3_payload.h"
 #include "ml3_quality.h"
 
@@ -64,6 +67,36 @@ static ml3_quality_thresholds_t synthetic_thresholds(void)
   thresholds.vdda_drift_invalid_ppm = UINT32_C(5000);
   thresholds.die_temp_min_centic = INT32_C(-4000);
   thresholds.die_temp_max_centic = INT32_C(8500);
+  return thresholds;
+}
+
+/* Mirrors ml3_quality_thresholds_from_config's candidate construction,
+ * without the ML3_CONFIG_*_READY gate (that gate is exercised elsewhere;
+ * this is about whether the trial's numeric values are actually
+ * permissive for a physically plausible reading, and whether the checks
+ * the trial deliberately left active still fire). */
+static ml3_quality_thresholds_t config_thresholds(void)
+{
+  ml3_quality_thresholds_t thresholds;
+
+  thresholds.zero_ambiguity_guard_uv =
+    (uint64_t)ML3_CONFIG_ZERO_AMBIGUITY_GUARD_MV * UINT64_C(1000);
+  thresholds.common_mode_min_uv =
+    (int64_t)ML3_CONFIG_CM_RANGE_MIN_MV * INT64_C(1000);
+  thresholds.common_mode_max_uv =
+    (int64_t)ML3_CONFIG_CM_RANGE_MAX_MV * INT64_C(1000);
+  thresholds.v5_min_uv = (uint64_t)ML3_CONFIG_V5_MINIMUM_MV * UINT64_C(1000);
+  thresholds.v5_max_uv = (uint64_t)ML3_CONFIG_V5_MAXIMUM_MV * UINT64_C(1000);
+  thresholds.noise_warn_uv = (uint64_t)ML3_CONFIG_NOISE_WARN_UV;
+  thresholds.noise_invalid_uv = (uint64_t)ML3_CONFIG_NOISE_INVALID_UV;
+  thresholds.warmup_drift_warn_uv = (uint64_t)ML3_CONFIG_WARMUP_DRIFT_WARN_UV;
+  thresholds.warmup_drift_invalid_uv =
+    (uint64_t)ML3_CONFIG_WARMUP_DRIFT_INVALID_UV;
+  thresholds.vdda_drift_warn_ppm = (uint32_t)ML3_CONFIG_VDDA_DRIFT_WARN_PPM;
+  thresholds.vdda_drift_invalid_ppm =
+    (uint32_t)ML3_CONFIG_VDDA_DRIFT_INVALID_PPM;
+  thresholds.die_temp_min_centic = (int32_t)ML3_CONFIG_DIE_TEMP_MIN_CENTIC;
+  thresholds.die_temp_max_centic = (int32_t)ML3_CONFIG_DIE_TEMP_MAX_CENTIC;
   return thresholds;
 }
 
@@ -328,11 +361,124 @@ static void test_incomplete_evidence_still_transmits(void)
         ML3_PAYLOAD_OK);
 }
 
+/*
+ * Step 3 (task-F1): a clean, physically plausible full-cycle reading -
+ * small but nonzero noise and warm-up drift, an ordinary die temperature -
+ * must stay VALID under the trial's actual configured thresholds. If this
+ * ever fails, the "beyond any physically plausible reading" values in
+ * ml3_config.h are no longer permissive and need re-review.
+ */
+static void test_step3_permissive_thresholds_never_flag_plausible_reading(void)
+{
+  const ml3_quality_thresholds_t thresholds = config_thresholds();
+  ml3_quality_input_t input;
+  ml3_quality_result_t quality;
+
+  (void)memset(&input, 0, sizeof(input));
+  input.seed_flags = 0U;
+  input.valid_cycles = 4U;
+  input.burst_cycles = 4U;
+  fill_common_rail_samples(&input);
+  input.has_mean_hi_uv = true;
+  input.mean_hi_uv = INT64_C(500000);
+  input.has_median_diff_uv = true;
+  input.median_diff_uv = INT64_C(450000);
+  input.has_mean_lo_uv = true;
+  input.mean_lo_uv = INT64_C(50000);
+  input.has_noise_sd_uv = true;
+  input.noise_sd_uv = UINT64_C(2000);
+  input.has_warmup_drift_uv = true;
+  input.warmup_drift_uv = INT64_C(3000);
+  input.has_die_temp_centic = true;
+  input.die_temp_centic = INT32_C(4500);
+
+  CHECK(ml3_quality_evaluate(&input, &thresholds, &quality) ==
+        ML3_QUALITY_STATUS_OK);
+  CHECK(quality.state == ML3_QUALITY_STATE_VALID);
+  CHECK(quality.flags == 0U);
+}
+
+/*
+ * Step 3's permissive noise/drift/die-temp thresholds must not weaken the
+ * checks the trial deliberately kept active: the below-floor cycle-count
+ * decision, ADC fault flags, and the V5 supply range (owner hardware
+ * observation, unrelated to Phase 2 qualification).
+ */
+static void test_step3_fixed_invalidating_checks_still_function(void)
+{
+  const ml3_quality_thresholds_t thresholds = config_thresholds();
+  ml3_quality_input_t input;
+  ml3_quality_result_t quality;
+
+  /* Below-floor cycle count, otherwise clean. */
+  (void)memset(&input, 0, sizeof(input));
+  input.seed_flags = 0U;
+  input.valid_cycles = 2U;
+  input.burst_cycles = 4U;
+  fill_common_rail_samples(&input);
+  input.has_die_temp_centic = true;
+  input.die_temp_centic = INT32_C(3000);
+  CHECK(ml3_quality_evaluate(&input, &thresholds, &quality) ==
+        ML3_QUALITY_STATUS_OK);
+  CHECK(quality.state == ML3_QUALITY_STATE_INVALID);
+
+  /* ADC fault flag, otherwise a full clean 4-cycle burst. */
+  (void)memset(&input, 0, sizeof(input));
+  input.seed_flags = (uint16_t)ML3_QUALITY_FLAG_ADC_CAL;
+  input.valid_cycles = 4U;
+  input.burst_cycles = 4U;
+  fill_common_rail_samples(&input);
+  input.has_mean_hi_uv = true;
+  input.mean_hi_uv = INT64_C(500000);
+  input.has_median_diff_uv = true;
+  input.median_diff_uv = INT64_C(450000);
+  input.has_mean_lo_uv = true;
+  input.mean_lo_uv = INT64_C(50000);
+  input.has_noise_sd_uv = true;
+  input.noise_sd_uv = UINT64_C(100);
+  input.has_warmup_drift_uv = true;
+  input.warmup_drift_uv = INT64_C(500);
+  input.has_die_temp_centic = true;
+  input.die_temp_centic = INT32_C(3000);
+  CHECK(ml3_quality_evaluate(&input, &thresholds, &quality) ==
+        ML3_QUALITY_STATUS_OK);
+  CHECK(quality.state == ML3_QUALITY_STATE_INVALID);
+  CHECK((quality.flags & (uint16_t)ML3_QUALITY_FLAG_ADC_CAL) != 0U);
+
+  /* V5 supply below the owner-approved range, otherwise clean. */
+  (void)memset(&input, 0, sizeof(input));
+  input.seed_flags = 0U;
+  input.valid_cycles = 4U;
+  input.burst_cycles = 4U;
+  fill_common_rail_samples(&input);
+  input.v5_pre_uv = (uint64_t)ML3_CONFIG_V5_MINIMUM_MV * UINT64_C(1000)
+    - UINT64_C(1000);
+  input.v5_post_uv = input.v5_pre_uv;
+  input.has_mean_hi_uv = true;
+  input.mean_hi_uv = INT64_C(500000);
+  input.has_median_diff_uv = true;
+  input.median_diff_uv = INT64_C(450000);
+  input.has_mean_lo_uv = true;
+  input.mean_lo_uv = INT64_C(50000);
+  input.has_noise_sd_uv = true;
+  input.noise_sd_uv = UINT64_C(100);
+  input.has_warmup_drift_uv = true;
+  input.warmup_drift_uv = INT64_C(500);
+  input.has_die_temp_centic = true;
+  input.die_temp_centic = INT32_C(3000);
+  CHECK(ml3_quality_evaluate(&input, &thresholds, &quality) ==
+        ML3_QUALITY_STATUS_OK);
+  CHECK(quality.state == ML3_QUALITY_STATE_INVALID);
+  CHECK((quality.flags & (uint16_t)ML3_QUALITY_FLAG_V5_LOW) != 0U);
+}
+
 int main(void)
 {
   test_reduced_valid_cycles_is_a_good_reading();
   test_below_floor_reading_still_transmits();
   test_incomplete_evidence_still_transmits();
+  test_step3_permissive_thresholds_never_flag_plausible_reading();
+  test_step3_fixed_invalidating_checks_still_function();
 
   if (failures != 0) {
     (void)fprintf(stderr, "ml3 bsp frame contract: %d failure(s)\n", failures);

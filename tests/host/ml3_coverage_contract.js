@@ -91,7 +91,9 @@ const categories = [
     evidence: [
       'test_reduced_valid_cycles_is_a_good_reading',
       'test_below_floor_reading_still_transmits',
-      'test_incomplete_evidence_still_transmits'
+      'test_incomplete_evidence_still_transmits',
+      'test_step3_permissive_thresholds_never_flag_plausible_reading',
+      'test_step3_fixed_invalidating_checks_still_function'
     ],
     runnerSource: 'BSP_FRAME_CONTRACT_TEST',
     runnerBinary: 'ml3_bsp_frame_contract_test'
