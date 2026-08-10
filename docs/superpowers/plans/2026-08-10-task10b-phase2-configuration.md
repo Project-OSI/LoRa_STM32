@@ -16,7 +16,7 @@ The two host configuration-contract updates replace only stale zero expectations
 
 - `ML3_CONFIG_PB5_ACTIVE_LOW` is `1U`, from the active-low vendor control identified in Task 10B brief line 52. Its readiness flag remains zero until Phase 4.
 - The zero-ambiguity guard is `2U` mV, from the Task 10B brief line 70 and the Gate 0 §4 macro feed. Its readiness flag remains zero.
-- The LO common-mode observation is 5.0–7.2 mV. Apply a stated 2 mV margin: 3–10 mV. This is a derivation from Task 10B brief line 71, not a fresh measurement. Its readiness flag remains zero.
+- The owner superseded the earlier 3–10 mV derivation with a 0–100 mV trial envelope. It is for detecting gross disconnected or shorted legs, not for routinely degrading valid probes as temperatures vary. Its readiness flag remains zero.
 - Warm-up is `1500U` ms, provisional from Task 10B brief line 73. Its readiness flag remains zero.
 - The 4.5–5.5 V supply limits, 0.5 divider ratio, and discharge threshold/time are the owner hardware observations in Task 10B brief lines 74–82. They are not bench measurements. The divider comment must say that the fitted equal 1 kΩ divider is required: a floating PA4 appears as a failed rail. Their readiness flags remain zero.
 

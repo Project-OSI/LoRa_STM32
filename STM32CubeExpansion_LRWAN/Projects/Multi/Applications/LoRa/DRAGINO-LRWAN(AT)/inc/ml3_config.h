@@ -29,8 +29,8 @@ extern "C" {
 #define ML3_CONFIG_THERMISTOR_EXCITATION_GPIO_READY 0U /* GATE0-PENDING (§3.3; circuit fitted and checked) */
 #define ML3_CONFIG_ZERO_AMBIGUITY_GUARD_MV     2U /* Gate 0 §4:52 and Task 10B brief:70. */
 #define ML3_CONFIG_ZERO_AMBIGUITY_GUARD_READY  0U /* GATE0-PENDING (§2.3) */
-#define ML3_CONFIG_CM_RANGE_MIN_MV             3U /* Task 10B brief:71; 5 mV observed minimum less 2 mV margin. */
-#define ML3_CONFIG_CM_RANGE_MAX_MV             10U /* Task 10B brief:71; 7.2 mV plus 2 mV margin, rounded outward to whole mV. */
+#define ML3_CONFIG_CM_RANGE_MIN_MV             0U /* GATE0-PENDING (§2.2): owner-approved trial envelope detects gross disconnected or shorted legs. */
+#define ML3_CONFIG_CM_RANGE_MAX_MV             100U /* Avoid routinely degrading valid probes across temperature. */
 #define ML3_CONFIG_CM_RANGE_READY              0U /* GATE0-PENDING (§2.2) */
 /* Two fitted equal 1 kΩ resistors wire +5V (14) -> PA4 (26) -> GND (15).
  * The nominal 0.5 ratio is required: a floating PA4 reads as a failed rail. */

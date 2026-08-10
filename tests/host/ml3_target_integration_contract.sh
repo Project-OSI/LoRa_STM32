@@ -179,10 +179,10 @@ require '^#define[[:space:]]+ML3_CONFIG_PB5_ACTIVE_LOW[[:space:]]+1U[[:space:]]*
   'PB5 active-low configuration is not set'
 require '^#define[[:space:]]+ML3_CONFIG_ZERO_AMBIGUITY_GUARD_MV[[:space:]]+2U[[:space:]]*/\*' "$CONFIG" \
   'zero-ambiguity guard is not 2 mV'
-require '^#define[[:space:]]+ML3_CONFIG_CM_RANGE_MIN_MV[[:space:]]+3U[[:space:]]*/\*' "$CONFIG" \
-  'common-mode minimum is not 3 mV'
-require '^#define[[:space:]]+ML3_CONFIG_CM_RANGE_MAX_MV[[:space:]]+10U[[:space:]]*/\*' "$CONFIG" \
-  'common-mode maximum is not 10 mV'
+require '^#define[[:space:]]+ML3_CONFIG_CM_RANGE_MIN_MV[[:space:]]+0U[[:space:]]*/\*' "$CONFIG" \
+  'common-mode minimum is not 0 mV'
+require '^#define[[:space:]]+ML3_CONFIG_CM_RANGE_MAX_MV[[:space:]]+100U[[:space:]]*/\*' "$CONFIG" \
+  'common-mode maximum is not 100 mV'
 require '^#define[[:space:]]+ML3_CONFIG_V5_DIVIDER_RATIO_PPM[[:space:]]+500000U[[:space:]]*/\*' "$CONFIG" \
   'V5 divider ratio is not 500000 ppm'
 require '^#define[[:space:]]+ML3_CONFIG_V5_MINIMUM_MV[[:space:]]+4500U[[:space:]]*/\*' "$CONFIG" \
@@ -222,8 +222,8 @@ if ! printf '%s\n' \
   'typedef char thermistor_excitation_ready_stays_off[(ML3_CONFIG_THERMISTOR_EXCITATION_GPIO_READY == 0U) ? 1 : -1];' \
   'typedef char pb5_active_low_is_set[(ML3_CONFIG_PB5_ACTIVE_LOW == 1U) ? 1 : -1];' \
   'typedef char zero_guard_is_2mv[(ML3_CONFIG_ZERO_AMBIGUITY_GUARD_MV == 2U) ? 1 : -1];' \
-  'typedef char common_mode_minimum_is_3mv[(ML3_CONFIG_CM_RANGE_MIN_MV == 3U) ? 1 : -1];' \
-  'typedef char common_mode_maximum_is_10mv[(ML3_CONFIG_CM_RANGE_MAX_MV == 10U) ? 1 : -1];' \
+  'typedef char common_mode_minimum_is_0mv[(ML3_CONFIG_CM_RANGE_MIN_MV == 0U) ? 1 : -1];' \
+  'typedef char common_mode_maximum_is_100mv[(ML3_CONFIG_CM_RANGE_MAX_MV == 100U) ? 1 : -1];' \
   'typedef char v5_divider_is_500000ppm[(ML3_CONFIG_V5_DIVIDER_RATIO_PPM == 500000U) ? 1 : -1];' \
   'typedef char v5_minimum_is_4500mv[(ML3_CONFIG_V5_MINIMUM_MV == 4500U) ? 1 : -1];' \
   'typedef char v5_maximum_is_5500mv[(ML3_CONFIG_V5_MAXIMUM_MV == 5500U) ? 1 : -1];' \
@@ -336,6 +336,8 @@ if [ -f "$ADC_PORT_C" ]; then
     require "$marker" "$ADC_PORT_C" "ADC port is missing $marker"
   done
 
+  init_body=$(extract_port_function 'ml3_stm32_adc_port_init')
+
   require_port_function_line \
     'ml3_stm32_adc_port_init' \
     'RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;' \
@@ -344,8 +346,44 @@ if [ -f "$ADC_PORT_C" ]; then
     'ml3_stm32_adc_port_init' \
     'RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;' \
     'ADC port init does not enable the ADC1 peripheral clock'
+  require_port_function_line \
+    'ml3_stm32_adc_port_init' \
+    'HW_GPIO_Init(GPIOA, GPIO_PIN_0, &init);' \
+    'ADC port init does not configure PA0 as an analog input'
+  require_port_function_line \
+    'ml3_stm32_adc_port_init' \
+    'HW_GPIO_Init(GPIOA, GPIO_PIN_1, &init);' \
+    'ADC port init does not configure PA1 as an analog input'
+  require_port_function_line \
+    'ml3_stm32_adc_port_init' \
+    'HW_GPIO_Init(GPIOA, GPIO_PIN_4, &init);' \
+    'ADC port init does not configure PA4 as an analog input'
+  require_port_function_line \
+    'ml3_stm32_adc_port_init' \
+    'init.Mode = GPIO_MODE_ANALOG;' \
+    'ADC port init does not select analog GPIO mode'
+  require_port_function_line \
+    'ml3_stm32_adc_port_init' \
+    'init.Pull = GPIO_NOPULL;' \
+    'ADC port init does not select no GPIO pull'
+  if printf '%s\n' "$init_body" | grep -Fq 'HW_GPIO_Init(GPIOA, GPIO_PIN_2, &init);'; then
+    fail 'ADC port init must preserve PA2 for LPUART1 TX'
+  fi
+  require 'PA2 remains LPUART1 TX' "$ADC_PORT_C" \
+    'ADC port does not document the intentional PA2 UART exception'
+  require 'all four ready callbacks observe this one bit' "$ADC_PORT_C" \
+    'ADC port does not document the shared STM32L072 ready flag'
+  require 'is_reference_settled supplies the independent elapsed-time guard' "$ADC_PORT_C" \
+    'ADC port does not document the independent VREFINT settle guard'
+  require 'N_PREDIV_S = 10' "$ADC_PORT_C" \
+    'ADC port does not document the RTC predivider for VREFINT settling'
+  require 'approximately 1.95 ms' "$ADC_PORT_C" \
+    'ADC port does not document the two-tick VREFINT settle duration'
+  require 'documented 10 us VREFINT requirement' "$ADC_PORT_C" \
+    'ADC port does not document the VREFINT settle requirement'
+  require 'HW_RTC_Tick2ms\(raw_tick\) resets when the 32-bit raw counter wraps' "$ADC_PORT_C" \
+    'ADC port does not document why the RTC wrap epoch is required'
 
-  init_body=$(extract_port_function 'ml3_stm32_adc_port_init')
   if ! printf '%s\n' "$init_body" | awk '
       /if \(context == NULL\)/ { null_check_line = NR }
       null_check_line > 0 && /return false;/ { reject_line = NR }

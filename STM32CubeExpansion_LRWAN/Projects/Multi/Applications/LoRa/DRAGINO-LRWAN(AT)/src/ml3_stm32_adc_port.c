@@ -16,8 +16,18 @@
 #pragma GCC diagnostic pop
 #endif
 
+/* hw_rtc.c sets N_PREDIV_S = 10, so the raw RTC counter runs at 1024 Hz:
+ * one tick is about 976.6 us and two ticks are approximately 1.95 ms. This
+ * exceeds the documented 10 us VREFINT requirement with large margin and
+ * covers the observed residual settling tail without adding an unbounded
+ * delay. */
 enum { ML3_STM32_ADC_VREFINT_SETTLE_TICKS = 2U };
 
+/* HW_RTC_Tick2ms(raw_tick) resets when the 32-bit raw counter wraps. Plain
+ * subtraction of converted milliseconds would therefore produce the wrong
+ * elapsed value at that boundary. This raw-tick epoch bridge keeps the
+ * uint32_t millisecond timeline monotonic; every seconds-long acquisition
+ * samples the tick continuously. */
 #define ML3_STM32_ADC_RTC_WRAP_MS UINT32_C(4194304000)
 
 static ml3_stm32_adc_port_context_t *ml3_stm32_adc_port_active_context;
@@ -174,6 +184,12 @@ static void ml3_stm32_adc_port_enable_temperature_buffer_gate(void *port_ctx) {
   SYSCFG->CFGR3 |= SYSCFG_CFGR3_ENBUF_SENSOR_ADC;
 }
 
+/* STM32L072 exposes only SYSCFG_CFGR3_VREFINT_RDYF for this group: the
+ * SENSOR_ADC_RDYF, VREFINT_ADC_RDYF, and VREFINT_COMP_RDYF names alias it.
+ * The adc_precision_port_t names are retained for its generic interface, but
+ * all four ready callbacks observe this one bit and do not independently
+ * prove temperature or buffer readiness.
+ * is_reference_settled supplies the independent elapsed-time guard. */
 static bool ml3_stm32_adc_port_is_vrefint_ready(void *port_ctx) {
   if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
     return false;
@@ -283,6 +299,8 @@ const adc_precision_port_t *ml3_stm32_adc_port_get(void) {
 }
 
 bool ml3_stm32_adc_port_init(ml3_stm32_adc_port_context_t *context) {
+  GPIO_InitTypeDef init;
+
   if (context == NULL) {
     return false;
   }
@@ -292,6 +310,16 @@ bool ml3_stm32_adc_port_init(ml3_stm32_adc_port_context_t *context) {
   context->rtc_tick_initialized = false;
   RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
   RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;
+
+  init.Mode = GPIO_MODE_ANALOG;
+  init.Pull = GPIO_NOPULL;
+  init.Speed = GPIO_SPEED_FREQ_HIGH;
+  HW_GPIO_Init(GPIOA, GPIO_PIN_0, &init);
+  HW_GPIO_Init(GPIOA, GPIO_PIN_1, &init);
+  HW_GPIO_Init(GPIOA, GPIO_PIN_4, &init);
+  /* PA2 remains LPUART1 TX. It is ADC_IN2, but the trial reads that channel
+   * passively and must not take over the vendor UART pin. */
+
   ml3_stm32_adc_port_active_context = context;
   return true;
 }
