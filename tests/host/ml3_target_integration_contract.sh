@@ -11,6 +11,7 @@ MAIN="$APP_DIR/src/main.c"
 PROJECT="$APP_DIR/MDK-ARM/STM32L072CZ-Nucleo/Lora.uvprojx"
 BENCH_ADC_C="$APP_DIR/src/bench_adc.c"
 BENCH_ADC_H="$APP_DIR/inc/bench_adc.h"
+RTC_C="$APP_DIR/src/hw_rtc.c"
 LORA="$APP_DIR/src/lora.c"
 ADC_PORT_C=${ML3_ADC_PORT_C:-"$APP_DIR/src/ml3_stm32_adc_port.c"}
 ADC_PORT_H="$APP_DIR/inc/ml3_stm32_adc_port.h"
@@ -337,6 +338,7 @@ if [ -f "$ADC_PORT_C" ]; then
   done
 
   init_body=$(extract_port_function 'ml3_stm32_adc_port_init')
+  configure_body=$(extract_port_function 'ml3_stm32_adc_port_configure')
 
   require_port_function_line \
     'ml3_stm32_adc_port_init' \
@@ -366,9 +368,16 @@ if [ -f "$ADC_PORT_C" ]; then
     'ml3_stm32_adc_port_init' \
     'init.Pull = GPIO_NOPULL;' \
     'ADC port init does not select no GPIO pull'
-  if printf '%s\n' "$init_body" | grep -Fq 'HW_GPIO_Init(GPIOA, GPIO_PIN_2, &init);'; then
-    fail 'ADC port init must preserve PA2 for LPUART1 TX'
-  fi
+  require_port_function_line \
+    'ml3_stm32_adc_port_init' \
+    'init.Speed = GPIO_SPEED_FREQ_HIGH;' \
+    'ADC port init does not match the bench GPIO speed'
+  for gpio_body in "$init_body" "$configure_body"; do
+    if printf '%s\n' "$gpio_body" | grep -Fq 'GPIO_PIN_2'; then
+      fail 'ADC port init and configure must preserve PA2 for LPUART1 TX'
+      break
+    fi
+  done
   require 'PA2 remains LPUART1 TX' "$ADC_PORT_C" \
     'ADC port does not document the intentional PA2 UART exception'
   require 'all four ready callbacks observe this one bit' "$ADC_PORT_C" \
@@ -377,12 +386,21 @@ if [ -f "$ADC_PORT_C" ]; then
     'ADC port does not document the independent VREFINT settle guard'
   require 'N_PREDIV_S = 10' "$ADC_PORT_C" \
     'ADC port does not document the RTC predivider for VREFINT settling'
+  require '^#define[[:space:]]+N_PREDIV_S[[:space:]]+10$' "$RTC_C" \
+    'vendor RTC predivider is not N_PREDIV_S = 10'
   require 'approximately 1.95 ms' "$ADC_PORT_C" \
     'ADC port does not document the two-tick VREFINT settle duration'
   require 'documented 10 us VREFINT requirement' "$ADC_PORT_C" \
     'ADC port does not document the VREFINT settle requirement'
-  require 'HW_RTC_Tick2ms\(raw_tick\) resets when the 32-bit raw counter wraps' "$ADC_PORT_C" \
-    'ADC port does not document why the RTC wrap epoch is required'
+  if ! grep -Fq 'HW_RTC_Tick2ms uses floor(raw_tick * 125 / 128)' "$ADC_PORT_C"; then
+    fail 'ADC port does not document the RTC tick-to-millisecond arithmetic'
+  fi
+  if ! grep -Fq 'raw counter wrap has a ~4,194,304,000ms period' "$ADC_PORT_C"; then
+    fail 'ADC port does not document the raw RTC wrap period'
+  fi
+  if ! grep -Fq 'epoch makes the uint32_t millisecond time continuous modulo 2^32 for sampled acquisitions' "$ADC_PORT_C"; then
+    fail 'ADC port does not document the RTC epoch continuity boundary'
+  fi
 
   if ! printf '%s\n' "$init_body" | awk '
       /if \(context == NULL\)/ { null_check_line = NR }

@@ -23,11 +23,10 @@
  * delay. */
 enum { ML3_STM32_ADC_VREFINT_SETTLE_TICKS = 2U };
 
-/* HW_RTC_Tick2ms(raw_tick) resets when the 32-bit raw counter wraps. Plain
- * subtraction of converted milliseconds would therefore produce the wrong
- * elapsed value at that boundary. This raw-tick epoch bridge keeps the
- * uint32_t millisecond timeline monotonic; every seconds-long acquisition
- * samples the tick continuously. */
+/* HW_RTC_Tick2ms uses floor(raw_tick * 125 / 128), so it resets when the
+ * 32-bit raw counter wraps. The raw counter wrap has a ~4,194,304,000ms period;
+ * plain subtraction of converted milliseconds would therefore produce the
+ * wrong elapsed value at that boundary. The epoch makes the uint32_t millisecond time continuous modulo 2^32 for sampled acquisitions. */
 #define ML3_STM32_ADC_RTC_WRAP_MS UINT32_C(4194304000)
 
 static ml3_stm32_adc_port_context_t *ml3_stm32_adc_port_active_context;

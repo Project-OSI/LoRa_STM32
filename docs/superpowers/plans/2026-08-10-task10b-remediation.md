@@ -19,7 +19,7 @@
 
 - [x] **Step 1: Write the failing port-contract checks**
 
-  Require `ml3_stm32_adc_port_init` to configure PA0, PA1, and PA4 as `GPIO_MODE_ANALOG` with `GPIO_NOPULL`. Require the source to state that PA2 is preserved as LPUART1 TX and that all four generic reference-ready callbacks observe the STM32L072 single `SYSCFG_CFGR3_VREFINT_RDYF` bit. Require the two-tick VREFINT explanation and the RTC-wrap explanation.
+  Require `ml3_stm32_adc_port_init` to configure PA0, PA1, and PA4 as `GPIO_MODE_ANALOG`, `GPIO_NOPULL`, and `GPIO_SPEED_FREQ_HIGH`. Bound the PA2 preservation check to the init and configure functions, rejecting any `GPIO_PIN_2` use there while allowing ADC channel 2 elsewhere. Require the source to state that all four generic reference-ready callbacks observe the STM32L072 single `SYSCFG_CFGR3_VREFINT_RDYF` bit. Pin the vendor `N_PREDIV_S = 10` setting, the two-tick VREFINT explanation, and the exact RTC conversion and modulo-`uint32_t` wrap explanation.
 
 - [x] **Step 2: Run the target contract and verify RED**
 
