@@ -280,29 +280,39 @@ static bool ml3_target_die_temp_centic(
   return true;
 }
 
+/*
+ * Populate the quality module's input from whatever the measurement engine
+ * actually produced. A reduced valid-cycle count (any per-cycle ABBA fault,
+ * commit 8202ae8) and absent burst statistics (below the three-cycle
+ * validity floor - ml3_measurement.c compute_uv_stats returns without
+ * setting the mean/median/noise/drift fields once valid_count < 3) are both
+ * normal, expected input, not reasons to discard the reading. They pass
+ * through to quality evaluation unmodified: it already applies its own
+ * floor (ml3_quality.c, valid_cycles < 3) and marks incomplete evidence
+ * when a field it needs is missing; duplicating either decision here would
+ * risk disagreeing with it. Every optional field below is copied through
+ * with its own has_* flag rather than being required, so an absent value
+ * becomes an unavailable field in ml3_quality_input_t (and, downstream, a
+ * transmitted sentinel) instead of an all-or-nothing rejection.
+ *
+ * Only a NULL argument or a result the engine never populated at all (no
+ * has_abba_raw / no has_valid_cycle_count) is genuinely unusable and
+ * rejected here.
+ */
 static bool ml3_target_fill_quality_input(
   const ml3_measurement_result_t *result,
   ml3_quality_input_t *quality_input)
 {
-  uint64_t pre_v5_uv;
-  uint64_t post_v5_uv;
-  int32_t die_temp_centic;
+  uint64_t pre_v5_uv = 0U;
+  uint64_t post_v5_uv = 0U;
+  int32_t die_temp_centic = 0;
+  bool rail_samples_ok;
+  bool v5_ok;
+  bool die_temp_ok;
   size_t index;
 
   if ((result == NULL) || (quality_input == NULL)
-      || !result->has_abba_raw || !result->has_valid_cycle_count
-      || !result->has_mean_hi_uv || !result->has_mean_lo_uv
-      || !result->has_median_diff_uv || !result->has_sd_uv
-      || !result->has_drift_uv || !result->has_vdda_pre_uv
-      || !result->has_vdda_post_uv
-      || (result->abba_raw_cycle_count != (uint16_t)ml3_cycles)
-      || (result->valid_cycle_count != result->abba_raw_cycle_count)
-      || (result->sd_uv < 0))
-  {
-    return false;
-  }
-  if (!ml3_target_v5_values(result, &pre_v5_uv, &post_v5_uv)
-      || !ml3_target_die_temp_centic(result, &die_temp_centic))
+      || !result->has_abba_raw || !result->has_valid_cycle_count)
   {
     return false;
   }
@@ -311,10 +321,12 @@ static bool ml3_target_fill_quality_input(
   quality_input->seed_flags = result->has_faults ? result->fault_flags : 0U;
   quality_input->valid_cycles = (uint8_t)result->valid_cycle_count;
   quality_input->burst_cycles = (uint8_t)result->abba_raw_cycle_count;
-  quality_input->has_rail_samples = true;
-  quality_input->rail_sample_count =
-    (uint8_t)(result->abba_raw_cycle_count * 2U);
-  for (index = 0U; index < result->abba_raw_cycle_count; ++index)
+
+  rail_samples_ok = result->has_vdda_pre_uv
+    && (result->abba_raw_cycle_count > 0U);
+  for (index = 0U;
+       rail_samples_ok && (index < result->abba_raw_cycle_count);
+       ++index)
   {
     const size_t sample_index = index * 2U;
 
@@ -327,27 +339,48 @@ static bool ml3_target_fill_quality_input(
         || !ml3_target_raw_to_uv(result->abba_l2_raw[index],
           result->vdda_pre_uv, &quality_input->lo_samples_uv[sample_index + 1U]))
     {
-      return false;
+      rail_samples_ok = false;
     }
   }
-  quality_input->has_mean_hi_uv = true;
-  quality_input->mean_hi_uv = result->mean_hi_uv;
-  quality_input->has_median_diff_uv = true;
-  quality_input->median_diff_uv = result->median_diff_uv;
-  quality_input->has_mean_lo_uv = true;
-  quality_input->mean_lo_uv = result->mean_lo_uv;
-  quality_input->has_noise_sd_uv = true;
-  quality_input->noise_sd_uv = (uint64_t)result->sd_uv;
-  quality_input->has_warmup_drift_uv = true;
-  quality_input->warmup_drift_uv = result->drift_uv;
-  quality_input->has_vdda_uv = true;
-  quality_input->vdda_pre_uv = result->vdda_pre_uv;
-  quality_input->vdda_post_uv = result->vdda_post_uv;
-  quality_input->has_v5_uv = true;
-  quality_input->v5_pre_uv = pre_v5_uv;
-  quality_input->v5_post_uv = post_v5_uv;
-  quality_input->has_die_temp_centic = true;
-  quality_input->die_temp_centic = die_temp_centic;
+  quality_input->has_rail_samples = rail_samples_ok;
+  quality_input->rail_sample_count = rail_samples_ok
+    ? (uint8_t)(result->abba_raw_cycle_count * 2U) : 0U;
+
+  quality_input->has_mean_hi_uv = result->has_mean_hi_uv;
+  quality_input->mean_hi_uv =
+    result->has_mean_hi_uv ? result->mean_hi_uv : 0;
+  quality_input->has_median_diff_uv = result->has_median_diff_uv;
+  quality_input->median_diff_uv =
+    result->has_median_diff_uv ? result->median_diff_uv : 0;
+  quality_input->has_mean_lo_uv = result->has_mean_lo_uv;
+  quality_input->mean_lo_uv =
+    result->has_mean_lo_uv ? result->mean_lo_uv : 0;
+  quality_input->has_noise_sd_uv = result->has_sd_uv && (result->sd_uv >= 0);
+  quality_input->noise_sd_uv =
+    quality_input->has_noise_sd_uv ? (uint64_t)result->sd_uv : 0U;
+  quality_input->has_warmup_drift_uv = result->has_drift_uv;
+  quality_input->warmup_drift_uv =
+    result->has_drift_uv ? result->drift_uv : 0;
+
+  quality_input->has_vdda_uv =
+    result->has_vdda_pre_uv && result->has_vdda_post_uv;
+  quality_input->vdda_pre_uv =
+    result->has_vdda_pre_uv ? result->vdda_pre_uv : 0U;
+  quality_input->vdda_post_uv =
+    result->has_vdda_post_uv ? result->vdda_post_uv : 0U;
+
+  v5_ok = ml3_target_v5_values(result, &pre_v5_uv, &post_v5_uv);
+  quality_input->has_v5_uv = v5_ok;
+  quality_input->v5_pre_uv = v5_ok ? pre_v5_uv : 0U;
+  quality_input->v5_post_uv = v5_ok ? post_v5_uv : 0U;
+
+  die_temp_ok = ml3_target_die_temp_centic(result, &die_temp_centic);
+  quality_input->has_die_temp_centic = die_temp_ok;
+  quality_input->die_temp_centic = die_temp_ok ? die_temp_centic : 0;
+
+  /* No EEPROM calibration and no thermistor circuit in this trial's scope
+   * (docs/2026-07-12-lsn50v2-ml3-firmware-plan.md); both report as always
+   * valid rather than as a fault this adapter cannot actually detect. */
   quality_input->has_calibration_status = true;
   quality_input->calibration_valid = true;
   quality_input->has_thermistor_status = true;
@@ -360,6 +393,7 @@ static bool ml3_target_on_process(void *context,
 {
   ml3_quality_input_t quality_input;
   ml3_quality_thresholds_t thresholds;
+  ml3_quality_status_t status;
 
   (void)context;
   if (!ml3_target_fill_quality_input(result, &quality_input))
@@ -370,49 +404,76 @@ static bool ml3_target_on_process(void *context,
   {
     return false;
   }
-  return ml3_quality_evaluate(&quality_input, &thresholds,
-    &ml3_quality_result) == ML3_QUALITY_STATUS_OK;
+  status = ml3_quality_evaluate(&quality_input, &thresholds,
+    &ml3_quality_result);
+  /*
+   * STATUS_INCOMPLETE still fully populates ml3_quality_result (state
+   * INVALID, incomplete_reason recorded): that is the quality module's own
+   * signal that required evidence was missing, and per plan section 3.9 it
+   * must reach the radio like any other invalid reading, not be dropped.
+   * Only INVALID_ARGUMENT/CONFIG_PENDING leave the result unpopulated, so
+   * those remain the only cases treated as a build failure here.
+   */
+  return (status == ML3_QUALITY_STATUS_OK)
+    || (status == ML3_QUALITY_STATUS_INCOMPLETE);
 }
 
+/*
+ * Every numeric field below is modeled by ml3_payload_routine_t as
+ * available/unavailable; ml3_payload_build_routine already encodes a
+ * sentinel for whichever fields are marked unavailable (and forces every
+ * numeric field to a sentinel when status_flags carries a core ADC
+ * failure), so a value missing here becomes a sentinel in the transmitted
+ * frame, not a dropped frame (plan section 3.9). sequence has no sentinel
+ * representation in the frame format, so a result without one is the one
+ * case this still refuses to build.
+ */
 static bool ml3_target_on_build_payload(void *context,
   const ml3_measurement_result_t *result)
 {
   ml3_payload_routine_t payload;
-  uint64_t pre_v5_uv;
-  uint64_t post_v5_uv;
-  int32_t die_temp_centic;
+  uint64_t pre_v5_uv = 0U;
+  uint64_t post_v5_uv = 0U;
+  int32_t die_temp_centic = 0;
+  bool v5_ok;
+  bool die_temp_ok;
+  bool noise_ok;
 
   (void)context;
-  if ((result == NULL) || !result->has_sequence || !result->has_mean_hi_uv
-      || !result->has_mean_lo_uv || !result->has_vdda_pre_uv
-      || !result->has_sd_uv || (result->sd_uv < 0)
-      || !ml3_target_v5_values(result, &pre_v5_uv, &post_v5_uv)
-      || !ml3_target_die_temp_centic(result, &die_temp_centic))
+  if ((result == NULL) || !result->has_sequence)
   {
     return false;
   }
+
+  v5_ok = ml3_target_v5_values(result, &pre_v5_uv, &post_v5_uv);
+  die_temp_ok = ml3_target_die_temp_centic(result, &die_temp_centic);
+  noise_ok = result->has_sd_uv && (result->sd_uv >= 0);
+  (void)post_v5_uv;
 
   (void)memset(&payload, 0, sizeof(payload));
   payload.status_flags = ml3_quality_result.flags;
   payload.sequence = result->sequence;
   payload.corrected_diff_available = false;
-  payload.mean_hi_available = true;
-  payload.mean_hi_uncalibrated_uv = result->mean_hi_uv;
-  payload.mean_lo_available = true;
-  payload.mean_lo_uncalibrated_uv = result->mean_lo_uv;
-  payload.vdda_available = true;
-  payload.vdda_uv = (int64_t)result->vdda_pre_uv;
-  payload.v5_available = true;
-  payload.v5_uv = (int64_t)pre_v5_uv;
-  payload.noise_available = true;
-  payload.noise_uv = result->sd_uv;
-  payload.die_temperature_available = true;
-  payload.die_temperature_millic = (int64_t)die_temp_centic * INT64_C(10);
+  payload.mean_hi_available = result->has_mean_hi_uv;
+  payload.mean_hi_uncalibrated_uv =
+    result->has_mean_hi_uv ? result->mean_hi_uv : 0;
+  payload.mean_lo_available = result->has_mean_lo_uv;
+  payload.mean_lo_uncalibrated_uv =
+    result->has_mean_lo_uv ? result->mean_lo_uv : 0;
+  payload.vdda_available = result->has_vdda_pre_uv;
+  payload.vdda_uv =
+    result->has_vdda_pre_uv ? (int64_t)result->vdda_pre_uv : 0;
+  payload.v5_available = v5_ok;
+  payload.v5_uv = v5_ok ? (int64_t)pre_v5_uv : 0;
+  payload.noise_available = noise_ok;
+  payload.noise_uv = noise_ok ? result->sd_uv : 0;
+  payload.die_temperature_available = die_temp_ok;
+  payload.die_temperature_millic =
+    die_temp_ok ? ((int64_t)die_temp_centic * INT64_C(10)) : 0;
   payload.soil_temperature_available = false;
   payload.quality_state = ml3_quality_result.state;
   payload.valid_cycle_count = (uint8_t)result->valid_cycle_count;
   payload.calibration_id = 0U;
-  (void)post_v5_uv;
   return ml3_payload_build_routine(&payload, ml3_routine_frame,
     ML3_PAYLOAD_ROUTINE_LENGTH, ML3_PAYLOAD_ROUTINE_LENGTH,
     &ml3_routine_frame_length) == ML3_PAYLOAD_OK;

@@ -1257,7 +1257,7 @@ die_temp_body=$(extract_bsp_function 'ml3_target_die_temp_centic')
 v5_values_body=$(extract_bsp_function 'ml3_target_v5_values')
 if ! printf '%s\n' "$process_body" | grep -Fq \
     'ml3_target_fill_quality_input(result, &quality_input)'; then
-  fail 'BSP process callback does not reject incomplete measurement evidence'
+  fail 'BSP process callback does not reject a result the engine never populated'
 fi
 for process_requirement in \
     'ADC_PRECISION_OVERSAMPLING_SCALE' \
@@ -1277,31 +1277,58 @@ done
 if printf '%s\n' "$phase3_block" | grep -Fq 'ml3_thermistor_convert'; then
   fail 'BSP process callback must not convert the unready thermistor table'
 fi
-
-# A complete four-cycle burst has eight retained rail samples.  The production
-# predicate must reject 3-of-4 valid-cycle evidence by itself—not only when a
-# separate fault flag is also present—and it must do so before rail evidence is
-# published to quality evaluation.
-if ! printf '%s\n' "$quality_input_body" | awk '
-    /^[[:space:]]*\|\| \(result->valid_cycle_count != result->abba_raw_cycle_count\)[[:space:]]*$/ {
-      standalone_evidence_guard = NR
-    }
-    /quality_input->has_rail_samples = true;/ { rail_samples = NR }
-    END {
-      exit((standalone_evidence_guard > 0) &&
-        (rail_samples > standalone_evidence_guard) ? 0 : 1)
-    }
-  '; then
-  fail 'BSP quality input lacks unconditional 3-of-4 rejection before rail samples'
+if ! printf '%s\n' "$process_body" | grep -Fq \
+    'ML3_QUALITY_STATUS_INCOMPLETE'; then
+  fail 'BSP process callback does not accept quality-incomplete evidence as transmittable'
 fi
-if ! printf '%s\n' "$quality_input_body" | grep -Fq \
-    'result->abba_raw_cycle_count != (uint16_t)ml3_cycles'; then
-  fail 'BSP quality input does not require the selected ABBA cycle count'
+
+# task-F1 (2026-08): a reduced valid-cycle count is normal, expected input -
+# per-cycle ABBA fault tolerance, commit 8202ae8 - and the quality module's
+# own floor (ml3_quality.c, valid_cycles < 3) is the single place that
+# decision belongs. A standalone rejection here on a reduced count, or on
+# the raw cycle count differing from the configured one, silently dropped
+# the whole reading and made a failing field node indistinguishable from a
+# dead radio. Pin that both rejections are gone.
+if printf '%s\n' "$quality_input_body" | grep -Fq \
+    '(result->valid_cycle_count != result->abba_raw_cycle_count)'; then
+  fail 'BSP quality input rejects a reduced valid-cycle count on its own again'
 fi
 if printf '%s\n' "$quality_input_body" | grep -Fq \
-    'result->abba_raw_cycle_count != 4U'; then
-  fail 'BSP quality input is fixed to four cycles despite the accepted 3-8 range'
+    'result->abba_raw_cycle_count != (uint16_t)ml3_cycles'; then
+  fail 'BSP quality input rejects a raw cycle count short of the configured one again'
 fi
+for forbidden_all_or_nothing_guard in \
+    '!result->has_mean_hi_uv' \
+    '!result->has_mean_lo_uv' \
+    '!result->has_median_diff_uv' \
+    '!result->has_sd_uv' \
+    '!result->has_drift_uv' \
+    '!result->has_vdda_pre_uv' \
+    '!result->has_vdda_post_uv'; do
+  if printf '%s\n' "$quality_input_body" | grep -Fq -- "$forbidden_all_or_nothing_guard"; then
+    fail "BSP quality input still refuses the whole reading on: $forbidden_all_or_nothing_guard"
+  fi
+done
+# Only a NULL argument or a result the engine never populated at all is
+# genuinely unusable; every other combination must reach quality evaluation
+# with per-field availability instead (checked below).
+if ! printf '%s\n' "$quality_input_body" | grep -Fq \
+    '!result->has_abba_raw || !result->has_valid_cycle_count'; then
+  fail 'BSP quality input does not gate on has_abba_raw / has_valid_cycle_count'
+fi
+if printf '%s\n' "$quality_input_body" | grep -Fq \
+    'quality_input->has_rail_samples = true;'; then
+  fail 'BSP quality input hardcodes rail-sample availability instead of deriving it'
+fi
+for required_pass_through in \
+    'quality_input->has_mean_hi_uv = result->has_mean_hi_uv;' \
+    'quality_input->has_mean_lo_uv = result->has_mean_lo_uv;' \
+    'quality_input->has_median_diff_uv = result->has_median_diff_uv;' \
+    'quality_input->has_warmup_drift_uv = result->has_drift_uv;'; do
+  if ! printf '%s\n' "$quality_input_body" | grep -Fq "$required_pass_through"; then
+    fail "BSP quality input does not pass through optional evidence: $required_pass_through"
+  fi
+done
 
 # All H1/H2/L1/L2 values are contemporaneous with the pre-VREF VDDA.  PA4 is
 # sampled before and after the burst, so its two raw codes must use their own
@@ -1381,6 +1408,37 @@ for payload_requirement in \
     fail "BSP routine payload callback lacks required contract: $payload_requirement"
   fi
 done
+
+# task-F1 (2026-08): ml3_payload_routine_t already models every numeric
+# field as available/unavailable and encodes a sentinel for whichever is
+# marked unavailable; hardcoding every field to available discarded that
+# and made a missing derived value (e.g. a below-floor reading's absent
+# statistics) indistinguishable from a present one at the frame level
+# instead of producing a sentinel. Pin that availability is now derived,
+# not hardcoded, for every field that can legitimately be absent.
+for forbidden_hardcoded_available in \
+    'payload.mean_hi_available = true;' \
+    'payload.mean_lo_available = true;' \
+    'payload.vdda_available = true;' \
+    'payload.v5_available = true;' \
+    'payload.noise_available = true;' \
+    'payload.die_temperature_available = true;'; do
+  if printf '%s\n' "$payload_body" | grep -Fq -- "$forbidden_hardcoded_available"; then
+    fail "BSP routine payload callback hardcodes availability again: $forbidden_hardcoded_available"
+  fi
+done
+for required_sentinel_wiring in \
+    'payload.mean_hi_available = result->has_mean_hi_uv;' \
+    'payload.mean_lo_available = result->has_mean_lo_uv;' \
+    'payload.vdda_available = result->has_vdda_pre_uv;'; do
+  if ! printf '%s\n' "$payload_body" | grep -Fq -- "$required_sentinel_wiring"; then
+    fail "BSP routine payload callback lacks sentinel-driven wiring: $required_sentinel_wiring"
+  fi
+done
+if printf '%s\n' "$payload_body" | grep -Eq \
+    '!result->has_mean_hi_uv \|\| !result->has_mean_lo_uv'; then
+  fail 'BSP routine payload callback still refuses the whole frame on missing statistics'
+fi
 for queue_requirement in \
     'app_data.Port = ML3_CONFIG_FPORT;' \
     'LORA_send(&app_data, LORAWAN_UNCONFIRMED_MSG)' \

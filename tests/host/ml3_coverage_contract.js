@@ -84,6 +84,17 @@ const categories = [
     evidence: ['test_exact_commands', 'test_calibration_record_span', 'test_invalid_arguments'],
     runnerSource: 'AT_COMMANDS_TEST',
     runnerBinary: 'ml3_at_commands_test'
+  },
+  {
+    name: 'bsp adapter frame no-suppression contract',
+    file: 'ml3_bsp_frame_contract_test.c',
+    evidence: [
+      'test_reduced_valid_cycles_is_a_good_reading',
+      'test_below_floor_reading_still_transmits',
+      'test_incomplete_evidence_still_transmits'
+    ],
+    runnerSource: 'BSP_FRAME_CONTRACT_TEST',
+    runnerBinary: 'ml3_bsp_frame_contract_test'
   }
 ];
 

@@ -194,6 +194,7 @@ THERMISTOR_TEST="$ROOT_DIR/tests/host/ml3_thermistor_test.c"
 PAYLOAD_TEST="$ROOT_DIR/tests/host/ml3_payload_test.c"
 AT_COMMANDS_TEST="$ROOT_DIR/tests/host/ml3_at_commands_test.c"
 PAYLOAD_VECTORS_TEST="$ROOT_DIR/tests/host/ml3_payload_vectors_test.c"
+BSP_FRAME_CONTRACT_TEST="$ROOT_DIR/tests/host/ml3_bsp_frame_contract_test.c"
 
 cleanup() {
   local cleanup_status=0
@@ -396,6 +397,16 @@ if [ "$status" -ne 0 ]; then
   exit "$status"
 fi
 
+ml3_run_isolated_command "$CC" "${CFLAGS[@]}" \
+  "$BSP_FRAME_CONTRACT_TEST" \
+  "$BUILD_DIR"/ml3_payload.o \
+  "$BUILD_DIR"/ml3_quality.o \
+  -o "$BUILD_DIR/ml3_bsp_frame_contract_test"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
 ml3_run_isolated_command "$BUILD_DIR/ml3_contract_test"
 status=$?
 if [ "$status" -ne 0 ]; then
@@ -445,6 +456,12 @@ if [ "$status" -ne 0 ]; then
 fi
 
 ml3_run_isolated_command "$BUILD_DIR/ml3_adc_precision_test"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
+ml3_run_isolated_command "$BUILD_DIR/ml3_bsp_frame_contract_test"
 status=$?
 if [ "$status" -ne 0 ]; then
   exit "$status"
