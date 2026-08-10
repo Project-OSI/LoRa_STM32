@@ -210,5 +210,6 @@ void ml3_stm32_adc_port_init(ml3_stm32_adc_port_context_t *context) {
   if (context != NULL) {
     context->vrefint_enable_tick = 0U;
   }
+  RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
   RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;
 }
