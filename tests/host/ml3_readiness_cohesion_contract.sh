@@ -19,6 +19,15 @@ require_defined_zero() {
   fi
 }
 
+require_defined_value() {
+  local macro=$1
+  local value=$2
+  local description=$3
+  if ! grep -Eq "^#define[[:space:]]+$macro[[:space:]]+$value" "$CONFIG"; then
+    fail "missing or wrong value: $description"
+  fi
+}
+
 extract_define_block() {
   local macro=$1
   awk -v macro="$macro" '
@@ -60,7 +69,7 @@ done
 
 require_defined_zero ML3_CONFIG_GATE0_APPROVAL_READY "Gate 0 approval"
 require_defined_zero ML3_CONFIG_GATE1_APPROVAL_READY "Gate 1 approval"
-require_defined_zero ML3_CONFIG_V5_DIVIDER_RATIO_PPM "canonical divider value"
+require_defined_value ML3_CONFIG_V5_DIVIDER_RATIO_PPM 500000U "canonical divider value"
 require_defined_zero ML3_CONFIG_V5_DIVIDER_RATIO_READY "canonical divider readiness"
 require_defined_zero ML3_CONFIG_MAX_FRMPAYLOAD_BYTES "maximum FRMPayload bytes"
 require_defined_zero ML3_CONFIG_MAX_FRMPAYLOAD_READY "maximum FRMPayload readiness"

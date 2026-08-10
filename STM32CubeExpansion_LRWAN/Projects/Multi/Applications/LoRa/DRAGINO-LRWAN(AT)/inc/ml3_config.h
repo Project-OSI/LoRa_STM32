@@ -19,7 +19,7 @@ extern "C" {
 #define ML3_CONFIG_FPORT_READY                 1U
 
 /* Gate 0 / Phase 1 hardware and build gates. */
-#define ML3_CONFIG_PB5_ACTIVE_LOW              0U /* GATE0-PENDING (§2.1) */
+#define ML3_CONFIG_PB5_ACTIVE_LOW              1U /* Task 10B brief:52; PB5 is active-low. */
 #define ML3_CONFIG_PB5_ACTIVE_LOW_READY        0U /* GATE0-PENDING (§2.1) */
 #define ML3_CONFIG_PB5_RESET_ISP_BROWNOUT_SAFE 0U /* GATE0-PENDING (§2.1) */
 #define ML3_CONFIG_PB5_RESET_ISP_BROWNOUT_SAFE_READY 0U /* GATE0-PENDING (§2.1) */
@@ -27,20 +27,22 @@ extern "C" {
 #define ML3_CONFIG_THERMISTOR_ADC_CHANNEL_READY 0U /* GATE0-PENDING (§3.3; board PA2 pull check) */
 #define ML3_CONFIG_THERMISTOR_EXCITATION_GPIO  4U /* BUILD-ONLY: PB4 */
 #define ML3_CONFIG_THERMISTOR_EXCITATION_GPIO_READY 0U /* GATE0-PENDING (§3.3; circuit fitted and checked) */
-#define ML3_CONFIG_ZERO_AMBIGUITY_GUARD_MV     0U /* GATE0-PENDING (§2.3) */
+#define ML3_CONFIG_ZERO_AMBIGUITY_GUARD_MV     2U /* Gate 0 §4:52 and Task 10B brief:70. */
 #define ML3_CONFIG_ZERO_AMBIGUITY_GUARD_READY  0U /* GATE0-PENDING (§2.3) */
-#define ML3_CONFIG_CM_RANGE_MIN_MV             0U /* GATE0-PENDING (§2.2) */
-#define ML3_CONFIG_CM_RANGE_MAX_MV             0U /* GATE0-PENDING (§2.2) */
+#define ML3_CONFIG_CM_RANGE_MIN_MV             3U /* Task 10B brief:71; 5 mV observed minimum less 2 mV margin. */
+#define ML3_CONFIG_CM_RANGE_MAX_MV             10U /* Task 10B brief:71; 7.2 mV plus 2 mV margin, rounded outward to whole mV. */
 #define ML3_CONFIG_CM_RANGE_READY              0U /* GATE0-PENDING (§2.2) */
-#define ML3_CONFIG_V5_DIVIDER_RATIO_PPM        0U /* GATE0-PENDING (§3.4) */
+/* Two fitted equal 1 kΩ resistors wire +5V (14) -> PA4 (26) -> GND (15).
+ * The nominal 0.5 ratio is required: a floating PA4 reads as a failed rail. */
+#define ML3_CONFIG_V5_DIVIDER_RATIO_PPM        500000U /* Owner hardware observation, not a bench measurement; Task 10B brief:80. */
 #define ML3_CONFIG_V5_DIVIDER_RATIO_READY      0U /* GATE0-PENDING (§3.4) */
-#define ML3_CONFIG_V5_MINIMUM_MV               0U /* GATE0-PENDING (§2.2) */
-#define ML3_CONFIG_V5_MAXIMUM_MV               0U /* GATE0-PENDING (§2.2) */
+#define ML3_CONFIG_V5_MINIMUM_MV               4500U /* Owner hardware observation, not a bench measurement; Task 10B brief:78. */
+#define ML3_CONFIG_V5_MAXIMUM_MV               5500U /* Owner hardware observation, not a bench measurement; Task 10B brief:79. */
 #define ML3_CONFIG_V5_LIMITS_READY             0U /* GATE0-PENDING (§2.2) */
-#define ML3_CONFIG_DISCHARGE_THRESHOLD_MV      0U /* GATE0-PENDING (§3.3) */
-#define ML3_CONFIG_DISCHARGE_TIMEOUT_MS        0U /* GATE0-PENDING (§3.3) */
+#define ML3_CONFIG_DISCHARGE_THRESHOLD_MV      500U /* Owner hardware observation, not a bench measurement; Task 10B brief:81. */
+#define ML3_CONFIG_DISCHARGE_TIMEOUT_MS        2000U /* Owner hardware observation, not a bench measurement; Task 10B brief:82. */
 #define ML3_CONFIG_DISCHARGE_READY             0U /* GATE0-PENDING (§3.3) */
-#define ML3_CONFIG_WARMUP_TIME_MS              0U /* GATE0-PENDING (§3.8) */
+#define ML3_CONFIG_WARMUP_TIME_MS              1500U /* Provisional; Task 10B brief:73 (manufacturer 0.5–1 s plus margin). */
 #define ML3_CONFIG_WARMUP_TIME_READY           0U /* GATE0-PENDING (§3.8) */
 #define ML3_CONFIG_LORA_REGION_ID              0U /* GATE0-PENDING (§3.13) */
 #define ML3_CONFIG_LORA_REGION_READY           0U /* GATE0-PENDING (§3.13) */

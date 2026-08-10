@@ -175,6 +175,38 @@ require '^#define[[:space:]]+ML3_CONFIG_THERMISTOR_EXCITATION_GPIO[[:space:]]+4U
   'build-only thermistor excitation is not PB4'
 require '^#define[[:space:]]+ML3_CONFIG_THERMISTOR_EXCITATION_GPIO_READY[[:space:]]+0U[[:space:]]*/\*' "$CONFIG" \
   'thermistor excitation readiness is not held at zero'
+require '^#define[[:space:]]+ML3_CONFIG_PB5_ACTIVE_LOW[[:space:]]+1U[[:space:]]*/\*' "$CONFIG" \
+  'PB5 active-low configuration is not set'
+require '^#define[[:space:]]+ML3_CONFIG_ZERO_AMBIGUITY_GUARD_MV[[:space:]]+2U[[:space:]]*/\*' "$CONFIG" \
+  'zero-ambiguity guard is not 2 mV'
+require '^#define[[:space:]]+ML3_CONFIG_CM_RANGE_MIN_MV[[:space:]]+3U[[:space:]]*/\*' "$CONFIG" \
+  'common-mode minimum is not 3 mV'
+require '^#define[[:space:]]+ML3_CONFIG_CM_RANGE_MAX_MV[[:space:]]+10U[[:space:]]*/\*' "$CONFIG" \
+  'common-mode maximum is not 10 mV'
+require '^#define[[:space:]]+ML3_CONFIG_V5_DIVIDER_RATIO_PPM[[:space:]]+500000U[[:space:]]*/\*' "$CONFIG" \
+  'V5 divider ratio is not 500000 ppm'
+require '^#define[[:space:]]+ML3_CONFIG_V5_MINIMUM_MV[[:space:]]+4500U[[:space:]]*/\*' "$CONFIG" \
+  'V5 minimum is not 4500 mV'
+require '^#define[[:space:]]+ML3_CONFIG_V5_MAXIMUM_MV[[:space:]]+5500U[[:space:]]*/\*' "$CONFIG" \
+  'V5 maximum is not 5500 mV'
+require '^#define[[:space:]]+ML3_CONFIG_DISCHARGE_THRESHOLD_MV[[:space:]]+500U[[:space:]]*/\*' "$CONFIG" \
+  'discharge threshold is not 500 mV'
+require '^#define[[:space:]]+ML3_CONFIG_DISCHARGE_TIMEOUT_MS[[:space:]]+2000U[[:space:]]*/\*' "$CONFIG" \
+  'discharge timeout is not 2000 ms'
+require '^#define[[:space:]]+ML3_CONFIG_WARMUP_TIME_MS[[:space:]]+1500U[[:space:]]*/\*' "$CONFIG" \
+  'warm-up time is not 1500 ms'
+for readiness_macro in \
+  ML3_CONFIG_PB5_ACTIVE_LOW_READY \
+  ML3_CONFIG_ZERO_AMBIGUITY_GUARD_READY \
+  ML3_CONFIG_CM_RANGE_READY \
+  ML3_CONFIG_V5_DIVIDER_RATIO_READY \
+  ML3_CONFIG_V5_LIMITS_READY \
+  ML3_CONFIG_DISCHARGE_READY \
+  ML3_CONFIG_WARMUP_TIME_READY
+do
+  require "^#define[[:space:]]+$readiness_macro[[:space:]]+0U[[:space:]]*/\\*" "$CONFIG" \
+    "$readiness_macro must remain zero in Phase 2"
+done
 require '^#define[[:space:]]+ML3_CONFIG_ACQUISITION_READY' "$CONFIG" \
   'acquisition readiness definition is missing'
 if ! contract_tmp=$(mktemp -d "${TMPDIR:-/tmp}/ml3-target-integration.XXXXXX"); then
@@ -188,6 +220,23 @@ if ! printf '%s\n' \
   'typedef char thermistor_excitation_is_pb4[(ML3_CONFIG_THERMISTOR_EXCITATION_GPIO == 4U) ? 1 : -1];' \
   'typedef char thermistor_adc_ready_stays_off[(ML3_CONFIG_THERMISTOR_ADC_CHANNEL_READY == 0U) ? 1 : -1];' \
   'typedef char thermistor_excitation_ready_stays_off[(ML3_CONFIG_THERMISTOR_EXCITATION_GPIO_READY == 0U) ? 1 : -1];' \
+  'typedef char pb5_active_low_is_set[(ML3_CONFIG_PB5_ACTIVE_LOW == 1U) ? 1 : -1];' \
+  'typedef char zero_guard_is_2mv[(ML3_CONFIG_ZERO_AMBIGUITY_GUARD_MV == 2U) ? 1 : -1];' \
+  'typedef char common_mode_minimum_is_3mv[(ML3_CONFIG_CM_RANGE_MIN_MV == 3U) ? 1 : -1];' \
+  'typedef char common_mode_maximum_is_10mv[(ML3_CONFIG_CM_RANGE_MAX_MV == 10U) ? 1 : -1];' \
+  'typedef char v5_divider_is_500000ppm[(ML3_CONFIG_V5_DIVIDER_RATIO_PPM == 500000U) ? 1 : -1];' \
+  'typedef char v5_minimum_is_4500mv[(ML3_CONFIG_V5_MINIMUM_MV == 4500U) ? 1 : -1];' \
+  'typedef char v5_maximum_is_5500mv[(ML3_CONFIG_V5_MAXIMUM_MV == 5500U) ? 1 : -1];' \
+  'typedef char discharge_threshold_is_500mv[(ML3_CONFIG_DISCHARGE_THRESHOLD_MV == 500U) ? 1 : -1];' \
+  'typedef char discharge_timeout_is_2000ms[(ML3_CONFIG_DISCHARGE_TIMEOUT_MS == 2000U) ? 1 : -1];' \
+  'typedef char warmup_time_is_1500ms[(ML3_CONFIG_WARMUP_TIME_MS == 1500U) ? 1 : -1];' \
+  'typedef char pb5_active_low_ready_stays_off[(ML3_CONFIG_PB5_ACTIVE_LOW_READY == 0U) ? 1 : -1];' \
+  'typedef char zero_guard_ready_stays_off[(ML3_CONFIG_ZERO_AMBIGUITY_GUARD_READY == 0U) ? 1 : -1];' \
+  'typedef char common_mode_ready_stays_off[(ML3_CONFIG_CM_RANGE_READY == 0U) ? 1 : -1];' \
+  'typedef char v5_divider_ready_stays_off[(ML3_CONFIG_V5_DIVIDER_RATIO_READY == 0U) ? 1 : -1];' \
+  'typedef char v5_limits_ready_stays_off[(ML3_CONFIG_V5_LIMITS_READY == 0U) ? 1 : -1];' \
+  'typedef char discharge_ready_stays_off[(ML3_CONFIG_DISCHARGE_READY == 0U) ? 1 : -1];' \
+  'typedef char warmup_ready_stays_off[(ML3_CONFIG_WARMUP_TIME_READY == 0U) ? 1 : -1];' \
   'typedef char acquisition_stays_off[(ML3_CONFIG_ACQUISITION_READY == 0U) ? 1 : -1];' \
   'typedef char deployment_stays_off[(ML3_CONFIG_DEPLOYABLE == 0U) ? 1 : -1];' \
   'int main(void) { return 0; }' | \
