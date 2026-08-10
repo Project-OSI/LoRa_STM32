@@ -20,8 +20,10 @@ PA4 has nothing connected to it today (it read 2–4 mV floating during the Gate
 
 The rail is about 5 V and the chip cannot read above roughly 3.6 V, so the voltage must be halved before it reaches the pin.
 
-1. **Resistor A** from the **+5V** terminal (JP4 position 1) to **PA4** (JP4 position 13).
-2. **Resistor B** from **PA4** to **GND** (JP4 position 2).
+Terminal numbers below follow the Dragino pinout diagram, where the right-hand block (JP4) is numbered **14 at the top to 26 at the bottom**: `+5V` = **14**, `GND` = **15**, `PA4` = **26**.
+
+1. **Resistor A** from the **+5V** terminal (**14**) to **PA4** (**26**).
+2. **Resistor B** from **PA4** (**26**) to **GND** (**15**).
 
 Use two resistors of the same value. Higher values waste less power — if you have 10 kΩ or larger, prefer those; the 1 kΩ pair works fine for this bench session. They do not need to be a matched pair or precise, because we are about to *measure* the actual ratio rather than trust it.
 
