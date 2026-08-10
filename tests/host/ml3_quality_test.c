@@ -113,16 +113,36 @@ static void test_public_contract(void)
         (uint16_t)ML3_QUALITY_FLAG_THERM_FAULT);
 }
 
-static void test_pending_config_preserves_output(void)
+/*
+ * task-F1 Step 4: activation flipped every _READY flag
+ * ml3_quality_thresholds_from_config requires (ZERO_AMBIGUITY_GUARD,
+ * CM_RANGE, V5_LIMITS - Gate 0 items readied in Step 4; NOISE_WARN/INVALID,
+ * WARMUP_DRIFT_WARN/INVALID, VDDA_DRIFT_WARN/INVALID, DIE_TEMP_RANGE -
+ * Phase 2 items readied permissive in Step 3), so config loading now
+ * succeeds instead of reporting CONFIG_PENDING. Pin the actual trial
+ * values it now produces, so a future edit to any of them is a visible,
+ * deliberate diff here.
+ */
+static void test_config_now_loads_trial_thresholds(void)
 {
   ml3_quality_thresholds_t thresholds;
-  ml3_quality_thresholds_t before;
 
   (void)memset(&thresholds, 0xa5, sizeof(thresholds));
-  before = thresholds;
   CHECK(ml3_quality_thresholds_from_config(&thresholds) ==
-        ML3_QUALITY_STATUS_CONFIG_PENDING);
-  CHECK(memcmp(&thresholds, &before, sizeof(thresholds)) == 0);
+        ML3_QUALITY_STATUS_OK);
+  CHECK(thresholds.zero_ambiguity_guard_uv == UINT64_C(2000));
+  CHECK(thresholds.common_mode_min_uv == INT64_C(0));
+  CHECK(thresholds.common_mode_max_uv == INT64_C(100000));
+  CHECK(thresholds.v5_min_uv == UINT64_C(4500000));
+  CHECK(thresholds.v5_max_uv == UINT64_C(5500000));
+  CHECK(thresholds.noise_warn_uv == UINT64_C(4000000));
+  CHECK(thresholds.noise_invalid_uv == UINT64_C(4200000));
+  CHECK(thresholds.warmup_drift_warn_uv == UINT64_C(4000000));
+  CHECK(thresholds.warmup_drift_invalid_uv == UINT64_C(4200000));
+  CHECK(thresholds.vdda_drift_warn_ppm == UINT32_C(900000));
+  CHECK(thresholds.vdda_drift_invalid_ppm == UINT32_C(950000));
+  CHECK(thresholds.die_temp_min_centic == INT32_C(-50000));
+  CHECK(thresholds.die_temp_max_centic == INT32_C(50000));
   CHECK(ml3_quality_thresholds_from_config(NULL) ==
         ML3_QUALITY_STATUS_INVALID_ARGUMENT);
 }
@@ -825,7 +845,7 @@ static void test_warning_flag_churn_does_not_change_invalid_signature(void)
 int main(void)
 {
   test_public_contract();
-  test_pending_config_preserves_output();
+  test_config_now_loads_trial_thresholds();
   test_clear_complete_evidence_is_valid();
   test_malformed_thresholds_are_rejected_transactionally();
   test_cycle_count_boundaries();

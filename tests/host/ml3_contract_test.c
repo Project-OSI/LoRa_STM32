@@ -21,7 +21,8 @@ typedef char ml3_fport_is_authorized[(ML3_CONFIG_FPORT == 13U) ? 1 : -1];
 typedef char ml3_mode_ready_is_authorized[(ML3_CONFIG_MODE_ML3_READY == 1U) ? 1 : -1];
 typedef char ml3_fport_ready_is_authorized[(ML3_CONFIG_FPORT_READY == 1U) ? 1 : -1];
 ASSERT_VALUE_MACRO(ML3_CONFIG_PB5_ACTIVE_LOW, 1U);
-ASSERT_ZERO_MACRO(ML3_CONFIG_PB5_ACTIVE_LOW_READY);
+/* task-F1 Step 4: verified in vendor source (see ml3_config.h comment). */
+ASSERT_VALUE_MACRO(ML3_CONFIG_PB5_ACTIVE_LOW_READY, 1U);
 ASSERT_ZERO_MACRO(ML3_CONFIG_PB5_RESET_ISP_BROWNOUT_SAFE);
 ASSERT_ZERO_MACRO(ML3_CONFIG_PB5_RESET_ISP_BROWNOUT_SAFE_READY);
 typedef char ml3_thermistor_adc_channel_is_pa2[
@@ -39,20 +40,28 @@ ASSERT_ZERO_MACRO(ML3_CONFIG_THERMISTOR_SETTLE_TIME_READY);
 ASSERT_ZERO_MACRO(ML3_CONFIG_THERMISTOR_TABLE_POINT_COUNT);
 ASSERT_ZERO_MACRO(ML3_CONFIG_THERMISTOR_TABLE_READY);
 ASSERT_VALUE_MACRO(ML3_CONFIG_ZERO_AMBIGUITY_GUARD_MV, 2U);
-ASSERT_ZERO_MACRO(ML3_CONFIG_ZERO_AMBIGUITY_GUARD_READY);
+/* task-F1 Step 4: Gate 0 §4 measured record. */
+ASSERT_VALUE_MACRO(ML3_CONFIG_ZERO_AMBIGUITY_GUARD_READY, 1U);
 ASSERT_VALUE_MACRO(ML3_CONFIG_CM_RANGE_MIN_MV, 0U);
 ASSERT_VALUE_MACRO(ML3_CONFIG_CM_RANGE_MAX_MV, 100U);
-ASSERT_ZERO_MACRO(ML3_CONFIG_CM_RANGE_READY);
+/* task-F1 Step 4: owner-approved trial envelope. */
+ASSERT_VALUE_MACRO(ML3_CONFIG_CM_RANGE_READY, 1U);
 ASSERT_VALUE_MACRO(ML3_CONFIG_V5_DIVIDER_RATIO_PPM, 500000U);
+/* task-F1 Step 4: deliberately left pending - see ml3_config.h comment and
+ * tests/host/ml3_readiness_cohesion_contract.sh (commit 6d70a8c); an
+ * assumed, not measured, ratio, excluded from the trial-readiness macro. */
 ASSERT_ZERO_MACRO(ML3_CONFIG_V5_DIVIDER_RATIO_READY);
 ASSERT_VALUE_MACRO(ML3_CONFIG_V5_MINIMUM_MV, 4500U);
 ASSERT_VALUE_MACRO(ML3_CONFIG_V5_MAXIMUM_MV, 5500U);
-ASSERT_ZERO_MACRO(ML3_CONFIG_V5_LIMITS_READY);
+/* task-F1 Step 4: owner hardware observation, not a bench measurement. */
+ASSERT_VALUE_MACRO(ML3_CONFIG_V5_LIMITS_READY, 1U);
 ASSERT_VALUE_MACRO(ML3_CONFIG_DISCHARGE_THRESHOLD_MV, 500U);
 ASSERT_VALUE_MACRO(ML3_CONFIG_DISCHARGE_TIMEOUT_MS, 2000U);
-ASSERT_ZERO_MACRO(ML3_CONFIG_DISCHARGE_READY);
+/* task-F1 Step 4: owner hardware observation, not a bench measurement. */
+ASSERT_VALUE_MACRO(ML3_CONFIG_DISCHARGE_READY, 1U);
 ASSERT_VALUE_MACRO(ML3_CONFIG_WARMUP_TIME_MS, 1500U);
-ASSERT_ZERO_MACRO(ML3_CONFIG_WARMUP_TIME_READY);
+/* task-F1 Step 4: manufacturer specification plus margin. */
+ASSERT_VALUE_MACRO(ML3_CONFIG_WARMUP_TIME_READY, 1U);
 ASSERT_ZERO_MACRO(ML3_CONFIG_LORA_REGION_ID);
 ASSERT_ZERO_MACRO(ML3_CONFIG_LORA_REGION_READY);
 ASSERT_ZERO_MACRO(ML3_CONFIG_LORA_DATARATE);
@@ -121,6 +130,24 @@ ASSERT_ZERO_MACRO(ML3_CONFIG_CAL_CM_READY);
 #endif
 
 typedef char ml3_gate1_approval_is_zero[(ML3_CONFIG_GATE1_APPROVAL_READY == 0U) ? 1 : -1];
+
+/*
+ * task-F1 Step 4: ML3_CONFIG_GATE0_APPROVAL_READY stays 0 - real Gate 0
+ * sign-off has not happened. The trial's own, distinct approval flag is
+ * separate and must never be confused with it.
+ */
+typedef char ml3_gate0_approval_is_zero[(ML3_CONFIG_GATE0_APPROVAL_READY == 0U) ? 1 : -1];
+ASSERT_VALUE_MACRO(ML3_CONFIG_TRIAL_APPROVAL_READY, 1U);
+
+/* task-F1 Step 4: ML3_CONFIG_GATE0_READINESS itself stays false - several
+ * of its constituent flags (thermistor, PB5 brownout, radio gates, the V5
+ * divider ratio, and real Gate 0 approval) are still pending by design. */
+typedef char ml3_gate0_readiness_stays_false[
+    (ML3_CONFIG_GATE0_READINESS == 0U) ? 1 : -1];
+/* The trial-readiness gate, built only from the subset of Gate 0 items
+ * with real evidence behind them now, is true and drives activation. */
+ASSERT_VALUE_MACRO(ML3_CONFIG_TRIAL_ACQUISITION_READINESS, 1U);
+ASSERT_VALUE_MACRO(ML3_CONFIG_ACQUISITION_READY, 1U);
 
 typedef char ml3_gate0_blocks_deployable[(ML3_CONFIG_DEPLOYABLE == 0U) ? 1 : -1];
 

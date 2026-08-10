@@ -426,31 +426,47 @@ require '^#define[[:space:]]+ML3_CONFIG_DISCHARGE_TIMEOUT_MS[[:space:]]+2000U[[:
   'discharge timeout is not 2000 ms'
 require '^#define[[:space:]]+ML3_CONFIG_WARMUP_TIME_MS[[:space:]]+1500U[[:space:]]*/\*' "$CONFIG" \
   'warm-up time is not 1500 ms'
+# task-F1 Step 4 (2026-08): trial activation readied six of these seven
+# Gate 0 hardware items (see each flag's basis comment in ml3_config.h).
+# The seventh, the V5 divider ratio calibration, is deliberately excluded -
+# it is an assumed, not measured, ratio, and tests/host/
+# ml3_readiness_cohesion_contract.sh independently pins it at 0 (commit
+# 6d70a8c, "reject computed ML3 divider values"). This loop was previously
+# a single "everything here stays zero" check; it is now two, so a future
+# edit to either group is a visible, deliberate diff rather than a silent
+# regression either way.
 for readiness_macro in \
   ML3_CONFIG_PB5_ACTIVE_LOW_READY \
   ML3_CONFIG_ZERO_AMBIGUITY_GUARD_READY \
   ML3_CONFIG_CM_RANGE_READY \
-  ML3_CONFIG_V5_DIVIDER_RATIO_READY \
   ML3_CONFIG_V5_LIMITS_READY \
   ML3_CONFIG_DISCHARGE_READY \
   ML3_CONFIG_WARMUP_TIME_READY
 do
-  require "^#define[[:space:]]+$readiness_macro[[:space:]]+0U[[:space:]]*/\\*" "$CONFIG" \
-    "$readiness_macro must remain zero in Phase 2"
+  require "^#define[[:space:]]+$readiness_macro[[:space:]]+1U[[:space:]]*/\\*" "$CONFIG" \
+    "$readiness_macro must be readied for the task-F1 trial"
 done
+require '^#define[[:space:]]+ML3_CONFIG_V5_DIVIDER_RATIO_READY[[:space:]]+0U[[:space:]]*/\*' "$CONFIG" \
+  'V5 divider ratio readiness must remain zero (deliberately excluded from the trial)'
+require '^#define[[:space:]]+ML3_CONFIG_TRIAL_APPROVAL_READY[[:space:]]+1U[[:space:]]*/\*' "$CONFIG" \
+  'trial approval readiness flag is missing (must be distinct from ML3_CONFIG_GATE0_APPROVAL_READY)'
+require '^#define[[:space:]]+ML3_CONFIG_GATE0_APPROVAL_READY[[:space:]]+0U[[:space:]]*/\*' "$CONFIG" \
+  'real Gate 0 approval readiness must remain zero - it must never be satisfied by trial approval'
 require '^#define[[:space:]]+ML3_CONFIG_ACQUISITION_READY' "$CONFIG" \
   'acquisition readiness definition is missing'
+# task-F1 Step 4: ACQUISITION_READY now points at the trial-scoped macro,
+# never at the full Gate 0 standard directly.
 if ! awk '
     /^#define[[:space:]]+ML3_CONFIG_ACQUISITION_READY[[:space:]]*\\$/ {
       getline
-      if ($0 ~ /^[[:space:]]+ML3_CONFIG_GATE0_READINESS$/) {
+      if ($0 ~ /^[[:space:]]+ML3_CONFIG_TRIAL_ACQUISITION_READINESS$/) {
         valid = 1
       }
       exit
     }
     END { exit(valid ? 0 : 1) }
   ' "$CONFIG"; then
-  fail 'acquisition readiness must expand only ML3_CONFIG_GATE0_READINESS'
+  fail 'acquisition readiness must expand only ML3_CONFIG_TRIAL_ACQUISITION_READINESS'
 fi
 if awk '
     /^#define[[:space:]]+ML3_CONFIG_ACQUISITION_READY/ { in_definition = 1 }
@@ -458,6 +474,23 @@ if awk '
     in_definition && $0 !~ /\\\\$/ { exit }
   ' "$CONFIG" | grep -q 'ML3_CONFIG_CAL_'; then
   fail 'acquisition readiness must not include calibration flags'
+fi
+# task-F1 Step 4: the trial-readiness macro itself must never require the
+# full Gate 0 approval flag or the excluded-for-precision V5 divider ratio
+# flag - it has its own, narrower approval flag instead.
+if awk '
+    /^#define[[:space:]]+ML3_CONFIG_TRIAL_ACQUISITION_READINESS/ { in_definition = 1 }
+    in_definition { print }
+    in_definition && $0 !~ /\\$/ { exit }
+  ' "$CONFIG" | grep -Eq 'ML3_CONFIG_GATE0_APPROVAL_READY|ML3_CONFIG_V5_DIVIDER_RATIO_READY'; then
+  fail 'trial-readiness macro must not require ML3_CONFIG_GATE0_APPROVAL_READY or ML3_CONFIG_V5_DIVIDER_RATIO_READY'
+fi
+if ! awk '
+    /^#define[[:space:]]+ML3_CONFIG_TRIAL_ACQUISITION_READINESS/ { in_definition = 1 }
+    in_definition { print }
+    in_definition && $0 !~ /\\$/ { exit }
+  ' "$CONFIG" | grep -Fq 'ML3_CONFIG_TRIAL_APPROVAL_READY'; then
+  fail 'trial-readiness macro does not require its own trial approval flag'
 fi
 if grep -Fq 'AT+5V''T' "$RAIL_PROCEDURE"; then
   fail 'rail procedure contains the prohibited rail-time command'
@@ -487,14 +520,24 @@ if ! printf '%s\n' \
   'typedef char discharge_threshold_is_500mv[(ML3_CONFIG_DISCHARGE_THRESHOLD_MV == 500U) ? 1 : -1];' \
   'typedef char discharge_timeout_is_2000ms[(ML3_CONFIG_DISCHARGE_TIMEOUT_MS == 2000U) ? 1 : -1];' \
   'typedef char warmup_time_is_1500ms[(ML3_CONFIG_WARMUP_TIME_MS == 1500U) ? 1 : -1];' \
-  'typedef char pb5_active_low_ready_stays_off[(ML3_CONFIG_PB5_ACTIVE_LOW_READY == 0U) ? 1 : -1];' \
-  'typedef char zero_guard_ready_stays_off[(ML3_CONFIG_ZERO_AMBIGUITY_GUARD_READY == 0U) ? 1 : -1];' \
-  'typedef char common_mode_ready_stays_off[(ML3_CONFIG_CM_RANGE_READY == 0U) ? 1 : -1];' \
+  'typedef char pb5_active_low_ready_is_set[(ML3_CONFIG_PB5_ACTIVE_LOW_READY == 1U) ? 1 : -1];' \
+  'typedef char zero_guard_ready_is_set[(ML3_CONFIG_ZERO_AMBIGUITY_GUARD_READY == 1U) ? 1 : -1];' \
+  'typedef char common_mode_ready_is_set[(ML3_CONFIG_CM_RANGE_READY == 1U) ? 1 : -1];' \
   'typedef char v5_divider_ready_stays_off[(ML3_CONFIG_V5_DIVIDER_RATIO_READY == 0U) ? 1 : -1];' \
-  'typedef char v5_limits_ready_stays_off[(ML3_CONFIG_V5_LIMITS_READY == 0U) ? 1 : -1];' \
-  'typedef char discharge_ready_stays_off[(ML3_CONFIG_DISCHARGE_READY == 0U) ? 1 : -1];' \
-  'typedef char warmup_ready_stays_off[(ML3_CONFIG_WARMUP_TIME_READY == 0U) ? 1 : -1];' \
-  'typedef char acquisition_stays_off[(ML3_CONFIG_ACQUISITION_READY == 0U) ? 1 : -1];' \
+  'typedef char v5_limits_ready_is_set[(ML3_CONFIG_V5_LIMITS_READY == 1U) ? 1 : -1];' \
+  'typedef char discharge_ready_is_set[(ML3_CONFIG_DISCHARGE_READY == 1U) ? 1 : -1];' \
+  'typedef char warmup_ready_is_set[(ML3_CONFIG_WARMUP_TIME_READY == 1U) ? 1 : -1];' \
+  'typedef char trial_approval_is_set[(ML3_CONFIG_TRIAL_APPROVAL_READY == 1U) ? 1 : -1];' \
+  'typedef char gate0_approval_stays_off[(ML3_CONFIG_GATE0_APPROVAL_READY == 0U) ? 1 : -1];' \
+  'typedef char pb5_brownout_ready_stays_off[(ML3_CONFIG_PB5_RESET_ISP_BROWNOUT_SAFE_READY == 0U) ? 1 : -1];' \
+  'typedef char lora_region_ready_stays_off[(ML3_CONFIG_LORA_REGION_READY == 0U) ? 1 : -1];' \
+  'typedef char lora_datarate_ready_stays_off[(ML3_CONFIG_LORA_DATARATE_READY == 0U) ? 1 : -1];' \
+  'typedef char max_frmpayload_ready_stays_off[(ML3_CONFIG_MAX_FRMPAYLOAD_READY == 0U) ? 1 : -1];' \
+  'typedef char routine_airtime_ready_stays_off[(ML3_CONFIG_ROUTINE_MAX_AIRTIME_READY == 0U) ? 1 : -1];' \
+  'typedef char diagnostic_airtime_ready_stays_off[(ML3_CONFIG_DIAGNOSTIC_MAX_AIRTIME_READY == 0U) ? 1 : -1];' \
+  'typedef char gate0_readiness_stays_false[(ML3_CONFIG_GATE0_READINESS == 0U) ? 1 : -1];' \
+  'typedef char trial_acquisition_readiness_is_true[(ML3_CONFIG_TRIAL_ACQUISITION_READINESS == 1U) ? 1 : -1];' \
+  'typedef char acquisition_is_trial_ready[(ML3_CONFIG_ACQUISITION_READY == 1U) ? 1 : -1];' \
   'typedef char deployment_stays_off[(ML3_CONFIG_DEPLOYABLE == 0U) ? 1 : -1];' \
   'int main(void) { return 0; }' | \
   "${CC:-cc}" -std=c99 -Werror -I"$APP_DIR/inc" -x c - -c \

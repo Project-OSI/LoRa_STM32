@@ -20,7 +20,7 @@ extern "C" {
 
 /* Gate 0 / Phase 1 hardware and build gates. */
 #define ML3_CONFIG_PB5_ACTIVE_LOW              1U /* Task 10B brief:52; PB5 is active-low. */
-#define ML3_CONFIG_PB5_ACTIVE_LOW_READY        0U /* GATE0-PENDING (§2.1) */
+#define ML3_CONFIG_PB5_ACTIVE_LOW_READY        1U /* task-F1 Step 4: verified in vendor source - stm32l0xx_hw_conf.h:265-267 (PWR_OUT_PORT=GPIOB, PWR_OUT_PIN=GPIO_PIN_5) and the pre-existing stock GPIO_PIN_RESET="Enable 5v power supply" callsites in this file (e.g. src/bsp.c line ~1007), consistent with ml3_target_set_power_5v's own active-low mapping. */
 #define ML3_CONFIG_PB5_RESET_ISP_BROWNOUT_SAFE 0U /* GATE0-PENDING (§2.1) */
 #define ML3_CONFIG_PB5_RESET_ISP_BROWNOUT_SAFE_READY 0U /* GATE0-PENDING (§2.1) */
 #define ML3_CONFIG_THERMISTOR_ADC_CHANNEL      2U /* BUILD-ONLY: PA2 / ADC_IN2 */
@@ -28,22 +28,31 @@ extern "C" {
 #define ML3_CONFIG_THERMISTOR_EXCITATION_GPIO  4U /* BUILD-ONLY: PB4 */
 #define ML3_CONFIG_THERMISTOR_EXCITATION_GPIO_READY 0U /* GATE0-PENDING (§3.3; circuit fitted and checked) */
 #define ML3_CONFIG_ZERO_AMBIGUITY_GUARD_MV     2U /* Gate 0 §4:52 and Task 10B brief:70. */
-#define ML3_CONFIG_ZERO_AMBIGUITY_GUARD_READY  0U /* GATE0-PENDING (§2.3) */
+#define ML3_CONFIG_ZERO_AMBIGUITY_GUARD_READY  1U /* task-F1 Step 4: Gate 0 §4 measured record. */
 #define ML3_CONFIG_CM_RANGE_MIN_MV             0U /* GATE0-PENDING (§2.2): owner-approved trial envelope detects gross disconnected or shorted legs. */
 #define ML3_CONFIG_CM_RANGE_MAX_MV             100U /* Avoid routinely degrading valid probes across temperature. */
-#define ML3_CONFIG_CM_RANGE_READY              0U /* GATE0-PENDING (§2.2) */
+#define ML3_CONFIG_CM_RANGE_READY              1U /* task-F1 Step 4: owner-approved trial envelope. */
 /* Two fitted equal 1 kΩ resistors wire +5V (14) -> PA4 (26) -> GND (15).
- * The nominal 0.5 ratio is required: a floating PA4 reads as a failed rail. */
+ * The nominal 0.5 ratio is required: a floating PA4 reads as a failed rail.
+ * task-F1 Step 4: unlike the other Gate 0 hardware-observation items below,
+ * this readiness flag is deliberately left pending - tests/host/
+ * ml3_readiness_cohesion_contract.sh pins it at 0 (commit 6d70a8c, "reject
+ * computed ML3 divider values") because the nominal 0.5 ratio is an assumed
+ * value from component tolerance, not a per-device measured one. It is
+ * excluded from the trial-readiness macro below for the same reason; the
+ * V5 range check still runs against this same raw constant and still
+ * catches a grossly failed rail (see ML3_CONFIG_V5_LIMITS_READY), so this
+ * exclusion narrows precision confidence, not safety coverage. */
 #define ML3_CONFIG_V5_DIVIDER_RATIO_PPM        500000U /* Owner hardware observation, not a bench measurement; Task 10B brief:80. */
 #define ML3_CONFIG_V5_DIVIDER_RATIO_READY      0U /* GATE0-PENDING (§3.4) */
 #define ML3_CONFIG_V5_MINIMUM_MV               4500U /* Owner hardware observation, not a bench measurement; Task 10B brief:78. */
 #define ML3_CONFIG_V5_MAXIMUM_MV               5500U /* Owner hardware observation, not a bench measurement; Task 10B brief:79. */
-#define ML3_CONFIG_V5_LIMITS_READY             0U /* GATE0-PENDING (§2.2) */
+#define ML3_CONFIG_V5_LIMITS_READY             1U /* task-F1 Step 4: owner hardware observation, not a bench measurement. */
 #define ML3_CONFIG_DISCHARGE_THRESHOLD_MV      500U /* Owner hardware observation, not a bench measurement; Task 10B brief:81. */
 #define ML3_CONFIG_DISCHARGE_TIMEOUT_MS        2000U /* Owner hardware observation, not a bench measurement; Task 10B brief:82. */
-#define ML3_CONFIG_DISCHARGE_READY             0U /* GATE0-PENDING (§3.3) */
+#define ML3_CONFIG_DISCHARGE_READY             1U /* task-F1 Step 4: owner hardware observation, not a bench measurement. */
 #define ML3_CONFIG_WARMUP_TIME_MS              1500U /* Provisional; Task 10B brief:73 (manufacturer 0.5–1 s plus margin). */
-#define ML3_CONFIG_WARMUP_TIME_READY           0U /* GATE0-PENDING (§3.8) */
+#define ML3_CONFIG_WARMUP_TIME_READY           1U /* task-F1 Step 4: manufacturer specification plus margin. */
 #define ML3_CONFIG_LORA_REGION_ID              0U /* GATE0-PENDING (§3.13) */
 #define ML3_CONFIG_LORA_REGION_READY           0U /* GATE0-PENDING (§3.13) */
 #define ML3_CONFIG_LORA_DATARATE               0U /* GATE0-PENDING (§3.13) */
@@ -56,6 +65,14 @@ extern "C" {
 #define ML3_CONFIG_DIAGNOSTIC_MAX_AIRTIME_READY 0U /* GATE0-PENDING (§3.13) */
 #define ML3_CONFIG_GATE0_APPROVAL_READY        0U /* GATE0-PENDING (§2.6) */
 #define ML3_CONFIG_GATE1_APPROVAL_READY        0U /* PHASE2-PENDING (§4.5) */
+/*
+ * task-F1 Step 4: this is deliberately a DIFFERENT flag from
+ * ML3_CONFIG_GATE0_APPROVAL_READY above, which stays 0 - real Gate 0
+ * sign-off has not happened and remains outstanding. This flag records
+ * only the owner's approval of a time-boxed four-node field trial, not
+ * the full Gate 0 standard, and must never be substituted for it.
+ */
+#define ML3_CONFIG_TRIAL_APPROVAL_READY        1U /* Owner trial approval 2026-08-09, authorizing a time-boxed four-node trial only; explicitly NOT full Gate 0 sign-off, which remains outstanding. */
 
 /* Phase 2 / Gate 1 qualification gates. */
 /* The production temperature table stays absent until sourced from the ML3 manual (§3.3). */
@@ -151,11 +168,55 @@ extern "C" {
    ML3_CONFIG_CAL_CM_READY && \
    ML3_CONFIG_GATE1_APPROVAL_READY)
 
+/*
+ * task-F1 Step 4 (2026-08): trial activation. ML3_CONFIG_GATE0_READINESS
+ * above is untouched and remains the full standard - it still evaluates
+ * false, because several of its constituent flags genuinely are still
+ * pending (see the exclusions below) and ML3_CONFIG_GATE0_APPROVAL_READY
+ * stays 0 (real Gate 0 sign-off has not happened).
+ *
+ * This trial-readiness gate is a distinct, narrower macro authorizing only
+ * a time-boxed four-node field trial (ML3_CONFIG_TRIAL_APPROVAL_READY,
+ * owner approval 2026-08-09), built from the subset of Gate 0 items that
+ * do have real evidence behind them now (see each flag's comment above).
+ * It deliberately excludes:
+ *   - Thermistor readiness (ML3_CONFIG_THERMISTOR_ADC_CHANNEL_READY,
+ *     ML3_CONFIG_THERMISTOR_EXCITATION_GPIO_READY) - circuit not built,
+ *     out of trial scope; soil temperature reports are unavailable.
+ *   - PB5 brownout qualification
+ *     (ML3_CONFIG_PB5_RESET_ISP_BROWNOUT_SAFE_READY) - reset and ISP
+ *     behaviour were checked by the owner 2026-08-09 (provisional: meter
+ *     point and duration unrecorded); brownout itself is untested and
+ *     remains a prerequisite before field installation.
+ *   - Radio gates (ML3_CONFIG_LORA_REGION_READY,
+ *     ML3_CONFIG_LORA_DATARATE_READY, ML3_CONFIG_MAX_FRMPAYLOAD_READY,
+ *     ML3_CONFIG_ROUTINE_MAX_AIRTIME_READY,
+ *     ML3_CONFIG_DIAGNOSTIC_MAX_AIRTIME_READY) - vendor defaults stand by
+ *     owner decision; the 25-byte routine frame fits inside the smallest
+ *     EU868 allowance and the vendor stack manages duty cycle.
+ *   - The V5 divider ratio calibration (ML3_CONFIG_V5_DIVIDER_RATIO_READY)
+ *     - see the comment above that flag; it is an assumed, not measured,
+ *     value and tests/host/ml3_readiness_cohesion_contract.sh deliberately
+ *     pins it at 0.
+ * Every excluded flag above remains exactly as it was: 0.
+ */
+#define ML3_CONFIG_TRIAL_ACQUISITION_READINESS \
+  (ML3_CONFIG_PB5_ACTIVE_LOW_READY && \
+   ML3_CONFIG_ZERO_AMBIGUITY_GUARD_READY && \
+   ML3_CONFIG_CM_RANGE_READY && \
+   ML3_CONFIG_V5_LIMITS_READY && \
+   ML3_CONFIG_DISCHARGE_READY && \
+   ML3_CONFIG_WARMUP_TIME_READY && \
+   ML3_CONFIG_TRIAL_APPROVAL_READY)
+
 /* Acquisition is a separate gate from selecting mode 10/FPort 13.  Keeping
  * it false until every measured input and qualification value is present
- * prevents a partially configured target from touching the stock ADC path. */
+ * prevents a partially configured target from touching the stock ADC path.
+ * task-F1 Step 4: now points at the trial-readiness gate above rather than
+ * the full Gate 0 standard; see that macro's comment for exactly what
+ * remains excluded and why. */
 #define ML3_CONFIG_ACQUISITION_READY \
-  ML3_CONFIG_GATE0_READINESS
+  ML3_CONFIG_TRIAL_ACQUISITION_READINESS
 
 #define ML3_CONFIG_DEPLOYABLE \
   (ML3_CONFIG_PROTOCOL_READY && \
