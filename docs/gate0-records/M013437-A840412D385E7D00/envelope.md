@@ -22,5 +22,6 @@ Water reading slightly above the 1.0 V nominal top — documented ML3 behavior i
 
 - Power-up/power-down transient captures (no oscilloscope on bench) — required by runbook §3 before Gate 0 sign-off.
 - Dry-soil and wet-soil conditions, temperature extremes.
-- Reset test (§2.8c): PASS 2026-08-05 — rail = stored-charge decay only (2 V → <1 V over minutes, no rise, LEDs dark). ISP + brownout tests deferred. PB5 polarity: active-low, established from vendor source (`stm32l0xx_hw_conf.h` PWR_OUT + `bsp.c:522` RESET=enable), not yet bench-confirmed.
+- PB5 state checks: the operator confirmed on 2026-08-09 that the 5 V rail stayed off during reset and ISP/programming events. Brownout has not been tested. PB5 polarity is active-low in the vendor source (`stm32l0xx_hw_conf.h` PWR_OUT; `bsp.c:522` RESET enables the rail).
+- Trial exception: the planned ML3 trial supplies the probe from an independent external source, not the PB5-controlled rail. Brownout behaviour is deferred until before any use that powers an ML3 from the board's switched 5 V output. The operator has not recorded the meter point or test duration for the reset and ISP checks.
 - STM32 REV_ID backfill (ST-Link read) pending.
