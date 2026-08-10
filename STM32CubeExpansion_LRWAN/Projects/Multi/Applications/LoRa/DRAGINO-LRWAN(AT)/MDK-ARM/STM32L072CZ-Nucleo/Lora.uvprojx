@@ -690,6 +690,16 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Projects/End_Node/ML3 Target Adapter</GroupName>
+          <Files>
+            <File>
+              <FileName>ml3_stm32_adc_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\src\ml3_stm32_adc_port.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Projects/End_Node/ML3</GroupName>
           <Files>
             <File>

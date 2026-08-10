@@ -97,6 +97,12 @@ ML3_SRCS := \
   $(APP_ROOT)/src/ml3_thermistor.c \
   $(APP_ROOT)/src/ml3_at_commands.c
 
+# The unregistered STM32L072 implementation of adc_precision_port_t is a
+# target adapter, not one of the seven pure ML3 branch modules above. It is
+# linked for build coverage only; bsp.c does not construct or call it yet.
+TARGET_ADAPTER_SRCS := \
+  $(APP_ROOT)/src/ml3_stm32_adc_port.c
+
 # Vendor sources under STM32CubeExpansion_LRWAN/{Drivers,Middlewares}, exactly
 # the CUBE_ROOT-relative <FilePath> entries in the uvprojx (64 files).
 CUBE_SRCS := \
@@ -165,7 +171,7 @@ CUBE_SRCS := \
   $(CUBE_ROOT)/Middlewares/Third_Party/Lora/Crypto/aes.c \
   $(CUBE_ROOT)/Middlewares/Third_Party/Lora/Crypto/cmac.c
 
-ALL_C_SRCS := $(APP_SRCS) $(ML3_SRCS) $(CUBE_SRCS) $(BENCH_SRCS)
+ALL_C_SRCS := $(APP_SRCS) $(ML3_SRCS) $(TARGET_ADAPTER_SRCS) $(CUBE_SRCS) $(BENCH_SRCS)
 ASM_SRCS   := $(STARTUP)
 
 # ---------------------------------------------------------------------------
@@ -300,6 +306,7 @@ LDFLAGS := $(MCU_FLAGS) \
 # objects built with different CFLAGS.
 APP_OBJS   := $(addprefix $(BUILD_DIR)/$(APP_OBJDIR)/,$(notdir $(APP_SRCS:.c=.o)))
 ML3_OBJS   := $(addprefix $(BUILD_DIR)/$(APP_OBJDIR)/,$(notdir $(ML3_SRCS:.c=.o)))
+TARGET_ADAPTER_OBJS := $(addprefix $(BUILD_DIR)/$(APP_OBJDIR)/,$(notdir $(TARGET_ADAPTER_SRCS:.c=.o)))
 BENCH_OBJS := $(addprefix $(BUILD_DIR)/$(APP_OBJDIR)/,$(notdir $(BENCH_SRCS:.c=.o)))
 CUBE_OBJS  := $(patsubst $(CUBE_ROOT)/%.c,$(BUILD_DIR)/$(CUBE_OBJDIR)/%.o,$(CUBE_SRCS))
 # Namespaced alongside APP_OBJS (not loose under $(BUILD_DIR)) for the same
@@ -307,7 +314,7 @@ CUBE_OBJS  := $(patsubst $(CUBE_ROOT)/%.c,$(BUILD_DIR)/$(CUBE_OBJDIR)/%.o,$(CUBE
 # which differs between BENCH=0/1, so the assembled object must not be
 # reused across variants either.
 ASM_OBJS   := $(addprefix $(BUILD_DIR)/$(APP_OBJDIR)/,$(notdir $(ASM_SRCS:.s=.o)))
-ALL_OBJS   := $(APP_OBJS) $(ML3_OBJS) $(BENCH_OBJS) $(CUBE_OBJS) $(ASM_OBJS)
+ALL_OBJS   := $(APP_OBJS) $(ML3_OBJS) $(TARGET_ADAPTER_OBJS) $(BENCH_OBJS) $(CUBE_OBJS) $(ASM_OBJS)
 
 ELF := $(BUILD_DIR)/$(TARGET).elf
 HEX := $(BUILD_DIR)/$(TARGET).hex
@@ -364,6 +371,12 @@ $(BUILD_DIR)/$(CUBE_OBJDIR)/Drivers/BSP/Components/iwdg/iwdg.o: $(CUBE_ROOT)/Dri
 # share with a plain pattern rule at the same stem, so this is spelled out
 # as one static pattern rule matching exactly the ML3_OBJS list.
 $(ML3_OBJS): $(BUILD_DIR)/$(APP_OBJDIR)/%.o: $(APP_ROOT)/src/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(ML3_STRICT_CFLAGS) -c $< -o $@
+
+# Target adapters follow the ML3 strict warning policy without joining the
+# seven-module ML3_SRCS list above.
+$(TARGET_ADAPTER_OBJS): $(BUILD_DIR)/$(APP_OBJDIR)/%.o: $(APP_ROOT)/src/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(ML3_STRICT_CFLAGS) -c $< -o $@
 

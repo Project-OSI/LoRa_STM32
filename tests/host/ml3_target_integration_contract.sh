@@ -11,7 +11,10 @@ MAIN="$APP_DIR/src/main.c"
 PROJECT="$APP_DIR/MDK-ARM/STM32L072CZ-Nucleo/Lora.uvprojx"
 BENCH_ADC_C="$APP_DIR/src/bench_adc.c"
 BENCH_ADC_H="$APP_DIR/inc/bench_adc.h"
+ADC_PORT_C="$APP_DIR/src/ml3_stm32_adc_port.c"
+ADC_PORT_H="$APP_DIR/inc/ml3_stm32_adc_port.h"
 GCC_MAKEFILE_DIR="$APP_DIR/gcc"
+GCC_MAKEFILE="$GCC_MAKEFILE_DIR/Makefile"
 failures=0
 
 fail() {
@@ -24,6 +27,14 @@ require() {
   local file=$2
   local description=$3
   if ! grep -Eq "$pattern" "$file"; then
+    fail "$description"
+  fi
+}
+
+require_file() {
+  local file=$1
+  local description=$2
+  if [ ! -f "$file" ]; then
     fail "$description"
   fi
 }
@@ -93,6 +104,54 @@ for source in adc_precision ml3_measurement ml3_calibration ml3_quality ml3_payl
     fail "Keil project source ${source}.c count=${count}, expected 1"
   fi
 done
+
+# --- Unregistered STM32L072 adc_precision target adapter (Task 10B / Phase 1) ---
+# This port is compiled into both target artifacts but remains unreachable while
+# ML3_CONFIG_ACQUISITION_READY is zero. Pin its direct-register protocol and
+# build registration here so future activation work cannot quietly weaken them.
+require_file "$ADC_PORT_C" 'src/ml3_stm32_adc_port.c is missing'
+require_file "$ADC_PORT_H" 'inc/ml3_stm32_adc_port.h is missing'
+require '^TARGET_ADAPTER_SRCS[[:space:]]*:=' "$GCC_MAKEFILE" \
+  'GCC target-adapter source list is missing'
+adapter_gcc_count=$(grep -Fc '$(APP_ROOT)/src/ml3_stm32_adc_port.c' "$GCC_MAKEFILE" || true)
+if [ "$adapter_gcc_count" -ne 1 ]; then
+  fail "GCC target-adapter source ml3_stm32_adc_port.c count=$adapter_gcc_count, expected 1"
+fi
+require '^TARGET_ADAPTER_OBJS[[:space:]]*:=' "$GCC_MAKEFILE" \
+  'GCC target-adapter object list is missing'
+require '^ALL_OBJS[[:space:]]*:=[^#]*\$\(TARGET_ADAPTER_OBJS\)' "$GCC_MAKEFILE" \
+  'GCC all-object list omits the target-adapter object'
+if ! awk '
+    /^\$\(TARGET_ADAPTER_OBJS\):/ { in_rule = 1 }
+    in_rule && /\$\(CC\) \$\(ML3_STRICT_CFLAGS\) -c/ { found = 1 }
+    in_rule && /^$/ { exit(found ? 0 : 1) }
+    END { exit(found ? 0 : 1) }
+  ' "$GCC_MAKEFILE"; then
+  fail 'GCC target-adapter object is not compiled with ML3_STRICT_CFLAGS'
+fi
+adapter_mdk_count=$(grep -Fc '<FilePath>..\..\src\ml3_stm32_adc_port.c</FilePath>' "$PROJECT" || true)
+if [ "$adapter_mdk_count" -ne 1 ]; then
+  fail "Keil target-adapter source ml3_stm32_adc_port.c count=$adapter_mdk_count, expected 1"
+fi
+
+if [ -f "$ADC_PORT_C" ]; then
+  require 'HW_RTC_Tick2ms\(HW_RTC_GetTimerValue\(\)\)' "$ADC_PORT_C" \
+    'ADC port now_ms does not convert the RTC tick clock'
+  require 'vrefint_enable_tick[[:space:]]*=[[:space:]]*HW_RTC_GetTimerValue\(\)' "$ADC_PORT_C" \
+    'ADC port does not timestamp ADC_CCR_VREFEN'
+  require '^enum \{ ML3_STM32_ADC_VREFINT_SETTLE_TICKS = 2U \};' "$ADC_PORT_C" \
+    'ADC port does not define the two-tick VREFINT settlement duration'
+  require '>=[[:space:]]*ML3_STM32_ADC_VREFINT_SETTLE_TICKS' "$ADC_PORT_C" \
+    'ADC port lacks the two-tick VREFINT settlement guard'
+  require 'return \(ADC1->CR & ADC_CR_ADSTART\) == 0U;' "$ADC_PORT_C" \
+    'ADC port does not report conversion stop from ADSTART'
+  for marker in ADC_CFGR2_OVSE ADC_OVERSAMPLING_RATIO_256 \
+      ADC_RIGHTBITSHIFT_4 ADC_SAMPLETIME_160CYCLES_5 ADC_CR_ADSTP \
+      ADC_CR_ADDIS ADC_CR_ADCAL ADC_CR_ADEN ADC_ISR_ADRDY ADC_ISR_EOC \
+      ADC_ISR_OVR; do
+    require "$marker" "$ADC_PORT_C" "ADC port is missing $marker"
+  done
+fi
 
 # --- Bench-only ADC readout tool (Task B2 / Gate 0 Section 4, AT+ML3ADC) ---
 # Pins down: the bench module exists with its entry point declared/defined;
