@@ -12,7 +12,7 @@ PROJECT="$APP_DIR/MDK-ARM/STM32L072CZ-Nucleo/Lora.uvprojx"
 BENCH_ADC_C="$APP_DIR/src/bench_adc.c"
 BENCH_ADC_H="$APP_DIR/inc/bench_adc.h"
 LORA="$APP_DIR/src/lora.c"
-ADC_PORT_C="$APP_DIR/src/ml3_stm32_adc_port.c"
+ADC_PORT_C=${ML3_ADC_PORT_C:-"$APP_DIR/src/ml3_stm32_adc_port.c"}
 ADC_PORT_H="$APP_DIR/inc/ml3_stm32_adc_port.h"
 GCC_MAKEFILE_DIR="$APP_DIR/gcc"
 GCC_MAKEFILE="$GCC_MAKEFILE_DIR/Makefile"
@@ -40,57 +40,81 @@ require_file() {
   fi
 }
 
+extract_port_function() {
+  local function_name=$1
+  awk -v function_name="$function_name" '
+      function opening_braces(line, copy) {
+        copy = line
+        gsub(/[^{]/, "", copy)
+        return length(copy)
+      }
+      function closing_braces(line, copy) {
+        copy = line
+        gsub(/[^}]/, "", copy)
+        return length(copy)
+      }
+      !capturing &&
+          $0 ~ "^[[:space:]]*(static[[:space:]]+)?[^;]*[[:space:]]" \
+            function_name "[[:space:]]*\\(" {
+        capturing = 1
+      }
+      capturing {
+        print
+        opening = opening_braces($0)
+        if (opening > 0) {
+          saw_opening = 1
+        }
+        depth += opening - closing_braces($0)
+        if (saw_opening && depth == 0) {
+          exit
+        }
+      }
+    ' "$ADC_PORT_C"
+}
+
 require_port_function_line() {
   local function_name=$1
   local required_line=$2
   local description=$3
-  if ! awk -v function_name="$function_name" -v required_line="$required_line" '
-      function_name == substr($0, 1, length(function_name)) {
-        in_function = 1
-      }
-      in_function && index($0, required_line) != 0 {
-        found = 1
-      }
-      in_function && /^}/ {
-        complete = 1
-        exit
-      }
-      END {
-        exit((complete && found) ? 0 : 1)
-      }
-    ' "$ADC_PORT_C"; then
+  local body
+
+  body=$(extract_port_function "$function_name")
+  if ! printf '%s\n' "$body" | grep -Fq "$required_line"; then
     fail "$description"
   fi
 }
 
-require_port_channel_mapping() {
-  local channel=$1
-  local channel_bit=$2
-  if ! awk -v case_line="case ${channel}U:" -v return_line="return ${channel_bit};" '
-      /^static uint32_t ml3_stm32_adc_port_channel_bit/ {
-        in_function = 1
+require_port_initializer_binding() {
+  local field=$1
+  local callback=$2
+  if ! awk -v field="$field" -v callback="$callback" '
+      /^static const adc_precision_port_t k_ml3_stm32_adc_port = \{/ {
+        in_port = 1
         next
       }
-      !in_function {
-        next
-      }
-      index($0, case_line) != 0 {
-        in_case = 1
-        next
-      }
-      in_case && index($0, return_line) != 0 {
-        found = 1
+      in_port && /^};/ {
+        complete = 1
         exit
       }
-      in_case && ($0 ~ /^[[:space:]]*case / ||
-          $0 ~ /^[[:space:]]*default:/ || $0 ~ /^}/) {
-        exit
+      in_port {
+        line = $0
+        sub(/^[[:space:]]*/, "", line)
+        if (line ~ "^\\." field "[[:space:]]*=") {
+          total++
+          if (line ~ "^\\." field "[[:space:]]*=[[:space:]]*NULL([[:space:]]*,)?[[:space:]]*$") {
+            null_binding = 1
+          }
+          if (line ~ "^\\." field "[[:space:]]*=[[:space:]]*" callback "[[:space:]]*,?[[:space:]]*$") {
+            expected_binding++
+          }
+        }
       }
       END {
-        exit(found ? 0 : 1)
+        exit((complete && total == 1 && expected_binding == 1 &&
+          !null_binding) ? 0 : 1)
       }
     ' "$ADC_PORT_C"; then
-    fail "ADC port channel ${channel} is not mapped to ${channel_bit}"
+    fail "ADC port callback .$field must be bound exactly once to $callback and must not be NULL"
   fi
 }
 
@@ -208,15 +232,20 @@ if [ -f "$ADC_PORT_C" ]; then
   done
 
   require_port_function_line \
-    'void ml3_stm32_adc_port_init(ml3_stm32_adc_port_context_t *context)' \
+    'ml3_stm32_adc_port_init' \
     'RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;' \
     'ADC port init does not enable the SYSCFG peripheral clock'
+  require_port_function_line \
+    'ml3_stm32_adc_port_init' \
+    'RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;' \
+    'ADC port init does not enable the ADC1 peripheral clock'
 
-  for runtime_source in "$BSP" "$MAIN" "$AT" "$COMMAND" "$LORA"; do
-    if grep -q 'ml3_stm32_adc_port' "$runtime_source"; then
-      fail "$(basename "$runtime_source") must not reference the unregistered ADC port"
-    fi
-  done
+  runtime_reference_files=$(find "$APP_DIR/src" -maxdepth 1 -type f \
+    -name '*.c' ! -name 'ml3_stm32_adc_port.c' \
+    -exec grep -l 'ml3_stm32_adc_port' {} + || true)
+  if [ -n "$runtime_reference_files" ]; then
+    fail "unregistered ADC port is referenced by runtime source: $runtime_reference_files"
+  fi
 
   callback_total=$(awk '
       /^static const adc_precision_port_t k_ml3_stm32_adc_port = \{/ {
@@ -236,118 +265,178 @@ if [ -f "$ADC_PORT_C" ]; then
   if [ "$callback_total" -ne 23 ]; then
     fail "ADC port callback initializer count=$callback_total, expected 23"
   fi
-  for callback in now_ms request_stop_conversion is_conversion_stopped \
-      request_disable_adc is_adc_disabled configure request_self_calibration \
-      is_calibration_complete request_enable_adc is_adc_ready \
-      enable_vrefint_gate enable_temperature_gate enable_vrefint_buffer_gate \
-      enable_temperature_buffer_gate is_vrefint_ready is_temperature_ready \
-      is_vrefint_buffer_ready is_temperature_buffer_ready is_reference_settled \
-      select_channel start_conversion is_conversion_complete read_raw; do
-    callback_count=$(awk -v callback=".$callback" '
-        /^static const adc_precision_port_t k_ml3_stm32_adc_port = \{/ {
-          in_port = 1
-          next
-        }
-        in_port && /^};/ {
-          exit
-        }
-        in_port {
-          line = $0
-          sub(/^[[:space:]]*/, "", line)
-          sub(/[[:space:]]*=.*/, "", line)
-          if (line == callback) {
-            count++
-          }
-        }
-        END {
-          print count + 0
-        }
-      ' "$ADC_PORT_C")
-    if [ "$callback_count" -ne 1 ]; then
-      fail "ADC port callback .$callback count=$callback_count, expected 1"
-    fi
-  done
 
-  if ! awk '
-      /^static void ml3_stm32_adc_port_request_enable_adc/ {
-        in_function = 1
-      }
-      in_function && /ADC1->ISR = ADC_ISR_ADRDY;/ {
+  while IFS=: read -r field callback; do
+    [ -n "$field" ] || continue
+    require_port_initializer_binding "$field" "$callback"
+  done <<'EOF'
+now_ms:ml3_stm32_adc_port_now_ms
+request_stop_conversion:ml3_stm32_adc_port_request_stop_conversion
+is_conversion_stopped:ml3_stm32_adc_port_is_conversion_stopped
+request_disable_adc:ml3_stm32_adc_port_request_disable_adc
+is_adc_disabled:ml3_stm32_adc_port_is_adc_disabled
+configure:ml3_stm32_adc_port_configure
+request_self_calibration:ml3_stm32_adc_port_request_self_calibration
+is_calibration_complete:ml3_stm32_adc_port_is_calibration_complete
+request_enable_adc:ml3_stm32_adc_port_request_enable_adc
+is_adc_ready:ml3_stm32_adc_port_is_adc_ready
+enable_vrefint_gate:ml3_stm32_adc_port_enable_vrefint_gate
+enable_temperature_gate:ml3_stm32_adc_port_enable_temperature_gate
+enable_vrefint_buffer_gate:ml3_stm32_adc_port_enable_vrefint_buffer_gate
+enable_temperature_buffer_gate:ml3_stm32_adc_port_enable_temperature_buffer_gate
+is_vrefint_ready:ml3_stm32_adc_port_is_vrefint_ready
+is_temperature_ready:ml3_stm32_adc_port_is_temperature_ready
+is_vrefint_buffer_ready:ml3_stm32_adc_port_is_vrefint_buffer_ready
+is_temperature_buffer_ready:ml3_stm32_adc_port_is_temperature_buffer_ready
+is_reference_settled:ml3_stm32_adc_port_is_reference_settled
+select_channel:ml3_stm32_adc_port_select_channel
+start_conversion:ml3_stm32_adc_port_start_conversion
+is_conversion_complete:ml3_stm32_adc_port_is_conversion_complete
+read_raw:ml3_stm32_adc_port_read_raw
+EOF
+
+  enable_body=$(extract_port_function \
+    'ml3_stm32_adc_port_request_enable_adc')
+  if ! printf '%s\n' "$enable_body" | awk '
+      /ADC1->ISR[[:space:]]*=[[:space:]]*ADC_ISR_ADRDY;/ {
         ready_line = NR
+        ready_count++
       }
-      in_function && /ADC1->CR \|= ADC_CR_ADEN;/ {
+      /ADC1->CR[[:space:]]*\|=[[:space:]]*ADC_CR_ADEN;/ {
         enable_line = NR
-      }
-      in_function && /^}/ {
-        complete = 1
-        exit
+        enable_count++
       }
       END {
-        exit((complete && ready_line > 0 && enable_line > 0 &&
+        exit((ready_count == 1 && enable_count == 1 &&
           ready_line < enable_line) ? 0 : 1)
       }
-    ' "$ADC_PORT_C"; then
+    '; then
     fail 'ADC port does not acknowledge ADRDY before setting ADEN'
   fi
 
-  if ! awk '
-      /^static bool ml3_stm32_adc_port_read_raw/ {
-        in_function = 1
-      }
-      in_function && /observed_overrun = \(ADC1->ISR & ADC_ISR_OVR\) != 0U;/ {
+  read_raw_body=$(extract_port_function 'ml3_stm32_adc_port_read_raw')
+  if ! printf '%s\n' "$read_raw_body" | awk '
+      /ADC1->ISR[[:space:]]*&[[:space:]]*ADC_ISR_OVR/ {
         observed_line = NR
+        observed_count++
       }
-      in_function && /\*raw_code = \(uint16_t\)ADC1->DR;/ {
+      /ADC1->DR/ {
         read_line = NR
+        read_count++
       }
-      in_function && /ADC1->ISR = ADC_ISR_OVR;/ {
+      /ADC1->ISR[[:space:]]*=[[:space:]]*ADC_ISR_OVR;/ {
         clear_line = NR
-      }
-      in_function && /^}/ {
-        complete = 1
-        exit
+        clear_count++
       }
       END {
-        exit((complete && observed_line > 0 && read_line > 0 && clear_line > 0 &&
+        exit((observed_count == 1 && read_count == 1 && clear_count == 1 &&
           observed_line < read_line && read_line < clear_line) ? 0 : 1)
       }
-    ' "$ADC_PORT_C"; then
+    '; then
     fail 'ADC port does not observe OVR, read DR, then acknowledge OVR in order'
   fi
 
-  if grep -Eq '(^|[^[:alnum:]_])(while|for)[[:space:]]*\(|HAL_Delay[[:space:]]*\(|HW_RTC_DelayMs[[:space:]]*\(' "$ADC_PORT_C"; then
+  if grep -Eq '(^|[^[:alnum:]_])(for|while)[[:space:]]*\(|(^|[^[:alnum:]_])(HAL_Delay|HW_RTC_DelayMs|[[:alnum:]_]*Delay(Ms)?)[[:space:]]*\(' "$ADC_PORT_C"; then
     fail 'ADC port must not use polling loops or blocking delays'
   fi
 
-  require 'ADC1->CHSELR = ml3_stm32_adc_port_channel_bit\(channel\);' "$ADC_PORT_C" \
-    'ADC port channel selection is not the pinned single-bit assignment'
-  require_port_channel_mapping 0 ADC_CHSELR_CHSEL0
-  require_port_channel_mapping 1 ADC_CHSELR_CHSEL1
-  require_port_channel_mapping 2 ADC_CHSELR_CHSEL2
-  require_port_channel_mapping 4 ADC_CHSELR_CHSEL4
-  require_port_channel_mapping 17 ADC_CHSELR_CHSEL17
-  require_port_channel_mapping 18 ADC_CHSELR_CHSEL18
-
-  if ! awk '
-      /^static void ml3_stm32_adc_port_configure/ {
-        in_function = 1
+  chsel_count=$(grep -Ec '^[[:space:]]*ADC1->CHSELR = ml3_stm32_adc_port_channel_bit\(channel\);$' "$ADC_PORT_C" || true)
+  if [ "$chsel_count" -ne 1 ]; then
+    fail 'ADC port channel selection must be exactly one pinned single-bit assignment'
+  fi
+  channel_body=$(extract_port_function 'ml3_stm32_adc_port_channel_bit')
+  if ! printf '%s\n' "$channel_body" | awk '
+      /^[[:space:]]*case[[:space:]]+/ {
+        case_count++
+        if ($0 !~ /^[[:space:]]*case[[:space:]]+[0-9]+U:[[:space:]]*$/) {
+          invalid_case = 1
+          next
+        }
+        line = $0
+        sub(/^[[:space:]]*case[[:space:]]+/, "", line)
+        sub(/U:.*/, "", line)
+        current_case = line
+        case_seen[current_case]++
+        next
       }
-      in_function {
-        body = body " " $0
+      /^[[:space:]]*default[[:space:]]*:/ {
+        default_count++
+        current_case = "default"
+        next
       }
-      in_function && /^}/ {
-        complete = 1
-        gsub(/[[:space:]]+/, " ", body)
-        exit
+      current_case ~ /^[0-9]+$/ &&
+          /^[[:space:]]*return[[:space:]]+/ {
+        line = $0
+        sub(/^[[:space:]]*return[[:space:]]+/, "", line)
+        sub(/;.*/, "", line)
+        case_return_count[current_case]++
+        if ((current_case == "0" && line == "ADC_CHSELR_CHSEL0") ||
+            (current_case == "1" && line == "ADC_CHSELR_CHSEL1") ||
+            (current_case == "2" && line == "ADC_CHSELR_CHSEL2") ||
+            (current_case == "4" && line == "ADC_CHSELR_CHSEL4") ||
+            (current_case == "17" && line == "ADC_CHSELR_CHSEL17") ||
+            (current_case == "18" && line == "ADC_CHSELR_CHSEL18")) {
+          mapped[current_case]++
+        }
+        current_case = ""
+        next
+      }
+      current_case == "default" && /^[[:space:]]*return[[:space:]]+/ {
+        default_return_count++
+        if ($0 ~ /^[[:space:]]*return[[:space:]]+0U;/) {
+          default_zero_count++
+        }
+        current_case = ""
       }
       END {
-        exit((complete &&
+        exit((case_count == 6 && default_count == 1 &&
+          default_return_count == 1 && default_zero_count == 1 && !invalid_case &&
+          case_seen["0"] == 1 && case_seen["1"] == 1 &&
+          case_seen["2"] == 1 && case_seen["4"] == 1 &&
+          case_seen["17"] == 1 && case_seen["18"] == 1 &&
+          case_return_count["0"] == 1 && case_return_count["1"] == 1 &&
+          case_return_count["2"] == 1 && case_return_count["4"] == 1 &&
+          case_return_count["17"] == 1 && case_return_count["18"] == 1 &&
+          mapped["0"] == 1 && mapped["1"] == 1 &&
+          mapped["2"] == 1 && mapped["4"] == 1 &&
+          mapped["17"] == 1 && mapped["18"] == 1) ? 0 : 1)
+      }
+    '; then
+    fail 'ADC port channel map must contain only the six approved cases and default to 0U'
+  fi
+
+  config_body=$(extract_port_function 'ml3_stm32_adc_port_configure')
+  if ! printf '%s\n' "$config_body" | awk '
+      /ADC1->CFGR1[[:space:]]*=/ {
+        cfgr1_writes++
+      }
+      /ADC1->CFGR2[[:space:]]*=/ {
+        cfgr2_writes++
+      }
+      /ADC1->SMPR[[:space:]]*=/ {
+        smpr_writes++
+      }
+      {
+        body = body " " $0
+      }
+      END {
+        gsub(/[[:space:]]+/, " ", body)
+        exit((cfgr1_writes == 1 && cfgr2_writes == 1 && smpr_writes == 1 &&
           body ~ /ADC1->CFGR1 = ADC_RESOLUTION_12B \| ADC_DATAALIGN_RIGHT \| ADC_EXTERNALTRIGCONVEDGE_NONE;/ &&
           body ~ /ADC1->CFGR2 = ADC_CLOCK_SYNC_PCLK_DIV4 \| ADC_CFGR2_OVSE \| ADC_OVERSAMPLING_RATIO_256 \| ADC_RIGHTBITSHIFT_4;/ &&
           body ~ /ADC1->SMPR = ADC_SAMPLETIME_160CYCLES_5;/) ? 0 : 1)
       }
-    ' "$ADC_PORT_C"; then
+    '; then
     fail 'ADC port fixed CFGR1/CFGR2/SMPR configuration is not pinned'
+  fi
+  for register in CFGR1 CFGR2 SMPR; do
+    register_references=$(grep -Ec "ADC1->$register" "$ADC_PORT_C" || true)
+    if [ "$register_references" -ne 1 ]; then
+      fail "ADC port $register must only be configured once in its configure callback"
+    fi
+  done
+  if grep -Eq 'ADC_CFGR1_(CONT|DMAEN|DMACFG)' "$ADC_PORT_C"; then
+    fail 'ADC port must not enable continuous conversion or DMA in CFGR1'
   fi
 fi
 
