@@ -13,6 +13,7 @@ BENCH_ADC_C="$APP_DIR/src/bench_adc.c"
 BENCH_ADC_H="$APP_DIR/inc/bench_adc.h"
 RTC_C="$APP_DIR/src/hw_rtc.c"
 LORA="$APP_DIR/src/lora.c"
+RAIL_PROCEDURE="$ROOT_DIR/docs/gate0-rail-measurement-procedure.md"
 ADC_PORT_C=${ML3_ADC_PORT_C:-"$APP_DIR/src/ml3_stm32_adc_port.c"}
 ADC_PORT_H="$APP_DIR/inc/ml3_stm32_adc_port.h"
 GCC_MAKEFILE_DIR="$APP_DIR/gcc"
@@ -210,6 +211,13 @@ do
 done
 require '^#define[[:space:]]+ML3_CONFIG_ACQUISITION_READY' "$CONFIG" \
   'acquisition readiness definition is missing'
+if grep -Fq 'AT+5V''T' "$RAIL_PROCEDURE"; then
+  fail 'rail procedure contains the prohibited rail-time command'
+fi
+require 'owner-observation values already configure Phase 2' "$RAIL_PROCEDURE" \
+  'rail procedure does not state that owner observations already configure Phase 2'
+require 'optional field-installation validation' "$RAIL_PROCEDURE" \
+  'rail procedure does not make remaining rail work optional field-installation validation'
 if ! contract_tmp=$(mktemp -d "${TMPDIR:-/tmp}/ml3-target-integration.XXXXXX"); then
   fail 'cannot create temporary directory for build-only gate contract'
   exit 1

@@ -109,3 +109,36 @@
   ```
 
   Do not push.
+
+### Task 4: Rail-procedure safety repair
+
+**Files:**
+
+- Modify: `docs/gate0-rail-measurement-procedure.md`
+- Modify: `tests/host/ml3_target_integration_contract.sh`
+- Modify: this plan
+
+- [x] **Step 1: Add the failing safety contract**
+
+  Scan the rail procedure for the prohibited rail-time command. Require it to
+  state that owner observations already configure Phase 2 and that the
+  remaining rail work is optional field-installation validation.
+
+- [x] **Step 2: Confirm the unsafe procedure fails the contract**
+
+  Run `bash tests/host/ml3_target_integration_contract.sh`. The old procedure
+  must fail because it contains the prohibited command and lacks the current
+  Phase 2 and optional-validation statements.
+
+- [x] **Step 3: Retire the manual rail switching procedure**
+
+  Preserve the PA4 divider wiring facts and the brownout prerequisite. Remove
+  the manual switching and restore instructions without suggesting another
+  command. Defer rail-on and discharge observations to the controlled Task 10B
+  engine and bring-up path.
+
+- [x] **Step 4: Verify and commit the safety repair**
+
+  Run the target contract, host suite, both target builds, `git diff --check`,
+  and the prose checker on both plans and the rail procedure. Commit the repair
+  with `docs: remove unsafe ML3 rail procedure command`, without pushing.
