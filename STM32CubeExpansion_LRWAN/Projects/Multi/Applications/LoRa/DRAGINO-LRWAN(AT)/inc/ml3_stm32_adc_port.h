@@ -11,10 +11,13 @@ extern "C" {
 
 typedef struct {
   uint32_t vrefint_enable_tick;
+  uint32_t last_rtc_tick;
+  uint32_t rtc_epoch_ms;
+  bool rtc_tick_initialized;
 } ml3_stm32_adc_port_context_t;
 
 const adc_precision_port_t *ml3_stm32_adc_port_get(void);
-void ml3_stm32_adc_port_init(ml3_stm32_adc_port_context_t *context);
+bool ml3_stm32_adc_port_init(ml3_stm32_adc_port_context_t *context);
 
 #ifdef __cplusplus
 }

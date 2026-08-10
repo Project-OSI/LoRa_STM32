@@ -84,6 +84,47 @@ require_port_function_line() {
   fi
 }
 
+require_port_context_guard() {
+  local function_name=$1
+  local description=$2
+
+  require_port_function_line "$function_name" \
+    'if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {' \
+    "$description"
+}
+
+require_adapter_dry_run_evidence() {
+  local commands=$1
+  local object_path=$2
+  local elf_path=$3
+  local variant=$4
+  local compile_count
+  local link_count
+  local strict_flag
+
+  compile_count=$(printf '%s\n' "$commands" | grep -Ec -- \
+    "-c[[:space:]]+\.\./src/ml3_stm32_adc_port\\.c[[:space:]]+-o[[:space:]]+$object_path" || true)
+  if [ "$compile_count" -ne 1 ]; then
+    fail "$variant build must compile ml3_stm32_adc_port.c exactly once into $object_path"
+    return
+  fi
+
+  for strict_flag in -Wall -Wextra -Werror -Wpedantic -Wshadow -Wconversion \
+      -Wvla -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wundef; do
+    if ! printf '%s\n' "$commands" | grep -E -- \
+      "-c[[:space:]]+\.\./src/ml3_stm32_adc_port\\.c[[:space:]]+-o[[:space:]]+$object_path" | \
+      grep -Fq -- "$strict_flag"; then
+      fail "$variant adapter compile command omits strict flag $strict_flag"
+    fi
+  done
+
+  link_count=$(printf '%s\n' "$commands" | grep -Ec -- \
+    "arm-none-eabi-gcc[[:space:]].*$object_path[[:space:]].*-o[[:space:]]+$elf_path" || true)
+  if [ "$link_count" -ne 1 ]; then
+    fail "$variant build must link $object_path exactly once into $elf_path"
+  fi
+}
+
 require_port_initializer_binding() {
   local field=$1
   local callback=$2
@@ -190,6 +231,9 @@ done
 # build registration here so future activation work cannot quietly weaken them.
 require_file "$ADC_PORT_C" 'src/ml3_stm32_adc_port.c is missing'
 require_file "$ADC_PORT_H" 'inc/ml3_stm32_adc_port.h is missing'
+require '^bool ml3_stm32_adc_port_init\(ml3_stm32_adc_port_context_t \*context\);' \
+  "$ADC_PORT_H" \
+  'ADC port init must report whether it accepted a non-NULL context'
 require '^TARGET_ADAPTER_SRCS[[:space:]]*:=' "$GCC_MAKEFILE" \
   'GCC target-adapter source list is missing'
 adapter_gcc_count=$(grep -Fc '$(APP_ROOT)/src/ml3_stm32_adc_port.c' "$GCC_MAKEFILE" || true)
@@ -214,8 +258,20 @@ if [ "$adapter_mdk_count" -ne 1 ]; then
 fi
 
 if [ -f "$ADC_PORT_C" ]; then
-  require 'HW_RTC_Tick2ms\(HW_RTC_GetTimerValue\(\)\)' "$ADC_PORT_C" \
+  require '^static ml3_stm32_adc_port_context_t \*ml3_stm32_adc_port_active_context;$' \
+    "$ADC_PORT_C" \
+    'ADC port has no active-context ownership guard'
+  require '^static bool ml3_stm32_adc_port_context_is_active\(const void \*port_ctx\) \{' \
+    "$ADC_PORT_C" \
+    'ADC port active-context helper is missing'
+  require 'HW_RTC_Tick2ms\(now_tick\)' "$ADC_PORT_C" \
     'ADC port now_ms does not convert the RTC tick clock'
+  require 'if \(now_tick < context->last_rtc_tick\)' "$ADC_PORT_C" \
+    'ADC port now_ms does not detect the raw RTC tick wrap'
+  require 'context->rtc_epoch_ms \+= ML3_STM32_ADC_RTC_WRAP_MS;' "$ADC_PORT_C" \
+    'ADC port now_ms does not carry milliseconds across the RTC tick wrap'
+  require 'return context->rtc_epoch_ms \+ \(uint32_t\)HW_RTC_Tick2ms\(now_tick\);' "$ADC_PORT_C" \
+    'ADC port now_ms does not return the wrap-preserving millisecond clock'
   require 'vrefint_enable_tick[[:space:]]*=[[:space:]]*HW_RTC_GetTimerValue\(\)' "$ADC_PORT_C" \
     'ADC port does not timestamp ADC_CCR_VREFEN'
   require '^enum \{ ML3_STM32_ADC_VREFINT_SETTLE_TICKS = 2U \};' "$ADC_PORT_C" \
@@ -239,6 +295,48 @@ if [ -f "$ADC_PORT_C" ]; then
     'ml3_stm32_adc_port_init' \
     'RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;' \
     'ADC port init does not enable the ADC1 peripheral clock'
+
+  init_body=$(extract_port_function 'ml3_stm32_adc_port_init')
+  if ! printf '%s\n' "$init_body" | awk '
+      /if \(context == NULL\)/ { null_check_line = NR }
+      null_check_line > 0 && /return false;/ { reject_line = NR }
+      /RCC->APB2ENR/ && first_clock_line == 0 { first_clock_line = NR }
+      END {
+        exit((null_check_line > 0 && reject_line > null_check_line &&
+          first_clock_line > reject_line) ? 0 : 1)
+      }
+    '; then
+    fail 'ADC port init must reject NULL before touching the peripheral clocks'
+  fi
+
+  while IFS= read -r callback; do
+    [ -n "$callback" ] || continue
+    require_port_context_guard "$callback" \
+      "ADC port callback $callback must fail closed without its active context"
+  done <<'EOF'
+ml3_stm32_adc_port_request_stop_conversion
+ml3_stm32_adc_port_is_conversion_stopped
+ml3_stm32_adc_port_request_disable_adc
+ml3_stm32_adc_port_is_adc_disabled
+ml3_stm32_adc_port_configure
+ml3_stm32_adc_port_request_self_calibration
+ml3_stm32_adc_port_is_calibration_complete
+ml3_stm32_adc_port_request_enable_adc
+ml3_stm32_adc_port_is_adc_ready
+ml3_stm32_adc_port_enable_vrefint_gate
+ml3_stm32_adc_port_enable_temperature_gate
+ml3_stm32_adc_port_enable_vrefint_buffer_gate
+ml3_stm32_adc_port_enable_temperature_buffer_gate
+ml3_stm32_adc_port_is_vrefint_ready
+ml3_stm32_adc_port_is_temperature_ready
+ml3_stm32_adc_port_is_vrefint_buffer_ready
+ml3_stm32_adc_port_is_temperature_buffer_ready
+ml3_stm32_adc_port_is_reference_settled
+ml3_stm32_adc_port_select_channel
+ml3_stm32_adc_port_start_conversion
+ml3_stm32_adc_port_is_conversion_complete
+ml3_stm32_adc_port_read_raw
+EOF
 
   runtime_reference_files=$(find "$APP_DIR/src" -maxdepth 1 -type f \
     -name '*.c' ! -name 'ml3_stm32_adc_port.c' \
@@ -484,14 +582,24 @@ fi
 # would run for the default target (-B: treat all targets as out of date;
 # -n: print without executing, no files touched) and inspects those.
 if command -v make >/dev/null 2>&1; then
-  default_commands=$(cd "$GCC_MAKEFILE_DIR" && make -B -n 2>&1)
+  if ! default_commands=$(cd "$GCC_MAKEFILE_DIR" && make -B -n 2>&1); then
+    fail 'cannot dry-run the default target build'
+    default_commands=''
+  fi
   if printf '%s\n' "$default_commands" | grep -q 'ML3_BENCH_TOOLS'; then
     fail 'default (BENCH=0) build command line references ML3_BENCH_TOOLS'
   fi
-  bench_commands=$(cd "$GCC_MAKEFILE_DIR" && make -B -n BENCH=1 2>&1)
+  require_adapter_dry_run_evidence "$default_commands" \
+    'build/app/ml3_stm32_adc_port.o' 'build/lora.elf' 'default'
+  if ! bench_commands=$(cd "$GCC_MAKEFILE_DIR" && make -B -n BENCH=1 2>&1); then
+    fail 'cannot dry-run the BENCH=1 target build'
+    bench_commands=''
+  fi
   if ! printf '%s\n' "$bench_commands" | grep -q -- '-DML3_BENCH_TOOLS=1'; then
     fail 'BENCH=1 build command line does not define ML3_BENCH_TOOLS=1 (check is not vacuous)'
   fi
+  require_adapter_dry_run_evidence "$bench_commands" \
+    'build/app-bench/ml3_stm32_adc_port.o' 'build/lora-bench.elf' 'BENCH=1'
 else
   fail 'make is not available to verify the default build command line stays ML3_BENCH_TOOLS-free'
 fi

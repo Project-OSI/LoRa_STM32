@@ -4,7 +4,7 @@
 
 **Goal:** Add an unregistered STM32L072 implementation of `adc_precision_port_t` that compiles in both target builds while every ML3 acquisition gate remains false.
 
-**Architecture:** `ml3_stm32_adc_port.c` is the only module that writes ADC1, ADC common-control, and SYSCFG ADC-buffer registers. It returns a static `adc_precision_port_t` and accepts a small context that records the RTC tick at `VREFEN`. Phase 1 does not include the port in `BSP_ML3_Service`, so no callback is reachable in the default or bench firmware.
+**Architecture:** `ml3_stm32_adc_port.c` is the only module that writes ADC1, ADC common-control, and SYSCFG ADC-buffer registers. It returns a static `adc_precision_port_t` and accepts a small context that records the RTC tick at `VREFEN` and carries its millisecond clock across an RTC wrap. Phase 1 does not include the port in `BSP_ML3_Service`, so no callback is reachable in the default or bench firmware.
 
 **Tech Stack:** C99, STM32L072 CMSIS register definitions, existing `hw_rtc` tick clock, GCC and MDK project manifests, shell integration contract.
 
@@ -41,17 +41,20 @@ Expose only:
 ```c
 typedef struct {
   uint32_t vrefint_enable_tick;
+  uint32_t last_rtc_tick;
+  uint32_t rtc_epoch_ms;
+  bool rtc_tick_initialized;
 } ml3_stm32_adc_port_context_t;
 
 const adc_precision_port_t *ml3_stm32_adc_port_get(void);
-void ml3_stm32_adc_port_init(ml3_stm32_adc_port_context_t *context);
+bool ml3_stm32_adc_port_init(ml3_stm32_adc_port_context_t *context);
 ```
 
-`init` zeros the context and enables the ADC peripheral clock. It must not configure, enable, or start ADC1.
+`init` rejects a null context before touching hardware, zeros an accepted context, and owns both the SYSCFG and ADC peripheral clocks. It must not configure, enable, or start ADC1. The callbacks reject any context that was not accepted by `init`.
 
 - [ ] **Step 2: Implement thin callbacks with no loops or delays**
 
-Use `HW_RTC_Tick2ms(HW_RTC_GetTimerValue())` for `now_ms`. Implement stop, disable, calibration, enable, ready, channel selection, start, completion, and read callbacks with one register operation or status read each. Clear `ADRDY` before setting `ADEN`; capture `OVR` before reading `DR`, then acknowledge `OVR`. Select one channel by assigning `ADC1->CHSELR = (uint32_t)1U << channel`.
+Use the RTC tick conversion for `now_ms`, carrying milliseconds across the raw 32-bit tick wrap so the core's unsigned elapsed-time arithmetic remains valid. Implement stop, disable, calibration, enable, ready, channel selection, start, completion, and read callbacks with one register operation or status read each. Clear `ADRDY` before setting `ADEN`; capture `OVR` before reading `DR`, then acknowledge `OVR`. Channel selection maps only ADC channels 0, 1, 2, 4, 17, and 18 to their named `ADC_CHSELR_CHSEL*` bits; unsupported channels map to zero.
 
 - [ ] **Step 3: Apply the fixed ADC configuration only while disabled**
 
@@ -102,4 +105,4 @@ git add tests/host/ml3_target_integration_contract.sh \
 git commit -m 'feat: add STM32 ML3 ADC port'
 ```
 
-Phase 2 cannot begin from this plan until the owner records the PB5-powered rail measurements required by `ML3_CONFIG_V5_*`, `ML3_CONFIG_DISCHARGE_*`, and `ML3_CONFIG_V5_DIVIDER_RATIO_PPM`.
+Phase 2 uses the current Task 10B brief's PB5-powered rail values as owner hardware observations, not bench measurements. Their comments must preserve that basis and explain that the fitted divider is required to keep PA4 from floating into a false supply-failure result.

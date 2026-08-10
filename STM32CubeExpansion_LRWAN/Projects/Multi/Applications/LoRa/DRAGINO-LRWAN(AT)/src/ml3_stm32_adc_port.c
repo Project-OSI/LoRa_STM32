@@ -18,6 +18,15 @@
 
 enum { ML3_STM32_ADC_VREFINT_SETTLE_TICKS = 2U };
 
+#define ML3_STM32_ADC_RTC_WRAP_MS UINT32_C(4194304000)
+
+static ml3_stm32_adc_port_context_t *ml3_stm32_adc_port_active_context;
+
+static bool ml3_stm32_adc_port_context_is_active(const void *port_ctx) {
+  return (port_ctx != NULL) &&
+    (port_ctx == ml3_stm32_adc_port_active_context);
+}
+
 static uint32_t ml3_stm32_adc_port_channel_bit(uint16_t channel) {
   switch (channel) {
     case 0U:
@@ -38,34 +47,60 @@ static uint32_t ml3_stm32_adc_port_channel_bit(uint16_t channel) {
 }
 
 static uint32_t ml3_stm32_adc_port_now_ms(void *port_ctx) {
-  (void)port_ctx;
-  return (uint32_t)HW_RTC_Tick2ms(HW_RTC_GetTimerValue());
+  ml3_stm32_adc_port_context_t *context =
+    (ml3_stm32_adc_port_context_t *)port_ctx;
+  uint32_t now_tick = HW_RTC_GetTimerValue();
+
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return (uint32_t)HW_RTC_Tick2ms(now_tick);
+  }
+  if (!context->rtc_tick_initialized) {
+    context->last_rtc_tick = now_tick;
+    context->rtc_tick_initialized = true;
+  } else if (now_tick < context->last_rtc_tick) {
+    context->rtc_epoch_ms += ML3_STM32_ADC_RTC_WRAP_MS;
+    context->last_rtc_tick = now_tick;
+  } else {
+    context->last_rtc_tick = now_tick;
+  }
+  return context->rtc_epoch_ms + (uint32_t)HW_RTC_Tick2ms(now_tick);
 }
 
 static void ml3_stm32_adc_port_request_stop_conversion(void *port_ctx) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return;
+  }
   ADC1->CR |= ADC_CR_ADSTP;
 }
 
 static bool ml3_stm32_adc_port_is_conversion_stopped(void *port_ctx) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return false;
+  }
   return (ADC1->CR & ADC_CR_ADSTART) == 0U;
 }
 
 static void ml3_stm32_adc_port_request_disable_adc(void *port_ctx) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return;
+  }
   ADC1->CR |= ADC_CR_ADDIS;
 }
 
 static bool ml3_stm32_adc_port_is_adc_disabled(void *port_ctx) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return false;
+  }
   return (ADC1->CR & ADC_CR_ADEN) == 0U;
 }
 
 static void ml3_stm32_adc_port_configure(
     void *port_ctx, const adc_precision_config_t *config) {
-  (void)port_ctx;
   (void)config;
+
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return;
+  }
 
   /* adc_precision_prepare() calls configure only after it has observed ADEN
    * clear. The zero-valued fields explicitly select 12-bit/right-aligned,
@@ -78,89 +113,125 @@ static void ml3_stm32_adc_port_configure(
 }
 
 static void ml3_stm32_adc_port_request_self_calibration(void *port_ctx) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return;
+  }
   ADC1->CR |= ADC_CR_ADCAL;
 }
 
 static bool ml3_stm32_adc_port_is_calibration_complete(void *port_ctx) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return false;
+  }
   return (ADC1->CR & ADC_CR_ADCAL) == 0U;
 }
 
 static void ml3_stm32_adc_port_request_enable_adc(void *port_ctx) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return;
+  }
   ADC1->ISR = ADC_ISR_ADRDY;
   ADC1->CR |= ADC_CR_ADEN;
 }
 
 static bool ml3_stm32_adc_port_is_adc_ready(void *port_ctx) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return false;
+  }
   return (ADC1->ISR & ADC_ISR_ADRDY) != 0U;
 }
 
 static void ml3_stm32_adc_port_enable_vrefint_gate(void *port_ctx) {
-  ml3_stm32_adc_port_context_t *context =
-    (ml3_stm32_adc_port_context_t *)port_ctx;
+  ml3_stm32_adc_port_context_t *context;
+
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return;
+  }
+  context = (ml3_stm32_adc_port_context_t *)port_ctx;
 
   ADC->CCR |= ADC_CCR_VREFEN;
   context->vrefint_enable_tick = HW_RTC_GetTimerValue();
 }
 
 static void ml3_stm32_adc_port_enable_temperature_gate(void *port_ctx) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return;
+  }
   ADC->CCR |= ADC_CCR_TSEN;
 }
 
 static void ml3_stm32_adc_port_enable_vrefint_buffer_gate(void *port_ctx) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return;
+  }
   SYSCFG->CFGR3 |= SYSCFG_CFGR3_ENBUF_VREFINT_ADC;
 }
 
 static void ml3_stm32_adc_port_enable_temperature_buffer_gate(void *port_ctx) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return;
+  }
   SYSCFG->CFGR3 |= SYSCFG_CFGR3_ENBUF_SENSOR_ADC;
 }
 
 static bool ml3_stm32_adc_port_is_vrefint_ready(void *port_ctx) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return false;
+  }
   return (SYSCFG->CFGR3 & SYSCFG_CFGR3_VREFINT_RDYF) != 0U;
 }
 
 static bool ml3_stm32_adc_port_is_temperature_ready(void *port_ctx) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return false;
+  }
   return (SYSCFG->CFGR3 & SYSCFG_CFGR3_SENSOR_ADC_RDYF) != 0U;
 }
 
 static bool ml3_stm32_adc_port_is_vrefint_buffer_ready(void *port_ctx) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return false;
+  }
   return (SYSCFG->CFGR3 & SYSCFG_CFGR3_VREFINT_ADC_RDYF) != 0U;
 }
 
 static bool ml3_stm32_adc_port_is_temperature_buffer_ready(void *port_ctx) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return false;
+  }
   return (SYSCFG->CFGR3 & SYSCFG_CFGR3_SENSOR_ADC_RDYF) != 0U;
 }
 
 static bool ml3_stm32_adc_port_is_reference_settled(void *port_ctx) {
-  ml3_stm32_adc_port_context_t *context =
-    (ml3_stm32_adc_port_context_t *)port_ctx;
+  ml3_stm32_adc_port_context_t *context;
+
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return false;
+  }
+  context = (ml3_stm32_adc_port_context_t *)port_ctx;
 
   return (HW_RTC_GetTimerValue() - context->vrefint_enable_tick)
     >= ML3_STM32_ADC_VREFINT_SETTLE_TICKS;
 }
 
 static void ml3_stm32_adc_port_select_channel(void *port_ctx, uint16_t channel) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return;
+  }
   ADC1->CHSELR = ml3_stm32_adc_port_channel_bit(channel);
 }
 
 static void ml3_stm32_adc_port_start_conversion(void *port_ctx) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return;
+  }
   ADC1->CR |= ADC_CR_ADSTART;
 }
 
 static bool ml3_stm32_adc_port_is_conversion_complete(void *port_ctx) {
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return false;
+  }
   return (ADC1->ISR & ADC_ISR_EOC) != 0U;
 }
 
@@ -168,7 +239,12 @@ static bool ml3_stm32_adc_port_read_raw(
     void *port_ctx, uint16_t *raw_code, bool *overrun) {
   bool observed_overrun;
 
-  (void)port_ctx;
+  if (!ml3_stm32_adc_port_context_is_active(port_ctx)) {
+    return false;
+  }
+  if ((raw_code == NULL) || (overrun == NULL)) {
+    return false;
+  }
   observed_overrun = (ADC1->ISR & ADC_ISR_OVR) != 0U;
   *raw_code = (uint16_t)ADC1->DR;
   *overrun = observed_overrun;
@@ -206,10 +282,16 @@ const adc_precision_port_t *ml3_stm32_adc_port_get(void) {
   return &k_ml3_stm32_adc_port;
 }
 
-void ml3_stm32_adc_port_init(ml3_stm32_adc_port_context_t *context) {
-  if (context != NULL) {
-    context->vrefint_enable_tick = 0U;
+bool ml3_stm32_adc_port_init(ml3_stm32_adc_port_context_t *context) {
+  if (context == NULL) {
+    return false;
   }
+  context->vrefint_enable_tick = 0U;
+  context->last_rtc_tick = 0U;
+  context->rtc_epoch_ms = 0U;
+  context->rtc_tick_initialized = false;
   RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
   RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;
+  ml3_stm32_adc_port_active_context = context;
+  return true;
 }
