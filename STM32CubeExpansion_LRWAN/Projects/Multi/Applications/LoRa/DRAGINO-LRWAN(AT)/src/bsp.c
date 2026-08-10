@@ -636,6 +636,25 @@ void BSP_ML3_Service(void)
 
   if (ml3_request_pending && !ml3_measurement_context.active)
   {
+    ml3_quality_thresholds_t precondition_thresholds;
+
+    /*
+     * task-F1: evaluate the quality-threshold precondition before anything
+     * is powered or sampled. Loading it later, inside on_process
+     * (ml3_target_on_process), let Gate 0 alone start a full acquisition -
+     * PB5 asserted, warm-up run, the whole ABBA burst captured - only to
+     * discard it at the very end because thresholds were still pending:
+     * battery cost with zero data, invisible remotely. Declining to start
+     * at all here means fail-closed is "not acting", never "acting and
+     * discarding".
+     */
+    if (ml3_quality_thresholds_from_config(&precondition_thresholds)
+        != ML3_QUALITY_STATUS_OK)
+    {
+      ml3_active = false;
+      ml3_request_pending = false;
+      return;
+    }
     if (ml3_measurement_start(&ml3_measurement_context) != ML3_MEASUREMENT_OK)
     {
       ml3_active = false;

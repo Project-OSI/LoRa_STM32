@@ -1060,6 +1060,51 @@ if ! printf '%s\n' "$bsp_service_body" | grep -Fq \
     'ml3_measurement_start(&ml3_measurement_context)'; then
   fail 'BSP_ML3_Service does not start one pending measurement'
 fi
+# task-F1: the quality-threshold precondition (ml3_quality_thresholds_from_config)
+# must be evaluated and must fail closed BEFORE ml3_measurement_start, which is
+# what powers PB5 / runs warm-up / captures the ABBA burst by driving the
+# measurement core through its states. Checking it later (inside on_process, at
+# the very end of an acquisition) let a pending-Gate-0 configuration run a full
+# acquisition and then discard it every cycle - battery cost with zero data,
+# invisible remotely. Pin that the precondition line precedes the start line,
+# and that failing it returns without ever reaching ml3_measurement_start.
+if ! printf '%s\n' "$bsp_service_body" | awk '
+    /ml3_quality_thresholds_from_config\(&precondition_thresholds\)/ {
+      precondition_line = NR
+    }
+    /ml3_measurement_start\(&ml3_measurement_context\)/ && start_line == 0 {
+      start_line = NR
+    }
+    END {
+      exit((precondition_line > 0) &&
+        (start_line > precondition_line) ? 0 : 1)
+    }
+  '; then
+  fail 'BSP_ML3_Service does not evaluate quality thresholds before starting acquisition'
+fi
+if ! printf '%s\n' "$bsp_service_body" | awk '
+    /ml3_quality_thresholds_from_config\(&precondition_thresholds\)/ {
+      precondition_line = NR
+    }
+    precondition_line > 0 && /!= ML3_QUALITY_STATUS_OK\)$/ { guard_line = NR }
+    guard_line > 0 && /ml3_active = false;/ && active_clear == 0 {
+      active_clear = NR
+    }
+    guard_line > 0 && /ml3_request_pending = false;/ && pending_clear == 0 {
+      pending_clear = NR
+    }
+    guard_line > 0 && /^[[:space:]]*return;[[:space:]]*$/ && return_line == 0 {
+      return_line = NR
+    }
+    END {
+      exit((guard_line > precondition_line) &&
+        (active_clear > guard_line) &&
+        (pending_clear > guard_line) &&
+        (return_line > pending_clear) ? 0 : 1)
+    }
+  '; then
+  fail 'BSP_ML3_Service does not fail closed (clear pending, return, never start) when thresholds are not ready'
+fi
 if ! printf '%s\n' "$bsp_service_body" | grep -Fq \
     'ml3_measurement_step(&ml3_measurement_context)'; then
   fail 'BSP_ML3_Service does not advance the core once per invocation'
