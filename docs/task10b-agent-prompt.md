@@ -52,15 +52,15 @@ Seven modules are complete, host-tested under a strict `-Werror` set, and have p
 - +5 V control is **PB5, active-low** (`PWR_OUT_PORT`/`PWR_OUT_PIN`, `inc/stm32l0xx_hw_conf.h:265-267`; `bsp.c:522` writes `GPIO_PIN_RESET` to enable). Inverting this powers a probe continuously, which the manufacturer forbids.
 - The ML3 needs 0.5–1 s warm-up and must not be powered continuously.
 
-## DECISION REQUIRED BEFORE PHASE 3 — probe power source
+## DECIDED 2026-08-09 — probe power source: the PB5-switched +5 V rail
 
-The trial was provisionally planned to power the probe from an **independent external supply** rather than the PB5-switched rail, to sidestep untested brownout behaviour. That choice has consequences the owner must rule on, and **you must not choose for them**:
+The owner has ruled: the trial powers the ML3 from the **LSN50v2's own switched +5 V output under PB5 control**, not an external supply. This is the designed path — the probe is energized only for the measurement window, honouring the manufacturer's "do not power continuously" instruction and preserving battery life.
 
-- With external power the probe is powered **continuously**, which the manufacturer explicitly forbids and which costs the sensor's duty-cycle design intent.
-- The engine's rail checks (`REFERENCE_PRE`/`POST` V5 monitoring via PA4, and discharge verification) observe a rail that is never energized, so V5 limits and discharge thresholds would need values describing a permanently-off rail, and their fault semantics reconsidered.
-- The firmware's warm-up sequencing controls nothing in that configuration.
+Consequences you must respect:
 
-**Ask the owner which configuration the trial uses before wiring Phase 3, and configure accordingly.** If PB5-switched (the designed path), the brownout check is a prerequisite and is quick: discharge a large capacitor through the node while scoping the rail. Record the answer in your report.
+- The engine's warm-up sequencing, V5 monitoring via PA4, and discharge verification are all **live and load-bearing**. Wire them fully; do not stub them.
+- The V5 limit, divider-ratio and discharge macros need **real measured values** (see Phase 2). Do not guess them. If the measurements are not yet in the Gate 0 records when you reach Phase 2, **stop and report** rather than inventing figures — an invented discharge threshold either hangs the state machine or lets it proceed with the rail still live.
+- The **brownout rail check becomes a prerequisite before field installation** (not before your code). It is deferred at the owner's discretion, but the trial now depends on the rail behaving during a dying battery. Note this in your bring-up checklist.
 
 ## The work — phases, stop for review between them
 
@@ -71,7 +71,7 @@ The trial was provisionally planned to power the probe from an **independent ext
 - Common-mode envelope: LO leg observed **5.0–7.2 mV** across air, damp and water — derive min/max with stated margin.
 - Signal ceiling: must accommodate the observed **1110 mV** (above the 1 V nominal).
 - Warm-up: **1500 ms** provisional (manufacturer 0.5–1 s plus margin).
-- V5 limits and discharge thresholds: **depend on the power-source decision above.**
+- V5 limits, `ML3_CONFIG_V5_DIVIDER_RATIO_PPM`, discharge threshold and timeout: **measured values required, from the PB5-powered rail with the probe attached as its load.** These were not captured during Gate 0 §3/§4 (that work used a bench supply and left PA4 floating). If they are absent from the Gate 0 records when you reach this point, stop and report — see the power-source section.
 - Region/DR/airtime: from the bench gateway's actual configuration — ask if not recorded.
 
 **Phase 3 — service wiring.** Replace the no-op body of `BSP_ML3_Service` per spec §5: instantiate the port struct once, initialise the engine from existing settings, drive `ml3_measurement_step` to completion across service calls, keep `ml3_active` true so the main loop blocks low-power mode during acquisition, route `BSP_ML3_Abort` to `ml3_measurement_abort`. Report soil temperature unavailable; set `calibration_id = 0`.
