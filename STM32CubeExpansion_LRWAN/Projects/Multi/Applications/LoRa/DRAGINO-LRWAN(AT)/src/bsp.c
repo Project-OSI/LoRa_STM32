@@ -295,9 +295,26 @@ static bool ml3_target_die_temp_centic(
  * becomes an unavailable field in ml3_quality_input_t (and, downstream, a
  * transmitted sentinel) instead of an all-or-nothing rejection.
  *
- * Only a NULL argument or a result the engine never populated at all (no
- * has_abba_raw / no has_valid_cycle_count) is genuinely unusable and
- * rejected here.
+ * !has_abba_raw is NOT rejected either (task-F1 M-1 fix): a prepare-stage
+ * or session-fatal ADC fault (ml3_measurement_set_prepare_fault_and_continue
+ * / set_adc_fault_and_continue) explicitly clears has_abba_raw and every
+ * other has_* flag via ml3_measurement_invalidate_measurement_data, then
+ * sets has_valid_cycle_count true with valid_cycle_count = 0, and routes to
+ * PROCESS specifically so a flagged frame still gets built - that is the
+ * "_and_continue" in both names. Rejecting on !has_abba_raw defeated that
+ * design: the rail still powered, warm-up still ran, battery still spent,
+ * and the node then went radio-silent every interval, indistinguishable
+ * from a dead one - exactly the plan S3.9 failure mode this package exists
+ * to eliminate. With every has_* flag below already independently gated
+ * (not assumed true), an all-zero-evidence input plus seed_flags is exactly
+ * what the protected quality module's own test proves it handles:
+ * ml3_quality_test.c test_hard_faults_do_not_require_numeric_evidence
+ * evaluates burst_cycles=0/valid_cycles=0 plus a seeded fault flag to
+ * STATUS_OK / STATE_INVALID with the flag preserved - confirmed by reading
+ * that test and by ml3_quality_input_shape_valid (burst_cycles=0 with
+ * has_rail_samples=false is a valid shape) before relying on it here.
+ *
+ * Only a NULL argument is genuinely unusable and rejected here.
  */
 static bool ml3_target_fill_quality_input(
   const ml3_measurement_result_t *result,
@@ -311,18 +328,19 @@ static bool ml3_target_fill_quality_input(
   bool die_temp_ok;
   size_t index;
 
-  if ((result == NULL) || (quality_input == NULL)
-      || !result->has_abba_raw || !result->has_valid_cycle_count)
+  if ((result == NULL) || (quality_input == NULL))
   {
     return false;
   }
 
   (void)memset(quality_input, 0, sizeof(*quality_input));
   quality_input->seed_flags = result->has_faults ? result->fault_flags : 0U;
-  quality_input->valid_cycles = (uint8_t)result->valid_cycle_count;
-  quality_input->burst_cycles = (uint8_t)result->abba_raw_cycle_count;
+  quality_input->valid_cycles = result->has_valid_cycle_count
+    ? (uint8_t)result->valid_cycle_count : 0U;
+  quality_input->burst_cycles = result->has_abba_raw
+    ? (uint8_t)result->abba_raw_cycle_count : 0U;
 
-  rail_samples_ok = result->has_vdda_pre_uv
+  rail_samples_ok = result->has_abba_raw && result->has_vdda_pre_uv
     && (result->abba_raw_cycle_count > 0U);
   for (index = 0U;
        rail_samples_ok && (index < result->abba_raw_cycle_count);

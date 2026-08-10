@@ -472,6 +472,102 @@ static void test_step3_fixed_invalidating_checks_still_function(void)
   CHECK((quality.flags & (uint16_t)ML3_QUALITY_FLAG_V5_LOW) != 0U);
 }
 
+/*
+ * M-1 (task-F1, final review): a prepare-stage ADC fault
+ * (ml3_measurement_set_prepare_fault_and_continue, e.g. an ADC
+ * calibration failure before the burst ever starts) and a session-fatal
+ * ADC fault (ml3_measurement_set_adc_fault_and_continue, e.g. a VREFINT
+ * read failure outside the per-cycle-tolerant ABBA window) both invalidate
+ * every has_* field via ml3_measurement_invalidate_measurement_data -
+ * including has_abba_raw - then explicitly set has_valid_cycle_count true
+ * with valid_cycle_count = 0, and route to PROCESS specifically so a
+ * flagged frame still gets built (the "_and_continue" in both names).
+ * bsp.c's ml3_target_fill_quality_input must not reject on !has_abba_raw:
+ * doing so silently dropped every frame from a node whose ADC had already
+ * failed, so it powered the rail, burned battery, and went radio-silent
+ * every interval - indistinguishable from a dead node, exactly what plan
+ * S3.9 exists to prevent. This shared helper builds the all-evidence-absent
+ * input ml3_target_fill_quality_input now produces for either fault class,
+ * differing only in which fault flag is seeded (ADC_CAL for the
+ * prepare-stage class, ADC_INIT for the session-fatal class - the
+ * respective fallback of ml3_measurement_map_prepare_fault_bits /
+ * map_adc_fault_bits for a non-timeout, non-overrun error).
+ */
+static void check_hard_fault_still_transmits(uint16_t fault_flag)
+{
+  const ml3_quality_thresholds_t thresholds = synthetic_thresholds();
+  ml3_quality_input_t input;
+  ml3_quality_result_t quality;
+  ml3_payload_routine_t payload;
+  uint8_t frame[ML3_PAYLOAD_ROUTINE_LENGTH];
+  size_t frame_length = 0U;
+
+  (void)memset(&input, 0, sizeof(input));
+  input.seed_flags = fault_flag;
+  input.valid_cycles = 0U;
+  input.burst_cycles = 0U;
+  /* has_rail_samples, every mean/median/noise/drift/vdda/v5/die-temp field,
+   * stay false/absent: exactly what ml3_measurement_invalidate_measurement_
+   * data leaves, and what ml3_target_fill_quality_input now passes through
+   * instead of rejecting. */
+  input.has_calibration_status = true;
+  input.calibration_valid = true;
+  input.has_thermistor_status = true;
+  input.thermistor_valid = true;
+
+  CHECK(ml3_quality_evaluate(&input, &thresholds, &quality) ==
+        ML3_QUALITY_STATUS_OK);
+  CHECK(quality.state == ML3_QUALITY_STATE_INVALID);
+  CHECK(quality.flags == fault_flag);
+  CHECK(quality.valid_cycles == 0U);
+  CHECK(quality.incomplete_reason == ML3_QUALITY_INCOMPLETE_NONE);
+
+  (void)memset(&payload, 0, sizeof(payload));
+  payload.status_flags = quality.flags;
+  payload.sequence = UINT16_C(11);
+  /* Every _available flag mirrors bsp.c: false, because the corresponding
+   * has_* field is false. */
+  payload.quality_state = quality.state;
+  payload.valid_cycle_count = quality.valid_cycles;
+
+  CHECK(ml3_payload_build_routine(
+          &payload, frame, sizeof(frame), sizeof(frame), &frame_length) ==
+        ML3_PAYLOAD_OK);
+  CHECK(frame_length == ML3_PAYLOAD_ROUTINE_LENGTH);
+  CHECK(read_u16_be(&frame[ML3_PAYLOAD_ROUTINE_FLAGS_OFFSET]) == fault_flag);
+  CHECK(frame[ML3_PAYLOAD_ROUTINE_QUALITY_OFFSET] ==
+        (uint8_t)((uint8_t)ML3_QUALITY_STATE_INVALID <<
+                   ML3_PAYLOAD_QUALITY_STATE_SHIFT));
+  CHECK(read_u16_be(&frame[ML3_PAYLOAD_ROUTINE_CORRECTED_OFFSET]) ==
+        ML3_PAYLOAD_CORRECTED_SENTINEL);
+  CHECK(read_u16_be(&frame[ML3_PAYLOAD_ROUTINE_MEAN_HI_OFFSET]) ==
+        ML3_PAYLOAD_UNSIGNED_SENTINEL);
+  CHECK(read_u16_be(&frame[ML3_PAYLOAD_ROUTINE_MEAN_LO_OFFSET]) ==
+        ML3_PAYLOAD_UNSIGNED_SENTINEL);
+  CHECK(read_u16_be(&frame[ML3_PAYLOAD_ROUTINE_VDDA_OFFSET]) ==
+        ML3_PAYLOAD_UNSIGNED_SENTINEL);
+  CHECK(read_u16_be(&frame[ML3_PAYLOAD_ROUTINE_V5_OFFSET]) ==
+        ML3_PAYLOAD_UNSIGNED_SENTINEL);
+  CHECK(read_u16_be(&frame[ML3_PAYLOAD_ROUTINE_NOISE_OFFSET]) ==
+        ML3_PAYLOAD_UNSIGNED_SENTINEL);
+  CHECK(read_u16_be(&frame[ML3_PAYLOAD_ROUTINE_DIE_TEMP_OFFSET]) ==
+        ML3_PAYLOAD_TEMPERATURE_SENTINEL);
+  CHECK(read_u16_be(&frame[ML3_PAYLOAD_ROUTINE_SOIL_TEMP_OFFSET]) ==
+        ML3_PAYLOAD_TEMPERATURE_SENTINEL);
+  CHECK(ml3_payload_validate_routine_frame(frame, frame_length) ==
+        ML3_PAYLOAD_OK);
+}
+
+static void test_prepare_stage_fault_still_transmits(void)
+{
+  check_hard_fault_still_transmits((uint16_t)ML3_QUALITY_FLAG_ADC_CAL);
+}
+
+static void test_session_fatal_adc_fault_still_transmits(void)
+{
+  check_hard_fault_still_transmits((uint16_t)ML3_QUALITY_FLAG_ADC_INIT);
+}
+
 int main(void)
 {
   test_reduced_valid_cycles_is_a_good_reading();
@@ -479,6 +575,8 @@ int main(void)
   test_incomplete_evidence_still_transmits();
   test_step3_permissive_thresholds_never_flag_plausible_reading();
   test_step3_fixed_invalidating_checks_still_function();
+  test_prepare_stage_fault_still_transmits();
+  test_session_fatal_adc_fault_still_transmits();
 
   if (failures != 0) {
     (void)fprintf(stderr, "ml3 bsp frame contract: %d failure(s)\n", failures);

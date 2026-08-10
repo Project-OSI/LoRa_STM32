@@ -93,7 +93,9 @@ const categories = [
       'test_below_floor_reading_still_transmits',
       'test_incomplete_evidence_still_transmits',
       'test_step3_permissive_thresholds_never_flag_plausible_reading',
-      'test_step3_fixed_invalidating_checks_still_function'
+      'test_step3_fixed_invalidating_checks_still_function',
+      'test_prepare_stage_fault_still_transmits',
+      'test_session_fatal_adc_fault_still_transmits'
     ],
     runnerSource: 'BSP_FRAME_CONTRACT_TEST',
     runnerBinary: 'ml3_bsp_frame_contract_test'

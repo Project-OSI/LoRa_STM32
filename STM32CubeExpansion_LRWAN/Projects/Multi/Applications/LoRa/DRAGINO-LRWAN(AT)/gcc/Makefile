@@ -98,8 +98,11 @@ ML3_SRCS := \
   $(APP_ROOT)/src/ml3_at_commands.c
 
 # The unregistered STM32L072 implementation of adc_precision_port_t is a
-# target adapter, not one of the seven pure ML3 branch modules above. It is
-# linked for build coverage only; bsp.c does not construct or call it yet.
+# target adapter, not one of the seven pure ML3 branch modules above.
+# task-F1 (2026-08): activation (ML3_CONFIG_ACQUISITION_READY now true via
+# the trial-readiness gate) made bsp.c construct and call it in the default
+# build - see ml3_target_configure_analog_pins/ml3_stm32_adc_port_now_ms in
+# bsp.c and arm-none-eabi-nm on gcc/build/lora.elf.
 TARGET_ADAPTER_SRCS := \
   $(APP_ROOT)/src/ml3_stm32_adc_port.c
 

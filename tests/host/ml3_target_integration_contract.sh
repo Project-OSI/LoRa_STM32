@@ -471,7 +471,7 @@ fi
 if awk '
     /^#define[[:space:]]+ML3_CONFIG_ACQUISITION_READY/ { in_definition = 1 }
     in_definition { print }
-    in_definition && $0 !~ /\\\\$/ { exit }
+    in_definition && $0 !~ /\\$/ { exit }
   ' "$CONFIG" | grep -q 'ML3_CONFIG_CAL_'; then
   fail 'acquisition readiness must not include calibration flags'
 fi
@@ -1385,6 +1385,19 @@ if printf '%s\n' "$quality_input_body" | grep -Fq \
     'result->abba_raw_cycle_count != (uint16_t)ml3_cycles'; then
   fail 'BSP quality input rejects a raw cycle count short of the configured one again'
 fi
+# task-F1 M-1 (2026-08, final-review finding): !has_abba_raw is also NOT a
+# standalone rejection. A prepare-stage or session-fatal ADC fault
+# (set_prepare_fault_and_continue / set_adc_fault_and_continue) clears
+# has_abba_raw (and every other has_* below) via
+# ml3_measurement_invalidate_measurement_data, then explicitly sets
+# has_valid_cycle_count true with valid_cycle_count = 0, and routes to
+# PROCESS specifically so a flagged frame still gets built. Rejecting
+# here defeated that: the rail still powered and the battery still spent
+# every interval a failing node went radio-silent instead, indistinguishable
+# from a dead one. The protected quality module's own test
+# (ml3_quality_test.c test_hard_faults_do_not_require_numeric_evidence)
+# proves an all-zero-evidence input plus a seeded fault flag evaluates
+# STATUS_OK / STATE_INVALID with the flag preserved.
 for forbidden_all_or_nothing_guard in \
     '!result->has_mean_hi_uv' \
     '!result->has_mean_lo_uv' \
@@ -1392,21 +1405,44 @@ for forbidden_all_or_nothing_guard in \
     '!result->has_sd_uv' \
     '!result->has_drift_uv' \
     '!result->has_vdda_pre_uv' \
-    '!result->has_vdda_post_uv'; do
+    '!result->has_vdda_post_uv' \
+    '!result->has_abba_raw' \
+    '!result->has_valid_cycle_count'; do
   if printf '%s\n' "$quality_input_body" | grep -Fq -- "$forbidden_all_or_nothing_guard"; then
     fail "BSP quality input still refuses the whole reading on: $forbidden_all_or_nothing_guard"
   fi
 done
-# Only a NULL argument or a result the engine never populated at all is
-# genuinely unusable; every other combination must reach quality evaluation
-# with per-field availability instead (checked below).
-if ! printf '%s\n' "$quality_input_body" | grep -Fq \
-    '!result->has_abba_raw || !result->has_valid_cycle_count'; then
-  fail 'BSP quality input does not gate on has_abba_raw / has_valid_cycle_count'
+# Only a NULL argument is genuinely unusable now; every other combination -
+# including a result the engine never populated at all - must reach quality
+# evaluation with per-field availability instead (checked below).
+if ! printf '%s\n' "$quality_input_body" | grep -Eq \
+    'if \(\(result == NULL\) \|\| \(quality_input == NULL\)\)'; then
+  fail 'BSP quality input does not gate exactly on NULL result / NULL quality_input'
+fi
+for required_conditional_derivation in \
+    'result->has_valid_cycle_count' \
+    'result->has_abba_raw'; do
+  occurrences=$(printf '%s\n' "$quality_input_body" | \
+    grep -Fc -- "$required_conditional_derivation" || true)
+  if [ "$occurrences" -lt 1 ]; then
+    fail "BSP quality input no longer derives valid_cycles/burst_cycles from $required_conditional_derivation"
+  fi
+done
+if printf '%s\n' "$quality_input_body" | grep -Fq \
+    'quality_input->valid_cycles = (uint8_t)result->valid_cycle_count;'; then
+  fail 'BSP quality input reads valid_cycle_count unconditionally again (must gate on has_valid_cycle_count)'
+fi
+if printf '%s\n' "$quality_input_body" | grep -Fq \
+    'quality_input->burst_cycles = (uint8_t)result->abba_raw_cycle_count;'; then
+  fail 'BSP quality input reads abba_raw_cycle_count unconditionally again (must gate on has_abba_raw)'
 fi
 if printf '%s\n' "$quality_input_body" | grep -Fq \
     'quality_input->has_rail_samples = true;'; then
   fail 'BSP quality input hardcodes rail-sample availability instead of deriving it'
+fi
+if ! printf '%s\n' "$quality_input_body" | grep -Fq \
+    'rail_samples_ok = result->has_abba_raw && result->has_vdda_pre_uv'; then
+  fail 'BSP quality input rail-sample availability no longer requires has_abba_raw'
 fi
 for required_pass_through in \
     'quality_input->has_mean_hi_uv = result->has_mean_hi_uv;' \
