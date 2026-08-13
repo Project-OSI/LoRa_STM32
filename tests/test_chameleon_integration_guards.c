@@ -53,6 +53,9 @@ int main(void)
     char *command = read_source("command.c");
     char *lora = read_source("lora.c");
     char *irq = read_source("stm32l0xx_it.c");
+    char *hal_msp = read_source("stm32l0xx_hal_msp.c");
+    char *hw = read_source("stm32l0xx_hw.c");
+    char *chameleon_hw = read_source("chameleon_lsn50_hw.c");
 
     require_text(bsp, "#include \"chameleon_lsn50_hw.h\"", "lifecycle include");
     require_text(bsp, "chameleon_lsn50_acquire(&g_chameleon_last_sample",
@@ -89,6 +92,23 @@ int main(void)
     require_text(lora,
                  "mode=(r_config[14]>>24)&0xFF;\n#ifdef USE_CHAMELEON\n\tmode=3;\n#endif",
                  "dedicated MOD3 override after persisted config read");
+    require_text(hal_msp,
+                 "if (rtc_timebase_ready)\n  {\n    return TimerGetCurrentTime();\n  }",
+                 "RTC-backed HAL timeout clock");
+    require_text(hal_msp, "return uwTick;",
+                 "safe HAL clock before RTC initialization");
+    require_text(hw,
+                 "HW_RTC_Init( );\n    HAL_RTC_TimebaseReady( );",
+                 "HAL timeout clock activation after RTC initialization");
+    require_text(hw,
+                 "TimerGetElapsedTime(adc_wait_started) >= HW_ADC_TIMEOUT_MS",
+                 "finite VREFINT wait");
+    forbid_text(hw, "HAL_ADC_PollForConversion( &hadc, HAL_MAX_DELAY )",
+                "infinite ADC conversion wait");
+    forbid_text(chameleon_hw, "return HAL_GetTick();",
+                "stalled Chameleon timeout clock");
+    require_text(chameleon_hw, "return TimerGetCurrentTime();",
+                 "RTC-backed Chameleon timeout clock");
 
     free(bsp);
     free(main_source);
@@ -96,6 +116,9 @@ int main(void)
     free(command);
     free(lora);
     free(irq);
+    free(hal_msp);
+    free(hw);
+    free(chameleon_hw);
     puts("test_chameleon_integration_guards OK");
     return 0;
 }

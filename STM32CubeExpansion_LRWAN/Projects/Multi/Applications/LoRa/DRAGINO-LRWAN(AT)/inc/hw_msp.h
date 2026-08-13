@@ -198,6 +198,8 @@ uint16_t HW_AdcReadChannel( uint32_t Channel);
  */
 void SystemClock_Config( void );
 
+void HAL_RTC_TimebaseReady( void );
+
 /**
   * @brief  Configure all GPIO's to Analog input to reduce the power consumption
   * @param  None

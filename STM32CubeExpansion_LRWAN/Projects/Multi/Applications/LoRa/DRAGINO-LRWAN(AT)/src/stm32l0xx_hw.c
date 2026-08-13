@@ -64,6 +64,7 @@ Maintainer: Miguel Luis and Gregory Cristian
 #include "vcom.h"
 #include "pwr_out.h"
 #include "lora.h"
+#include "timeServer.h"
 /*!
  *  \brief Unique Devices IDs register set ( STM32L0xxx )
  */
@@ -78,6 +79,7 @@ Maintainer: Miguel Luis and Gregory Cristian
  /* Internal voltage reference, parameter VREFINT_CAL*/
 #define VREFINT_CAL       ((uint16_t*) ((uint32_t) 0x1FF80078))
 #define LORAWAN_MAX_BAT   254
+#define HW_ADC_TIMEOUT_MS 10U
 extern uint16_t batteryLevel_mV;
 
 /* Internal temperature sensor: constants data used for indicative values in  */
@@ -136,6 +138,7 @@ void HW_Init( void )
     HW_SPI_Init( );
 
     HW_RTC_Init( );
+    HAL_RTC_TimebaseReady( );
     
     TraceInit( );
 
@@ -421,37 +424,61 @@ uint16_t HW_AdcReadChannel( uint32_t Channel )
 {
 
   ADC_ChannelConfTypeDef adcConf;
+  TimerTime_t adc_wait_started;
   uint16_t adcData = 0;
   
   if( AdcInitialized == true )
   {
     /* wait the the Vrefint used by adc is set */
-    while (__HAL_PWR_GET_FLAG(PWR_FLAG_VREFINTRDY) == RESET) {};
+    adc_wait_started = TimerGetCurrentTime();
+    while (__HAL_PWR_GET_FLAG(PWR_FLAG_VREFINTRDY) == RESET)
+    {
+      if (TimerGetElapsedTime(adc_wait_started) >= HW_ADC_TIMEOUT_MS)
+      {
+        return 0;
+      }
+    }
       
     ADCCLK_ENABLE();
     
     /*calibrate ADC if any calibraiton hardware*/
-    HAL_ADCEx_Calibration_Start(&hadc, ADC_SINGLE_ENDED );
+    if (HAL_ADCEx_Calibration_Start(&hadc, ADC_SINGLE_ENDED ) != HAL_OK)
+    {
+      goto adc_cleanup;
+    }
     
     /* Deselects all channels*/
     adcConf.Channel = ADC_CHANNEL_MASK;
     adcConf.Rank = ADC_RANK_NONE; 
-    HAL_ADC_ConfigChannel( &hadc, &adcConf);
+    if (HAL_ADC_ConfigChannel( &hadc, &adcConf) != HAL_OK)
+    {
+      goto adc_cleanup;
+    }
       
     /* configure adc channel */
     adcConf.Channel = Channel;
     adcConf.Rank = ADC_RANK_CHANNEL_NUMBER;
-    HAL_ADC_ConfigChannel( &hadc, &adcConf);
+    if (HAL_ADC_ConfigChannel( &hadc, &adcConf) != HAL_OK)
+    {
+      goto adc_cleanup;
+    }
 
     /* Start the conversion process */
-    HAL_ADC_Start( &hadc);
+    if (HAL_ADC_Start( &hadc) != HAL_OK)
+    {
+      goto adc_cleanup;
+    }
       
     /* Wait for the end of conversion */
-    HAL_ADC_PollForConversion( &hadc, HAL_MAX_DELAY );
+    if (HAL_ADC_PollForConversion( &hadc, HW_ADC_TIMEOUT_MS ) != HAL_OK)
+    {
+      goto adc_cleanup;
+    }
       
     /* Get the converted value of regular channel */
     adcData = HAL_ADC_GetValue ( &hadc);
 
+adc_cleanup:
     __HAL_ADC_DISABLE( &hadc) ;
 
     ADCCLK_DISABLE();

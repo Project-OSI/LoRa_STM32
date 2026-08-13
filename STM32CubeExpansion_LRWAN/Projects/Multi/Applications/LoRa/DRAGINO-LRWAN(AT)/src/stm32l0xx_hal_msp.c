@@ -55,6 +55,9 @@
  *starting the adc, you must make sure VREFINT is settled*/
 #define ENABLE_FAST_WAKEUP
 
+extern __IO uint32_t uwTick;
+static bool rtc_timebase_ready = false;
+
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -82,6 +85,20 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
 void HAL_Delay(__IO uint32_t Delay)
 {
   DelayMs( Delay ); /* based on RTC */
+}
+
+uint32_t HAL_GetTick(void)
+{
+  if (rtc_timebase_ready)
+  {
+    return TimerGetCurrentTime();
+  }
+  return uwTick;
+}
+
+void HAL_RTC_TimebaseReady(void)
+{
+  rtc_timebase_ready = true;
 }
 
 /**

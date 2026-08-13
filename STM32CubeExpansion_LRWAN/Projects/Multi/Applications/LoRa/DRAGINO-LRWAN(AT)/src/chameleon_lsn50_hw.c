@@ -1,4 +1,7 @@
 #include "chameleon_lsn50_hw.h"
+#ifndef CHAMELEON_HOST_TEST
+#include "timeServer.h"
+#endif
 
 #include <string.h>
 
@@ -242,7 +245,7 @@ static void stm32_delay_ms(void *context, uint32_t ms)
 static uint32_t stm32_millis(void *context)
 {
     (void)context;
-    return HAL_GetTick();
+    return TimerGetCurrentTime();
 }
 
 static chameleon_result_t stm32_probe(void *context)
@@ -325,7 +328,7 @@ chameleon_i2c_status_t chameleon_board_i2c_write_read(uint8_t addr7,
 }
 
 void chameleon_board_delay_ms(uint32_t ms) { HAL_Delay(ms); }
-uint32_t chameleon_board_millis(void) { return HAL_GetTick(); }
+uint32_t chameleon_board_millis(void) { return TimerGetCurrentTime(); }
 uint16_t chameleon_board_battery_mv(void) { return batteryLevel_mV; }
 
 chameleon_result_t chameleon_lsn50_acquire(chameleon_sample_t *sample,
