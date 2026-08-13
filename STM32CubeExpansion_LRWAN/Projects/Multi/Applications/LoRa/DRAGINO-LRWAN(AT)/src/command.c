@@ -944,6 +944,13 @@ static void parse_cmd(const char *cmd)
 							{
 								store_config_status=0;
 							}
+
+#ifdef USE_CHAMELEON
+							if(strcmp(cmd,AT_MOD)==0)
+							{
+								store_config_status=0;
+							}
+#endif
 							
 							if(store_config_status>0)
 							{

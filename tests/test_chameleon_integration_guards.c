@@ -50,6 +50,8 @@ int main(void)
     char *bsp = read_source("bsp.c");
     char *main_source = read_source("main.c");
     char *at = read_source("at.c");
+    char *command = read_source("command.c");
+    char *lora = read_source("lora.c");
     char *irq = read_source("stm32l0xx_it.c");
 
     require_text(bsp, "#include \"chameleon_lsn50_hw.h\"", "lifecycle include");
@@ -69,16 +71,30 @@ int main(void)
     require_text(main_source,
                  "#ifndef USE_CHAMELEON\n\t\t\t\t\tGPIO_EXTI14_IoInit(inmode);\n#endif",
                  "downlink EXTI14 compile guard");
+    require_text(main_source,
+                 "#ifdef USE_CHAMELEON\n\t\t\t\tif(AppData->Buff[1]==0x03)",
+                 "downlink mode locked to MOD3");
     require_text(at,
                  "#ifndef USE_CHAMELEON\n\tGPIO_EXTI14_IoInit(inmode);\n#endif",
                  "AT EXTI14 compile guard");
+    require_text(at,
+                 "#ifdef USE_CHAMELEON\n\tif(workmode!=3)",
+                 "dedicated image rejects non-MOD3 requests");
+    require_text(command,
+                 "#ifdef USE_CHAMELEON\n\t\t\t\t\t\t\tif(strcmp(cmd,AT_MOD)==0)\n\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\tstore_config_status=0;\n\t\t\t\t\t\t\t}\n#endif",
+                 "dedicated MOD3 command skips EEPROM storage");
     require_text(irq,
                  "#ifndef USE_CHAMELEON\n if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_14) != RESET)",
                  "IRQ EXTI14 compile guard");
+    require_text(lora,
+                 "mode=(r_config[14]>>24)&0xFF;\n#ifdef USE_CHAMELEON\n\tmode=3;\n#endif",
+                 "dedicated MOD3 override after persisted config read");
 
     free(bsp);
     free(main_source);
     free(at);
+    free(command);
+    free(lora);
     free(irq);
     puts("test_chameleon_integration_guards OK");
     return 0;

@@ -1301,6 +1301,9 @@ void EEPROM_Read_Config(void)
 	flag2=r_config[13]&0xFF;
 	
 	mode=(r_config[14]>>24)&0xFF;
+#ifdef USE_CHAMELEON
+	mode=3;
+#endif
 	
 	inmode=(r_config[14]>>16)&0xFF;	
 
@@ -1373,4 +1376,3 @@ void new_firmware_update(void)
 	}		
 }
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-

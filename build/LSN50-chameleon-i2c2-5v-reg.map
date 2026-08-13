@@ -3013,7 +3013,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x08000000                g_pfnVectors
                 0x080000c0                        . = ALIGN (0x4)
 
-.text           0x080000c0    0x1534c
+.text           0x080000c0    0x1535c
                 0x080000c0                        . = ALIGN (0x4)
  *(.text)
  .text          0x080000c0       0x14 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_thumb1_case_uqi.o)
@@ -4279,1225 +4279,1225 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x0800ac24       0x1c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800ac24                at_decrypt_get
  .text.at_MOD_set
-                0x0800ac40       0x4c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800ac40       0x48 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                 0x0800ac40                at_MOD_set
  .text.at_MOD_get
-                0x0800ac8c       0x14 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800ac8c                at_MOD_get
+                0x0800ac88       0x14 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800ac88                at_MOD_get
  .text.at_INTMOD1_set
-                0x0800aca0       0x3c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800aca0                at_INTMOD1_set
+                0x0800ac9c       0x3c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800ac9c                at_INTMOD1_set
  .text.at_INTMOD1_get
-                0x0800acdc       0x14 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800acdc                at_INTMOD1_get
+                0x0800acd8       0x14 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800acd8                at_INTMOD1_get
  .text.at_INTMOD2_set
-                0x0800acf0       0x40 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800acf0                at_INTMOD2_set
+                0x0800acec       0x40 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800acec                at_INTMOD2_set
  .text.at_INTMOD2_get
-                0x0800ad30       0x14 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800ad30                at_INTMOD2_get
+                0x0800ad2c       0x14 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800ad2c                at_INTMOD2_get
  .text.at_INTMOD3_set
-                0x0800ad44       0x40 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800ad44                at_INTMOD3_set
+                0x0800ad40       0x40 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800ad40                at_INTMOD3_set
  .text.at_INTMOD3_get
-                0x0800ad84       0x14 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800ad84                at_INTMOD3_get
+                0x0800ad80       0x14 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800ad80                at_INTMOD3_get
  .text.at_weight_GapValue_set
-                0x0800ad98       0x64 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800ad98                at_weight_GapValue_set
+                0x0800ad94       0x64 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800ad94                at_weight_GapValue_set
  .text.at_weight_GapValue_get
-                0x0800adfc       0x24 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800adfc                at_weight_GapValue_get
+                0x0800adf8       0x24 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800adf8                at_weight_GapValue_get
  .text.at_5Vtime_set
-                0x0800ae20       0x28 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800ae20                at_5Vtime_set
+                0x0800ae1c       0x28 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800ae1c                at_5Vtime_set
  .text.at_5Vtime_get
-                0x0800ae48       0x14 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800ae48                at_5Vtime_get
+                0x0800ae44       0x14 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800ae44                at_5Vtime_get
  .text.at_SETCNT_set
-                0x0800ae5c       0x40 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800ae5c                at_SETCNT_set
+                0x0800ae58       0x40 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800ae58                at_SETCNT_set
  .text.at_getsensorvaule_set
-                0x0800ae9c       0x5c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800ae9c                at_getsensorvaule_set
+                0x0800ae98       0x5c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800ae98                at_getsensorvaule_set
  .text.at_downlink_detect_set
-                0x0800aef8       0x70 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800aef8                at_downlink_detect_set
+                0x0800aef4       0x70 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800aef4                at_downlink_detect_set
  .text.at_downlink_detect_get
-                0x0800af68       0x2c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800af68                at_downlink_detect_get
+                0x0800af64       0x2c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800af64                at_downlink_detect_get
  .text.at_setmaxnbtrans_set
-                0x0800af94       0x40 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800af94                at_setmaxnbtrans_set
+                0x0800af90       0x40 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800af90                at_setmaxnbtrans_set
  .text.at_setmaxnbtrans_get
-                0x0800afd4       0x24 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800afd4                at_setmaxnbtrans_get
+                0x0800afd0       0x24 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800afd0                at_setmaxnbtrans_get
  .text.at_disdownlinkcheck_set
-                0x0800aff8       0x30 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800aff8                at_disdownlinkcheck_set
+                0x0800aff4       0x30 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800aff4                at_disdownlinkcheck_set
  .text.at_disdownlinkcheck_get
-                0x0800b028       0x1c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800b028                at_disdownlinkcheck_get
+                0x0800b024       0x1c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800b024                at_disdownlinkcheck_get
  .text.at_dismac_answer_set
-                0x0800b044       0x30 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800b044                at_dismac_answer_set
+                0x0800b040       0x30 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800b040                at_dismac_answer_set
  .text.at_dismac_answer_get
-                0x0800b074       0x1c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800b074                at_dismac_answer_get
+                0x0800b070       0x1c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800b070                at_dismac_answer_get
  .text.at_rxdata_test
-                0x0800b090       0x64 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800b090                at_rxdata_test
+                0x0800b08c       0x64 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800b08c                at_rxdata_test
  .text.weightreset
-                0x0800b0f4       0x3c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800b0f4                weightreset
+                0x0800b0f0       0x3c ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800b0f0                weightreset
  .text.at_weightreset
-                0x0800b130        0xa ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                0x0800b130                at_weightreset
- *fill*         0x0800b13a        0x2
+                0x0800b12c        0xa ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x0800b12c                at_weightreset
+ *fill*         0x0800b136        0x2
  .text.CMD_GetChar
-                0x0800b13c       0x20 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
+                0x0800b138       0x20 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
  .text.com_error
-                0x0800b15c       0x24 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
+                0x0800b158       0x24 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
  .text.CMD_Init
-                0x0800b180       0x18 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
-                0x0800b180                CMD_Init
+                0x0800b17c       0x18 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
+                0x0800b17c                CMD_Init
  .text.CMD_Process
-                0x0800b198      0x204 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
-                0x0800b198                CMD_Process
+                0x0800b194      0x218 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
+                0x0800b194                CMD_Process
  .text.printf_all_config
-                0x0800b39c       0x3c ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
-                0x0800b39c                printf_all_config
+                0x0800b3ac       0x3c ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
+                0x0800b3ac                printf_all_config
  .text.McpsConfirm
-                0x0800b3d8        0x2 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
- *fill*         0x0800b3da        0x2
+                0x0800b3e8        0x2 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+ *fill*         0x0800b3ea        0x2
  .text.MlmeConfirm
-                0x0800b3dc       0x48 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b3ec       0x48 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
  .text.McpsIndication
-                0x0800b424       0xa0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b434       0xa0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
  .text.customize_freq1_get
-                0x0800b4c4        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b4c4                customize_freq1_get
+                0x0800b4d4        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b4d4                customize_freq1_get
  .text.customize_freq1_set
-                0x0800b4d0        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b4d0                customize_freq1_set
+                0x0800b4e0        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b4e0                customize_freq1_set
  .text.region_printf
-                0x0800b4dc       0x14 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b4dc                region_printf
+                0x0800b4ec       0x14 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b4ec                region_printf
  .text.key_printf
-                0x0800b4f0       0x38 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b4f0                key_printf
+                0x0800b500       0x38 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b500                key_printf
  .text.LORA_Join
-                0x0800b528       0xb8 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b528                LORA_Join
+                0x0800b538       0xb8 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b538                LORA_Join
  .text.LORA_JoinStatus
-                0x0800b5e0       0x14 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b5e0                LORA_JoinStatus
+                0x0800b5f0       0x14 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b5f0                LORA_JoinStatus
  .text.LORA_send
-                0x0800b5f4       0x8c ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b5f4                LORA_send
+                0x0800b604       0x8c ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b604                LORA_send
  .text.LORA_RequestClass
-                0x0800b680       0x68 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b680                LORA_RequestClass
+                0x0800b690       0x68 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b690                LORA_RequestClass
  .text.lora_config_otaa_set
-                0x0800b6e8        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b6e8                lora_config_otaa_set
+                0x0800b6f8        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b6f8                lora_config_otaa_set
  .text.lora_config_otaa_get
-                0x0800b6f4        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b6f4                lora_config_otaa_get
+                0x0800b704        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b704                lora_config_otaa_get
  .text.lora_config_duty_cycle_set
-                0x0800b700       0x18 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b700                lora_config_duty_cycle_set
+                0x0800b710       0x18 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b710                lora_config_duty_cycle_set
  .text.lora_config_duty_cycle_get
-                0x0800b718        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b718                lora_config_duty_cycle_get
+                0x0800b728        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b728                lora_config_duty_cycle_get
  .text.lora_config_deveui_get
-                0x0800b724        0x8 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b724                lora_config_deveui_get
+                0x0800b734        0x8 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b734                lora_config_deveui_get
  .text.lora_config_deveui_set
-                0x0800b72c       0x14 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b72c                lora_config_deveui_set
+                0x0800b73c       0x14 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b73c                lora_config_deveui_set
  .text.lora_config_devaddr_set
-                0x0800b740        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b740                lora_config_devaddr_set
+                0x0800b750        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b750                lora_config_devaddr_set
  .text.lora_config_devaddr_get
-                0x0800b74c       0x38 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b74c                lora_config_devaddr_get
+                0x0800b75c       0x38 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b75c                lora_config_devaddr_get
  .text.lora_config_nwkskey_set
-                0x0800b784       0x14 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b784                lora_config_nwkskey_set
+                0x0800b794       0x14 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b794                lora_config_nwkskey_set
  .text.lora_config_nwkskey_get
-                0x0800b798        0x8 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b798                lora_config_nwkskey_get
+                0x0800b7a8        0x8 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b7a8                lora_config_nwkskey_get
  .text.lora_config_appskey_set
-                0x0800b7a0       0x14 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b7a0                lora_config_appskey_set
+                0x0800b7b0       0x14 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b7b0                lora_config_appskey_set
  .text.lora_config_appskey_get
-                0x0800b7b4        0x8 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b7b4                lora_config_appskey_get
+                0x0800b7c4        0x8 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b7c4                lora_config_appskey_get
  .text.lora_config_appeui_get
-                0x0800b7bc        0x8 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b7bc                lora_config_appeui_get
+                0x0800b7cc        0x8 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b7cc                lora_config_appeui_get
  .text.lora_config_appeui_set
-                0x0800b7c4       0x14 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b7c4                lora_config_appeui_set
+                0x0800b7d4       0x14 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b7d4                lora_config_appeui_set
  .text.lora_config_appkey_get
-                0x0800b7d8        0x8 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b7d8                lora_config_appkey_get
+                0x0800b7e8        0x8 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b7e8                lora_config_appkey_get
  .text.lora_config_appkey_set
-                0x0800b7e0       0x14 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b7e0                lora_config_appkey_set
+                0x0800b7f0       0x14 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b7f0                lora_config_appkey_set
  .text.lora_config_reqack_set
-                0x0800b7f4        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b7f4                lora_config_reqack_set
+                0x0800b804        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b804                lora_config_reqack_set
  .text.lora_config_reqack_get
-                0x0800b800        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b800                lora_config_reqack_get
+                0x0800b810        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b810                lora_config_reqack_get
  .text.lora_config_snr_get
-                0x0800b80c        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b80c                lora_config_snr_get
+                0x0800b81c        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b81c                lora_config_snr_get
  .text.lora_config_application_port_set
-                0x0800b818        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b818                lora_config_application_port_set
+                0x0800b828        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b828                lora_config_application_port_set
  .text.lora_config_application_port_get
-                0x0800b824        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b824                lora_config_application_port_get
+                0x0800b834        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b834                lora_config_application_port_get
  .text.lora_config_rssi_get
-                0x0800b830        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b830                lora_config_rssi_get
+                0x0800b840        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b840                lora_config_rssi_get
  .text.lora_config_tx_datarate_set
-                0x0800b83c        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b83c                lora_config_tx_datarate_set
+                0x0800b84c        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b84c                lora_config_tx_datarate_set
  .text.lora_config_tx_datarate_get
-                0x0800b848        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b848                lora_config_tx_datarate_get
+                0x0800b858        0xc ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b858                lora_config_tx_datarate_get
  .text.lora_config_isack_get
-                0x0800b854       0x10 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b854                lora_config_isack_get
+                0x0800b864       0x10 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b864                lora_config_isack_get
  .text.store_data
-                0x0800b864       0xe4 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b864                store_data
+                0x0800b874       0xe4 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b874                store_data
  .text.read_data
-                0x0800b948       0x68 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b948                read_data
+                0x0800b958       0x68 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b958                read_data
  .text.EEPROM_Store_key
-                0x0800b9b0       0x78 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800b9b0                EEPROM_Store_key
+                0x0800b9c0       0x78 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800b9c0                EEPROM_Store_key
  .text.Flash_Read_key
-                0x0800ba28       0x9c ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800ba28                Flash_Read_key
+                0x0800ba38       0x9c ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800ba38                Flash_Read_key
  .text.EEPROM_Store_Config
-                0x0800bac4      0x350 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800bac4                EEPROM_Store_Config
+                0x0800bad4      0x350 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800bad4                EEPROM_Store_Config
  .text.EEPROM_Read_Config
-                0x0800be14      0x2b4 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800be14                EEPROM_Read_Config
+                0x0800be24      0x2b4 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800be24                EEPROM_Read_Config
  .text.fdr_config
-                0x0800c0c8       0xe8 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800c0c8                fdr_config
+                0x0800c0d8       0xe8 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800c0d8                fdr_config
  .text.LORA_Init
-                0x0800c1b0      0x11c ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800c1b0                LORA_Init
+                0x0800c1c0      0x11c ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800c1c0                LORA_Init
  .text.string_touint
-                0x0800c2cc       0x3c ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800c2cc                string_touint
+                0x0800c2dc       0x3c ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800c2dc                string_touint
  .text.new_firmware_update
-                0x0800c308       0x80 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
-                0x0800c308                new_firmware_update
+                0x0800c318       0x80 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x0800c318                new_firmware_update
  .text.tiny_vfscanf
-                0x0800c388      0x290 ./build/obj/chameleon-i2c2-5v-reg/tiny_sscanf_7164f13a.o
+                0x0800c398      0x290 ./build/obj/chameleon-i2c2-5v-reg/tiny_sscanf_7164f13a.o
  .text.tiny_sscanf
-                0x0800c618       0x16 ./build/obj/chameleon-i2c2-5v-reg/tiny_sscanf_7164f13a.o
-                0x0800c618                tiny_sscanf
+                0x0800c628       0x16 ./build/obj/chameleon-i2c2-5v-reg/tiny_sscanf_7164f13a.o
+                0x0800c628                tiny_sscanf
  .text.RegionIsActive
-                0x0800c62e        0xa ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c62e                RegionIsActive
+                0x0800c63e        0xa ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c63e                RegionIsActive
  .text.RegionGetPhyParam
-                0x0800c638       0x14 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c638                RegionGetPhyParam
+                0x0800c648       0x14 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c648                RegionGetPhyParam
  .text.RegionSetBandTxDone
-                0x0800c64c        0xe ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c64c                RegionSetBandTxDone
+                0x0800c65c        0xe ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c65c                RegionSetBandTxDone
  .text.RegionInitDefaults
-                0x0800c65a        0xe ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c65a                RegionInitDefaults
+                0x0800c66a        0xe ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c66a                RegionInitDefaults
  .text.RegionVerify
-                0x0800c668       0x18 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c668                RegionVerify
+                0x0800c678       0x18 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c678                RegionVerify
  .text.RegionApplyCFList
-                0x0800c680        0xe ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c680                RegionApplyCFList
+                0x0800c690        0xe ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c690                RegionApplyCFList
  .text.RegionChanMaskSet
-                0x0800c68e       0x14 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c68e                RegionChanMaskSet
+                0x0800c69e       0x14 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c69e                RegionChanMaskSet
  .text.RegionAdrNext
-                0x0800c6a2       0x1c ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c6a2                RegionAdrNext
+                0x0800c6b2       0x1c ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c6b2                RegionAdrNext
  .text.RegionComputeRxWindowParameters
-                0x0800c6be       0x16 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c6be                RegionComputeRxWindowParameters
+                0x0800c6ce       0x16 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c6ce                RegionComputeRxWindowParameters
  .text.RegionRxConfig
-                0x0800c6d4       0x18 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c6d4                RegionRxConfig
+                0x0800c6e4       0x18 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c6e4                RegionRxConfig
  .text.RegionTxConfig
-                0x0800c6ec       0x1a ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c6ec                RegionTxConfig
+                0x0800c6fc       0x1a ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c6fc                RegionTxConfig
  .text.RegionLinkAdrReq
-                0x0800c706       0x20 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c706                RegionLinkAdrReq
+                0x0800c716       0x20 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c716                RegionLinkAdrReq
  .text.RegionRxParamSetupReq
-                0x0800c726       0x14 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c726                RegionRxParamSetupReq
+                0x0800c736       0x14 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c736                RegionRxParamSetupReq
  .text.RegionNewChannelReq
-                0x0800c73a       0x14 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c73a                RegionNewChannelReq
+                0x0800c74a       0x14 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c74a                RegionNewChannelReq
  .text.RegionTxParamSetupReq
-                0x0800c74e       0x14 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c74e                RegionTxParamSetupReq
+                0x0800c75e       0x14 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c75e                RegionTxParamSetupReq
  .text.RegionDlChannelReq
-                0x0800c762       0x14 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c762                RegionDlChannelReq
+                0x0800c772       0x14 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c772                RegionDlChannelReq
  .text.RegionAlternateDr
-                0x0800c776       0x14 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c776                RegionAlternateDr
+                0x0800c786       0x14 ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c786                RegionAlternateDr
  .text.RegionCalcBackOff
-                0x0800c78a        0xe ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c78a                RegionCalcBackOff
+                0x0800c79a        0xe ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c79a                RegionCalcBackOff
  .text.RegionNextChannel
-                0x0800c798       0x1c ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c798                RegionNextChannel
+                0x0800c7a8       0x1c ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c7a8                RegionNextChannel
  .text.RegionSetContinuousWave
-                0x0800c7b4        0xe ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c7b4                RegionSetContinuousWave
+                0x0800c7c4        0xe ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c7c4                RegionSetContinuousWave
  .text.RegionApplyDrOffset
-                0x0800c7c2       0x1a ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
-                0x0800c7c2                RegionApplyDrOffset
+                0x0800c7d2       0x1a ./build/obj/chameleon-i2c2-5v-reg/Region_e7cf99a6.o
+                0x0800c7d2                RegionApplyDrOffset
  .text.RegionCommonChanVerifyDr
-                0x0800c7dc       0x6c ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
-                0x0800c7dc                RegionCommonChanVerifyDr
+                0x0800c7ec       0x6c ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
+                0x0800c7ec                RegionCommonChanVerifyDr
  .text.RegionCommonValueInRange
-                0x0800c848       0x1c ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
-                0x0800c848                RegionCommonValueInRange
+                0x0800c858       0x1c ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
+                0x0800c858                RegionCommonValueInRange
  .text.RegionCommonChanDisable
-                0x0800c864       0x2a ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
-                0x0800c864                RegionCommonChanDisable
+                0x0800c874       0x2a ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
+                0x0800c874                RegionCommonChanDisable
  .text.RegionCommonCountChannels
-                0x0800c88e       0x3e ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
-                0x0800c88e                RegionCommonCountChannels
+                0x0800c89e       0x3e ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
+                0x0800c89e                RegionCommonCountChannels
  .text.RegionCommonChanMaskCopy
-                0x0800c8cc       0x1c ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
-                0x0800c8cc                RegionCommonChanMaskCopy
+                0x0800c8dc       0x1c ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
+                0x0800c8dc                RegionCommonChanMaskCopy
  .text.RegionCommonSetBandTxDone
-                0x0800c8e8        0xc ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
-                0x0800c8e8                RegionCommonSetBandTxDone
+                0x0800c8f8        0xc ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
+                0x0800c8f8                RegionCommonSetBandTxDone
  .text.RegionCommonUpdateBandTimeOff
-                0x0800c8f4       0x9a ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
-                0x0800c8f4                RegionCommonUpdateBandTimeOff
+                0x0800c904       0x9a ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
+                0x0800c904                RegionCommonUpdateBandTimeOff
  .text.RegionCommonParseLinkAdrReq
-                0x0800c98e       0x36 ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
-                0x0800c98e                RegionCommonParseLinkAdrReq
+                0x0800c99e       0x36 ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
+                0x0800c99e                RegionCommonParseLinkAdrReq
  .text.RegionCommonLinkAdrReqVerifyParams
-                0x0800c9c4       0x9c ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
-                0x0800c9c4                RegionCommonLinkAdrReqVerifyParams
+                0x0800c9d4       0x9c ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
+                0x0800c9d4                RegionCommonLinkAdrReqVerifyParams
  .text.RegionCommonComputeSymbolTimeLoRa
-                0x0800ca60       0x34 ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
-                0x0800ca60                RegionCommonComputeSymbolTimeLoRa
+                0x0800ca70       0x34 ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
+                0x0800ca70                RegionCommonComputeSymbolTimeLoRa
  .text.RegionCommonComputeSymbolTimeFsk
-                0x0800ca94       0x18 ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
-                0x0800ca94                RegionCommonComputeSymbolTimeFsk
+                0x0800caa4       0x18 ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
+                0x0800caa4                RegionCommonComputeSymbolTimeFsk
  .text.RegionCommonComputeRxWindowParameters
-                0x0800caac       0xac ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
-                0x0800caac                RegionCommonComputeRxWindowParameters
+                0x0800cabc       0xac ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
+                0x0800cabc                RegionCommonComputeRxWindowParameters
  .text.RegionCommonComputeTxPower
-                0x0800cb58       0x38 ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
-                0x0800cb58                RegionCommonComputeTxPower
+                0x0800cb68       0x38 ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
+                0x0800cb68                RegionCommonComputeTxPower
  .text.RegionCommonCalcBackOff
-                0x0800cb90       0x4a ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
-                0x0800cb90                RegionCommonCalcBackOff
- *fill*         0x0800cbda        0x2
+                0x0800cba0       0x4a ./build/obj/chameleon-i2c2-5v-reg/RegionCommon_2f44c7de.o
+                0x0800cba0                RegionCommonCalcBackOff
+ *fill*         0x0800cbea        0x2
  .text.VerifyTxFreq
-                0x0800cbdc       0xa0 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800cbec       0xa0 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
  .text.RegionEU868GetPhyParam
-                0x0800cc7c       0xcc ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800cc7c                RegionEU868GetPhyParam
+                0x0800cc8c       0xcc ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800cc8c                RegionEU868GetPhyParam
  .text.RegionEU868SetBandTxDone
-                0x0800cd48       0x28 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800cd48                RegionEU868SetBandTxDone
+                0x0800cd58       0x28 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800cd58                RegionEU868SetBandTxDone
  .text.RegionEU868InitDefaults
-                0x0800cd70       0x90 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800cd70                RegionEU868InitDefaults
+                0x0800cd80       0x90 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800cd80                RegionEU868InitDefaults
  .text.RegionEU868Verify
-                0x0800ce00       0x56 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800ce00                RegionEU868Verify
- *fill*         0x0800ce56        0x2
+                0x0800ce10       0x56 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800ce10                RegionEU868Verify
+ *fill*         0x0800ce66        0x2
  .text.RegionEU868ChanMaskSet
-                0x0800ce58       0x2c ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800ce58                RegionEU868ChanMaskSet
+                0x0800ce68       0x2c ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800ce68                RegionEU868ChanMaskSet
  .text.RegionEU868AdrNext
-                0x0800ce84       0x6c ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800ce84                RegionEU868AdrNext
+                0x0800ce94       0x6c ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800ce94                RegionEU868AdrNext
  .text.RegionEU868ComputeRxWindowParameters
-                0x0800cef0       0x70 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800cef0                RegionEU868ComputeRxWindowParameters
+                0x0800cf00       0x70 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800cf00                RegionEU868ComputeRxWindowParameters
  .text.RegionEU868RxConfig
-                0x0800cf60      0x150 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800cf60                RegionEU868RxConfig
+                0x0800cf70      0x150 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800cf70                RegionEU868RxConfig
  .text.RegionEU868TxConfig
-                0x0800d0b0      0x184 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800d0b0                RegionEU868TxConfig
+                0x0800d0c0      0x184 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800d0c0                RegionEU868TxConfig
  .text.RegionEU868LinkAdrReq
-                0x0800d234      0x134 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800d234                RegionEU868LinkAdrReq
+                0x0800d244      0x134 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800d244                RegionEU868LinkAdrReq
  .text.RegionEU868RxParamSetupReq
-                0x0800d368       0x40 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800d368                RegionEU868RxParamSetupReq
+                0x0800d378       0x40 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800d378                RegionEU868RxParamSetupReq
  .text.RegionEU868TxParamSetupReq
-                0x0800d3a8        0x6 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800d3a8                RegionEU868TxParamSetupReq
- *fill*         0x0800d3ae        0x2
+                0x0800d3b8        0x6 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800d3b8                RegionEU868TxParamSetupReq
+ *fill*         0x0800d3be        0x2
  .text.RegionEU868DlChannelReq
-                0x0800d3b0       0x3c ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800d3b0                RegionEU868DlChannelReq
+                0x0800d3c0       0x3c ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800d3c0                RegionEU868DlChannelReq
  .text.RegionEU868AlternateDr
-                0x0800d3ec       0x24 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800d3ec                RegionEU868AlternateDr
+                0x0800d3fc       0x24 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800d3fc                RegionEU868AlternateDr
  .text.RegionEU868CalcBackOff
-                0x0800d410       0x34 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800d410                RegionEU868CalcBackOff
+                0x0800d420       0x34 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800d420                RegionEU868CalcBackOff
  .text.RegionEU868NextChannel
-                0x0800d444      0x110 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800d444                RegionEU868NextChannel
+                0x0800d454      0x110 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800d454                RegionEU868NextChannel
  .text.RegionEU868ChannelAdd
-                0x0800d554       0xe8 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800d554                RegionEU868ChannelAdd
+                0x0800d564       0xe8 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800d564                RegionEU868ChannelAdd
  .text.RegionEU868ChannelsRemove
-                0x0800d63c       0x30 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800d63c                RegionEU868ChannelsRemove
+                0x0800d64c       0x30 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800d64c                RegionEU868ChannelsRemove
  .text.RegionEU868ApplyCFList
-                0x0800d66c       0x6a ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800d66c                RegionEU868ApplyCFList
+                0x0800d67c       0x6a ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800d67c                RegionEU868ApplyCFList
  .text.RegionEU868NewChannelReq
-                0x0800d6d6       0x3a ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800d6d6                RegionEU868NewChannelReq
+                0x0800d6e6       0x3a ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800d6e6                RegionEU868NewChannelReq
  .text.RegionEU868SetContinuousWave
-                0x0800d710       0x4c ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800d710                RegionEU868SetContinuousWave
+                0x0800d720       0x4c ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800d720                RegionEU868SetContinuousWave
  .text.RegionEU868ApplyDrOffset
-                0x0800d75c        0xe ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
-                0x0800d75c                RegionEU868ApplyDrOffset
- *fill*         0x0800d76a        0x2
+                0x0800d76c        0xe ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x0800d76c                RegionEU868ApplyDrOffset
+ *fill*         0x0800d77a        0x2
  .text.ResetMacParameters
-                0x0800d76c       0xdc ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800d77c       0xdc ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .text.ValidatePayloadLength
-                0x0800d848       0x40 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800d858       0x40 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .text.OnAckTimeoutTimerEvent
-                0x0800d888       0x4c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800d898       0x4c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .text.PrepareRxDoneAbort
-                0x0800d8d4       0x4c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800d8e4       0x4c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .text.RxWindowSetup
-                0x0800d920       0x18 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800d930       0x18 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .text.OnRxWindow2TimerEvent
-                0x0800d938       0x94 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800d948       0x94 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .text.OnRadioTxTimeout
-                0x0800d9cc       0x40 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800d9dc       0x40 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .text.OnRadioTxDone
-                0x0800da0c      0x140 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800da1c      0x140 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .text.OnRxWindow1TimerEvent
-                0x0800db4c       0x9c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800db5c       0x9c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .text.OnRadioRxTimeout
-                0x0800dbe8       0x88 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800dbf8       0x88 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .text.OnRadioRxError
-                0x0800dc70       0x88 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800dc80       0x88 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .text.ProcessMacCommands
-                0x0800dcf8      0x52c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800dd08      0x52c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .text.OnRadioRxDone
-                0x0800e224      0x580 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800e234      0x580 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .text.printf_joinmessage
-                0x0800e7a4       0x84 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
-                0x0800e7a4                printf_joinmessage
+                0x0800e7b4       0x84 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800e7b4                printf_joinmessage
  .text.PrepareFrame
-                0x0800e828      0x38c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
-                0x0800e828                PrepareFrame
+                0x0800e838      0x38c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800e838                PrepareFrame
  .text.SendFrameOnChannel
-                0x0800ebb4      0x12c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
-                0x0800ebb4                SendFrameOnChannel
+                0x0800ebc4      0x12c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800ebc4                SendFrameOnChannel
  .text.ScheduleTx
-                0x0800ece0      0x1f4 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
- .text.Send     0x0800eed4       0x3c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
-                0x0800eed4                Send
+                0x0800ecf0      0x1f4 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+ .text.Send     0x0800eee4       0x3c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800eee4                Send
  .text.OnTxDelayedTimerEvent
-                0x0800ef10       0x80 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800ef20       0x80 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .text.OnMacStateCheckTimerEvent
-                0x0800ef90      0x4ac ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800efa0      0x4ac ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .text.SetTxContinuousWave
-                0x0800f43c       0x5c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
-                0x0800f43c                SetTxContinuousWave
+                0x0800f44c       0x5c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800f44c                SetTxContinuousWave
  .text.SetTxContinuousWave1
-                0x0800f498       0x3c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
-                0x0800f498                SetTxContinuousWave1
+                0x0800f4a8       0x3c ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800f4a8                SetTxContinuousWave1
  .text.LoRaMacInitialization
-                0x0800f4d4      0x290 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
-                0x0800f4d4                LoRaMacInitialization
+                0x0800f4e4      0x290 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800f4e4                LoRaMacInitialization
  .text.LoRaMacQueryTxPossible
-                0x0800f764       0xf4 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
-                0x0800f764                LoRaMacQueryTxPossible
+                0x0800f774       0xf4 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800f774                LoRaMacQueryTxPossible
  .text.LoRaMacMibGetRequestConfirm
-                0x0800f858      0x134 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
-                0x0800f858                LoRaMacMibGetRequestConfirm
+                0x0800f868      0x134 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800f868                LoRaMacMibGetRequestConfirm
  .text.LoRaMacMibSetRequestConfirm
-                0x0800f98c      0x300 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
-                0x0800f98c                LoRaMacMibSetRequestConfirm
+                0x0800f99c      0x300 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800f99c                LoRaMacMibSetRequestConfirm
  .text.LoRaMacMlmeRequest
-                0x0800fc8c      0x1a8 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
-                0x0800fc8c                LoRaMacMlmeRequest
+                0x0800fc9c      0x1a8 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800fc9c                LoRaMacMlmeRequest
  .text.LoRaMacMcpsRequest
-                0x0800fe34      0x158 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
-                0x0800fe34                LoRaMacMcpsRequest
+                0x0800fe44      0x158 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800fe44                LoRaMacMcpsRequest
  .text.LoRaMacTestSetDutyCycleOn
-                0x0800ff8c       0x24 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
-                0x0800ff8c                LoRaMacTestSetDutyCycleOn
+                0x0800ff9c       0x24 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x0800ff9c                LoRaMacTestSetDutyCycleOn
  .text.LoRaMacComputeMic
-                0x0800ffb0       0x84 ./build/obj/chameleon-i2c2-5v-reg/LoRaMacCrypto_5c88798c.o
-                0x0800ffb0                LoRaMacComputeMic
+                0x0800ffc0       0x84 ./build/obj/chameleon-i2c2-5v-reg/LoRaMacCrypto_5c88798c.o
+                0x0800ffc0                LoRaMacComputeMic
  .text.LoRaMacPayloadEncrypt
-                0x08010034       0xf8 ./build/obj/chameleon-i2c2-5v-reg/LoRaMacCrypto_5c88798c.o
-                0x08010034                LoRaMacPayloadEncrypt
+                0x08010044       0xf8 ./build/obj/chameleon-i2c2-5v-reg/LoRaMacCrypto_5c88798c.o
+                0x08010044                LoRaMacPayloadEncrypt
  .text.LoRaMacPayloadDecrypt
-                0x0801012c       0x1a ./build/obj/chameleon-i2c2-5v-reg/LoRaMacCrypto_5c88798c.o
-                0x0801012c                LoRaMacPayloadDecrypt
- *fill*         0x08010146        0x2
+                0x0801013c       0x1a ./build/obj/chameleon-i2c2-5v-reg/LoRaMacCrypto_5c88798c.o
+                0x0801013c                LoRaMacPayloadDecrypt
+ *fill*         0x08010156        0x2
  .text.LoRaMacJoinComputeMic
-                0x08010148       0x4c ./build/obj/chameleon-i2c2-5v-reg/LoRaMacCrypto_5c88798c.o
-                0x08010148                LoRaMacJoinComputeMic
+                0x08010158       0x4c ./build/obj/chameleon-i2c2-5v-reg/LoRaMacCrypto_5c88798c.o
+                0x08010158                LoRaMacJoinComputeMic
  .text.LoRaMacJoinDecrypt
-                0x08010194       0x40 ./build/obj/chameleon-i2c2-5v-reg/LoRaMacCrypto_5c88798c.o
-                0x08010194                LoRaMacJoinDecrypt
+                0x080101a4       0x40 ./build/obj/chameleon-i2c2-5v-reg/LoRaMacCrypto_5c88798c.o
+                0x080101a4                LoRaMacJoinDecrypt
  .text.LoRaMacJoinComputeSKeys
-                0x080101d4       0x98 ./build/obj/chameleon-i2c2-5v-reg/LoRaMacCrypto_5c88798c.o
-                0x080101d4                LoRaMacJoinComputeSKeys
+                0x080101e4       0x98 ./build/obj/chameleon-i2c2-5v-reg/LoRaMacCrypto_5c88798c.o
+                0x080101e4                LoRaMacJoinComputeSKeys
  .text.OnCertifTxNextPacketTimerEvent
-                0x0801026c       0xbc ./build/obj/chameleon-i2c2-5v-reg/lora-test_9d43f367.o
+                0x0801027c       0xbc ./build/obj/chameleon-i2c2-5v-reg/lora-test_9d43f367.o
  .text.certif_running
-                0x08010328        0xc ./build/obj/chameleon-i2c2-5v-reg/lora-test_9d43f367.o
-                0x08010328                certif_running
+                0x08010338        0xc ./build/obj/chameleon-i2c2-5v-reg/lora-test_9d43f367.o
+                0x08010338                certif_running
  .text.certif_DownLinkIncrement
-                0x08010334       0x10 ./build/obj/chameleon-i2c2-5v-reg/lora-test_9d43f367.o
-                0x08010334                certif_DownLinkIncrement
+                0x08010344       0x10 ./build/obj/chameleon-i2c2-5v-reg/lora-test_9d43f367.o
+                0x08010344                certif_DownLinkIncrement
  .text.certif_linkCheck
-                0x08010344       0x20 ./build/obj/chameleon-i2c2-5v-reg/lora-test_9d43f367.o
-                0x08010344                certif_linkCheck
+                0x08010354       0x20 ./build/obj/chameleon-i2c2-5v-reg/lora-test_9d43f367.o
+                0x08010354                certif_linkCheck
  .text.certif_rx
-                0x08010364      0x1d8 ./build/obj/chameleon-i2c2-5v-reg/lora-test_9d43f367.o
-                0x08010364                certif_rx
- .text.DelayMs  0x0801053c        0x8 ./build/obj/chameleon-i2c2-5v-reg/delay_69b8651c.o
-                0x0801053c                DelayMs
+                0x08010374      0x1d8 ./build/obj/chameleon-i2c2-5v-reg/lora-test_9d43f367.o
+                0x08010374                certif_rx
+ .text.DelayMs  0x0801054c        0x8 ./build/obj/chameleon-i2c2-5v-reg/delay_69b8651c.o
+                0x0801054c                DelayMs
  .text.LPM_SetOffMode
-                0x08010544       0x2c ./build/obj/chameleon-i2c2-5v-reg/low_power_manager_062ac3e9.o
-                0x08010544                LPM_SetOffMode
+                0x08010554       0x2c ./build/obj/chameleon-i2c2-5v-reg/low_power_manager_062ac3e9.o
+                0x08010554                LPM_SetOffMode
  .text.LPM_SetStopMode
-                0x08010570       0x2c ./build/obj/chameleon-i2c2-5v-reg/low_power_manager_062ac3e9.o
-                0x08010570                LPM_SetStopMode
+                0x08010580       0x2c ./build/obj/chameleon-i2c2-5v-reg/low_power_manager_062ac3e9.o
+                0x08010580                LPM_SetStopMode
  .text.LPM_GetMode
-                0x0801059c       0x28 ./build/obj/chameleon-i2c2-5v-reg/low_power_manager_062ac3e9.o
-                0x0801059c                LPM_GetMode
+                0x080105ac       0x28 ./build/obj/chameleon-i2c2-5v-reg/low_power_manager_062ac3e9.o
+                0x080105ac                LPM_GetMode
  .text.LPM_ExitSleepMode
-                0x080105c4        0x2 ./build/obj/chameleon-i2c2-5v-reg/low_power_manager_062ac3e9.o
-                0x080105c4                LPM_ExitSleepMode
+                0x080105d4        0x2 ./build/obj/chameleon-i2c2-5v-reg/low_power_manager_062ac3e9.o
+                0x080105d4                LPM_ExitSleepMode
  .text.LPM_EnterOffMode
-                0x080105c6        0x2 ./build/obj/chameleon-i2c2-5v-reg/low_power_manager_062ac3e9.o
-                0x080105c6                LPM_EnterOffMode
+                0x080105d6        0x2 ./build/obj/chameleon-i2c2-5v-reg/low_power_manager_062ac3e9.o
+                0x080105d6                LPM_EnterOffMode
  .text.LPM_ExitOffMode
-                0x080105c8        0x2 ./build/obj/chameleon-i2c2-5v-reg/low_power_manager_062ac3e9.o
-                0x080105c8                LPM_ExitOffMode
- *fill*         0x080105ca        0x2
+                0x080105d8        0x2 ./build/obj/chameleon-i2c2-5v-reg/low_power_manager_062ac3e9.o
+                0x080105d8                LPM_ExitOffMode
+ *fill*         0x080105da        0x2
  .text.LPM_EnterLowPower
-                0x080105cc       0x38 ./build/obj/chameleon-i2c2-5v-reg/low_power_manager_062ac3e9.o
-                0x080105cc                LPM_EnterLowPower
+                0x080105dc       0x38 ./build/obj/chameleon-i2c2-5v-reg/low_power_manager_062ac3e9.o
+                0x080105dc                LPM_EnterLowPower
  .text.TimerSetTimeout
-                0x08010604       0x2a ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
- *fill*         0x0801062e        0x2
+                0x08010614       0x2a ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
+ *fill*         0x0801063e        0x2
  .text.TimerInsertNewHeadTimer
-                0x08010630       0x1c ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
+                0x08010640       0x1c ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
  .text.TimerInit
-                0x0801064c        0xe ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
-                0x0801064c                TimerInit
- *fill*         0x0801065a        0x2
+                0x0801065c        0xe ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
+                0x0801065c                TimerInit
+ *fill*         0x0801066a        0x2
  .text.TimerStart
-                0x0801065c       0x68 ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
-                0x0801065c                TimerStart
+                0x0801066c       0x68 ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
+                0x0801066c                TimerStart
  .text.TimerIrqHandler
-                0x080106c4       0x70 ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
-                0x080106c4                TimerIrqHandler
+                0x080106d4       0x70 ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
+                0x080106d4                TimerIrqHandler
  .text.TimerStop
-                0x08010734       0x58 ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
-                0x08010734                TimerStop
+                0x08010744       0x58 ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
+                0x08010744                TimerStop
  .text.TimerSetValue
-                0x0801078c       0x22 ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
-                0x0801078c                TimerSetValue
+                0x0801079c       0x22 ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
+                0x0801079c                TimerSetValue
  .text.TimerGetCurrentTime
-                0x080107ae        0xc ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
-                0x080107ae                TimerGetCurrentTime
+                0x080107be        0xc ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
+                0x080107be                TimerGetCurrentTime
  .text.TimerGetElapsedTime
-                0x080107ba       0x18 ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
-                0x080107ba                TimerGetElapsedTime
- *fill*         0x080107d2        0x2
- .text.rand1    0x080107d4       0x2c ./build/obj/chameleon-i2c2-5v-reg/utilities_06cf1bad.o
-                0x080107d4                rand1
- .text.srand1   0x08010800        0xc ./build/obj/chameleon-i2c2-5v-reg/utilities_06cf1bad.o
-                0x08010800                srand1
- .text.randr    0x0801080c       0x16 ./build/obj/chameleon-i2c2-5v-reg/utilities_06cf1bad.o
-                0x0801080c                randr
- .text.memcpy1  0x08010822       0x12 ./build/obj/chameleon-i2c2-5v-reg/utilities_06cf1bad.o
-                0x08010822                memcpy1
- .text.memcpyr  0x08010834       0x18 ./build/obj/chameleon-i2c2-5v-reg/utilities_06cf1bad.o
-                0x08010834                memcpyr
- .text.memset1  0x0801084c       0x10 ./build/obj/chameleon-i2c2-5v-reg/utilities_06cf1bad.o
-                0x0801084c                memset1
+                0x080107ca       0x18 ./build/obj/chameleon-i2c2-5v-reg/timeServer_ff13a564.o
+                0x080107ca                TimerGetElapsedTime
+ *fill*         0x080107e2        0x2
+ .text.rand1    0x080107e4       0x2c ./build/obj/chameleon-i2c2-5v-reg/utilities_06cf1bad.o
+                0x080107e4                rand1
+ .text.srand1   0x08010810        0xc ./build/obj/chameleon-i2c2-5v-reg/utilities_06cf1bad.o
+                0x08010810                srand1
+ .text.randr    0x0801081c       0x16 ./build/obj/chameleon-i2c2-5v-reg/utilities_06cf1bad.o
+                0x0801081c                randr
+ .text.memcpy1  0x08010832       0x12 ./build/obj/chameleon-i2c2-5v-reg/utilities_06cf1bad.o
+                0x08010832                memcpy1
+ .text.memcpyr  0x08010844       0x18 ./build/obj/chameleon-i2c2-5v-reg/utilities_06cf1bad.o
+                0x08010844                memcpyr
+ .text.memset1  0x0801085c       0x10 ./build/obj/chameleon-i2c2-5v-reg/utilities_06cf1bad.o
+                0x0801085c                memset1
  .text.Trace_TxCpltCallback
-                0x0801085c       0x48 ./build/obj/chameleon-i2c2-5v-reg/trace_0f7c981b.o
+                0x0801086c       0x48 ./build/obj/chameleon-i2c2-5v-reg/trace_0f7c981b.o
  .text.TraceInit
-                0x080108a4       0x28 ./build/obj/chameleon-i2c2-5v-reg/trace_0f7c981b.o
-                0x080108a4                TraceInit
+                0x080108b4       0x28 ./build/obj/chameleon-i2c2-5v-reg/trace_0f7c981b.o
+                0x080108b4                TraceInit
  .text.TraceSend
-                0x080108cc       0x88 ./build/obj/chameleon-i2c2-5v-reg/trace_0f7c981b.o
-                0x080108cc                TraceSend
+                0x080108dc       0x88 ./build/obj/chameleon-i2c2-5v-reg/trace_0f7c981b.o
+                0x080108dc                TraceSend
  .text.CircularQueue_Init
-                0x08010954       0x26 ./build/obj/chameleon-i2c2-5v-reg/queue_53f702e2.o
-                0x08010954                CircularQueue_Init
+                0x08010964       0x26 ./build/obj/chameleon-i2c2-5v-reg/queue_53f702e2.o
+                0x08010964                CircularQueue_Init
  .text.CircularQueue_Add
-                0x0801097a      0x1f4 ./build/obj/chameleon-i2c2-5v-reg/queue_53f702e2.o
-                0x0801097a                CircularQueue_Add
- *fill*         0x08010b6e        0x2
+                0x0801098a      0x1f4 ./build/obj/chameleon-i2c2-5v-reg/queue_53f702e2.o
+                0x0801098a                CircularQueue_Add
+ *fill*         0x08010b7e        0x2
  .text.CircularQueue_Remove
-                0x08010b70       0xc0 ./build/obj/chameleon-i2c2-5v-reg/queue_53f702e2.o
-                0x08010b70                CircularQueue_Remove
+                0x08010b80       0xc0 ./build/obj/chameleon-i2c2-5v-reg/queue_53f702e2.o
+                0x08010b80                CircularQueue_Remove
  .text.CircularQueue_Sense
-                0x08010c30       0x8c ./build/obj/chameleon-i2c2-5v-reg/queue_53f702e2.o
-                0x08010c30                CircularQueue_Sense
+                0x08010c40       0x8c ./build/obj/chameleon-i2c2-5v-reg/queue_53f702e2.o
+                0x08010c40                CircularQueue_Sense
  .text.aes_set_key
-                0x08010cbc      0x104 ./build/obj/chameleon-i2c2-5v-reg/aes_fc1b9773.o
-                0x08010cbc                aes_set_key
+                0x08010ccc      0x104 ./build/obj/chameleon-i2c2-5v-reg/aes_fc1b9773.o
+                0x08010ccc                aes_set_key
  .text.aes_encrypt
-                0x08010dc0      0x3c0 ./build/obj/chameleon-i2c2-5v-reg/aes_fc1b9773.o
-                0x08010dc0                aes_encrypt
+                0x08010dd0      0x3c0 ./build/obj/chameleon-i2c2-5v-reg/aes_fc1b9773.o
+                0x08010dd0                aes_encrypt
  .text.AES_CMAC_Init
-                0x08011180       0x20 ./build/obj/chameleon-i2c2-5v-reg/cmac_a4bbb0de.o
-                0x08011180                AES_CMAC_Init
+                0x08011190       0x20 ./build/obj/chameleon-i2c2-5v-reg/cmac_a4bbb0de.o
+                0x08011190                AES_CMAC_Init
  .text.AES_CMAC_SetKey
-                0x080111a0        0xe ./build/obj/chameleon-i2c2-5v-reg/cmac_a4bbb0de.o
-                0x080111a0                AES_CMAC_SetKey
+                0x080111b0        0xe ./build/obj/chameleon-i2c2-5v-reg/cmac_a4bbb0de.o
+                0x080111b0                AES_CMAC_SetKey
  .text.AES_CMAC_Update
-                0x080111ae       0xc4 ./build/obj/chameleon-i2c2-5v-reg/cmac_a4bbb0de.o
-                0x080111ae                AES_CMAC_Update
+                0x080111be       0xc4 ./build/obj/chameleon-i2c2-5v-reg/cmac_a4bbb0de.o
+                0x080111be                AES_CMAC_Update
  .text.AES_CMAC_Final
-                0x08011272      0x13a ./build/obj/chameleon-i2c2-5v-reg/cmac_a4bbb0de.o
-                0x08011272                AES_CMAC_Final
- .text.le32     0x080113ac       0x16 ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
+                0x08011282      0x13a ./build/obj/chameleon-i2c2-5v-reg/cmac_a4bbb0de.o
+                0x08011282                AES_CMAC_Final
+ .text.le32     0x080113bc       0x16 ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
  .text.via_chameleon_probe
-                0x080113c2       0x14 ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
-                0x080113c2                via_chameleon_probe
+                0x080113d2       0x14 ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
+                0x080113d2                via_chameleon_probe
  .text.via_chameleon_trigger
-                0x080113d6       0x1c ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
-                0x080113d6                via_chameleon_trigger
+                0x080113e6       0x1c ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
+                0x080113e6                via_chameleon_trigger
  .text.via_chameleon_wait_ready
-                0x080113f2       0x6c ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
-                0x080113f2                via_chameleon_wait_ready
- *fill*         0x0801145e        0x2
+                0x08011402       0x6c ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
+                0x08011402                via_chameleon_wait_ready
+ *fill*         0x0801146e        0x2
  .text.via_chameleon_read_sample
-                0x08011460      0x150 ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
-                0x08011460                via_chameleon_read_sample
+                0x08011470      0x150 ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
+                0x08011470                via_chameleon_read_sample
  .text.via_chameleon_measure
-                0x080115b0       0x24 ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
-                0x080115b0                via_chameleon_measure
+                0x080115c0       0x24 ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
+                0x080115c0                via_chameleon_measure
  .text.put_u32_be
-                0x080115d4       0x10 ./build/obj/chameleon-i2c2-5v-reg/chameleon_payload.o
+                0x080115e4       0x10 ./build/obj/chameleon-i2c2-5v-reg/chameleon_payload.o
  .text.chameleon_payload_encode_v1
-                0x080115e4       0xa2 ./build/obj/chameleon-i2c2-5v-reg/chameleon_payload.o
-                0x080115e4                chameleon_payload_encode_v1
- *fill*         0x08011686        0x2
+                0x080115f4       0xa2 ./build/obj/chameleon-i2c2-5v-reg/chameleon_payload.o
+                0x080115f4                chameleon_payload_encode_v1
+ *fill*         0x08011696        0x2
  .text.stm32_battery_mv
-                0x08011688        0xc ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x08011698        0xc ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .text.stm32_delay_ms
-                0x08011694        0xa ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x080116a4        0xa ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .text.stm32_millis
-                0x0801169e        0x8 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x080116ae        0x8 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .text.stm32_measure
-                0x080116a6        0xc ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x080116b6        0xc ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .text.stm32_probe
-                0x080116b2        0x8 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
- *fill*         0x080116ba        0x2
+                0x080116c2        0x8 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+ *fill*         0x080116ca        0x2
  .text.stm32_i2c_deinit
-                0x080116bc       0x10 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x080116cc       0x10 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .text.stm32_i2c_init
-                0x080116cc       0x34 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x080116dc       0x34 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .text.stm32_rail_on
-                0x08011700       0x14 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x08011710       0x14 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .text.stm32_bus_isolate
-                0x08011714       0x60 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x08011724       0x60 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .text.stm32_rail_off
-                0x08011774       0x48 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x08011784       0x48 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .text.chameleon_lsn50_last_attempts
-                0x080117bc        0xc ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
-                0x080117bc                chameleon_lsn50_last_attempts
+                0x080117cc        0xc ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x080117cc                chameleon_lsn50_last_attempts
  .text.chameleon_result_name
-                0x080117c8       0x18 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
-                0x080117c8                chameleon_result_name
+                0x080117d8       0x18 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x080117d8                chameleon_result_name
  .text.chameleon_lsn50_run
-                0x080117e0      0x160 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
-                0x080117e0                chameleon_lsn50_run
+                0x080117f0      0x160 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x080117f0                chameleon_lsn50_run
  .text.chameleon_board_i2c_write
-                0x08011940       0x40 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
-                0x08011940                chameleon_board_i2c_write
+                0x08011950       0x40 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x08011950                chameleon_board_i2c_write
  .text.chameleon_board_i2c_write_read
-                0x08011980       0x50 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
-                0x08011980                chameleon_board_i2c_write_read
+                0x08011990       0x50 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x08011990                chameleon_board_i2c_write_read
  .text.chameleon_board_delay_ms
-                0x080119d0        0x8 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
-                0x080119d0                chameleon_board_delay_ms
+                0x080119e0        0x8 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x080119e0                chameleon_board_delay_ms
  .text.chameleon_board_millis
-                0x080119d8        0x8 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
-                0x080119d8                chameleon_board_millis
+                0x080119e8        0x8 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x080119e8                chameleon_board_millis
  .text.chameleon_lsn50_acquire
-                0x080119e0       0x14 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
-                0x080119e0                chameleon_lsn50_acquire
+                0x080119f0       0x14 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x080119f0                chameleon_lsn50_acquire
  .text.chameleon_lsn50_prepare_sleep
-                0x080119f4       0x10 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
-                0x080119f4                chameleon_lsn50_prepare_sleep
+                0x08011a04       0x10 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x08011a04                chameleon_lsn50_prepare_sleep
  .text.__muldi3
-                0x08011a04       0x3e /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_muldi3.o)
-                0x08011a04                __aeabi_lmul
-                0x08011a04                __muldi3
+                0x08011a14       0x3e /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_muldi3.o)
+                0x08011a14                __aeabi_lmul
+                0x08011a14                __muldi3
  .text.__fixunssfsi
-                0x08011a42       0x2e /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_fixunssfsi.o)
-                0x08011a42                __aeabi_f2uiz
-                0x08011a42                __fixunssfsi
+                0x08011a52       0x2e /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_fixunssfsi.o)
+                0x08011a52                __aeabi_f2uiz
+                0x08011a52                __fixunssfsi
  .text.__fixunsdfsi
-                0x08011a70       0x38 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_fixunsdfsi.o)
-                0x08011a70                __fixunsdfsi
-                0x08011a70                __aeabi_d2uiz
+                0x08011a80       0x38 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_fixunsdfsi.o)
+                0x08011a80                __fixunsdfsi
+                0x08011a80                __aeabi_d2uiz
  .text.__udivmoddi4
-                0x08011aa8       0xe0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
-                0x08011aa8                __udivmoddi4
+                0x08011ab8       0xe0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
+                0x08011ab8                __udivmoddi4
  .text.__aeabi_fdiv
-                0x08011b88      0x200 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(divsf3.o)
-                0x08011b88                __aeabi_fdiv
- .text.__eqsf2  0x08011d88       0x46 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(eqsf2.o)
-                0x08011d88                __nesf2
-                0x08011d88                __eqsf2
- .text.__gesf2  0x08011dce       0x6c /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(gesf2.o)
-                0x08011dce                __gtsf2
-                0x08011dce                __gesf2
- .text.__lesf2  0x08011e3a       0x6a /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(lesf2.o)
-                0x08011e3a                __lesf2
-                0x08011e3a                __ltsf2
+                0x08011b98      0x200 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(divsf3.o)
+                0x08011b98                __aeabi_fdiv
+ .text.__eqsf2  0x08011d98       0x46 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(eqsf2.o)
+                0x08011d98                __nesf2
+                0x08011d98                __eqsf2
+ .text.__gesf2  0x08011dde       0x6c /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(gesf2.o)
+                0x08011dde                __gtsf2
+                0x08011dde                __gesf2
+ .text.__lesf2  0x08011e4a       0x6a /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(lesf2.o)
+                0x08011e4a                __lesf2
+                0x08011e4a                __ltsf2
  .text.__aeabi_fmul
-                0x08011ea4      0x1f8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(mulsf3.o)
-                0x08011ea4                __aeabi_fmul
+                0x08011eb4      0x1f8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(mulsf3.o)
+                0x08011eb4                __aeabi_fmul
  .text.__aeabi_fsub
-                0x0801209c      0x2fc /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(subsf3.o)
-                0x0801209c                __aeabi_fsub
+                0x080120ac      0x2fc /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(subsf3.o)
+                0x080120ac                __aeabi_fsub
  .text.__aeabi_f2iz
-                0x08012398       0x3c /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(fixsfsi.o)
-                0x08012398                __aeabi_f2iz
+                0x080123a8       0x3c /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(fixsfsi.o)
+                0x080123a8                __aeabi_f2iz
  .text.__aeabi_i2f
-                0x080123d4       0x84 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatsisf.o)
-                0x080123d4                __aeabi_i2f
+                0x080123e4       0x84 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatsisf.o)
+                0x080123e4                __aeabi_i2f
  .text.__aeabi_ui2f
-                0x08012458       0x78 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatunsisf.o)
-                0x08012458                __aeabi_ui2f
+                0x08012468       0x78 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatunsisf.o)
+                0x08012468                __aeabi_ui2f
  .text.__aeabi_dadd
-                0x080124d0      0x598 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(adddf3.o)
-                0x080124d0                __aeabi_dadd
+                0x080124e0      0x598 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(adddf3.o)
+                0x080124e0                __aeabi_dadd
  .text.__aeabi_ddiv
-                0x08012a68      0x534 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(divdf3.o)
-                0x08012a68                __aeabi_ddiv
- .text.__eqdf2  0x08012f9c       0x74 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(eqdf2.o)
-                0x08012f9c                __eqdf2
-                0x08012f9c                __nedf2
- .text.__gedf2  0x08013010       0xc8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(gedf2.o)
-                0x08013010                __gtdf2
-                0x08013010                __gedf2
- .text.__ledf2  0x080130d8       0xc8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(ledf2.o)
-                0x080130d8                __ltdf2
-                0x080130d8                __ledf2
+                0x08012a78      0x534 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(divdf3.o)
+                0x08012a78                __aeabi_ddiv
+ .text.__eqdf2  0x08012fac       0x74 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(eqdf2.o)
+                0x08012fac                __eqdf2
+                0x08012fac                __nedf2
+ .text.__gedf2  0x08013020       0xc8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(gedf2.o)
+                0x08013020                __gtdf2
+                0x08013020                __gedf2
+ .text.__ledf2  0x080130e8       0xc8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(ledf2.o)
+                0x080130e8                __ltdf2
+                0x080130e8                __ledf2
  .text.__aeabi_dmul
-                0x080131a0      0x444 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(muldf3.o)
-                0x080131a0                __aeabi_dmul
+                0x080131b0      0x444 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(muldf3.o)
+                0x080131b0                __aeabi_dmul
  .text.__aeabi_dsub
-                0x080135e4      0x5a4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(subdf3.o)
-                0x080135e4                __aeabi_dsub
+                0x080135f4      0x5a4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(subdf3.o)
+                0x080135f4                __aeabi_dsub
  .text.__aeabi_d2iz
-                0x08013b88       0x68 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(fixdfsi.o)
-                0x08013b88                __aeabi_d2iz
+                0x08013b98       0x68 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(fixdfsi.o)
+                0x08013b98                __aeabi_d2iz
  .text.__aeabi_i2d
-                0x08013bf0       0x50 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatsidf.o)
-                0x08013bf0                __aeabi_i2d
+                0x08013c00       0x50 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatsidf.o)
+                0x08013c00                __aeabi_i2d
  .text.__aeabi_ui2d
-                0x08013c40       0x40 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatunsidf.o)
-                0x08013c40                __aeabi_ui2d
+                0x08013c50       0x40 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatunsidf.o)
+                0x08013c50                __aeabi_ui2d
  .text.__aeabi_f2d
-                0x08013c80       0x84 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(extendsfdf2.o)
-                0x08013c80                __aeabi_f2d
+                0x08013c90       0x84 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(extendsfdf2.o)
+                0x08013c90                __aeabi_f2d
  .text.__aeabi_d2f
-                0x08013d04       0xdc /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(truncdfsf2.o)
-                0x08013d04                __aeabi_d2f
- .text.atoi     0x08013de0        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-atoi.o)
-                0x08013de0                atoi
+                0x08013d14       0xdc /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(truncdfsf2.o)
+                0x08013d14                __aeabi_d2f
+ .text.atoi     0x08013df0        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-atoi.o)
+                0x08013df0                atoi
  .text._strtol_l.isra.0
-                0x08013dec      0x108 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
+                0x08013dfc      0x108 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
  .text._strtol_r
-                0x08013ef4        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
-                0x08013ef4                _strtol_r
- .text.strtol   0x08013efc       0x18 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
-                0x08013efc                strtol
- .text.sscanf   0x08013f14       0x54 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sscanf.o)
-                0x08013f14                sscanf
-                0x08013f14                siscanf
+                0x08013f04        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
+                0x08013f04                _strtol_r
+ .text.strtol   0x08013f0c       0x18 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
+                0x08013f0c                strtol
+ .text.sscanf   0x08013f24       0x54 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sscanf.o)
+                0x08013f24                sscanf
+                0x08013f24                siscanf
  .text.__seofread
-                0x08013f68        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-stdio.o)
-                0x08013f68                __seofread
+                0x08013f78        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-stdio.o)
+                0x08013f78                __seofread
  .text._vsnprintf_r
-                0x08013f6c       0x54 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
-                0x08013f6c                _vsnprintf_r
-                0x08013f6c                _vsniprintf_r
+                0x08013f7c       0x54 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
+                0x08013f7c                _vsnprintf_r
+                0x08013f7c                _vsniprintf_r
  .text.vsnprintf
-                0x08013fc0       0x18 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
-                0x08013fc0                vsnprintf
-                0x08013fc0                vsniprintf
- .text.memset   0x08013fd8       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memset.o)
-                0x08013fd8                memset
- .text.strncmp  0x08013fe8       0x24 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strncmp.o)
-                0x08013fe8                strncmp
- .text.__errno  0x0801400c        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-errno.o)
-                0x0801400c                __errno
+                0x08013fd0       0x18 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
+                0x08013fd0                vsnprintf
+                0x08013fd0                vsniprintf
+ .text.memset   0x08013fe8       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memset.o)
+                0x08013fe8                memset
+ .text.strncmp  0x08013ff8       0x24 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strncmp.o)
+                0x08013ff8                strncmp
+ .text.__errno  0x0801401c        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-errno.o)
+                0x0801401c                __errno
  .text.__libc_init_array
-                0x08014018       0x48 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-init.o)
-                0x08014018                __libc_init_array
+                0x08014028       0x48 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-init.o)
+                0x08014028                __libc_init_array
  .text.__retarget_lock_acquire_recursive
-                0x08014060        0x2 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
-                0x08014060                __retarget_lock_acquire_recursive
+                0x08014070        0x2 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
+                0x08014070                __retarget_lock_acquire_recursive
  .text.__retarget_lock_release_recursive
-                0x08014062        0x2 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
-                0x08014062                __retarget_lock_release_recursive
- .text.memcpy   0x08014064       0x12 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memcpy-stub.o)
-                0x08014064                memcpy
- *fill*         0x08014076        0x2
- .text._free_r  0x08014078       0x94 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-freer.o)
-                0x08014078                _free_r
+                0x08014072        0x2 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
+                0x08014072                __retarget_lock_release_recursive
+ .text.memcpy   0x08014074       0x12 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memcpy-stub.o)
+                0x08014074                memcpy
+ *fill*         0x08014086        0x2
+ .text._free_r  0x08014088       0x94 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-freer.o)
+                0x08014088                _free_r
  .text.sbrk_aligned
-                0x0801410c       0x44 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
+                0x0801411c       0x44 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
  .text._malloc_r
-                0x08014150      0x100 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
-                0x08014150                _malloc_r
+                0x08014160      0x100 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
+                0x08014160                _malloc_r
  .text.__malloc_lock
-                0x08014250       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
-                0x08014250                __malloc_lock
- .text.__malloc_unlock
                 0x08014260       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
-                0x08014260                __malloc_unlock
+                0x08014260                __malloc_lock
+ .text.__malloc_unlock
+                0x08014270       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
+                0x08014270                __malloc_unlock
  .text.__ssputs_r
-                0x08014270       0xc4 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
-                0x08014270                __ssputs_r
+                0x08014280       0xc4 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
+                0x08014280                __ssputs_r
  .text._svfprintf_r
-                0x08014334      0x1e8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
-                0x08014334                _svfprintf_r
-                0x08014334                _svfiprintf_r
+                0x08014344      0x1e8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
+                0x08014344                _svfprintf_r
+                0x08014344                _svfiprintf_r
  .text._sungetc_r
-                0x0801451c       0x78 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
-                0x0801451c                _sungetc_r
+                0x0801452c       0x78 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x0801452c                _sungetc_r
  .text.__ssrefill_r
-                0x08014594       0x3e /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
-                0x08014594                __ssrefill_r
- *fill*         0x080145d2        0x2
+                0x080145a4       0x3e /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x080145a4                __ssrefill_r
+ *fill*         0x080145e2        0x2
  .text.__ssvfscanf_r
-                0x080145d4      0x2b0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
-                0x080145d4                __ssvfscanf_r
-                0x080145d4                __ssvfiscanf_r
+                0x080145e4      0x2b0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x080145e4                __ssvfscanf_r
+                0x080145e4                __ssvfiscanf_r
  .text._printf_common
-                0x08014884       0xda /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
-                0x08014884                _printf_common
- *fill*         0x0801495e        0x2
+                0x08014894       0xda /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x08014894                _printf_common
+ *fill*         0x0801496e        0x2
  .text._printf_i
-                0x08014960      0x21c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
-                0x08014960                _printf_i
+                0x08014970      0x21c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x08014970                _printf_i
  .text._scanf_chars
-                0x08014b7c       0xc0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
-                0x08014b7c                _scanf_chars
+                0x08014b8c       0xc0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x08014b8c                _scanf_chars
  .text._scanf_i
-                0x08014c3c      0x1f0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
-                0x08014c3c                _scanf_i
- .text.__sccl   0x08014e2c       0x7a /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sccl.o)
-                0x08014e2c                __sccl
- *fill*         0x08014ea6        0x2
+                0x08014c4c      0x1f0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x08014c4c                _scanf_i
+ .text.__sccl   0x08014e3c       0x7a /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sccl.o)
+                0x08014e3c                __sccl
+ *fill*         0x08014eb6        0x2
  .text.__submore
-                0x08014ea8       0x7c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ungetc.o)
-                0x08014ea8                __submore
- .text.memmove  0x08014f24       0x28 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memmove.o)
-                0x08014f24                memmove
- .text._sbrk_r  0x08014f4c       0x24 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sbrkr.o)
-                0x08014f4c                _sbrk_r
- .text.memchr   0x08014f70       0x16 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memchr-stub.o)
-                0x08014f70                memchr
+                0x08014eb8       0x7c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ungetc.o)
+                0x08014eb8                __submore
+ .text.memmove  0x08014f34       0x28 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memmove.o)
+                0x08014f34                memmove
+ .text._sbrk_r  0x08014f5c       0x24 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sbrkr.o)
+                0x08014f5c                _sbrk_r
+ .text.memchr   0x08014f80       0x16 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memchr-stub.o)
+                0x08014f80                memchr
  .text._realloc_r
-                0x08014f86       0x5e /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-reallocr.o)
-                0x08014f86                _realloc_r
+                0x08014f96       0x5e /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-reallocr.o)
+                0x08014f96                _realloc_r
  .text._strtoul_l.isra.0
-                0x08014fe4      0x100 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
+                0x08014ff4      0x100 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
  .text._strtoul_r
-                0x080150e4        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
-                0x080150e4                _strtoul_r
+                0x080150f4        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
+                0x080150f4                _strtoul_r
  .text._malloc_usable_size_r
-                0x080150ec       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-msizer.o)
-                0x080150ec                _malloc_usable_size_r
- .text._sbrk    0x080150fc       0x1c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libnosys.a(sbrk.o)
-                0x080150fc                _sbrk
- .text.ceil     0x08015118      0x118 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_ceil.o)
-                0x08015118                ceil
- .text.floor    0x08015230      0x124 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_floor.o)
-                0x08015230                floor
- .text.round    0x08015354       0xa0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_round.o)
-                0x08015354                round
+                0x080150fc       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-msizer.o)
+                0x080150fc                _malloc_usable_size_r
+ .text._sbrk    0x0801510c       0x1c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libnosys.a(sbrk.o)
+                0x0801510c                _sbrk
+ .text.ceil     0x08015128      0x118 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_ceil.o)
+                0x08015128                ceil
+ .text.floor    0x08015240      0x124 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_floor.o)
+                0x08015240                floor
+ .text.round    0x08015364       0xa0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_round.o)
+                0x08015364                round
  *(.glue_7)
- .glue_7        0x080153f4        0x0 linker stubs
+ .glue_7        0x08015404        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x080153f4        0x0 linker stubs
+ .glue_7t       0x08015404        0x0 linker stubs
  *(.eh_frame)
- .eh_frame      0x080153f4        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
+ .eh_frame      0x08015404        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
  *(.init)
- .init          0x080153f4        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crti.o
-                0x080153f4                _init
- .init          0x080153f8        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
+ .init          0x08015404        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crti.o
+                0x08015404                _init
+ .init          0x08015408        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  *(.fini)
- .fini          0x08015400        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crti.o
-                0x08015400                _fini
- .fini          0x08015404        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
-                0x0801540c                        . = ALIGN (0x4)
-                0x0801540c                        _etext = .
+ .fini          0x08015410        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crti.o
+                0x08015410                _fini
+ .fini          0x08015414        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
+                0x0801541c                        . = ALIGN (0x4)
+                0x0801541c                        _etext = .
 
-.vfp11_veneer   0x0801540c        0x0
- .vfp11_veneer  0x0801540c        0x0 linker stubs
+.vfp11_veneer   0x0801541c        0x0
+ .vfp11_veneer  0x0801541c        0x0 linker stubs
 
-.v4_bx          0x0801540c        0x0
- .v4_bx         0x0801540c        0x0 linker stubs
+.v4_bx          0x0801541c        0x0
+ .v4_bx         0x0801541c        0x0 linker stubs
 
-.iplt           0x0801540c        0x0
- .iplt          0x0801540c        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
+.iplt           0x0801541c        0x0
+ .iplt          0x0801541c        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
 
-.rodata         0x08015410     0x2750
-                0x08015410                        . = ALIGN (0x4)
+.rodata         0x08015420     0x2788
+                0x08015420                        . = ALIGN (0x4)
  *(.rodata)
- .rodata        0x08015410        0xb ./build/obj/chameleon-i2c2-5v-reg/tfsensor_f8521127.o
- *fill*         0x0801541b        0x1
- .rodata        0x0801541c       0x24 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
- .rodata        0x08015440        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+ .rodata        0x08015420        0xb ./build/obj/chameleon-i2c2-5v-reg/tfsensor_f8521127.o
+ *fill*         0x0801542b        0x1
+ .rodata        0x0801542c       0x24 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+ .rodata        0x08015450        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
  *(.rodata*)
  .rodata.EEPROM_program.str1.1
-                0x0801544c     0x1b1a ./build/obj/chameleon-i2c2-5v-reg/flash_eraseprogram_078ea408.o
+                0x0801545c     0x1b4e ./build/obj/chameleon-i2c2-5v-reg/flash_eraseprogram_078ea408.o
                                  0x1d (size before relaxing)
  .rodata.EEPROM_erase_one_address.str1.1
-                0x08016f66        0x0 ./build/obj/chameleon-i2c2-5v-reg/flash_eraseprogram_078ea408.o
+                0x08016faa        0x0 ./build/obj/chameleon-i2c2-5v-reg/flash_eraseprogram_078ea408.o
                                  0x22 (size before relaxing)
  .rodata.SX1276OnDio0Irq.str1.1
-                0x08016f66        0x0 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
+                0x08016faa        0x0 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
                                  0x31 (size before relaxing)
  .rodata.SX1276OnDio1Irq.str1.1
-                0x08016f66        0x0 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
+                0x08016faa        0x0 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
                                   0xc (size before relaxing)
- *fill*         0x08016f66        0x2
+ *fill*         0x08016faa        0x6
  .rodata.CSWTCH.94
-                0x08016f68       0x18 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
+                0x08016fb0       0x18 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
  .rodata.FskBandwidths
-                0x08016f80       0xb0 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
-                0x08016f80                FskBandwidths
+                0x08016fc8       0xb0 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
+                0x08016fc8                FskBandwidths
  .rodata.RadioRegsInit
-                0x08017030       0x30 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
-                0x08017030                RadioRegsInit
+                0x08017078       0x30 ./build/obj/chameleon-i2c2-5v-reg/sx1276_174cd5fd.o
+                0x08017078                RadioRegsInit
  .rodata.waitbusy.str1.1
-                0x08017060        0x0 ./build/obj/chameleon-i2c2-5v-reg/lidar_lite_v3hp_29c3a030.o
+                0x080170a8        0x0 ./build/obj/chameleon-i2c2-5v-reg/lidar_lite_v3hp_29c3a030.o
                                   0x2 (size before relaxing)
  .rodata.LidarLite_init.str1.1
-                0x08017060        0x0 ./build/obj/chameleon-i2c2-5v-reg/lidar_lite_v3hp_29c3a030.o
+                0x080170a8        0x0 ./build/obj/chameleon-i2c2-5v-reg/lidar_lite_v3hp_29c3a030.o
                                   0x7 (size before relaxing)
  .rodata.LidarLite.str1.1
-                0x08017060        0x0 ./build/obj/chameleon-i2c2-5v-reg/lidar_lite_v3hp_29c3a030.o
+                0x080170a8        0x0 ./build/obj/chameleon-i2c2-5v-reg/lidar_lite_v3hp_29c3a030.o
                                   0x2 (size before relaxing)
- .rodata.Radio  0x08017060       0x68 ./build/obj/chameleon-i2c2-5v-reg/sx1276mb1las_a2dfe320.o
-                0x08017060                Radio
+ .rodata.Radio  0x080170a8       0x68 ./build/obj/chameleon-i2c2-5v-reg/sx1276mb1las_a2dfe320.o
+                0x080170a8                Radio
  .rodata.PLLMulTable
-                0x080170c8        0x9 ./build/obj/chameleon-i2c2-5v-reg/system_stm32l0xx_d1d9d34c.o
-                0x080170c8                PLLMulTable
+                0x08017110        0x9 ./build/obj/chameleon-i2c2-5v-reg/system_stm32l0xx_d1d9d34c.o
+                0x08017110                PLLMulTable
  .rodata.APBPrescTable
-                0x080170d1        0x8 ./build/obj/chameleon-i2c2-5v-reg/system_stm32l0xx_d1d9d34c.o
-                0x080170d1                APBPrescTable
+                0x08017119        0x8 ./build/obj/chameleon-i2c2-5v-reg/system_stm32l0xx_d1d9d34c.o
+                0x08017119                APBPrescTable
  .rodata.AHBPrescTable
-                0x080170d9       0x10 ./build/obj/chameleon-i2c2-5v-reg/system_stm32l0xx_d1d9d34c.o
-                0x080170d9                AHBPrescTable
+                0x08017121       0x10 ./build/obj/chameleon-i2c2-5v-reg/system_stm32l0xx_d1d9d34c.o
+                0x08017121                AHBPrescTable
  .rodata.BSP_sensor_Read.str1.1
-                0x080170e9        0x0 ./build/obj/chameleon-i2c2-5v-reg/bsp_fc5dfbea.o
+                0x08017131        0x0 ./build/obj/chameleon-i2c2-5v-reg/bsp_fc5dfbea.o
                                 0x1ff (size before relaxing)
  .rodata.BSP_sensor_Init.str1.1
-                0x080170e9        0x0 ./build/obj/chameleon-i2c2-5v-reg/bsp_fc5dfbea.o
+                0x08017131        0x0 ./build/obj/chameleon-i2c2-5v-reg/bsp_fc5dfbea.o
                                  0xe3 (size before relaxing)
  .rodata.DaysInMonthLeapYear
-                0x080170e9        0xc ./build/obj/chameleon-i2c2-5v-reg/hw_rtc_40701610.o
+                0x08017131        0xc ./build/obj/chameleon-i2c2-5v-reg/hw_rtc_40701610.o
  .rodata.DaysInMonth
-                0x080170f5        0xc ./build/obj/chameleon-i2c2-5v-reg/hw_rtc_40701610.o
+                0x0801713d        0xc ./build/obj/chameleon-i2c2-5v-reg/hw_rtc_40701610.o
  .rodata.LORA_ConfirmClass.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
                                  0x1e (size before relaxing)
  .rodata.LORA_RxData.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
                                  0x4a (size before relaxing)
  .rodata.LORA_HasJoined.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
                                   0x9 (size before relaxing)
  .rodata.main.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/main_47d3d071.o
                                  0x1e (size before relaxing)
  .rodata.at_tfmini_data_receive.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/vcom_81525599.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/vcom_81525599.o
                                   0x6 (size before relaxing)
  .rodata.print_8_02x.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x2a (size before relaxing)
  .rodata.print_16_02x.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x52 (size before relaxing)
  .rodata.print_d.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x5 (size before relaxing)
  .rodata.print_u.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x5 (size before relaxing)
  .rodata.changeform.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x28 (size before relaxing)
  .rodata.sscanf_16_hhx.part.0.isra.0.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x50 (size before relaxing)
  .rodata.at_DEBUG_run.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x13 (size before relaxing)
  .rodata.at_FDR.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x5 (size before relaxing)
  .rodata.at_DevEUI_set.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x28 (size before relaxing)
  .rodata.at_DevAddr_set.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x14 (size before relaxing)
  .rodata.at_TransmitPower_set.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x2c (size before relaxing)
  .rodata.at_DutyCycle_get.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x8 (size before relaxing)
  .rodata.at_Rx2Frequency_set.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x4 (size before relaxing)
  .rodata.at_JoinAcceptDelay1_set.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x22 (size before relaxing)
  .rodata.at_NetworkID_get.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x16 (size before relaxing)
  .rodata.at_DeviceClass_get.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x5 (size before relaxing)
  .rodata.at_SendBinary.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x29 (size before relaxing)
  .rodata.at_ReceiveBinary.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0xd (size before relaxing)
  .rodata.at_Receive.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x3 (size before relaxing)
  .rodata.at_RJTDC_set.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x20 (size before relaxing)
  .rodata.at_RPL_set.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x28 (size before relaxing)
  .rodata.at_version_get.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x8 (size before relaxing)
  .rodata.at_ack_set.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x9 (size before relaxing)
  .rodata.at_ack_get.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0xb (size before relaxing)
  .rodata.at_CFG_run.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x53 (size before relaxing)
  .rodata.at_TDC_set.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x23 (size before relaxing)
  .rodata.at_MOD_set.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
-                                 0x1a (size before relaxing)
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                                 0x4e (size before relaxing)
  .rodata.at_INTMOD1_set.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x1e (size before relaxing)
  .rodata.at_INTMOD2_set.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x1e (size before relaxing)
  .rodata.at_INTMOD3_set.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x1e (size before relaxing)
  .rodata.at_weight_GapValue_set.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x6 (size before relaxing)
  .rodata.at_weight_GapValue_get.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x8 (size before relaxing)
  .rodata.at_SETCNT_set.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x7 (size before relaxing)
  .rodata.at_downlink_detect_set.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                  0x2d (size before relaxing)
  .rodata.at_setmaxnbtrans_set.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x6 (size before relaxing)
  .rodata.at_setmaxnbtrans_get.str1.1
-                0x08017101        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+                0x08017149        0x0 ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
                                   0x8 (size before relaxing)
- .rodata.CSWTCH.109
-                0x08017101        0xd ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
+ .rodata.CSWTCH.108
+                0x08017149        0xd ./build/obj/chameleon-i2c2-5v-reg/at_82e457e9.o
  .rodata.CMD_Process.str1.1
-                0x0801710e        0x0 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
-                                 0xe3 (size before relaxing)
+                0x08017156        0x0 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
+                                 0xe8 (size before relaxing)
  .rodata.printf_all_config.str1.1
-                0x0801710e        0x0 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
+                0x08017156        0x0 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
                                   0x6 (size before relaxing)
  .rodata.str1.1
-                0x0801710e        0x0 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
-                                0xfcb (size before relaxing)
- *fill*         0x0801710e        0x2
+                0x08017156        0x0 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
+                                0xfc6 (size before relaxing)
+ *fill*         0x08017156        0x2
  .rodata.ATCommand
-                0x08017110      0x588 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
+                0x08017158      0x588 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
  .rodata.ATError_description
-                0x08017698       0x28 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
+                0x080176e0       0x28 ./build/obj/chameleon-i2c2-5v-reg/command_a2f38ca8.o
  .rodata.region_printf.str1.1
-                0x080176c0        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x08017708        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
                                   0x8 (size before relaxing)
  .rodata.key_printf.str1.1
-                0x080176c0        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x08017708        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
                                  0x32 (size before relaxing)
  .rodata.lora_config_devaddr_get.str1.1
-                0x080176c0        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x08017708        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
                                   0x9 (size before relaxing)
  .rodata.EEPROM_Store_Config.str1.1
-                0x080176c0        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x08017708        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
                                  0x17 (size before relaxing)
  .rodata.LORA_Init.str1.1
-                0x080176c0        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x08017708        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
                                  0x92 (size before relaxing)
  .rodata.string_touint.str1.1
-                0x080176c0        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
+                0x08017708        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora_bb201500.o
                                   0x7 (size before relaxing)
  .rodata.RegionEU868RxConfig.str1.1
-                0x080176c0        0x0 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x08017708        0x0 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
                                  0x42 (size before relaxing)
  .rodata.RegionEU868TxConfig.str1.1
-                0x080176c0        0x0 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x08017708        0x0 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
                                  0x3c (size before relaxing)
  .rodata.MaxPayloadOfDatarateRepeaterEU868
-                0x080176c0        0x8 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x08017708        0x8 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
  .rodata.MaxPayloadOfDatarateEU868
-                0x080176c8        0x8 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x08017710        0x8 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
  .rodata.BandwidthsEU868
-                0x080176d0       0x20 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x08017718       0x20 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
  .rodata.DataratesEU868
-                0x080176f0        0x8 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
+                0x08017738        0x8 ./build/obj/chameleon-i2c2-5v-reg/RegionEU868_fd21cf6c.o
  .rodata.ProcessMacCommands.str1.1
-                0x080176f8        0x0 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x08017740        0x0 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
                                  0xad (size before relaxing)
  .rodata.printf_joinmessage.str1.1
-                0x080176f8        0x0 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x08017740        0x0 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
                                  0x5f (size before relaxing)
  .rodata.SendFrameOnChannel.str1.1
-                0x080176f8        0x0 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x08017740        0x0 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
                                  0x52 (size before relaxing)
  .rodata.LoRaMacMaxEirpTable
-                0x080176f8       0x10 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
+                0x08017740       0x10 ./build/obj/chameleon-i2c2-5v-reg/LoRaMac_6eac7497.o
  .rodata.OnCertifTxNextPacketTimerEvent.str1.1
-                0x08017708        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora-test_9d43f367.o
+                0x08017750        0x0 ./build/obj/chameleon-i2c2-5v-reg/lora-test_9d43f367.o
                                  0x1a (size before relaxing)
  .rodata.gfm3_sbox
-                0x08017708      0x100 ./build/obj/chameleon-i2c2-5v-reg/aes_fc1b9773.o
+                0x08017750      0x100 ./build/obj/chameleon-i2c2-5v-reg/aes_fc1b9773.o
  .rodata.gfm2_sbox
-                0x08017808      0x100 ./build/obj/chameleon-i2c2-5v-reg/aes_fc1b9773.o
- .rodata.sbox   0x08017908      0x100 ./build/obj/chameleon-i2c2-5v-reg/aes_fc1b9773.o
+                0x08017850      0x100 ./build/obj/chameleon-i2c2-5v-reg/aes_fc1b9773.o
+ .rodata.sbox   0x08017950      0x100 ./build/obj/chameleon-i2c2-5v-reg/aes_fc1b9773.o
  .rodata.commands.0
-                0x08017a08        0x8 ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
+                0x08017a50        0x8 ./build/obj/chameleon-i2c2-5v-reg/via_chameleon.o
  .rodata.chameleon_result_name.str1.1
-                0x08017a10        0x0 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x08017a58        0x0 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
                                   0x8 (size before relaxing)
  .rodata.str1.1
-                0x08017a10        0x0 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x08017a58        0x0 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
                                  0x6c (size before relaxing)
  .rodata.CSWTCH.20
-                0x08017a10       0x20 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x08017a58       0x20 ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .rodata.stm32_ops
-                0x08017a30       0x2c ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
+                0x08017a78       0x2c ./build/obj/chameleon-i2c2-5v-reg/chameleon_lsn50_hw.o
  .rodata._ctype_
-                0x08017a5c      0x101 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ctype_.o)
-                0x08017a5c                _ctype_
+                0x08017aa4      0x101 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ctype_.o)
+                0x08017aa4                _ctype_
  .rodata._svfprintf_r.str1.1
-                0x08017b5d        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
+                0x08017ba5        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
                                  0x11 (size before relaxing)
  .rodata.__ssvfscanf_r.str1.1
-                0x08017b5d        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x08017ba5        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
                                   0x4 (size before relaxing)
  .rodata._printf_i.str1.1
-                0x08017b5d        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x08017ba5        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
                                  0x22 (size before relaxing)
  .rodata._scanf_i.str1.1
-                0x08017b5d        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x08017ba5        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
                                  0x12 (size before relaxing)
  .rodata.str1.1
-                0x08017b5d        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x08017ba5        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
                                   0x9 (size before relaxing)
-                0x08017b60                        . = ALIGN (0x4)
- *fill*         0x08017b5d        0x3
+                0x08017ba8                        . = ALIGN (0x4)
+ *fill*         0x08017ba5        0x3
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
-.ARM            0x08017b60        0x8
-                0x08017b60                        __exidx_start = .
+.ARM            0x08017ba8        0x8
+                0x08017ba8                        __exidx_start = .
  *(.ARM.exidx*)
  .ARM.exidx.text.__udivmoddi4
-                0x08017b60        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
-                0x08017b68                        __exidx_end = .
+                0x08017ba8        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
+                0x08017bb0                        __exidx_end = .
 
-.rel.dyn        0x08017b68        0x0
- .rel.iplt      0x08017b68        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
+.rel.dyn        0x08017bb0        0x0
+ .rel.iplt      0x08017bb0        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
 
-.preinit_array  0x08017b68        0x0
-                0x08017b68                        PROVIDE (__preinit_array_start = .)
+.preinit_array  0x08017bb0        0x0
+                0x08017bb0                        PROVIDE (__preinit_array_start = .)
  *(.preinit_array*)
-                0x08017b68                        PROVIDE (__preinit_array_end = .)
+                0x08017bb0                        PROVIDE (__preinit_array_end = .)
 
-.init_array     0x08017b68        0x4
-                0x08017b68                        PROVIDE (__init_array_start = .)
+.init_array     0x08017bb0        0x4
+                0x08017bb0                        PROVIDE (__init_array_start = .)
  *(SORT_BY_NAME(.init_array.*))
  *(.init_array*)
- .init_array    0x08017b68        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
-                0x08017b6c                        PROVIDE (__init_array_end = .)
+ .init_array    0x08017bb0        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
+                0x08017bb4                        PROVIDE (__init_array_end = .)
 
-.fini_array     0x08017b6c        0x4
-                0x08017b6c                        PROVIDE (__fini_array_start = .)
+.fini_array     0x08017bb4        0x4
+                0x08017bb4                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_NAME(.fini_array.*))
  *(.fini_array*)
- .fini_array    0x08017b6c        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
-                0x08017b70                        PROVIDE (__fini_array_end = .)
-                0x08017b70                        _sidata = LOADADDR (.data)
+ .fini_array    0x08017bb4        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
+                0x08017bb8                        PROVIDE (__fini_array_end = .)
+                0x08017bb8                        _sidata = LOADADDR (.data)
 
-.data           0x20000000      0x1ac load address 0x08017b70
+.data           0x20000000      0x1ac load address 0x08017bb8
                 0x20000000                        . = ALIGN (0x4)
                 0x20000000                        _sdata = .
  *(.data)
@@ -5560,10 +5560,10 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x200001ac                        . = ALIGN (0x4)
                 0x200001ac                        _edata = .
 
-.igot.plt       0x200001ac        0x0 load address 0x08017d1c
+.igot.plt       0x200001ac        0x0 load address 0x08017d64
  .igot.plt      0x200001ac        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
 
-.bss            0x200001ac     0x16c8 load address 0x08017d1c
+.bss            0x200001ac     0x16c8 load address 0x08017d64
                 0x200001ac                        . = ALIGN (0x4)
                 0x200001ac                        _sbss = .
                 0x200001ac                        __bss_start__ = _sbss
@@ -6155,7 +6155,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x20001874                        __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x20001874      0x804 load address 0x08017d1c
+                0x20001874      0x804 load address 0x08017d64
                 0x20001878                        . = ALIGN (0x8)
  *fill*         0x20001874        0x4
                 0x20001878                        PROVIDE (end = .)

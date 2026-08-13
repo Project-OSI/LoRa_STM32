@@ -1133,6 +1133,13 @@ static void LORA_RxData( lora_AppData_t *AppData )
 		{
 			if( AppData->BuffSize == 2 )         
 			{	
+#ifdef USE_CHAMELEON
+				if(AppData->Buff[1]==0x03)
+				{
+					mode=3;
+					rxpr_flags=1;
+				}
+#else
 				if((AppData->Buff[1]>=0x01)&&(AppData->Buff[1]<=0x09))    //---->AT+MOD
 				{
 					mode=AppData->Buff[1];
@@ -1140,6 +1147,7 @@ static void LORA_RxData( lora_AppData_t *AppData )
 					atz_flags=1;						
 					rxpr_flags=1;	
 				}						 
+#endif
 			}				
 			break;
 		}

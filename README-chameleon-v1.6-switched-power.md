@@ -8,6 +8,10 @@ These are dedicated Chameleon MOD3 images. PB14 interrupt and digital-input
 handling is disabled throughout each image so firmware cannot contend with
 I2C2 SDA. Do not use either image for another LSN50 sensor mode.
 
+The build overrides the mode loaded from EEPROM and always runs MOD3.
+`AT+MOD=?` therefore returns `3` after startup. `AT+MOD=3` confirms the fixed
+mode without writing EEPROM; requests for modes 1, 2, or 4-9 are rejected.
+
 Connector terminal numbers are deliberately omitted. Dragino documentation and
 the earlier branch notes disagree, and the deployed LSN50V2 PCB revision has not
 been physically confirmed. Identify pins by signal name and verify them with the
@@ -142,3 +146,12 @@ meter on the selected power circuit.
 These measurements are release gates. Successful compilation and host tests do
 not establish electrical safety, STOP-mode current, reliable 400 kHz timing, or
 field readiness.
+
+## Bench history
+
+The 2026-08-13 Variant B test exposed a mode-initialization defect in the first
+dual-power artifacts. The image inherited MOD1 from EEPROM even though it was a
+dedicated MOD3 build. Sending `AT+MOD=3` produced no acknowledgement; the board
+restarted after about 20 seconds when its watchdog expired in the blocking
+vendor AT/configuration path. The replacement artifacts force MOD3 after every
+EEPROM configuration read and exclude the MOD command from EEPROM storage.

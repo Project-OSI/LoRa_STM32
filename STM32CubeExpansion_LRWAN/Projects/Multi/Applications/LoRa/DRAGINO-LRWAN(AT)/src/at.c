@@ -1571,6 +1571,15 @@ ATEerror_t at_MOD_set(const char *param)
   {
     return AT_PARAM_ERROR;
   }
+#ifdef USE_CHAMELEON
+	if(workmode!=3)
+  {
+		PPRINTF("Chameleon firmware supports MOD3 only\r\n");
+    return AT_PARAM_ERROR;
+  }
+	mode=3;
+	PPRINTF("Chameleon firmware is fixed to MOD3\r\n");
+#else
 	if ((workmode>=1)&&(workmode<=9))
   {
     mode=workmode;	
@@ -1581,6 +1590,7 @@ ATEerror_t at_MOD_set(const char *param)
 		PPRINTF("Mode of range is 1 to 9\r\n");	
     return AT_PARAM_ERROR;
 	}
+#endif
 	
 	return AT_OK;
 }
