@@ -63,7 +63,7 @@ int main(void)
     require_text(bsp, "Chameleon result:%s attempts:%u flags:0x%02x",
                  "exact serial result and attempt diagnostics");
     require_text(bsp,
-                 "Chameleon I2C2 acquisition enabled [5v-reg field-debug-5]",
+                 "Chameleon I2C2 acquisition enabled [5v-reg field-debug-6]",
                  "5V-regulator field-build identity");
     require_text(bsp,
                  "Chameleon I2C2 acquisition enabled [vcc-pmos]",
@@ -80,6 +80,9 @@ int main(void)
                  "field diagnostic ADC boundary");
     require_text(bsp, "[CHAM-DBG1] acquire=%u",
                  "field diagnostic acquisition boundary");
+    require_text(bsp,
+                 "[CHAM-DBG4] probes=%lu hal=%lu err=0x%08lx state=0x%08lx isr=0x%08lx lines=0x%02lx",
+                 "field diagnostic I2C2 probe report");
     require_text(main_source, "[CHAM-DBG1] reset=%s",
                  "field diagnostic reset cause");
     require_text(main_source, "[CHAM-DBG2] last-stage=%lu",
@@ -105,6 +108,12 @@ int main(void)
                  "retained post-acquisition stage");
     require_text(chameleon_hw, "RTC->BKP4R = CHAMELEON_FIELD_DEBUG_MAGIC | stage;",
                  "RTC backup stage persistence");
+    require_text(chameleon_hw, "HAL_I2C_GetError(&chameleon_i2c2)",
+                 "I2C2 HAL error capture");
+    require_text(chameleon_hw, "I2C2->ISR",
+                 "I2C2 peripheral status capture");
+    require_text(chameleon_hw, "GPIOB->IDR",
+                 "I2C2 live line-state capture");
     require_text(irq, "chameleon_field_debug_set_stage(91U);",
                  "retained HardFault stage");
     forbid_text(bsp, "chameleon_i2c1_init_400khz", "Chameleon I2C1 init");

@@ -172,6 +172,8 @@ chameleon_result_t chameleon_lsn50_run(const chameleon_lsn50_ops_t *ops,
 #define CHAMELEON_FIELD_DEBUG_MAGIC 0x43480000UL
 #define CHAMELEON_FIELD_DEBUG_MASK  0xFFFF0000UL
 
+static chameleon_probe_debug_t chameleon_probe_debug;
+
 void chameleon_field_debug_set_stage(uint32_t stage)
 {
     HAL_PWR_EnableBkUpAccess();
@@ -191,6 +193,13 @@ void chameleon_field_debug_clear_stage(void)
 {
     HAL_PWR_EnableBkUpAccess();
     RTC->BKP4R = 0U;
+}
+
+void chameleon_field_debug_get_probe(chameleon_probe_debug_t *debug)
+{
+    if (debug != 0) {
+        *debug = chameleon_probe_debug;
+    }
 }
 #endif
 
@@ -329,6 +338,16 @@ chameleon_i2c_status_t chameleon_board_i2c_write(uint8_t addr7,
     if (len == 0U) {
         status = HAL_I2C_IsDeviceReady(&chameleon_i2c2, address, 1U,
                                        CHAMELEON_I2C_TXN_MS);
+#ifdef CHAMELEON_FIELD_DEBUG
+        chameleon_probe_debug.probe_calls++;
+        chameleon_probe_debug.hal_status = (uint32_t)status;
+        chameleon_probe_debug.hal_error = HAL_I2C_GetError(&chameleon_i2c2);
+        chameleon_probe_debug.hal_state = (uint32_t)HAL_I2C_GetState(&chameleon_i2c2);
+        chameleon_probe_debug.i2c_isr = I2C2->ISR;
+        chameleon_probe_debug.line_state =
+            ((GPIOB->IDR & CHAMELEON_SCL_PIN) != 0U ? 2U : 0U) |
+            ((GPIOB->IDR & CHAMELEON_SDA_PIN) != 0U ? 1U : 0U);
+#endif
     } else {
         status = HAL_I2C_Master_Transmit(&chameleon_i2c2, address,
                                          (uint8_t *)data, (uint16_t)len,
@@ -371,6 +390,9 @@ uint16_t chameleon_board_battery_mv(void) { return batteryLevel_mV; }
 chameleon_result_t chameleon_lsn50_acquire(chameleon_sample_t *sample,
                                            uint32_t measurement_timeout_ms)
 {
+#ifdef CHAMELEON_FIELD_DEBUG
+    memset(&chameleon_probe_debug, 0, sizeof(chameleon_probe_debug));
+#endif
     return chameleon_lsn50_run(&stm32_ops, sample, measurement_timeout_ms);
 }
 

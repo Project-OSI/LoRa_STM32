@@ -38,9 +38,19 @@ chameleon_result_t chameleon_lsn50_acquire(chameleon_sample_t *sample,
                                            uint32_t measurement_timeout_ms);
 void chameleon_lsn50_prepare_sleep(void);
 #ifdef CHAMELEON_FIELD_DEBUG
+typedef struct {
+    uint32_t probe_calls;
+    uint32_t hal_status;
+    uint32_t hal_error;
+    uint32_t hal_state;
+    uint32_t i2c_isr;
+    uint32_t line_state;
+} chameleon_probe_debug_t;
+
 void chameleon_field_debug_set_stage(uint32_t stage);
 uint32_t chameleon_field_debug_get_stage(void);
 void chameleon_field_debug_clear_stage(void);
+void chameleon_field_debug_get_probe(chameleon_probe_debug_t *debug);
 #endif
 #endif
 

@@ -380,6 +380,7 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
     {
         chameleon_result_t chameleon_result;
 #ifdef CHAMELEON_FIELD_DEBUG
+        chameleon_probe_debug_t probe_debug;
         chameleon_field_debug_set_stage(8U);
         PPRINTF("[CHAM-DBG1] adc-ok\r\n");
         chameleon_field_debug_set_stage(9U);
@@ -391,6 +392,14 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
 #ifdef CHAMELEON_FIELD_DEBUG
         chameleon_field_debug_set_stage(10U);
         PPRINTF("[CHAM-DBG1] acquire=%u\r\n", (unsigned)chameleon_result);
+        chameleon_field_debug_get_probe(&probe_debug);
+        PPRINTF("[CHAM-DBG4] probes=%lu hal=%lu err=0x%08lx state=0x%08lx isr=0x%08lx lines=0x%02lx\r\n",
+                (unsigned long)probe_debug.probe_calls,
+                (unsigned long)probe_debug.hal_status,
+                (unsigned long)probe_debug.hal_error,
+                (unsigned long)probe_debug.hal_state,
+                (unsigned long)probe_debug.i2c_isr,
+                (unsigned long)probe_debug.line_state);
 #endif
         if(message==1)
         {
@@ -667,7 +676,7 @@ void  BSP_sensor_Init( void  )
 		chameleon_lsn50_prepare_sleep();
 #if defined(CHAMELEON_POWER_LSN50_5V)
 #ifdef CHAMELEON_FIELD_DEBUG
-			PRINTF("\r\nChameleon I2C2 acquisition enabled [5v-reg field-debug-5]\r\n");
+			PRINTF("\r\nChameleon I2C2 acquisition enabled [5v-reg field-debug-6]\r\n");
 #else
 		PRINTF("\r\nChameleon I2C2 acquisition enabled [5v-reg]\r\n");
 #endif
