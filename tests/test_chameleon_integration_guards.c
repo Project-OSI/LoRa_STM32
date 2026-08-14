@@ -63,7 +63,7 @@ int main(void)
     require_text(bsp, "Chameleon result:%s attempts:%u flags:0x%02x",
                  "exact serial result and attempt diagnostics");
     require_text(bsp,
-                 "Chameleon I2C2 acquisition enabled [5v-reg field-debug-6]",
+                 "Chameleon I2C2 acquisition enabled [5v-reg field-debug-7 100khz]",
                  "5V-regulator field-build identity");
     require_text(bsp,
                  "Chameleon I2C2 acquisition enabled [vcc-pmos]",
@@ -114,6 +114,15 @@ int main(void)
                  "I2C2 peripheral status capture");
     require_text(chameleon_hw, "GPIOB->IDR",
                  "I2C2 live line-state capture");
+    require_text(chameleon_hw,
+                 "#define CHAMELEON_I2C_TIMING_100KHZ 0x10A13E56U",
+                 "field diagnostic 100 kHz timing");
+    require_text(chameleon_hw,
+                 "#define CHAMELEON_I2C_TIMING_400KHZ 0x00B1112EU",
+                 "production 400 kHz timing");
+    require_text(chameleon_hw,
+                 "#ifdef CHAMELEON_FIELD_DEBUG\n#define CHAMELEON_I2C_TIMING CHAMELEON_I2C_TIMING_100KHZ\n#else\n#define CHAMELEON_I2C_TIMING CHAMELEON_I2C_TIMING_400KHZ\n#endif",
+                 "debug-only 100 kHz timing selection");
     require_text(irq, "chameleon_field_debug_set_stage(91U);",
                  "retained HardFault stage");
     forbid_text(bsp, "chameleon_i2c1_init_400khz", "Chameleon I2C1 init");
@@ -163,8 +172,6 @@ int main(void)
                 "stalled Chameleon timeout clock");
     require_text(chameleon_hw, "return TimerGetCurrentTime();",
                  "RTC-backed Chameleon timeout clock");
-    require_text(chameleon_hw, "#define CHAMELEON_I2C_TIMING       0x00B1112EU",
-                 "working-firmware 400 kHz timing");
     require_text(chameleon_hw, "#define CHAMELEON_I2C_TXN_MS       1000U",
                  "working-firmware HAL transaction timeout");
 

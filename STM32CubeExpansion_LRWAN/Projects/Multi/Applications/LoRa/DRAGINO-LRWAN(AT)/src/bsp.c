@@ -676,7 +676,7 @@ void  BSP_sensor_Init( void  )
 		chameleon_lsn50_prepare_sleep();
 #if defined(CHAMELEON_POWER_LSN50_5V)
 #ifdef CHAMELEON_FIELD_DEBUG
-			PRINTF("\r\nChameleon I2C2 acquisition enabled [5v-reg field-debug-6]\r\n");
+			PRINTF("\r\nChameleon I2C2 acquisition enabled [5v-reg field-debug-7 100khz]\r\n");
 #else
 		PRINTF("\r\nChameleon I2C2 acquisition enabled [5v-reg]\r\n");
 #endif
