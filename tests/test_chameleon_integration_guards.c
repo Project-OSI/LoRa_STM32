@@ -62,6 +62,51 @@ int main(void)
                  "MOD3 lifecycle acquisition");
     require_text(bsp, "Chameleon result:%s attempts:%u flags:0x%02x",
                  "exact serial result and attempt diagnostics");
+    require_text(bsp,
+                 "Chameleon I2C2 acquisition enabled [5v-reg field-debug-5]",
+                 "5V-regulator field-build identity");
+    require_text(bsp,
+                 "Chameleon I2C2 acquisition enabled [vcc-pmos]",
+                 "VCC-PMOS field-build identity");
+    require_text(at, "[CHAM-DBG1] command-enter",
+                 "field diagnostic command boundary");
+    require_text(bsp, "[CHAM-DBG1] sensor-enter",
+                 "field diagnostic sensor boundary");
+    require_text(bsp, "[CHAM-DBG1] battery=%u",
+                 "field diagnostic battery boundary");
+    require_text(bsp, "[CHAM-DBG1] battery-print-ok",
+                 "field diagnostic floating-point print boundary");
+    require_text(bsp, "[CHAM-DBG1] adc-ok",
+                 "field diagnostic ADC boundary");
+    require_text(bsp, "[CHAM-DBG1] acquire=%u",
+                 "field diagnostic acquisition boundary");
+    require_text(main_source, "[CHAM-DBG1] reset=%s",
+                 "field diagnostic reset cause");
+    require_text(main_source, "[CHAM-DBG2] last-stage=%lu",
+                 "retained field diagnostic stage report");
+    require_text(main_source, "[CHAM-DBG3] raw-stage=0x%08lx",
+                 "raw retained field diagnostic report");
+    require_text(command, "chameleon_field_debug_set_stage(90U);",
+                 "retained command-dispatch stage");
+    require_text(at, "chameleon_field_debug_set_stage(77U);",
+                 "retained marker self-test stage");
+    require_text(at, "chameleon_field_debug_set_stage(1U);",
+                 "retained command-entry stage");
+    require_text(at,
+                 "ATEerror_t at_getsensorvaule_set(const char *param)\n{\n\tint stus;",
+                 "GETSENSORVALUE percent-d destination type");
+    require_text(bsp, "chameleon_field_debug_set_stage(3U);",
+                 "retained pre-battery stage");
+    require_text(bsp, "chameleon_field_debug_set_stage(4U);",
+                 "retained post-battery stage");
+    require_text(bsp, "chameleon_field_debug_set_stage(9U);",
+                 "retained pre-acquisition stage");
+    require_text(bsp, "chameleon_field_debug_set_stage(10U);",
+                 "retained post-acquisition stage");
+    require_text(chameleon_hw, "RTC->BKP4R = CHAMELEON_FIELD_DEBUG_MAGIC | stage;",
+                 "RTC backup stage persistence");
+    require_text(irq, "chameleon_field_debug_set_stage(91U);",
+                 "retained HardFault stage");
     forbid_text(bsp, "chameleon_i2c1_init_400khz", "Chameleon I2C1 init");
     forbid_text(bsp, "chameleon_board_i2c_write(", "board adapter in BSP");
     require_text(bsp,
@@ -109,6 +154,10 @@ int main(void)
                 "stalled Chameleon timeout clock");
     require_text(chameleon_hw, "return TimerGetCurrentTime();",
                  "RTC-backed Chameleon timeout clock");
+    require_text(chameleon_hw, "#define CHAMELEON_I2C_TIMING       0x00B1112EU",
+                 "working-firmware 400 kHz timing");
+    require_text(chameleon_hw, "#define CHAMELEON_I2C_TXN_MS       1000U",
+                 "working-firmware HAL transaction timeout");
 
     free(bsp);
     free(main_source);

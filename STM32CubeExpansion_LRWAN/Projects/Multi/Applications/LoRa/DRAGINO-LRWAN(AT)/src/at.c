@@ -64,6 +64,9 @@
 #include "gpio_exti.h"
 #include "weight.h"
 #include "bsp.h"
+#ifdef USE_CHAMELEON
+#include "chameleon_lsn50_hw.h"
+#endif
 
 bool debug_flags=0;
 bool message_flags=0;
@@ -1765,7 +1768,7 @@ ATEerror_t at_SETCNT_set(const char *param)
 
 ATEerror_t at_getsensorvaule_set(const char *param)
 {
-	uint8_t stus;
+	int stus;
 	if (tiny_sscanf(param, "%d", &stus) != 1)
   {
     return AT_PARAM_ERROR;
@@ -1777,6 +1780,10 @@ ATEerror_t at_getsensorvaule_set(const char *param)
 		{
 			return AT_BUSY_ERROR;
 		}	
+#ifdef CHAMELEON_FIELD_DEBUG
+		chameleon_field_debug_set_stage(1U);
+		PPRINTF("[CHAM-DBG1] command-enter\r\n");
+#endif
 		sensor_t sensor_message;
 		BSP_sensor_Read(&sensor_message,1);
 	}
@@ -1785,6 +1792,12 @@ ATEerror_t at_getsensorvaule_set(const char *param)
 		message_flags=1;
 		uplink_data_status=1;
 	}
+#ifdef CHAMELEON_FIELD_DEBUG
+	else if(stus==2)
+	{
+		chameleon_field_debug_set_stage(77U);
+	}
+#endif
 	else
 	{
 		return AT_PARAM_ERROR;

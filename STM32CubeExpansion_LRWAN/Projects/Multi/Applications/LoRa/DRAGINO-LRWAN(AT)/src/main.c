@@ -61,6 +61,7 @@
 #ifdef USE_CHAMELEON
 #include "via_chameleon.h"
 #include "chameleon_payload.h"
+#include "chameleon_lsn50_hw.h"
 #include "bsp.h"
 #endif
 
@@ -267,6 +268,17 @@ int main( void )
   /* USER CODE BEGIN 1 */
   /* USER CODE END 1 */
   CMD_Init();
+
+#ifdef CHAMELEON_FIELD_DEBUG
+	uint32_t chameleon_last_stage = chameleon_field_debug_get_stage();
+	PPRINTF("[CHAM-DBG1] reset=%s\r\n",
+	        (__HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST) != RESET) ? "iwdg" : "other");
+	PPRINTF("[CHAM-DBG2] last-stage=%lu\r\n",
+	        (unsigned long)chameleon_last_stage);
+	PPRINTF("[CHAM-DBG3] raw-stage=0x%08lx\r\n",
+	        (unsigned long)RTC->BKP4R);
+	chameleon_field_debug_clear_stage();
+#endif
 	
 	iwdg_init();		
 	

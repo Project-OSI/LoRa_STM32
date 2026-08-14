@@ -25,6 +25,7 @@ typedef struct {
     size_t length;
     uint32_t now_ms;
     unsigned probe_calls;
+    unsigned wait_ready_calls;
     unsigned measure_calls;
     int init_ok;
     chameleon_result_t first_probe;
@@ -89,6 +90,14 @@ static chameleon_result_t measure(void *context, chameleon_sample_t *sample,
     event(fake, "measure");
     return result;
 }
+static chameleon_result_t wait_ready(void *context, uint32_t timeout_ms)
+{
+    fake_hw_t *fake = context;
+    (void)timeout_ms;
+    fake->wait_ready_calls++;
+    event(fake, "boot-ready");
+    return CHAMELEON_RESULT_OK;
+}
 static uint16_t battery_mv(void *context)
 {
     (void)context;
@@ -108,6 +117,7 @@ static chameleon_lsn50_ops_t make_ops(fake_hw_t *fake)
     ops.delay_ms = delay_ms;
     ops.millis = millis;
     ops.probe = probe;
+    ops.wait_ready = wait_ready;
     ops.measure = measure;
     ops.battery_mv = battery_mv;
     return ops;
@@ -134,7 +144,7 @@ static void test_success_has_one_session_and_cleanup(void)
     ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
               CHAMELEON_RESULT_OK, "success result");
     ASSERT_STR(fake.trace,
-               "off,isolate,on,stabilize,init,probe,measure,deinit,isolate,off",
+               "off,isolate,on,stabilize,init,probe,boot-ready,measure,deinit,isolate,off",
                "success lifecycle");
     ASSERT_EQ(fake.measure_calls, 1U, "one measurement");
     ASSERT_EQ(chameleon_lsn50_last_attempts(), 1U, "one attempt reported");
@@ -151,7 +161,7 @@ static void test_transport_failure_gets_one_cold_retry(void)
     ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
               CHAMELEON_RESULT_OK, "retry succeeds");
     ASSERT_STR(fake.trace,
-               "off,isolate,on,stabilize,init,probe,measure,deinit,isolate,off,wait,off,isolate,on,stabilize,init,probe,measure,deinit,isolate,off",
+               "off,isolate,on,stabilize,init,probe,boot-ready,measure,deinit,isolate,off,wait,off,isolate,on,stabilize,init,probe,boot-ready,measure,deinit,isolate,off",
                "cold retry lifecycle");
     ASSERT_EQ(fake.measure_calls, 2U, "at most two measurements");
     ASSERT_EQ(chameleon_lsn50_last_attempts(), 2U, "retry count reported");
@@ -167,7 +177,7 @@ static void test_startup_probe_waits_for_delayed_ack(void)
     ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
               CHAMELEON_RESULT_OK, "delayed ACK succeeds");
     ASSERT_STR(fake.trace,
-               "off,isolate,on,stabilize,init,probe,wait,probe,measure,deinit,isolate,off",
+               "off,isolate,on,stabilize,init,probe,wait,probe,boot-ready,measure,deinit,isolate,off",
                "bounded startup probing");
     ASSERT_EQ(fake.probe_calls, 2U, "probe repeated after interval");
 }

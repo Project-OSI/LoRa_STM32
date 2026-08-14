@@ -88,10 +88,18 @@ rail and avoids Variant A's low-VCC uncertainty.
 
 Each report starts with the selected rail OFF and PB13/PB14 in analog/no-pull
 state. Firmware turns the rail on, waits 25 ms, initializes a private I2C2 HAL
-handle, and probes address `0x08` every 50 ms for at most 1500 ms. It
-then sends trigger command `0x40`, polls status command `0x41` every 50 ms for an
-absolute maximum of 2 s, and reads temperature, all raw and compensated
-resistances, and the eight-byte array ID with repeated-start transactions.
+handle at 400 kHz, and probes address `0x08` every 50 ms for at most 1500 ms.
+Because the reader starts a measurement when power is applied, firmware first
+polls status command `0x41` until that power-up measurement is ready. It then
+follows the reference-library sequence: send trigger command `0x40`, poll
+`0x41` every 50 ms for at most 2 s, and read temperature, all raw and
+compensated resistances, and the eight-byte array ID with repeated-start
+transactions.
+
+The I2C timing value (`0x00B1112E`) and 1000 ms HAL transaction timeout match
+the original working PB6/PB7 firmware. The additional pre-trigger status wait
+recreates the condition that firmware had implicitly: its continuously powered
+reader had completed startup before each acquisition.
 
 Cleanup always deinitializes I2C2, returns PB13/PB14 to analog/no-pull, and turns
 the rail off. A recoverable communication failure receives at most one complete

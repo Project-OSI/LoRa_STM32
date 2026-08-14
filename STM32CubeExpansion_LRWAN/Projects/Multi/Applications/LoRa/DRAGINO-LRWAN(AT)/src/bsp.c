@@ -118,11 +118,27 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
 {	
  	#if defined(LoRa_Sensor_Node)
 
+#ifdef CHAMELEON_FIELD_DEBUG
+	chameleon_field_debug_set_stage(2U);
+	PPRINTF("[CHAM-DBG1] sensor-enter\r\n");
+	chameleon_field_debug_set_stage(3U);
+#endif
 	HW_GetBatteryLevel( );	
+#ifdef CHAMELEON_FIELD_DEBUG
+	chameleon_field_debug_set_stage(4U);
+	PPRINTF("[CHAM-DBG1] battery=%u\r\n", batteryLevel_mV);
+#endif
 	if(message==1)
 	{
+	#ifdef CHAMELEON_FIELD_DEBUG
+		chameleon_field_debug_set_stage(5U);
+	#endif
 		PPRINTF("\r\n");
 		PPRINTF("Bat:%.3f V\r\n",(batteryLevel_mV/1000.0));
+#ifdef CHAMELEON_FIELD_DEBUG
+		chameleon_field_debug_set_stage(6U);
+		PPRINTF("[CHAM-DBG1] battery-print-ok\r\n");
+#endif
 		if(mode==6)
 		{
 			PPRINTF("PB14_count1:%u\r\n",COUNT);
@@ -330,6 +346,9 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
 	} 
 	else if((mode==3)||(mode==8))
 	{
+#ifdef CHAMELEON_FIELD_DEBUG
+		 chameleon_field_debug_set_stage(7U);
+#endif
 		 BSP_oil_float_Init();
 		 for(uint8_t w=0;w<6;w++)
 		 {
@@ -360,10 +379,19 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
     if(mode==3)
     {
         chameleon_result_t chameleon_result;
+#ifdef CHAMELEON_FIELD_DEBUG
+        chameleon_field_debug_set_stage(8U);
+        PPRINTF("[CHAM-DBG1] adc-ok\r\n");
+        chameleon_field_debug_set_stage(9U);
+#endif
         /* Keep stock MOD=3 ADC values in sensor_data, then append the
          * Chameleon I2C sample for main.c to encode in the same uplink. */
         chameleon_result = chameleon_lsn50_acquire(&g_chameleon_last_sample,
                                                    CHAMELEON_DEFAULT_TIMEOUT_MS);
+#ifdef CHAMELEON_FIELD_DEBUG
+        chameleon_field_debug_set_stage(10U);
+        PPRINTF("[CHAM-DBG1] acquire=%u\r\n", (unsigned)chameleon_result);
+#endif
         if(message==1)
         {
             PPRINTF("Chameleon result:%s attempts:%u flags:0x%02x temp:%d comp:%lu/%lu/%lu raw:%lu/%lu/%lu\r\n",
@@ -637,7 +665,15 @@ void  BSP_sensor_Init( void  )
 	else if(mode==3)
 	{
 		chameleon_lsn50_prepare_sleep();
-		PRINTF("\r\nChameleon I2C2 acquisition enabled\r\n");
+#if defined(CHAMELEON_POWER_LSN50_5V)
+#ifdef CHAMELEON_FIELD_DEBUG
+			PRINTF("\r\nChameleon I2C2 acquisition enabled [5v-reg field-debug-5]\r\n");
+#else
+		PRINTF("\r\nChameleon I2C2 acquisition enabled [5v-reg]\r\n");
+#endif
+#elif defined(CHAMELEON_POWER_EXTERNAL_PMOS)
+		PRINTF("\r\nChameleon I2C2 acquisition enabled [vcc-pmos]\r\n");
+#endif
 	}
 #endif
 	 

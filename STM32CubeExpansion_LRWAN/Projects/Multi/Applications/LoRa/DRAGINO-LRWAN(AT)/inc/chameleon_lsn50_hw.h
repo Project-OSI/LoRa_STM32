@@ -20,6 +20,7 @@ typedef struct {
     void (*delay_ms)(void *context, uint32_t ms);
     uint32_t (*millis)(void *context);
     chameleon_result_t (*probe)(void *context);
+    chameleon_result_t (*wait_ready)(void *context, uint32_t timeout_ms);
     chameleon_result_t (*measure)(void *context,
                                   chameleon_sample_t *sample,
                                   uint32_t timeout_ms);
@@ -36,6 +37,11 @@ const char *chameleon_result_name(chameleon_result_t result);
 chameleon_result_t chameleon_lsn50_acquire(chameleon_sample_t *sample,
                                            uint32_t measurement_timeout_ms);
 void chameleon_lsn50_prepare_sleep(void);
+#ifdef CHAMELEON_FIELD_DEBUG
+void chameleon_field_debug_set_stage(uint32_t stage);
+uint32_t chameleon_field_debug_get_stage(void);
+void chameleon_field_debug_clear_stage(void);
+#endif
 #endif
 
 #endif /* CHAMELEON_LSN50_HW_H */

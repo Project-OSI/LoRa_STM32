@@ -38,6 +38,7 @@ static int ops_valid(const chameleon_lsn50_ops_t *ops)
         && ops->delay_ms != 0
         && ops->millis != 0
         && ops->probe != 0
+        && ops->wait_ready != 0
         && ops->measure != 0
         && ops->battery_mv != 0;
 }
@@ -102,6 +103,9 @@ static chameleon_result_t run_one_session(const chameleon_lsn50_ops_t *ops,
 
     result = bounded_probe(ops);
     if (result == CHAMELEON_RESULT_OK) {
+        result = ops->wait_ready(ops->context, measurement_timeout_ms);
+    }
+    if (result == CHAMELEON_RESULT_OK) {
         result = ops->measure(ops->context, sample, measurement_timeout_ms);
     }
     clean_session(ops, initialized);
@@ -162,7 +166,33 @@ chameleon_result_t chameleon_lsn50_run(const chameleon_lsn50_ops_t *ops,
 #define CHAMELEON_SCL_PIN          GPIO_PIN_13
 #define CHAMELEON_SDA_PIN          GPIO_PIN_14
 #define CHAMELEON_I2C_TIMING       0x00B1112EU
-#define CHAMELEON_I2C_TXN_MS       10U
+#define CHAMELEON_I2C_TXN_MS       1000U
+
+#ifdef CHAMELEON_FIELD_DEBUG
+#define CHAMELEON_FIELD_DEBUG_MAGIC 0x43480000UL
+#define CHAMELEON_FIELD_DEBUG_MASK  0xFFFF0000UL
+
+void chameleon_field_debug_set_stage(uint32_t stage)
+{
+    HAL_PWR_EnableBkUpAccess();
+    RTC->BKP4R = CHAMELEON_FIELD_DEBUG_MAGIC | stage;
+}
+
+uint32_t chameleon_field_debug_get_stage(void)
+{
+    uint32_t value = RTC->BKP4R;
+    if ((value & CHAMELEON_FIELD_DEBUG_MASK) != CHAMELEON_FIELD_DEBUG_MAGIC) {
+        return 0U;
+    }
+    return value & ~CHAMELEON_FIELD_DEBUG_MASK;
+}
+
+void chameleon_field_debug_clear_stage(void)
+{
+    HAL_PWR_EnableBkUpAccess();
+    RTC->BKP4R = 0U;
+}
+#endif
 
 #if defined(CHAMELEON_POWER_EXTERNAL_PMOS)
 #define CHAMELEON_POWER_PIN        GPIO_PIN_12
@@ -262,6 +292,12 @@ static chameleon_result_t stm32_measure(void *context,
     return via_chameleon_measure(sample, timeout_ms);
 }
 
+static chameleon_result_t stm32_wait_ready(void *context, uint32_t timeout_ms)
+{
+    (void)context;
+    return via_chameleon_wait_ready(timeout_ms);
+}
+
 static uint16_t stm32_battery_mv(void *context)
 {
     (void)context;
@@ -278,6 +314,7 @@ static const chameleon_lsn50_ops_t stm32_ops = {
     stm32_delay_ms,
     stm32_millis,
     stm32_probe,
+    stm32_wait_ready,
     stm32_measure,
     stm32_battery_mv
 };

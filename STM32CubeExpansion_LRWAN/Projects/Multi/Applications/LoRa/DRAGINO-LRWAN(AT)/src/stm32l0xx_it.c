@@ -62,6 +62,9 @@ Maintainer: Miguel Luis and Gregory Cristian
 #include "hw.h"
 #include "stm32l0xx_it.h"
 #include "iwdg.h"
+#ifdef CHAMELEON_FIELD_DEBUG
+#include "chameleon_lsn50_hw.h"
+#endif
 
 extern TIM_HandleTypeDef htim3;
 extern int exti_flag,exti_flag2,exti_flag3;
@@ -109,6 +112,9 @@ void NMI_Handler(void)
 
 void HardFault_Handler(void)
 {
+#ifdef CHAMELEON_FIELD_DEBUG
+  chameleon_field_debug_set_stage(91U);
+#endif
   while(1)
   {
     __NOP();

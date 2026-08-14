@@ -3015,7 +3015,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x08000000                g_pfnVectors
                 0x080000c0                        . = ALIGN (0x4)
 
-.text           0x080000c0    0x153a8
+.text           0x080000c0    0x153bc
                 0x080000c0                        . = ALIGN (0x4)
  *(.text)
  .text          0x080000c0       0x14 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_thumb1_case_uqi.o)
@@ -4323,1186 +4323,1187 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x0800aea4       0x40 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                 0x0800aea4                at_SETCNT_set
  .text.at_getsensorvaule_set
-                0x0800aee4       0x5c ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x0800aee4       0x50 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                 0x0800aee4                at_getsensorvaule_set
  .text.at_downlink_detect_set
-                0x0800af40       0x70 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
-                0x0800af40                at_downlink_detect_set
+                0x0800af34       0x70 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x0800af34                at_downlink_detect_set
  .text.at_downlink_detect_get
-                0x0800afb0       0x2c ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
-                0x0800afb0                at_downlink_detect_get
+                0x0800afa4       0x2c ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x0800afa4                at_downlink_detect_get
  .text.at_setmaxnbtrans_set
-                0x0800afdc       0x40 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
-                0x0800afdc                at_setmaxnbtrans_set
+                0x0800afd0       0x40 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x0800afd0                at_setmaxnbtrans_set
  .text.at_setmaxnbtrans_get
-                0x0800b01c       0x24 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
-                0x0800b01c                at_setmaxnbtrans_get
+                0x0800b010       0x24 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x0800b010                at_setmaxnbtrans_get
  .text.at_disdownlinkcheck_set
-                0x0800b040       0x30 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
-                0x0800b040                at_disdownlinkcheck_set
+                0x0800b034       0x30 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x0800b034                at_disdownlinkcheck_set
  .text.at_disdownlinkcheck_get
-                0x0800b070       0x1c ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
-                0x0800b070                at_disdownlinkcheck_get
+                0x0800b064       0x1c ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x0800b064                at_disdownlinkcheck_get
  .text.at_dismac_answer_set
-                0x0800b08c       0x30 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
-                0x0800b08c                at_dismac_answer_set
+                0x0800b080       0x30 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x0800b080                at_dismac_answer_set
  .text.at_dismac_answer_get
-                0x0800b0bc       0x1c ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
-                0x0800b0bc                at_dismac_answer_get
+                0x0800b0b0       0x1c ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x0800b0b0                at_dismac_answer_get
  .text.at_rxdata_test
-                0x0800b0d8       0x64 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
-                0x0800b0d8                at_rxdata_test
+                0x0800b0cc       0x64 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x0800b0cc                at_rxdata_test
  .text.weightreset
-                0x0800b13c       0x3c ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
-                0x0800b13c                weightreset
+                0x0800b130       0x3c ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x0800b130                weightreset
  .text.at_weightreset
-                0x0800b178        0xa ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
-                0x0800b178                at_weightreset
- *fill*         0x0800b182        0x2
+                0x0800b16c        0xa ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x0800b16c                at_weightreset
+ *fill*         0x0800b176        0x2
  .text.CMD_GetChar
-                0x0800b184       0x20 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
+                0x0800b178       0x20 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
  .text.com_error
-                0x0800b1a4       0x24 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
+                0x0800b198       0x24 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
  .text.CMD_Init
-                0x0800b1c8       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
-                0x0800b1c8                CMD_Init
+                0x0800b1bc       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
+                0x0800b1bc                CMD_Init
  .text.CMD_Process
-                0x0800b1e0      0x218 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
-                0x0800b1e0                CMD_Process
+                0x0800b1d4      0x218 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
+                0x0800b1d4                CMD_Process
  .text.printf_all_config
-                0x0800b3f8       0x3c ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
-                0x0800b3f8                printf_all_config
+                0x0800b3ec       0x3c ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
+                0x0800b3ec                printf_all_config
  .text.McpsConfirm
-                0x0800b434        0x2 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
- *fill*         0x0800b436        0x2
+                0x0800b428        0x2 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+ *fill*         0x0800b42a        0x2
  .text.MlmeConfirm
-                0x0800b438       0x48 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b42c       0x48 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
  .text.McpsIndication
-                0x0800b480       0xa0 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b474       0xa0 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
  .text.customize_freq1_get
-                0x0800b520        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b520                customize_freq1_get
+                0x0800b514        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b514                customize_freq1_get
  .text.customize_freq1_set
-                0x0800b52c        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b52c                customize_freq1_set
+                0x0800b520        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b520                customize_freq1_set
  .text.region_printf
-                0x0800b538       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b538                region_printf
+                0x0800b52c       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b52c                region_printf
  .text.key_printf
-                0x0800b54c       0x38 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b54c                key_printf
+                0x0800b540       0x38 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b540                key_printf
  .text.LORA_Join
-                0x0800b584       0xb8 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b584                LORA_Join
+                0x0800b578       0xb8 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b578                LORA_Join
  .text.LORA_JoinStatus
-                0x0800b63c       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b63c                LORA_JoinStatus
+                0x0800b630       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b630                LORA_JoinStatus
  .text.LORA_send
-                0x0800b650       0x8c ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b650                LORA_send
+                0x0800b644       0x8c ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b644                LORA_send
  .text.LORA_RequestClass
-                0x0800b6dc       0x68 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b6dc                LORA_RequestClass
+                0x0800b6d0       0x68 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b6d0                LORA_RequestClass
  .text.lora_config_otaa_set
-                0x0800b744        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b744                lora_config_otaa_set
+                0x0800b738        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b738                lora_config_otaa_set
  .text.lora_config_otaa_get
-                0x0800b750        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b750                lora_config_otaa_get
+                0x0800b744        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b744                lora_config_otaa_get
  .text.lora_config_duty_cycle_set
-                0x0800b75c       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b75c                lora_config_duty_cycle_set
+                0x0800b750       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b750                lora_config_duty_cycle_set
  .text.lora_config_duty_cycle_get
-                0x0800b774        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b774                lora_config_duty_cycle_get
+                0x0800b768        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b768                lora_config_duty_cycle_get
  .text.lora_config_deveui_get
-                0x0800b780        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b780                lora_config_deveui_get
+                0x0800b774        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b774                lora_config_deveui_get
  .text.lora_config_deveui_set
-                0x0800b788       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b788                lora_config_deveui_set
+                0x0800b77c       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b77c                lora_config_deveui_set
  .text.lora_config_devaddr_set
-                0x0800b79c        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b79c                lora_config_devaddr_set
+                0x0800b790        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b790                lora_config_devaddr_set
  .text.lora_config_devaddr_get
-                0x0800b7a8       0x38 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b7a8                lora_config_devaddr_get
+                0x0800b79c       0x38 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b79c                lora_config_devaddr_get
  .text.lora_config_nwkskey_set
-                0x0800b7e0       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b7e0                lora_config_nwkskey_set
+                0x0800b7d4       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b7d4                lora_config_nwkskey_set
  .text.lora_config_nwkskey_get
-                0x0800b7f4        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b7f4                lora_config_nwkskey_get
+                0x0800b7e8        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b7e8                lora_config_nwkskey_get
  .text.lora_config_appskey_set
-                0x0800b7fc       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b7fc                lora_config_appskey_set
+                0x0800b7f0       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b7f0                lora_config_appskey_set
  .text.lora_config_appskey_get
-                0x0800b810        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b810                lora_config_appskey_get
+                0x0800b804        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b804                lora_config_appskey_get
  .text.lora_config_appeui_get
-                0x0800b818        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b818                lora_config_appeui_get
+                0x0800b80c        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b80c                lora_config_appeui_get
  .text.lora_config_appeui_set
-                0x0800b820       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b820                lora_config_appeui_set
+                0x0800b814       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b814                lora_config_appeui_set
  .text.lora_config_appkey_get
-                0x0800b834        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b834                lora_config_appkey_get
+                0x0800b828        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b828                lora_config_appkey_get
  .text.lora_config_appkey_set
-                0x0800b83c       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b83c                lora_config_appkey_set
+                0x0800b830       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b830                lora_config_appkey_set
  .text.lora_config_reqack_set
-                0x0800b850        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b850                lora_config_reqack_set
+                0x0800b844        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b844                lora_config_reqack_set
  .text.lora_config_reqack_get
-                0x0800b85c        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b85c                lora_config_reqack_get
+                0x0800b850        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b850                lora_config_reqack_get
  .text.lora_config_snr_get
-                0x0800b868        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b868                lora_config_snr_get
+                0x0800b85c        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b85c                lora_config_snr_get
  .text.lora_config_application_port_set
-                0x0800b874        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b874                lora_config_application_port_set
+                0x0800b868        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b868                lora_config_application_port_set
  .text.lora_config_application_port_get
-                0x0800b880        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b880                lora_config_application_port_get
+                0x0800b874        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b874                lora_config_application_port_get
  .text.lora_config_rssi_get
-                0x0800b88c        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b88c                lora_config_rssi_get
+                0x0800b880        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b880                lora_config_rssi_get
  .text.lora_config_tx_datarate_set
-                0x0800b898        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b898                lora_config_tx_datarate_set
+                0x0800b88c        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b88c                lora_config_tx_datarate_set
  .text.lora_config_tx_datarate_get
-                0x0800b8a4        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b8a4                lora_config_tx_datarate_get
+                0x0800b898        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b898                lora_config_tx_datarate_get
  .text.lora_config_isack_get
-                0x0800b8b0       0x10 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b8b0                lora_config_isack_get
+                0x0800b8a4       0x10 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b8a4                lora_config_isack_get
  .text.store_data
-                0x0800b8c0       0xe4 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b8c0                store_data
+                0x0800b8b4       0xe4 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b8b4                store_data
  .text.read_data
-                0x0800b9a4       0x68 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800b9a4                read_data
+                0x0800b998       0x68 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800b998                read_data
  .text.EEPROM_Store_key
-                0x0800ba0c       0x78 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800ba0c                EEPROM_Store_key
+                0x0800ba00       0x78 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800ba00                EEPROM_Store_key
  .text.Flash_Read_key
-                0x0800ba84       0x9c ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800ba84                Flash_Read_key
+                0x0800ba78       0x9c ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800ba78                Flash_Read_key
  .text.EEPROM_Store_Config
-                0x0800bb20      0x350 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800bb20                EEPROM_Store_Config
+                0x0800bb14      0x350 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800bb14                EEPROM_Store_Config
  .text.EEPROM_Read_Config
-                0x0800be70      0x2b4 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800be70                EEPROM_Read_Config
+                0x0800be64      0x2b4 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800be64                EEPROM_Read_Config
  .text.fdr_config
-                0x0800c124       0xe8 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800c124                fdr_config
+                0x0800c118       0xe8 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800c118                fdr_config
  .text.LORA_Init
-                0x0800c20c      0x11c ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800c20c                LORA_Init
+                0x0800c200      0x11c ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800c200                LORA_Init
  .text.string_touint
-                0x0800c328       0x3c ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800c328                string_touint
+                0x0800c31c       0x3c ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800c31c                string_touint
  .text.new_firmware_update
-                0x0800c364       0x80 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
-                0x0800c364                new_firmware_update
+                0x0800c358       0x80 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x0800c358                new_firmware_update
  .text.tiny_vfscanf
-                0x0800c3e4      0x290 ./build/obj/chameleon-i2c2-vcc-pmos/tiny_sscanf_7164f13a.o
+                0x0800c3d8      0x290 ./build/obj/chameleon-i2c2-vcc-pmos/tiny_sscanf_7164f13a.o
  .text.tiny_sscanf
-                0x0800c674       0x16 ./build/obj/chameleon-i2c2-vcc-pmos/tiny_sscanf_7164f13a.o
-                0x0800c674                tiny_sscanf
+                0x0800c668       0x16 ./build/obj/chameleon-i2c2-vcc-pmos/tiny_sscanf_7164f13a.o
+                0x0800c668                tiny_sscanf
  .text.RegionIsActive
-                0x0800c68a        0xa ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c68a                RegionIsActive
+                0x0800c67e        0xa ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c67e                RegionIsActive
  .text.RegionGetPhyParam
-                0x0800c694       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c694                RegionGetPhyParam
+                0x0800c688       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c688                RegionGetPhyParam
  .text.RegionSetBandTxDone
-                0x0800c6a8        0xe ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c6a8                RegionSetBandTxDone
+                0x0800c69c        0xe ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c69c                RegionSetBandTxDone
  .text.RegionInitDefaults
-                0x0800c6b6        0xe ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c6b6                RegionInitDefaults
+                0x0800c6aa        0xe ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c6aa                RegionInitDefaults
  .text.RegionVerify
-                0x0800c6c4       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c6c4                RegionVerify
+                0x0800c6b8       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c6b8                RegionVerify
  .text.RegionApplyCFList
-                0x0800c6dc        0xe ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c6dc                RegionApplyCFList
+                0x0800c6d0        0xe ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c6d0                RegionApplyCFList
  .text.RegionChanMaskSet
-                0x0800c6ea       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c6ea                RegionChanMaskSet
+                0x0800c6de       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c6de                RegionChanMaskSet
  .text.RegionAdrNext
-                0x0800c6fe       0x1c ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c6fe                RegionAdrNext
+                0x0800c6f2       0x1c ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c6f2                RegionAdrNext
  .text.RegionComputeRxWindowParameters
-                0x0800c71a       0x16 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c71a                RegionComputeRxWindowParameters
+                0x0800c70e       0x16 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c70e                RegionComputeRxWindowParameters
  .text.RegionRxConfig
-                0x0800c730       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c730                RegionRxConfig
+                0x0800c724       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c724                RegionRxConfig
  .text.RegionTxConfig
-                0x0800c748       0x1a ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c748                RegionTxConfig
+                0x0800c73c       0x1a ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c73c                RegionTxConfig
  .text.RegionLinkAdrReq
-                0x0800c762       0x20 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c762                RegionLinkAdrReq
+                0x0800c756       0x20 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c756                RegionLinkAdrReq
  .text.RegionRxParamSetupReq
-                0x0800c782       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c782                RegionRxParamSetupReq
+                0x0800c776       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c776                RegionRxParamSetupReq
  .text.RegionNewChannelReq
-                0x0800c796       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c796                RegionNewChannelReq
+                0x0800c78a       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c78a                RegionNewChannelReq
  .text.RegionTxParamSetupReq
-                0x0800c7aa       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c7aa                RegionTxParamSetupReq
+                0x0800c79e       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c79e                RegionTxParamSetupReq
  .text.RegionDlChannelReq
-                0x0800c7be       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c7be                RegionDlChannelReq
+                0x0800c7b2       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c7b2                RegionDlChannelReq
  .text.RegionAlternateDr
-                0x0800c7d2       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c7d2                RegionAlternateDr
+                0x0800c7c6       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c7c6                RegionAlternateDr
  .text.RegionCalcBackOff
-                0x0800c7e6        0xe ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c7e6                RegionCalcBackOff
+                0x0800c7da        0xe ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c7da                RegionCalcBackOff
  .text.RegionNextChannel
-                0x0800c7f4       0x1c ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c7f4                RegionNextChannel
+                0x0800c7e8       0x1c ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c7e8                RegionNextChannel
  .text.RegionSetContinuousWave
-                0x0800c810        0xe ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c810                RegionSetContinuousWave
+                0x0800c804        0xe ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c804                RegionSetContinuousWave
  .text.RegionApplyDrOffset
-                0x0800c81e       0x1a ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
-                0x0800c81e                RegionApplyDrOffset
+                0x0800c812       0x1a ./build/obj/chameleon-i2c2-vcc-pmos/Region_e7cf99a6.o
+                0x0800c812                RegionApplyDrOffset
  .text.RegionCommonChanVerifyDr
-                0x0800c838       0x6c ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
-                0x0800c838                RegionCommonChanVerifyDr
+                0x0800c82c       0x6c ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
+                0x0800c82c                RegionCommonChanVerifyDr
  .text.RegionCommonValueInRange
-                0x0800c8a4       0x1c ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
-                0x0800c8a4                RegionCommonValueInRange
+                0x0800c898       0x1c ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
+                0x0800c898                RegionCommonValueInRange
  .text.RegionCommonChanDisable
-                0x0800c8c0       0x2a ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
-                0x0800c8c0                RegionCommonChanDisable
+                0x0800c8b4       0x2a ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
+                0x0800c8b4                RegionCommonChanDisable
  .text.RegionCommonCountChannels
-                0x0800c8ea       0x3e ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
-                0x0800c8ea                RegionCommonCountChannels
+                0x0800c8de       0x3e ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
+                0x0800c8de                RegionCommonCountChannels
  .text.RegionCommonChanMaskCopy
-                0x0800c928       0x1c ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
-                0x0800c928                RegionCommonChanMaskCopy
+                0x0800c91c       0x1c ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
+                0x0800c91c                RegionCommonChanMaskCopy
  .text.RegionCommonSetBandTxDone
-                0x0800c944        0xc ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
-                0x0800c944                RegionCommonSetBandTxDone
+                0x0800c938        0xc ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
+                0x0800c938                RegionCommonSetBandTxDone
  .text.RegionCommonUpdateBandTimeOff
-                0x0800c950       0x9a ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
-                0x0800c950                RegionCommonUpdateBandTimeOff
+                0x0800c944       0x9a ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
+                0x0800c944                RegionCommonUpdateBandTimeOff
  .text.RegionCommonParseLinkAdrReq
-                0x0800c9ea       0x36 ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
-                0x0800c9ea                RegionCommonParseLinkAdrReq
+                0x0800c9de       0x36 ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
+                0x0800c9de                RegionCommonParseLinkAdrReq
  .text.RegionCommonLinkAdrReqVerifyParams
-                0x0800ca20       0x9c ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
-                0x0800ca20                RegionCommonLinkAdrReqVerifyParams
+                0x0800ca14       0x9c ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
+                0x0800ca14                RegionCommonLinkAdrReqVerifyParams
  .text.RegionCommonComputeSymbolTimeLoRa
-                0x0800cabc       0x34 ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
-                0x0800cabc                RegionCommonComputeSymbolTimeLoRa
+                0x0800cab0       0x34 ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
+                0x0800cab0                RegionCommonComputeSymbolTimeLoRa
  .text.RegionCommonComputeSymbolTimeFsk
-                0x0800caf0       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
-                0x0800caf0                RegionCommonComputeSymbolTimeFsk
+                0x0800cae4       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
+                0x0800cae4                RegionCommonComputeSymbolTimeFsk
  .text.RegionCommonComputeRxWindowParameters
-                0x0800cb08       0xac ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
-                0x0800cb08                RegionCommonComputeRxWindowParameters
+                0x0800cafc       0xac ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
+                0x0800cafc                RegionCommonComputeRxWindowParameters
  .text.RegionCommonComputeTxPower
-                0x0800cbb4       0x38 ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
-                0x0800cbb4                RegionCommonComputeTxPower
+                0x0800cba8       0x38 ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
+                0x0800cba8                RegionCommonComputeTxPower
  .text.RegionCommonCalcBackOff
-                0x0800cbec       0x4a ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
-                0x0800cbec                RegionCommonCalcBackOff
- *fill*         0x0800cc36        0x2
+                0x0800cbe0       0x4a ./build/obj/chameleon-i2c2-vcc-pmos/RegionCommon_2f44c7de.o
+                0x0800cbe0                RegionCommonCalcBackOff
+ *fill*         0x0800cc2a        0x2
  .text.VerifyTxFreq
-                0x0800cc38       0xa0 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800cc2c       0xa0 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
  .text.RegionEU868GetPhyParam
-                0x0800ccd8       0xcc ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800ccd8                RegionEU868GetPhyParam
+                0x0800cccc       0xcc ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800cccc                RegionEU868GetPhyParam
  .text.RegionEU868SetBandTxDone
-                0x0800cda4       0x28 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800cda4                RegionEU868SetBandTxDone
+                0x0800cd98       0x28 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800cd98                RegionEU868SetBandTxDone
  .text.RegionEU868InitDefaults
-                0x0800cdcc       0x90 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800cdcc                RegionEU868InitDefaults
+                0x0800cdc0       0x90 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800cdc0                RegionEU868InitDefaults
  .text.RegionEU868Verify
-                0x0800ce5c       0x56 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800ce5c                RegionEU868Verify
- *fill*         0x0800ceb2        0x2
+                0x0800ce50       0x56 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800ce50                RegionEU868Verify
+ *fill*         0x0800cea6        0x2
  .text.RegionEU868ChanMaskSet
-                0x0800ceb4       0x2c ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800ceb4                RegionEU868ChanMaskSet
+                0x0800cea8       0x2c ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800cea8                RegionEU868ChanMaskSet
  .text.RegionEU868AdrNext
-                0x0800cee0       0x6c ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800cee0                RegionEU868AdrNext
+                0x0800ced4       0x6c ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800ced4                RegionEU868AdrNext
  .text.RegionEU868ComputeRxWindowParameters
-                0x0800cf4c       0x70 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800cf4c                RegionEU868ComputeRxWindowParameters
+                0x0800cf40       0x70 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800cf40                RegionEU868ComputeRxWindowParameters
  .text.RegionEU868RxConfig
-                0x0800cfbc      0x150 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800cfbc                RegionEU868RxConfig
+                0x0800cfb0      0x150 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800cfb0                RegionEU868RxConfig
  .text.RegionEU868TxConfig
-                0x0800d10c      0x184 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800d10c                RegionEU868TxConfig
+                0x0800d100      0x184 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800d100                RegionEU868TxConfig
  .text.RegionEU868LinkAdrReq
-                0x0800d290      0x134 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800d290                RegionEU868LinkAdrReq
+                0x0800d284      0x134 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800d284                RegionEU868LinkAdrReq
  .text.RegionEU868RxParamSetupReq
-                0x0800d3c4       0x40 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800d3c4                RegionEU868RxParamSetupReq
+                0x0800d3b8       0x40 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800d3b8                RegionEU868RxParamSetupReq
  .text.RegionEU868TxParamSetupReq
-                0x0800d404        0x6 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800d404                RegionEU868TxParamSetupReq
- *fill*         0x0800d40a        0x2
+                0x0800d3f8        0x6 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800d3f8                RegionEU868TxParamSetupReq
+ *fill*         0x0800d3fe        0x2
  .text.RegionEU868DlChannelReq
-                0x0800d40c       0x3c ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800d40c                RegionEU868DlChannelReq
+                0x0800d400       0x3c ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800d400                RegionEU868DlChannelReq
  .text.RegionEU868AlternateDr
-                0x0800d448       0x24 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800d448                RegionEU868AlternateDr
+                0x0800d43c       0x24 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800d43c                RegionEU868AlternateDr
  .text.RegionEU868CalcBackOff
-                0x0800d46c       0x34 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800d46c                RegionEU868CalcBackOff
+                0x0800d460       0x34 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800d460                RegionEU868CalcBackOff
  .text.RegionEU868NextChannel
-                0x0800d4a0      0x110 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800d4a0                RegionEU868NextChannel
+                0x0800d494      0x110 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800d494                RegionEU868NextChannel
  .text.RegionEU868ChannelAdd
-                0x0800d5b0       0xe8 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800d5b0                RegionEU868ChannelAdd
+                0x0800d5a4       0xe8 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800d5a4                RegionEU868ChannelAdd
  .text.RegionEU868ChannelsRemove
-                0x0800d698       0x30 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800d698                RegionEU868ChannelsRemove
+                0x0800d68c       0x30 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800d68c                RegionEU868ChannelsRemove
  .text.RegionEU868ApplyCFList
-                0x0800d6c8       0x6a ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800d6c8                RegionEU868ApplyCFList
+                0x0800d6bc       0x6a ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800d6bc                RegionEU868ApplyCFList
  .text.RegionEU868NewChannelReq
-                0x0800d732       0x3a ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800d732                RegionEU868NewChannelReq
+                0x0800d726       0x3a ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800d726                RegionEU868NewChannelReq
  .text.RegionEU868SetContinuousWave
-                0x0800d76c       0x4c ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800d76c                RegionEU868SetContinuousWave
+                0x0800d760       0x4c ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800d760                RegionEU868SetContinuousWave
  .text.RegionEU868ApplyDrOffset
-                0x0800d7b8        0xe ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
-                0x0800d7b8                RegionEU868ApplyDrOffset
- *fill*         0x0800d7c6        0x2
+                0x0800d7ac        0xe ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x0800d7ac                RegionEU868ApplyDrOffset
+ *fill*         0x0800d7ba        0x2
  .text.ResetMacParameters
-                0x0800d7c8       0xdc ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800d7bc       0xdc ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
  .text.ValidatePayloadLength
-                0x0800d8a4       0x40 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800d898       0x40 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
  .text.OnAckTimeoutTimerEvent
-                0x0800d8e4       0x4c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800d8d8       0x4c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
  .text.PrepareRxDoneAbort
-                0x0800d930       0x4c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800d924       0x4c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
  .text.RxWindowSetup
-                0x0800d97c       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800d970       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
  .text.OnRxWindow2TimerEvent
-                0x0800d994       0x94 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800d988       0x94 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
  .text.OnRadioTxTimeout
-                0x0800da28       0x40 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800da1c       0x40 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
  .text.OnRadioTxDone
-                0x0800da68      0x140 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800da5c      0x140 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
  .text.OnRxWindow1TimerEvent
-                0x0800dba8       0x9c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800db9c       0x9c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
  .text.OnRadioRxTimeout
-                0x0800dc44       0x88 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800dc38       0x88 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
  .text.OnRadioRxError
-                0x0800dccc       0x88 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800dcc0       0x88 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
  .text.ProcessMacCommands
-                0x0800dd54      0x52c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800dd48      0x52c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
  .text.OnRadioRxDone
-                0x0800e280      0x580 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800e274      0x580 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
  .text.printf_joinmessage
-                0x0800e800       0x84 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
-                0x0800e800                printf_joinmessage
+                0x0800e7f4       0x84 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800e7f4                printf_joinmessage
  .text.PrepareFrame
-                0x0800e884      0x38c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
-                0x0800e884                PrepareFrame
+                0x0800e878      0x38c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800e878                PrepareFrame
  .text.SendFrameOnChannel
-                0x0800ec10      0x12c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
-                0x0800ec10                SendFrameOnChannel
+                0x0800ec04      0x12c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800ec04                SendFrameOnChannel
  .text.ScheduleTx
-                0x0800ed3c      0x1f4 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
- .text.Send     0x0800ef30       0x3c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
-                0x0800ef30                Send
+                0x0800ed30      0x1f4 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+ .text.Send     0x0800ef24       0x3c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800ef24                Send
  .text.OnTxDelayedTimerEvent
-                0x0800ef6c       0x80 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800ef60       0x80 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
  .text.OnMacStateCheckTimerEvent
-                0x0800efec      0x4ac ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800efe0      0x4ac ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
  .text.SetTxContinuousWave
-                0x0800f498       0x5c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
-                0x0800f498                SetTxContinuousWave
+                0x0800f48c       0x5c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800f48c                SetTxContinuousWave
  .text.SetTxContinuousWave1
-                0x0800f4f4       0x3c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
-                0x0800f4f4                SetTxContinuousWave1
+                0x0800f4e8       0x3c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800f4e8                SetTxContinuousWave1
  .text.LoRaMacInitialization
-                0x0800f530      0x290 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
-                0x0800f530                LoRaMacInitialization
+                0x0800f524      0x290 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800f524                LoRaMacInitialization
  .text.LoRaMacQueryTxPossible
-                0x0800f7c0       0xf4 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
-                0x0800f7c0                LoRaMacQueryTxPossible
+                0x0800f7b4       0xf4 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800f7b4                LoRaMacQueryTxPossible
  .text.LoRaMacMibGetRequestConfirm
-                0x0800f8b4      0x134 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
-                0x0800f8b4                LoRaMacMibGetRequestConfirm
+                0x0800f8a8      0x134 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800f8a8                LoRaMacMibGetRequestConfirm
  .text.LoRaMacMibSetRequestConfirm
-                0x0800f9e8      0x300 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
-                0x0800f9e8                LoRaMacMibSetRequestConfirm
+                0x0800f9dc      0x300 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800f9dc                LoRaMacMibSetRequestConfirm
  .text.LoRaMacMlmeRequest
-                0x0800fce8      0x1a8 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
-                0x0800fce8                LoRaMacMlmeRequest
+                0x0800fcdc      0x1a8 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800fcdc                LoRaMacMlmeRequest
  .text.LoRaMacMcpsRequest
-                0x0800fe90      0x158 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
-                0x0800fe90                LoRaMacMcpsRequest
+                0x0800fe84      0x158 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800fe84                LoRaMacMcpsRequest
  .text.LoRaMacTestSetDutyCycleOn
-                0x0800ffe8       0x24 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
-                0x0800ffe8                LoRaMacTestSetDutyCycleOn
+                0x0800ffdc       0x24 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x0800ffdc                LoRaMacTestSetDutyCycleOn
  .text.LoRaMacComputeMic
-                0x0801000c       0x84 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMacCrypto_5c88798c.o
-                0x0801000c                LoRaMacComputeMic
+                0x08010000       0x84 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMacCrypto_5c88798c.o
+                0x08010000                LoRaMacComputeMic
  .text.LoRaMacPayloadEncrypt
-                0x08010090       0xf8 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMacCrypto_5c88798c.o
-                0x08010090                LoRaMacPayloadEncrypt
+                0x08010084       0xf8 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMacCrypto_5c88798c.o
+                0x08010084                LoRaMacPayloadEncrypt
  .text.LoRaMacPayloadDecrypt
-                0x08010188       0x1a ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMacCrypto_5c88798c.o
-                0x08010188                LoRaMacPayloadDecrypt
- *fill*         0x080101a2        0x2
+                0x0801017c       0x1a ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMacCrypto_5c88798c.o
+                0x0801017c                LoRaMacPayloadDecrypt
+ *fill*         0x08010196        0x2
  .text.LoRaMacJoinComputeMic
-                0x080101a4       0x4c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMacCrypto_5c88798c.o
-                0x080101a4                LoRaMacJoinComputeMic
+                0x08010198       0x4c ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMacCrypto_5c88798c.o
+                0x08010198                LoRaMacJoinComputeMic
  .text.LoRaMacJoinDecrypt
-                0x080101f0       0x40 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMacCrypto_5c88798c.o
-                0x080101f0                LoRaMacJoinDecrypt
+                0x080101e4       0x40 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMacCrypto_5c88798c.o
+                0x080101e4                LoRaMacJoinDecrypt
  .text.LoRaMacJoinComputeSKeys
-                0x08010230       0x98 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMacCrypto_5c88798c.o
-                0x08010230                LoRaMacJoinComputeSKeys
+                0x08010224       0x98 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMacCrypto_5c88798c.o
+                0x08010224                LoRaMacJoinComputeSKeys
  .text.OnCertifTxNextPacketTimerEvent
-                0x080102c8       0xbc ./build/obj/chameleon-i2c2-vcc-pmos/lora-test_9d43f367.o
+                0x080102bc       0xbc ./build/obj/chameleon-i2c2-vcc-pmos/lora-test_9d43f367.o
  .text.certif_running
-                0x08010384        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora-test_9d43f367.o
-                0x08010384                certif_running
+                0x08010378        0xc ./build/obj/chameleon-i2c2-vcc-pmos/lora-test_9d43f367.o
+                0x08010378                certif_running
  .text.certif_DownLinkIncrement
-                0x08010390       0x10 ./build/obj/chameleon-i2c2-vcc-pmos/lora-test_9d43f367.o
-                0x08010390                certif_DownLinkIncrement
+                0x08010384       0x10 ./build/obj/chameleon-i2c2-vcc-pmos/lora-test_9d43f367.o
+                0x08010384                certif_DownLinkIncrement
  .text.certif_linkCheck
-                0x080103a0       0x20 ./build/obj/chameleon-i2c2-vcc-pmos/lora-test_9d43f367.o
-                0x080103a0                certif_linkCheck
+                0x08010394       0x20 ./build/obj/chameleon-i2c2-vcc-pmos/lora-test_9d43f367.o
+                0x08010394                certif_linkCheck
  .text.certif_rx
-                0x080103c0      0x1d8 ./build/obj/chameleon-i2c2-vcc-pmos/lora-test_9d43f367.o
-                0x080103c0                certif_rx
- .text.DelayMs  0x08010598        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/delay_69b8651c.o
-                0x08010598                DelayMs
+                0x080103b4      0x1d8 ./build/obj/chameleon-i2c2-vcc-pmos/lora-test_9d43f367.o
+                0x080103b4                certif_rx
+ .text.DelayMs  0x0801058c        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/delay_69b8651c.o
+                0x0801058c                DelayMs
  .text.LPM_SetOffMode
-                0x080105a0       0x2c ./build/obj/chameleon-i2c2-vcc-pmos/low_power_manager_062ac3e9.o
-                0x080105a0                LPM_SetOffMode
+                0x08010594       0x2c ./build/obj/chameleon-i2c2-vcc-pmos/low_power_manager_062ac3e9.o
+                0x08010594                LPM_SetOffMode
  .text.LPM_SetStopMode
-                0x080105cc       0x2c ./build/obj/chameleon-i2c2-vcc-pmos/low_power_manager_062ac3e9.o
-                0x080105cc                LPM_SetStopMode
+                0x080105c0       0x2c ./build/obj/chameleon-i2c2-vcc-pmos/low_power_manager_062ac3e9.o
+                0x080105c0                LPM_SetStopMode
  .text.LPM_GetMode
-                0x080105f8       0x28 ./build/obj/chameleon-i2c2-vcc-pmos/low_power_manager_062ac3e9.o
-                0x080105f8                LPM_GetMode
+                0x080105ec       0x28 ./build/obj/chameleon-i2c2-vcc-pmos/low_power_manager_062ac3e9.o
+                0x080105ec                LPM_GetMode
  .text.LPM_ExitSleepMode
-                0x08010620        0x2 ./build/obj/chameleon-i2c2-vcc-pmos/low_power_manager_062ac3e9.o
-                0x08010620                LPM_ExitSleepMode
+                0x08010614        0x2 ./build/obj/chameleon-i2c2-vcc-pmos/low_power_manager_062ac3e9.o
+                0x08010614                LPM_ExitSleepMode
  .text.LPM_EnterOffMode
-                0x08010622        0x2 ./build/obj/chameleon-i2c2-vcc-pmos/low_power_manager_062ac3e9.o
-                0x08010622                LPM_EnterOffMode
+                0x08010616        0x2 ./build/obj/chameleon-i2c2-vcc-pmos/low_power_manager_062ac3e9.o
+                0x08010616                LPM_EnterOffMode
  .text.LPM_ExitOffMode
-                0x08010624        0x2 ./build/obj/chameleon-i2c2-vcc-pmos/low_power_manager_062ac3e9.o
-                0x08010624                LPM_ExitOffMode
- *fill*         0x08010626        0x2
+                0x08010618        0x2 ./build/obj/chameleon-i2c2-vcc-pmos/low_power_manager_062ac3e9.o
+                0x08010618                LPM_ExitOffMode
+ *fill*         0x0801061a        0x2
  .text.LPM_EnterLowPower
-                0x08010628       0x38 ./build/obj/chameleon-i2c2-vcc-pmos/low_power_manager_062ac3e9.o
-                0x08010628                LPM_EnterLowPower
+                0x0801061c       0x38 ./build/obj/chameleon-i2c2-vcc-pmos/low_power_manager_062ac3e9.o
+                0x0801061c                LPM_EnterLowPower
  .text.TimerSetTimeout
-                0x08010660       0x2a ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
- *fill*         0x0801068a        0x2
+                0x08010654       0x2a ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
+ *fill*         0x0801067e        0x2
  .text.TimerInsertNewHeadTimer
-                0x0801068c       0x1c ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
+                0x08010680       0x1c ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
  .text.TimerInit
-                0x080106a8        0xe ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
-                0x080106a8                TimerInit
- *fill*         0x080106b6        0x2
+                0x0801069c        0xe ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
+                0x0801069c                TimerInit
+ *fill*         0x080106aa        0x2
  .text.TimerStart
-                0x080106b8       0x68 ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
-                0x080106b8                TimerStart
+                0x080106ac       0x68 ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
+                0x080106ac                TimerStart
  .text.TimerIrqHandler
-                0x08010720       0x70 ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
-                0x08010720                TimerIrqHandler
+                0x08010714       0x70 ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
+                0x08010714                TimerIrqHandler
  .text.TimerStop
-                0x08010790       0x58 ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
-                0x08010790                TimerStop
+                0x08010784       0x58 ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
+                0x08010784                TimerStop
  .text.TimerSetValue
-                0x080107e8       0x22 ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
-                0x080107e8                TimerSetValue
+                0x080107dc       0x22 ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
+                0x080107dc                TimerSetValue
  .text.TimerGetCurrentTime
-                0x0801080a        0xc ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
-                0x0801080a                TimerGetCurrentTime
+                0x080107fe        0xc ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
+                0x080107fe                TimerGetCurrentTime
  .text.TimerGetElapsedTime
-                0x08010816       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
-                0x08010816                TimerGetElapsedTime
- *fill*         0x0801082e        0x2
- .text.rand1    0x08010830       0x2c ./build/obj/chameleon-i2c2-vcc-pmos/utilities_06cf1bad.o
-                0x08010830                rand1
- .text.srand1   0x0801085c        0xc ./build/obj/chameleon-i2c2-vcc-pmos/utilities_06cf1bad.o
-                0x0801085c                srand1
- .text.randr    0x08010868       0x16 ./build/obj/chameleon-i2c2-vcc-pmos/utilities_06cf1bad.o
-                0x08010868                randr
- .text.memcpy1  0x0801087e       0x12 ./build/obj/chameleon-i2c2-vcc-pmos/utilities_06cf1bad.o
-                0x0801087e                memcpy1
- .text.memcpyr  0x08010890       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/utilities_06cf1bad.o
-                0x08010890                memcpyr
- .text.memset1  0x080108a8       0x10 ./build/obj/chameleon-i2c2-vcc-pmos/utilities_06cf1bad.o
-                0x080108a8                memset1
+                0x0801080a       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/timeServer_ff13a564.o
+                0x0801080a                TimerGetElapsedTime
+ *fill*         0x08010822        0x2
+ .text.rand1    0x08010824       0x2c ./build/obj/chameleon-i2c2-vcc-pmos/utilities_06cf1bad.o
+                0x08010824                rand1
+ .text.srand1   0x08010850        0xc ./build/obj/chameleon-i2c2-vcc-pmos/utilities_06cf1bad.o
+                0x08010850                srand1
+ .text.randr    0x0801085c       0x16 ./build/obj/chameleon-i2c2-vcc-pmos/utilities_06cf1bad.o
+                0x0801085c                randr
+ .text.memcpy1  0x08010872       0x12 ./build/obj/chameleon-i2c2-vcc-pmos/utilities_06cf1bad.o
+                0x08010872                memcpy1
+ .text.memcpyr  0x08010884       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/utilities_06cf1bad.o
+                0x08010884                memcpyr
+ .text.memset1  0x0801089c       0x10 ./build/obj/chameleon-i2c2-vcc-pmos/utilities_06cf1bad.o
+                0x0801089c                memset1
  .text.Trace_TxCpltCallback
-                0x080108b8       0x48 ./build/obj/chameleon-i2c2-vcc-pmos/trace_0f7c981b.o
+                0x080108ac       0x48 ./build/obj/chameleon-i2c2-vcc-pmos/trace_0f7c981b.o
  .text.TraceInit
-                0x08010900       0x28 ./build/obj/chameleon-i2c2-vcc-pmos/trace_0f7c981b.o
-                0x08010900                TraceInit
+                0x080108f4       0x28 ./build/obj/chameleon-i2c2-vcc-pmos/trace_0f7c981b.o
+                0x080108f4                TraceInit
  .text.TraceSend
-                0x08010928       0x88 ./build/obj/chameleon-i2c2-vcc-pmos/trace_0f7c981b.o
-                0x08010928                TraceSend
+                0x0801091c       0x88 ./build/obj/chameleon-i2c2-vcc-pmos/trace_0f7c981b.o
+                0x0801091c                TraceSend
  .text.CircularQueue_Init
-                0x080109b0       0x26 ./build/obj/chameleon-i2c2-vcc-pmos/queue_53f702e2.o
-                0x080109b0                CircularQueue_Init
+                0x080109a4       0x26 ./build/obj/chameleon-i2c2-vcc-pmos/queue_53f702e2.o
+                0x080109a4                CircularQueue_Init
  .text.CircularQueue_Add
-                0x080109d6      0x1f4 ./build/obj/chameleon-i2c2-vcc-pmos/queue_53f702e2.o
-                0x080109d6                CircularQueue_Add
- *fill*         0x08010bca        0x2
+                0x080109ca      0x1f4 ./build/obj/chameleon-i2c2-vcc-pmos/queue_53f702e2.o
+                0x080109ca                CircularQueue_Add
+ *fill*         0x08010bbe        0x2
  .text.CircularQueue_Remove
-                0x08010bcc       0xc0 ./build/obj/chameleon-i2c2-vcc-pmos/queue_53f702e2.o
-                0x08010bcc                CircularQueue_Remove
+                0x08010bc0       0xc0 ./build/obj/chameleon-i2c2-vcc-pmos/queue_53f702e2.o
+                0x08010bc0                CircularQueue_Remove
  .text.CircularQueue_Sense
-                0x08010c8c       0x8c ./build/obj/chameleon-i2c2-vcc-pmos/queue_53f702e2.o
-                0x08010c8c                CircularQueue_Sense
+                0x08010c80       0x8c ./build/obj/chameleon-i2c2-vcc-pmos/queue_53f702e2.o
+                0x08010c80                CircularQueue_Sense
  .text.aes_set_key
-                0x08010d18      0x104 ./build/obj/chameleon-i2c2-vcc-pmos/aes_fc1b9773.o
-                0x08010d18                aes_set_key
+                0x08010d0c      0x104 ./build/obj/chameleon-i2c2-vcc-pmos/aes_fc1b9773.o
+                0x08010d0c                aes_set_key
  .text.aes_encrypt
-                0x08010e1c      0x3c0 ./build/obj/chameleon-i2c2-vcc-pmos/aes_fc1b9773.o
-                0x08010e1c                aes_encrypt
+                0x08010e10      0x3c0 ./build/obj/chameleon-i2c2-vcc-pmos/aes_fc1b9773.o
+                0x08010e10                aes_encrypt
  .text.AES_CMAC_Init
-                0x080111dc       0x20 ./build/obj/chameleon-i2c2-vcc-pmos/cmac_a4bbb0de.o
-                0x080111dc                AES_CMAC_Init
+                0x080111d0       0x20 ./build/obj/chameleon-i2c2-vcc-pmos/cmac_a4bbb0de.o
+                0x080111d0                AES_CMAC_Init
  .text.AES_CMAC_SetKey
-                0x080111fc        0xe ./build/obj/chameleon-i2c2-vcc-pmos/cmac_a4bbb0de.o
-                0x080111fc                AES_CMAC_SetKey
+                0x080111f0        0xe ./build/obj/chameleon-i2c2-vcc-pmos/cmac_a4bbb0de.o
+                0x080111f0                AES_CMAC_SetKey
  .text.AES_CMAC_Update
-                0x0801120a       0xc4 ./build/obj/chameleon-i2c2-vcc-pmos/cmac_a4bbb0de.o
-                0x0801120a                AES_CMAC_Update
+                0x080111fe       0xc4 ./build/obj/chameleon-i2c2-vcc-pmos/cmac_a4bbb0de.o
+                0x080111fe                AES_CMAC_Update
  .text.AES_CMAC_Final
-                0x080112ce      0x13a ./build/obj/chameleon-i2c2-vcc-pmos/cmac_a4bbb0de.o
-                0x080112ce                AES_CMAC_Final
- .text.le32     0x08011408       0x16 ./build/obj/chameleon-i2c2-vcc-pmos/via_chameleon.o
+                0x080112c2      0x13a ./build/obj/chameleon-i2c2-vcc-pmos/cmac_a4bbb0de.o
+                0x080112c2                AES_CMAC_Final
+ .text.le32     0x080113fc       0x16 ./build/obj/chameleon-i2c2-vcc-pmos/via_chameleon.o
  .text.via_chameleon_probe
-                0x0801141e       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/via_chameleon.o
-                0x0801141e                via_chameleon_probe
+                0x08011412       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/via_chameleon.o
+                0x08011412                via_chameleon_probe
  .text.via_chameleon_trigger
-                0x08011432       0x1c ./build/obj/chameleon-i2c2-vcc-pmos/via_chameleon.o
-                0x08011432                via_chameleon_trigger
+                0x08011426       0x1c ./build/obj/chameleon-i2c2-vcc-pmos/via_chameleon.o
+                0x08011426                via_chameleon_trigger
  .text.via_chameleon_wait_ready
-                0x0801144e       0x6c ./build/obj/chameleon-i2c2-vcc-pmos/via_chameleon.o
-                0x0801144e                via_chameleon_wait_ready
- *fill*         0x080114ba        0x2
+                0x08011442       0x6c ./build/obj/chameleon-i2c2-vcc-pmos/via_chameleon.o
+                0x08011442                via_chameleon_wait_ready
+ *fill*         0x080114ae        0x2
  .text.via_chameleon_read_sample
-                0x080114bc      0x150 ./build/obj/chameleon-i2c2-vcc-pmos/via_chameleon.o
-                0x080114bc                via_chameleon_read_sample
+                0x080114b0      0x150 ./build/obj/chameleon-i2c2-vcc-pmos/via_chameleon.o
+                0x080114b0                via_chameleon_read_sample
  .text.via_chameleon_measure
-                0x0801160c       0x24 ./build/obj/chameleon-i2c2-vcc-pmos/via_chameleon.o
-                0x0801160c                via_chameleon_measure
+                0x08011600       0x24 ./build/obj/chameleon-i2c2-vcc-pmos/via_chameleon.o
+                0x08011600                via_chameleon_measure
  .text.put_u32_be
-                0x08011630       0x10 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_payload.o
+                0x08011624       0x10 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_payload.o
  .text.chameleon_payload_encode_v1
-                0x08011640       0xa2 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_payload.o
-                0x08011640                chameleon_payload_encode_v1
- *fill*         0x080116e2        0x2
+                0x08011634       0xa2 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_payload.o
+                0x08011634                chameleon_payload_encode_v1
+ *fill*         0x080116d6        0x2
  .text.stm32_battery_mv
-                0x080116e4        0xc ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x080116d8        0xc ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
  .text.stm32_delay_ms
-                0x080116f0        0xa ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x080116e4        0xa ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
  .text.stm32_millis
-                0x080116fa        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x080116ee        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
  .text.stm32_measure
-                0x08011702        0xc ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x080116f6        0xc ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+ .text.stm32_wait_ready
+                0x08011702        0xa ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
  .text.stm32_probe
-                0x0801170e        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
- *fill*         0x08011716        0x2
+                0x0801170c        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
  .text.stm32_i2c_deinit
-                0x08011718       0x10 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x08011714       0x10 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
  .text.stm32_i2c_init
-                0x08011728       0x34 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x08011724       0x34 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
  .text.stm32_rail_on
-                0x0801175c       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x08011758       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
  .text.stm32_bus_isolate
-                0x08011770       0x60 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x0801176c       0x60 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
  .text.stm32_rail_off
-                0x080117d0       0x48 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x080117cc       0x48 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
  .text.chameleon_lsn50_last_attempts
-                0x08011818        0xc ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
-                0x08011818                chameleon_lsn50_last_attempts
+                0x08011814        0xc ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x08011814                chameleon_lsn50_last_attempts
  .text.chameleon_result_name
-                0x08011824       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
-                0x08011824                chameleon_result_name
+                0x08011820       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x08011820                chameleon_result_name
  .text.chameleon_lsn50_run
-                0x0801183c      0x160 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
-                0x0801183c                chameleon_lsn50_run
+                0x08011838      0x170 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x08011838                chameleon_lsn50_run
  .text.chameleon_board_i2c_write
-                0x0801199c       0x40 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
-                0x0801199c                chameleon_board_i2c_write
+                0x080119a8       0x44 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x080119a8                chameleon_board_i2c_write
  .text.chameleon_board_i2c_write_read
-                0x080119dc       0x50 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
-                0x080119dc                chameleon_board_i2c_write_read
+                0x080119ec       0x54 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x080119ec                chameleon_board_i2c_write_read
  .text.chameleon_board_delay_ms
-                0x08011a2c        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
-                0x08011a2c                chameleon_board_delay_ms
+                0x08011a40        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x08011a40                chameleon_board_delay_ms
  .text.chameleon_board_millis
-                0x08011a34        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
-                0x08011a34                chameleon_board_millis
+                0x08011a48        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x08011a48                chameleon_board_millis
  .text.chameleon_lsn50_acquire
-                0x08011a3c       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
-                0x08011a3c                chameleon_lsn50_acquire
+                0x08011a50       0x14 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x08011a50                chameleon_lsn50_acquire
  .text.chameleon_lsn50_prepare_sleep
-                0x08011a50       0x10 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
-                0x08011a50                chameleon_lsn50_prepare_sleep
+                0x08011a64       0x10 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x08011a64                chameleon_lsn50_prepare_sleep
  .text.__muldi3
-                0x08011a60       0x3e /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_muldi3.o)
-                0x08011a60                __aeabi_lmul
-                0x08011a60                __muldi3
+                0x08011a74       0x3e /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_muldi3.o)
+                0x08011a74                __aeabi_lmul
+                0x08011a74                __muldi3
  .text.__fixunssfsi
-                0x08011a9e       0x2e /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_fixunssfsi.o)
-                0x08011a9e                __aeabi_f2uiz
-                0x08011a9e                __fixunssfsi
+                0x08011ab2       0x2e /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_fixunssfsi.o)
+                0x08011ab2                __aeabi_f2uiz
+                0x08011ab2                __fixunssfsi
  .text.__fixunsdfsi
-                0x08011acc       0x38 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_fixunsdfsi.o)
-                0x08011acc                __fixunsdfsi
-                0x08011acc                __aeabi_d2uiz
+                0x08011ae0       0x38 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_fixunsdfsi.o)
+                0x08011ae0                __fixunsdfsi
+                0x08011ae0                __aeabi_d2uiz
  .text.__udivmoddi4
-                0x08011b04       0xe0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
-                0x08011b04                __udivmoddi4
+                0x08011b18       0xe0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
+                0x08011b18                __udivmoddi4
  .text.__aeabi_fdiv
-                0x08011be4      0x200 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(divsf3.o)
-                0x08011be4                __aeabi_fdiv
- .text.__eqsf2  0x08011de4       0x46 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(eqsf2.o)
-                0x08011de4                __nesf2
-                0x08011de4                __eqsf2
- .text.__gesf2  0x08011e2a       0x6c /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(gesf2.o)
-                0x08011e2a                __gtsf2
-                0x08011e2a                __gesf2
- .text.__lesf2  0x08011e96       0x6a /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(lesf2.o)
-                0x08011e96                __lesf2
-                0x08011e96                __ltsf2
+                0x08011bf8      0x200 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(divsf3.o)
+                0x08011bf8                __aeabi_fdiv
+ .text.__eqsf2  0x08011df8       0x46 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(eqsf2.o)
+                0x08011df8                __nesf2
+                0x08011df8                __eqsf2
+ .text.__gesf2  0x08011e3e       0x6c /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(gesf2.o)
+                0x08011e3e                __gtsf2
+                0x08011e3e                __gesf2
+ .text.__lesf2  0x08011eaa       0x6a /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(lesf2.o)
+                0x08011eaa                __lesf2
+                0x08011eaa                __ltsf2
  .text.__aeabi_fmul
-                0x08011f00      0x1f8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(mulsf3.o)
-                0x08011f00                __aeabi_fmul
+                0x08011f14      0x1f8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(mulsf3.o)
+                0x08011f14                __aeabi_fmul
  .text.__aeabi_fsub
-                0x080120f8      0x2fc /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(subsf3.o)
-                0x080120f8                __aeabi_fsub
+                0x0801210c      0x2fc /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(subsf3.o)
+                0x0801210c                __aeabi_fsub
  .text.__aeabi_f2iz
-                0x080123f4       0x3c /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(fixsfsi.o)
-                0x080123f4                __aeabi_f2iz
+                0x08012408       0x3c /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(fixsfsi.o)
+                0x08012408                __aeabi_f2iz
  .text.__aeabi_i2f
-                0x08012430       0x84 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatsisf.o)
-                0x08012430                __aeabi_i2f
+                0x08012444       0x84 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatsisf.o)
+                0x08012444                __aeabi_i2f
  .text.__aeabi_ui2f
-                0x080124b4       0x78 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatunsisf.o)
-                0x080124b4                __aeabi_ui2f
+                0x080124c8       0x78 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatunsisf.o)
+                0x080124c8                __aeabi_ui2f
  .text.__aeabi_dadd
-                0x0801252c      0x598 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(adddf3.o)
-                0x0801252c                __aeabi_dadd
+                0x08012540      0x598 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(adddf3.o)
+                0x08012540                __aeabi_dadd
  .text.__aeabi_ddiv
-                0x08012ac4      0x534 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(divdf3.o)
-                0x08012ac4                __aeabi_ddiv
- .text.__eqdf2  0x08012ff8       0x74 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(eqdf2.o)
-                0x08012ff8                __eqdf2
-                0x08012ff8                __nedf2
- .text.__gedf2  0x0801306c       0xc8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(gedf2.o)
-                0x0801306c                __gtdf2
-                0x0801306c                __gedf2
- .text.__ledf2  0x08013134       0xc8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(ledf2.o)
-                0x08013134                __ltdf2
-                0x08013134                __ledf2
+                0x08012ad8      0x534 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(divdf3.o)
+                0x08012ad8                __aeabi_ddiv
+ .text.__eqdf2  0x0801300c       0x74 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(eqdf2.o)
+                0x0801300c                __eqdf2
+                0x0801300c                __nedf2
+ .text.__gedf2  0x08013080       0xc8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(gedf2.o)
+                0x08013080                __gtdf2
+                0x08013080                __gedf2
+ .text.__ledf2  0x08013148       0xc8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(ledf2.o)
+                0x08013148                __ltdf2
+                0x08013148                __ledf2
  .text.__aeabi_dmul
-                0x080131fc      0x444 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(muldf3.o)
-                0x080131fc                __aeabi_dmul
+                0x08013210      0x444 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(muldf3.o)
+                0x08013210                __aeabi_dmul
  .text.__aeabi_dsub
-                0x08013640      0x5a4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(subdf3.o)
-                0x08013640                __aeabi_dsub
+                0x08013654      0x5a4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(subdf3.o)
+                0x08013654                __aeabi_dsub
  .text.__aeabi_d2iz
-                0x08013be4       0x68 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(fixdfsi.o)
-                0x08013be4                __aeabi_d2iz
+                0x08013bf8       0x68 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(fixdfsi.o)
+                0x08013bf8                __aeabi_d2iz
  .text.__aeabi_i2d
-                0x08013c4c       0x50 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatsidf.o)
-                0x08013c4c                __aeabi_i2d
+                0x08013c60       0x50 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatsidf.o)
+                0x08013c60                __aeabi_i2d
  .text.__aeabi_ui2d
-                0x08013c9c       0x40 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatunsidf.o)
-                0x08013c9c                __aeabi_ui2d
+                0x08013cb0       0x40 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(floatunsidf.o)
+                0x08013cb0                __aeabi_ui2d
  .text.__aeabi_f2d
-                0x08013cdc       0x84 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(extendsfdf2.o)
-                0x08013cdc                __aeabi_f2d
+                0x08013cf0       0x84 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(extendsfdf2.o)
+                0x08013cf0                __aeabi_f2d
  .text.__aeabi_d2f
-                0x08013d60       0xdc /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(truncdfsf2.o)
-                0x08013d60                __aeabi_d2f
- .text.atoi     0x08013e3c        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-atoi.o)
-                0x08013e3c                atoi
+                0x08013d74       0xdc /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(truncdfsf2.o)
+                0x08013d74                __aeabi_d2f
+ .text.atoi     0x08013e50        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-atoi.o)
+                0x08013e50                atoi
  .text._strtol_l.isra.0
-                0x08013e48      0x108 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
+                0x08013e5c      0x108 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
  .text._strtol_r
-                0x08013f50        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
-                0x08013f50                _strtol_r
- .text.strtol   0x08013f58       0x18 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
-                0x08013f58                strtol
- .text.sscanf   0x08013f70       0x54 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sscanf.o)
-                0x08013f70                sscanf
-                0x08013f70                siscanf
+                0x08013f64        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
+                0x08013f64                _strtol_r
+ .text.strtol   0x08013f6c       0x18 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtol.o)
+                0x08013f6c                strtol
+ .text.sscanf   0x08013f84       0x54 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sscanf.o)
+                0x08013f84                sscanf
+                0x08013f84                siscanf
  .text.__seofread
-                0x08013fc4        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-stdio.o)
-                0x08013fc4                __seofread
+                0x08013fd8        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-stdio.o)
+                0x08013fd8                __seofread
  .text._vsnprintf_r
-                0x08013fc8       0x54 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
-                0x08013fc8                _vsnprintf_r
-                0x08013fc8                _vsniprintf_r
+                0x08013fdc       0x54 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
+                0x08013fdc                _vsnprintf_r
+                0x08013fdc                _vsniprintf_r
  .text.vsnprintf
-                0x0801401c       0x18 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
-                0x0801401c                vsnprintf
-                0x0801401c                vsniprintf
- .text.memset   0x08014034       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memset.o)
-                0x08014034                memset
- .text.strncmp  0x08014044       0x24 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strncmp.o)
-                0x08014044                strncmp
- .text.__errno  0x08014068        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-errno.o)
-                0x08014068                __errno
+                0x08014030       0x18 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-vsnprintf.o)
+                0x08014030                vsnprintf
+                0x08014030                vsniprintf
+ .text.memset   0x08014048       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memset.o)
+                0x08014048                memset
+ .text.strncmp  0x08014058       0x24 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strncmp.o)
+                0x08014058                strncmp
+ .text.__errno  0x0801407c        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-errno.o)
+                0x0801407c                __errno
  .text.__libc_init_array
-                0x08014074       0x48 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-init.o)
-                0x08014074                __libc_init_array
+                0x08014088       0x48 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-init.o)
+                0x08014088                __libc_init_array
  .text.__retarget_lock_acquire_recursive
-                0x080140bc        0x2 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
-                0x080140bc                __retarget_lock_acquire_recursive
+                0x080140d0        0x2 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
+                0x080140d0                __retarget_lock_acquire_recursive
  .text.__retarget_lock_release_recursive
-                0x080140be        0x2 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
-                0x080140be                __retarget_lock_release_recursive
- .text.memcpy   0x080140c0       0x12 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memcpy-stub.o)
-                0x080140c0                memcpy
- *fill*         0x080140d2        0x2
- .text._free_r  0x080140d4       0x94 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-freer.o)
-                0x080140d4                _free_r
+                0x080140d2        0x2 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-lock.o)
+                0x080140d2                __retarget_lock_release_recursive
+ .text.memcpy   0x080140d4       0x12 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memcpy-stub.o)
+                0x080140d4                memcpy
+ *fill*         0x080140e6        0x2
+ .text._free_r  0x080140e8       0x94 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-freer.o)
+                0x080140e8                _free_r
  .text.sbrk_aligned
-                0x08014168       0x44 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
+                0x0801417c       0x44 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
  .text._malloc_r
-                0x080141ac      0x100 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
-                0x080141ac                _malloc_r
+                0x080141c0      0x100 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mallocr.o)
+                0x080141c0                _malloc_r
  .text.__malloc_lock
-                0x080142ac       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
-                0x080142ac                __malloc_lock
+                0x080142c0       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
+                0x080142c0                __malloc_lock
  .text.__malloc_unlock
-                0x080142bc       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
-                0x080142bc                __malloc_unlock
+                0x080142d0       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-mlock.o)
+                0x080142d0                __malloc_unlock
  .text.__ssputs_r
-                0x080142cc       0xc4 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
-                0x080142cc                __ssputs_r
+                0x080142e0       0xc4 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
+                0x080142e0                __ssputs_r
  .text._svfprintf_r
-                0x08014390      0x1e8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
-                0x08014390                _svfprintf_r
-                0x08014390                _svfiprintf_r
+                0x080143a4      0x1e8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
+                0x080143a4                _svfprintf_r
+                0x080143a4                _svfiprintf_r
  .text._sungetc_r
-                0x08014578       0x78 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
-                0x08014578                _sungetc_r
+                0x0801458c       0x78 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x0801458c                _sungetc_r
  .text.__ssrefill_r
-                0x080145f0       0x3e /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
-                0x080145f0                __ssrefill_r
- *fill*         0x0801462e        0x2
+                0x08014604       0x3e /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x08014604                __ssrefill_r
+ *fill*         0x08014642        0x2
  .text.__ssvfscanf_r
-                0x08014630      0x2b0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
-                0x08014630                __ssvfscanf_r
-                0x08014630                __ssvfiscanf_r
+                0x08014644      0x2b0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x08014644                __ssvfscanf_r
+                0x08014644                __ssvfiscanf_r
  .text._printf_common
-                0x080148e0       0xda /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
-                0x080148e0                _printf_common
- *fill*         0x080149ba        0x2
+                0x080148f4       0xda /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x080148f4                _printf_common
+ *fill*         0x080149ce        0x2
  .text._printf_i
-                0x080149bc      0x21c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
-                0x080149bc                _printf_i
+                0x080149d0      0x21c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x080149d0                _printf_i
  .text._scanf_chars
-                0x08014bd8       0xc0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
-                0x08014bd8                _scanf_chars
+                0x08014bec       0xc0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x08014bec                _scanf_chars
  .text._scanf_i
-                0x08014c98      0x1f0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
-                0x08014c98                _scanf_i
- .text.__sccl   0x08014e88       0x7a /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sccl.o)
-                0x08014e88                __sccl
- *fill*         0x08014f02        0x2
+                0x08014cac      0x1f0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x08014cac                _scanf_i
+ .text.__sccl   0x08014e9c       0x7a /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sccl.o)
+                0x08014e9c                __sccl
+ *fill*         0x08014f16        0x2
  .text.__submore
-                0x08014f04       0x7c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ungetc.o)
-                0x08014f04                __submore
- .text.memmove  0x08014f80       0x28 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memmove.o)
-                0x08014f80                memmove
- .text._sbrk_r  0x08014fa8       0x24 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sbrkr.o)
-                0x08014fa8                _sbrk_r
- .text.memchr   0x08014fcc       0x16 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memchr-stub.o)
-                0x08014fcc                memchr
+                0x08014f18       0x7c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ungetc.o)
+                0x08014f18                __submore
+ .text.memmove  0x08014f94       0x28 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memmove.o)
+                0x08014f94                memmove
+ .text._sbrk_r  0x08014fbc       0x24 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-sbrkr.o)
+                0x08014fbc                _sbrk_r
+ .text.memchr   0x08014fe0       0x16 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memchr-stub.o)
+                0x08014fe0                memchr
  .text._realloc_r
-                0x08014fe2       0x5e /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-reallocr.o)
-                0x08014fe2                _realloc_r
+                0x08014ff6       0x5e /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-reallocr.o)
+                0x08014ff6                _realloc_r
  .text._strtoul_l.isra.0
-                0x08015040      0x100 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
+                0x08015054      0x100 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
  .text._strtoul_r
-                0x08015140        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
-                0x08015140                _strtoul_r
+                0x08015154        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-strtoul.o)
+                0x08015154                _strtoul_r
  .text._malloc_usable_size_r
-                0x08015148       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-msizer.o)
-                0x08015148                _malloc_usable_size_r
- .text._sbrk    0x08015158       0x1c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libnosys.a(sbrk.o)
-                0x08015158                _sbrk
- .text.ceil     0x08015174      0x118 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_ceil.o)
-                0x08015174                ceil
- .text.floor    0x0801528c      0x124 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_floor.o)
-                0x0801528c                floor
- .text.round    0x080153b0       0xa0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_round.o)
-                0x080153b0                round
+                0x0801515c       0x10 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-msizer.o)
+                0x0801515c                _malloc_usable_size_r
+ .text._sbrk    0x0801516c       0x1c /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libnosys.a(sbrk.o)
+                0x0801516c                _sbrk
+ .text.ceil     0x08015188      0x118 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_ceil.o)
+                0x08015188                ceil
+ .text.floor    0x080152a0      0x124 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_floor.o)
+                0x080152a0                floor
+ .text.round    0x080153c4       0xa0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libm.a(libm_a-s_round.o)
+                0x080153c4                round
  *(.glue_7)
- .glue_7        0x08015450        0x0 linker stubs
+ .glue_7        0x08015464        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x08015450        0x0 linker stubs
+ .glue_7t       0x08015464        0x0 linker stubs
  *(.eh_frame)
- .eh_frame      0x08015450        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
+ .eh_frame      0x08015464        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
  *(.init)
- .init          0x08015450        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crti.o
-                0x08015450                _init
- .init          0x08015454        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
+ .init          0x08015464        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crti.o
+                0x08015464                _init
+ .init          0x08015468        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
  *(.fini)
- .fini          0x0801545c        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crti.o
-                0x0801545c                _fini
- .fini          0x08015460        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
-                0x08015468                        . = ALIGN (0x4)
-                0x08015468                        _etext = .
+ .fini          0x08015470        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crti.o
+                0x08015470                _fini
+ .fini          0x08015474        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
+                0x0801547c                        . = ALIGN (0x4)
+                0x0801547c                        _etext = .
 
-.vfp11_veneer   0x08015468        0x0
- .vfp11_veneer  0x08015468        0x0 linker stubs
+.vfp11_veneer   0x0801547c        0x0
+ .vfp11_veneer  0x0801547c        0x0 linker stubs
 
-.v4_bx          0x08015468        0x0
- .v4_bx         0x08015468        0x0 linker stubs
+.v4_bx          0x0801547c        0x0
+ .v4_bx         0x0801547c        0x0 linker stubs
 
-.iplt           0x08015468        0x0
- .iplt          0x08015468        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
+.iplt           0x0801547c        0x0
+ .iplt          0x0801547c        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
 
-.rodata         0x08015468     0x2788
-                0x08015468                        . = ALIGN (0x4)
+.rodata         0x08015480     0x2794
+                0x08015480                        . = ALIGN (0x4)
  *(.rodata)
- .rodata        0x08015468        0xb ./build/obj/chameleon-i2c2-vcc-pmos/tfsensor_f8521127.o
- *fill*         0x08015473        0x1
- .rodata        0x08015474       0x24 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
- .rodata        0x08015498        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+ .rodata        0x08015480        0xb ./build/obj/chameleon-i2c2-vcc-pmos/tfsensor_f8521127.o
+ *fill*         0x0801548b        0x1
+ .rodata        0x0801548c       0x24 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+ .rodata        0x080154b0        0xc /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
  *(.rodata*)
  .rodata.EEPROM_program.str1.1
-                0x080154a4     0x1b4e ./build/obj/chameleon-i2c2-vcc-pmos/flash_eraseprogram_078ea408.o
+                0x080154bc     0x1b59 ./build/obj/chameleon-i2c2-vcc-pmos/flash_eraseprogram_078ea408.o
                                  0x1d (size before relaxing)
  .rodata.EEPROM_erase_one_address.str1.1
-                0x08016ff2        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/flash_eraseprogram_078ea408.o
+                0x08017015        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/flash_eraseprogram_078ea408.o
                                  0x22 (size before relaxing)
  .rodata.SX1276OnDio0Irq.str1.1
-                0x08016ff2        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/sx1276_174cd5fd.o
+                0x08017015        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/sx1276_174cd5fd.o
                                  0x31 (size before relaxing)
  .rodata.SX1276OnDio1Irq.str1.1
-                0x08016ff2        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/sx1276_174cd5fd.o
+                0x08017015        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/sx1276_174cd5fd.o
                                   0xc (size before relaxing)
- *fill*         0x08016ff2        0x6
+ *fill*         0x08017015        0x3
  .rodata.CSWTCH.94
-                0x08016ff8       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/sx1276_174cd5fd.o
+                0x08017018       0x18 ./build/obj/chameleon-i2c2-vcc-pmos/sx1276_174cd5fd.o
  .rodata.FskBandwidths
-                0x08017010       0xb0 ./build/obj/chameleon-i2c2-vcc-pmos/sx1276_174cd5fd.o
-                0x08017010                FskBandwidths
+                0x08017030       0xb0 ./build/obj/chameleon-i2c2-vcc-pmos/sx1276_174cd5fd.o
+                0x08017030                FskBandwidths
  .rodata.RadioRegsInit
-                0x080170c0       0x30 ./build/obj/chameleon-i2c2-vcc-pmos/sx1276_174cd5fd.o
-                0x080170c0                RadioRegsInit
+                0x080170e0       0x30 ./build/obj/chameleon-i2c2-vcc-pmos/sx1276_174cd5fd.o
+                0x080170e0                RadioRegsInit
  .rodata.waitbusy.str1.1
-                0x080170f0        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lidar_lite_v3hp_29c3a030.o
+                0x08017110        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lidar_lite_v3hp_29c3a030.o
                                   0x2 (size before relaxing)
  .rodata.LidarLite_init.str1.1
-                0x080170f0        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lidar_lite_v3hp_29c3a030.o
+                0x08017110        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lidar_lite_v3hp_29c3a030.o
                                   0x7 (size before relaxing)
  .rodata.LidarLite.str1.1
-                0x080170f0        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lidar_lite_v3hp_29c3a030.o
+                0x08017110        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lidar_lite_v3hp_29c3a030.o
                                   0x2 (size before relaxing)
- .rodata.Radio  0x080170f0       0x68 ./build/obj/chameleon-i2c2-vcc-pmos/sx1276mb1las_a2dfe320.o
-                0x080170f0                Radio
+ .rodata.Radio  0x08017110       0x68 ./build/obj/chameleon-i2c2-vcc-pmos/sx1276mb1las_a2dfe320.o
+                0x08017110                Radio
  .rodata.PLLMulTable
-                0x08017158        0x9 ./build/obj/chameleon-i2c2-vcc-pmos/system_stm32l0xx_d1d9d34c.o
-                0x08017158                PLLMulTable
+                0x08017178        0x9 ./build/obj/chameleon-i2c2-vcc-pmos/system_stm32l0xx_d1d9d34c.o
+                0x08017178                PLLMulTable
  .rodata.APBPrescTable
-                0x08017161        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/system_stm32l0xx_d1d9d34c.o
-                0x08017161                APBPrescTable
+                0x08017181        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/system_stm32l0xx_d1d9d34c.o
+                0x08017181                APBPrescTable
  .rodata.AHBPrescTable
-                0x08017169       0x10 ./build/obj/chameleon-i2c2-vcc-pmos/system_stm32l0xx_d1d9d34c.o
-                0x08017169                AHBPrescTable
+                0x08017189       0x10 ./build/obj/chameleon-i2c2-vcc-pmos/system_stm32l0xx_d1d9d34c.o
+                0x08017189                AHBPrescTable
  .rodata.BSP_sensor_Read.str1.1
-                0x08017179        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/bsp_fc5dfbea.o
+                0x08017199        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/bsp_fc5dfbea.o
                                 0x1ff (size before relaxing)
  .rodata.BSP_sensor_Init.str1.1
-                0x08017179        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/bsp_fc5dfbea.o
-                                 0xe3 (size before relaxing)
+                0x08017199        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/bsp_fc5dfbea.o
+                                 0xee (size before relaxing)
  .rodata.DaysInMonthLeapYear
-                0x08017179        0xc ./build/obj/chameleon-i2c2-vcc-pmos/hw_rtc_40701610.o
+                0x08017199        0xc ./build/obj/chameleon-i2c2-vcc-pmos/hw_rtc_40701610.o
  .rodata.DaysInMonth
-                0x08017185        0xc ./build/obj/chameleon-i2c2-vcc-pmos/hw_rtc_40701610.o
+                0x080171a5        0xc ./build/obj/chameleon-i2c2-vcc-pmos/hw_rtc_40701610.o
  .rodata.LORA_ConfirmClass.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/main_47d3d071.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/main_47d3d071.o
                                  0x1e (size before relaxing)
  .rodata.LORA_RxData.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/main_47d3d071.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/main_47d3d071.o
                                  0x4a (size before relaxing)
  .rodata.LORA_HasJoined.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/main_47d3d071.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/main_47d3d071.o
                                   0x9 (size before relaxing)
  .rodata.main.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/main_47d3d071.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/main_47d3d071.o
                                  0x1e (size before relaxing)
  .rodata.at_tfmini_data_receive.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/vcom_81525599.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/vcom_81525599.o
                                   0x6 (size before relaxing)
  .rodata.print_8_02x.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x2a (size before relaxing)
  .rodata.print_16_02x.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x52 (size before relaxing)
  .rodata.print_d.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                   0x5 (size before relaxing)
  .rodata.print_u.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                   0x5 (size before relaxing)
  .rodata.changeform.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x28 (size before relaxing)
  .rodata.sscanf_16_hhx.part.0.isra.0.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x50 (size before relaxing)
  .rodata.at_DEBUG_run.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x13 (size before relaxing)
  .rodata.at_FDR.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                   0x5 (size before relaxing)
  .rodata.at_DevEUI_set.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x28 (size before relaxing)
  .rodata.at_DevAddr_set.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x14 (size before relaxing)
  .rodata.at_TransmitPower_set.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x2c (size before relaxing)
  .rodata.at_DutyCycle_get.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                   0x8 (size before relaxing)
  .rodata.at_Rx2Frequency_set.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                   0x4 (size before relaxing)
  .rodata.at_JoinAcceptDelay1_set.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x22 (size before relaxing)
  .rodata.at_NetworkID_get.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x16 (size before relaxing)
  .rodata.at_DeviceClass_get.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                   0x5 (size before relaxing)
  .rodata.at_SendBinary.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x29 (size before relaxing)
  .rodata.at_ReceiveBinary.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                   0xd (size before relaxing)
  .rodata.at_Receive.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                   0x3 (size before relaxing)
  .rodata.at_RJTDC_set.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x20 (size before relaxing)
  .rodata.at_RPL_set.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x28 (size before relaxing)
  .rodata.at_version_get.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                   0x8 (size before relaxing)
  .rodata.at_ack_set.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                   0x9 (size before relaxing)
  .rodata.at_ack_get.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                   0xb (size before relaxing)
  .rodata.at_CFG_run.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x53 (size before relaxing)
  .rodata.at_TDC_set.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x23 (size before relaxing)
  .rodata.at_MOD_set.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x4e (size before relaxing)
  .rodata.at_INTMOD1_set.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x1e (size before relaxing)
  .rodata.at_INTMOD2_set.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x1e (size before relaxing)
  .rodata.at_INTMOD3_set.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x1e (size before relaxing)
  .rodata.at_weight_GapValue_set.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                   0x6 (size before relaxing)
  .rodata.at_weight_GapValue_get.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                   0x8 (size before relaxing)
  .rodata.at_SETCNT_set.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                   0x7 (size before relaxing)
  .rodata.at_downlink_detect_set.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                  0x2d (size before relaxing)
  .rodata.at_setmaxnbtrans_set.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                   0x6 (size before relaxing)
  .rodata.at_setmaxnbtrans_get.str1.1
-                0x08017191        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
                                   0x8 (size before relaxing)
  .rodata.CSWTCH.108
-                0x08017191        0xd ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
+                0x080171b1        0xd ./build/obj/chameleon-i2c2-vcc-pmos/at_82e457e9.o
  .rodata.CMD_Process.str1.1
-                0x0801719e        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
+                0x080171be        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
                                  0xe8 (size before relaxing)
  .rodata.printf_all_config.str1.1
-                0x0801719e        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
+                0x080171be        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
                                   0x6 (size before relaxing)
  .rodata.str1.1
-                0x0801719e        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
+                0x080171be        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
                                 0xfc6 (size before relaxing)
- *fill*         0x0801719e        0x2
+ *fill*         0x080171be        0x2
  .rodata.ATCommand
-                0x080171a0      0x588 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
+                0x080171c0      0x588 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
  .rodata.ATError_description
-                0x08017728       0x28 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
+                0x08017748       0x28 ./build/obj/chameleon-i2c2-vcc-pmos/command_a2f38ca8.o
  .rodata.region_printf.str1.1
-                0x08017750        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x08017770        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
                                   0x8 (size before relaxing)
  .rodata.key_printf.str1.1
-                0x08017750        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x08017770        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
                                  0x32 (size before relaxing)
  .rodata.lora_config_devaddr_get.str1.1
-                0x08017750        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x08017770        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
                                   0x9 (size before relaxing)
  .rodata.EEPROM_Store_Config.str1.1
-                0x08017750        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x08017770        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
                                  0x17 (size before relaxing)
  .rodata.LORA_Init.str1.1
-                0x08017750        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x08017770        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
                                  0x92 (size before relaxing)
  .rodata.string_touint.str1.1
-                0x08017750        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
+                0x08017770        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lora_bb201500.o
                                   0x7 (size before relaxing)
  .rodata.RegionEU868RxConfig.str1.1
-                0x08017750        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x08017770        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
                                  0x42 (size before relaxing)
  .rodata.RegionEU868TxConfig.str1.1
-                0x08017750        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x08017770        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
                                  0x3c (size before relaxing)
  .rodata.MaxPayloadOfDatarateRepeaterEU868
-                0x08017750        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x08017770        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
  .rodata.MaxPayloadOfDatarateEU868
-                0x08017758        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x08017778        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
  .rodata.BandwidthsEU868
-                0x08017760       0x20 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x08017780       0x20 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
  .rodata.DataratesEU868
-                0x08017780        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
+                0x080177a0        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/RegionEU868_fd21cf6c.o
  .rodata.ProcessMacCommands.str1.1
-                0x08017788        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x080177a8        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
                                  0xad (size before relaxing)
  .rodata.printf_joinmessage.str1.1
-                0x08017788        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x080177a8        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
                                  0x5f (size before relaxing)
  .rodata.SendFrameOnChannel.str1.1
-                0x08017788        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x080177a8        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
                                  0x52 (size before relaxing)
  .rodata.LoRaMacMaxEirpTable
-                0x08017788       0x10 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
+                0x080177a8       0x10 ./build/obj/chameleon-i2c2-vcc-pmos/LoRaMac_6eac7497.o
  .rodata.OnCertifTxNextPacketTimerEvent.str1.1
-                0x08017798        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lora-test_9d43f367.o
+                0x080177b8        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/lora-test_9d43f367.o
                                  0x1a (size before relaxing)
  .rodata.gfm3_sbox
-                0x08017798      0x100 ./build/obj/chameleon-i2c2-vcc-pmos/aes_fc1b9773.o
+                0x080177b8      0x100 ./build/obj/chameleon-i2c2-vcc-pmos/aes_fc1b9773.o
  .rodata.gfm2_sbox
-                0x08017898      0x100 ./build/obj/chameleon-i2c2-vcc-pmos/aes_fc1b9773.o
- .rodata.sbox   0x08017998      0x100 ./build/obj/chameleon-i2c2-vcc-pmos/aes_fc1b9773.o
+                0x080178b8      0x100 ./build/obj/chameleon-i2c2-vcc-pmos/aes_fc1b9773.o
+ .rodata.sbox   0x080179b8      0x100 ./build/obj/chameleon-i2c2-vcc-pmos/aes_fc1b9773.o
  .rodata.commands.0
-                0x08017a98        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/via_chameleon.o
+                0x08017ab8        0x8 ./build/obj/chameleon-i2c2-vcc-pmos/via_chameleon.o
  .rodata.chameleon_result_name.str1.1
-                0x08017aa0        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x08017ac0        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
                                   0x8 (size before relaxing)
  .rodata.str1.1
-                0x08017aa0        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x08017ac0        0x0 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
                                  0x6c (size before relaxing)
- .rodata.CSWTCH.20
-                0x08017aa0       0x20 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+ .rodata.CSWTCH.21
+                0x08017ac0       0x20 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
  .rodata.stm32_ops
-                0x08017ac0       0x2c ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
+                0x08017ae0       0x30 ./build/obj/chameleon-i2c2-vcc-pmos/chameleon_lsn50_hw.o
  .rodata._ctype_
-                0x08017aec      0x101 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ctype_.o)
-                0x08017aec                _ctype_
+                0x08017b10      0x101 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-ctype_.o)
+                0x08017b10                _ctype_
  .rodata._svfprintf_r.str1.1
-                0x08017bed        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
+                0x08017c11        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfprintf.o)
                                  0x11 (size before relaxing)
  .rodata.__ssvfscanf_r.str1.1
-                0x08017bed        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
+                0x08017c11        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-svfscanf.o)
                                   0x4 (size before relaxing)
  .rodata._printf_i.str1.1
-                0x08017bed        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x08017c11        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfprintf_i.o)
                                  0x22 (size before relaxing)
  .rodata._scanf_i.str1.1
-                0x08017bed        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x08017c11        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
                                  0x12 (size before relaxing)
  .rodata.str1.1
-                0x08017bed        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
+                0x08017c11        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-nano-vfscanf_i.o)
                                   0x9 (size before relaxing)
-                0x08017bf0                        . = ALIGN (0x4)
- *fill*         0x08017bed        0x3
+                0x08017c14                        . = ALIGN (0x4)
+ *fill*         0x08017c11        0x3
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
-.ARM            0x08017bf0        0x8
-                0x08017bf0                        __exidx_start = .
+.ARM            0x08017c14        0x8
+                0x08017c14                        __exidx_start = .
  *(.ARM.exidx*)
  .ARM.exidx.text.__udivmoddi4
-                0x08017bf0        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
-                0x08017bf8                        __exidx_end = .
+                0x08017c14        0x8 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/libgcc.a(_udivmoddi4.o)
+                0x08017c1c                        __exidx_end = .
 
-.rel.dyn        0x08017bf8        0x0
- .rel.iplt      0x08017bf8        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
+.rel.dyn        0x08017c1c        0x0
+ .rel.iplt      0x08017c1c        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
 
-.preinit_array  0x08017bf8        0x0
-                0x08017bf8                        PROVIDE (__preinit_array_start = .)
+.preinit_array  0x08017c1c        0x0
+                0x08017c1c                        PROVIDE (__preinit_array_start = .)
  *(.preinit_array*)
-                0x08017bf8                        PROVIDE (__preinit_array_end = .)
+                0x08017c1c                        PROVIDE (__preinit_array_end = .)
 
-.init_array     0x08017bf8        0x4
-                0x08017bf8                        PROVIDE (__init_array_start = .)
+.init_array     0x08017c1c        0x4
+                0x08017c1c                        PROVIDE (__init_array_start = .)
  *(SORT_BY_NAME(.init_array.*))
  *(.init_array*)
- .init_array    0x08017bf8        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
-                0x08017bfc                        PROVIDE (__init_array_end = .)
+ .init_array    0x08017c1c        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
+                0x08017c20                        PROVIDE (__init_array_end = .)
 
-.fini_array     0x08017bfc        0x4
-                0x08017bfc                        PROVIDE (__fini_array_start = .)
+.fini_array     0x08017c20        0x4
+                0x08017c20                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_NAME(.fini_array.*))
  *(.fini_array*)
- .fini_array    0x08017bfc        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
-                0x08017c00                        PROVIDE (__fini_array_end = .)
-                0x08017c00                        _sidata = LOADADDR (.data)
+ .fini_array    0x08017c20        0x4 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
+                0x08017c24                        PROVIDE (__fini_array_end = .)
+                0x08017c24                        _sidata = LOADADDR (.data)
 
-.data           0x20000000      0x1ac load address 0x08017c00
+.data           0x20000000      0x1ac load address 0x08017c24
                 0x20000000                        . = ALIGN (0x4)
                 0x20000000                        _sdata = .
  *(.data)
@@ -5565,10 +5566,10 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x200001ac                        . = ALIGN (0x4)
                 0x200001ac                        _edata = .
 
-.igot.plt       0x200001ac        0x0 load address 0x08017dac
+.igot.plt       0x200001ac        0x0 load address 0x08017dd0
  .igot.plt      0x200001ac        0x0 /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtbegin.o
 
-.bss            0x200001ac     0x16c8 load address 0x08017dac
+.bss            0x200001ac     0x16c8 load address 0x08017dd0
                 0x200001ac                        . = ALIGN (0x4)
                 0x200001ac                        _sbss = .
                 0x200001ac                        __bss_start__ = _sbss
@@ -6162,7 +6163,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/16.1.0/thumb/v6-m/nofp/crtn.o
                 0x20001874                        __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x20001874      0x804 load address 0x08017dac
+                0x20001874      0x804 load address 0x08017dd0
                 0x20001878                        . = ALIGN (0x8)
  *fill*         0x20001874        0x4
                 0x20001878                        PROVIDE (end = .)

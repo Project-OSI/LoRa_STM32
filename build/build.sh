@@ -9,7 +9,8 @@ TARGET_VARIANT="${1:-}"
 case "$TARGET_VARIANT" in
   clean)
     rm -rf "./build/obj/chameleon-i2c2-vcc-pmos" \
-           "./build/obj/chameleon-i2c2-5v-reg"
+           "./build/obj/chameleon-i2c2-5v-reg" \
+           "./build/obj/chameleon-i2c2-5v-reg-field-debug"
     rm -f ./build/LSN50-chameleon-i2c2-vcc-pmos.elf \
           ./build/LSN50-chameleon-i2c2-vcc-pmos.map \
           ./build/LSN50-chameleon-i2c2-vcc-pmos.hex \
@@ -17,7 +18,11 @@ case "$TARGET_VARIANT" in
           ./build/LSN50-chameleon-i2c2-5v-reg.elf \
           ./build/LSN50-chameleon-i2c2-5v-reg.map \
           ./build/LSN50-chameleon-i2c2-5v-reg.hex \
-          ./build/LSN50-chameleon-i2c2-5v-reg.bin
+          ./build/LSN50-chameleon-i2c2-5v-reg.bin \
+          ./build/LSN50-chameleon-i2c2-5v-reg-field-debug.elf \
+          ./build/LSN50-chameleon-i2c2-5v-reg-field-debug.map \
+          ./build/LSN50-chameleon-i2c2-5v-reg-field-debug.hex \
+          ./build/LSN50-chameleon-i2c2-5v-reg-field-debug.bin
     exit 0
     ;;
   chameleon-i2c2-vcc-pmos)
@@ -28,8 +33,12 @@ case "$TARGET_VARIANT" in
     TARGET_BASENAME="LSN50-chameleon-i2c2-5v-reg"
     EXTRA_CFLAGS=(-UUSE_SHT -DUSE_CHAMELEON -DCHAMELEON_POWER_LSN50_5V)
     ;;
+  chameleon-i2c2-5v-reg-field-debug)
+    TARGET_BASENAME="LSN50-chameleon-i2c2-5v-reg-field-debug"
+    EXTRA_CFLAGS=(-UUSE_SHT -DUSE_CHAMELEON -DCHAMELEON_POWER_LSN50_5V -DCHAMELEON_FIELD_DEBUG)
+    ;;
   *)
-    echo "usage: $0 {clean|chameleon-i2c2-vcc-pmos|chameleon-i2c2-5v-reg}" >&2
+    echo "usage: $0 {clean|chameleon-i2c2-vcc-pmos|chameleon-i2c2-5v-reg|chameleon-i2c2-5v-reg-field-debug}" >&2
     exit 2
     ;;
 esac

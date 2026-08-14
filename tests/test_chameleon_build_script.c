@@ -45,6 +45,9 @@ int main(void)
     require(script, "chameleon-i2c2-5v-reg)");
     require(script, "CHAMELEON_POWER_LSN50_5V");
     require(script, "LSN50-chameleon-i2c2-5v-reg");
+    require(script, "chameleon-i2c2-5v-reg-field-debug)");
+    require(script, "CHAMELEON_FIELD_DEBUG");
+    require(script, "LSN50-chameleon-i2c2-5v-reg-field-debug");
     require(script, "OBJDIR=\"./build/obj/${TARGET_VARIANT}\"");
     require(script, "src/chameleon_lsn50_hw.c");
     if (strstr(hardware, "GPIO_MODE_OUTPUT_PP") != 0) {
