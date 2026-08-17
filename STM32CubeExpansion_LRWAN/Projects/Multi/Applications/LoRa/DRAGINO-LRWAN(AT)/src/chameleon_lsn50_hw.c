@@ -164,7 +164,9 @@ static chameleon_result_t run_one_session(const chameleon_lsn50_ops_t *ops,
     if (result == CHAMELEON_RESULT_OK) {
         remaining = remaining_ms(ops, acquire_started);
         timeout = remaining > 50U
-                ? min_u32(measurement_timeout_ms, remaining - 50U) : 0U;
+                ? min_u32(CHAMELEON_DEFAULT_TIMEOUT_MS,
+                          min_u32(measurement_timeout_ms, remaining - 50U))
+                : 0U;
         if (timeout == 0U) {
             result = CHAMELEON_RESULT_MEASUREMENT_TIMEOUT;
         } else {
@@ -176,7 +178,9 @@ static chameleon_result_t run_one_session(const chameleon_lsn50_ops_t *ops,
     if (result == CHAMELEON_RESULT_OK) {
         remaining = remaining_ms(ops, acquire_started);
         timeout = remaining > 500U
-                ? min_u32(measurement_timeout_ms, remaining - 500U) : 0U;
+                ? min_u32(CHAMELEON_DEFAULT_TIMEOUT_MS,
+                          min_u32(measurement_timeout_ms, remaining - 500U))
+                : 0U;
         if (timeout == 0U) {
             result = CHAMELEON_RESULT_MEASUREMENT_TIMEOUT;
         } else {

@@ -292,19 +292,18 @@ static void test_cold_retry_is_exactly_one_second_when_budget_allows(void)
     ASSERT_EQ(chameleon_lsn50_last_attempts(), 2U, "one retry only");
 }
 
-static void test_retry_requires_six_point_one_five_seconds_remaining(void)
+static void test_retry_skips_at_six_point_one_four_nine_second_reserve(void)
 {
     fake_hw_t fake = make_fake();
     chameleon_lsn50_ops_t ops = make_ops(&fake);
     chameleon_sample_t sample;
     fake.first_measure = CHAMELEON_RESULT_STATUS_IO_FAILED;
-    fake.ready_cost_ms = 6000U;
-    fake.measure_cost_ms = 6000U;
+    fake.extra_after_first_measure_ms = 5751U;
 
-    ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 6000U),
+    ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
               CHAMELEON_RESULT_STATUS_IO_FAILED, "retry skipped at reserve boundary");
     ASSERT_EQ(chameleon_lsn50_last_attempts(), 1U, "no second session");
-    ASSERT_EQ(fake.now_ms, 11500U, "first session consumes bounded costs");
+    ASSERT_EQ(fake.now_ms, 5851U, "first session leaves 6149ms");
 }
 
 static void test_ready_and_measure_reserves_prevent_late_calls(void)
@@ -392,6 +391,24 @@ static void test_watchdog_is_refreshed_around_bounded_opaque_calls(void)
                 "opaque calls remain inside watchdog limit");
 }
 
+static void test_caller_timeout_cannot_extend_an_opaque_via_call(void)
+{
+    fake_hw_t fake = make_fake();
+    chameleon_lsn50_ops_t ops = make_ops(&fake);
+    chameleon_sample_t sample;
+    fake.ready_cost_ms = 10000U;
+    fake.measure_cost_ms = 10000U;
+
+    ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 10000U),
+              CHAMELEON_RESULT_OK, "large caller timeout remains bounded");
+    ASSERT_TRUE(fake.ready_timeout_seen <= CHAMELEON_DEFAULT_TIMEOUT_MS,
+                "ready timeout capped at VIA limit");
+    ASSERT_TRUE(fake.measure_timeout_seen <= CHAMELEON_DEFAULT_TIMEOUT_MS,
+                "measure timeout capped at VIA limit");
+    ASSERT_TRUE(fake.max_watchdog_gap_ms < 5000U,
+                "opaque timeout remains inside watchdog limit");
+}
+
 static void test_valid_sentinel_sample_does_not_retry(void)
 {
     fake_hw_t fake = make_fake();
@@ -412,13 +429,14 @@ int main(void)
     test_readiness_timeout_does_not_clear_bus();
     test_probe_window_is_four_hundred_ms_with_fifty_ms_intervals();
     test_cold_retry_is_exactly_one_second_when_budget_allows();
-    test_retry_requires_six_point_one_five_seconds_remaining();
+    test_retry_skips_at_six_point_one_four_nine_second_reserve();
     test_ready_and_measure_reserves_prevent_late_calls();
     test_ready_reserve_skips_call_with_fifty_ms_or_less_remaining();
     test_measure_reserve_skips_call_with_five_hundred_ms_or_less_remaining();
     test_retry_runs_at_exact_six_point_one_five_second_reserve();
     test_watchdog_delay_slices_are_no_more_than_one_second();
     test_watchdog_is_refreshed_around_bounded_opaque_calls();
+    test_caller_timeout_cannot_extend_an_opaque_via_call();
     test_valid_sentinel_sample_does_not_retry();
     puts("test_chameleon_lifecycle OK");
     return 0;
