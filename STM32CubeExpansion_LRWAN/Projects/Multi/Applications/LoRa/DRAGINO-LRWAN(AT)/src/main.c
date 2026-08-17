@@ -65,12 +65,6 @@
 #include "bsp.h"
 #endif
 
-#ifdef USE_CHAMELEON
-#define PB14_DIGITAL_READ() GPIO_PIN_RESET
-#else
-#define PB14_DIGITAL_READ() HAL_GPIO_ReadPin(GPIO_EXTI14_PORT,GPIO_EXTI14_PIN)
-#endif
-
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 
@@ -246,6 +240,47 @@ static  LoRaParam_t LoRaParamInit= {LORAWAN_ADR_STATE,
 
 /* Private functions ---------------------------------------------------------*/
 
+#ifdef USE_CHAMELEON
+static const char *chameleon_reset_cause(uint32_t flags)
+{
+  if ((flags & RCC_CSR_IWDGRSTF) != 0U)
+  {
+    return "iwdg";
+  }
+  if ((flags & RCC_CSR_WWDGRSTF) != 0U)
+  {
+    return "wwdg";
+  }
+  if ((flags & RCC_CSR_SFTRSTF) != 0U)
+  {
+    return "software";
+  }
+  if ((flags & RCC_CSR_LPWRRSTF) != 0U)
+  {
+    return "low-power";
+  }
+  if ((flags & RCC_CSR_PORRSTF) != 0U)
+  {
+    return "por/pdr";
+  }
+  if ((flags & RCC_CSR_PINRSTF) != 0U)
+  {
+    return "pin";
+  }
+  if ((flags & RCC_CSR_OBLRSTF) != 0U)
+  {
+    return "option-byte";
+  }
+#if defined(RCC_CSR_FWRSTF)
+  if ((flags & RCC_CSR_FWRSTF) != 0U)
+  {
+    return "firewall";
+  }
+#endif
+  return "other";
+}
+#endif
+
 /**
   * @brief  Main program
   * @param  None
@@ -269,15 +304,12 @@ int main( void )
   /* USER CODE END 1 */
   CMD_Init();
 
-#ifdef CHAMELEON_FIELD_DEBUG
-	uint32_t chameleon_last_stage = chameleon_field_debug_get_stage();
-	PPRINTF("[CHAM-DBG1] reset=%s\r\n",
-	        (__HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST) != RESET) ? "iwdg" : "other");
-	PPRINTF("[CHAM-DBG2] last-stage=%lu\r\n",
-	        (unsigned long)chameleon_last_stage);
-	PPRINTF("[CHAM-DBG3] raw-stage=0x%08lx\r\n",
-	        (unsigned long)RTC->BKP4R);
-	chameleon_field_debug_clear_stage();
+#ifdef USE_CHAMELEON
+	uint32_t chameleon_reset_flags = RCC->CSR;
+	PPRINTF("Chameleon reset:%s flags:0x%08lx\r\n",
+	        chameleon_reset_cause(chameleon_reset_flags),
+	        (unsigned long)chameleon_reset_flags);
+	__HAL_RCC_CLEAR_RESET_FLAGS();
 #endif
 	
 	iwdg_init();		
@@ -370,7 +402,7 @@ int main( void )
 			{
 				if((( LoRaMacState & 0x00000001 ) != 0x00000001) &&(( LoRaMacState & 0x00000010 ) != 0x00000010))
 				{
-					normal_status=PB14_DIGITAL_READ();
+					normal_status=HAL_GPIO_ReadPin(GPIO_EXTI14_PORT,GPIO_EXTI14_PIN);
 					normal2_status=HAL_GPIO_ReadPin(GPIO_EXTI15_PORT,GPIO_EXTI15_PIN);
 					normal3_status=HAL_GPIO_ReadPin(GPIO_EXTI4_PORT,GPIO_EXTI4_PIN);
 					is_check_exit=0;
@@ -596,7 +628,7 @@ static void Send( void )
 
 		if(exit_temp==0)
 		{
-			switch_status=PB14_DIGITAL_READ();
+			switch_status=HAL_GPIO_ReadPin(GPIO_EXTI14_PORT,GPIO_EXTI14_PIN);
 		}
 		AppData.Buff[i++]=(switch_status<<7)|(sensor_data.in1<<1)|(exit_temp&0x01);
 	
@@ -643,7 +675,7 @@ static void Send( void )
 
 		if(exit_temp==0)
 		{
-			switch_status=PB14_DIGITAL_READ();
+			switch_status=HAL_GPIO_ReadPin(GPIO_EXTI14_PORT,GPIO_EXTI14_PIN);
 		}
 		AppData.Buff[i++]=(switch_status<<7)|(sensor_data.in1<<1)|0x04|(exit_temp&0x01);
 
@@ -664,7 +696,7 @@ static void Send( void )
 	else if(mode==3)
 	{
 #ifdef USE_CHAMELEON
-		switch_status=0;
+		switch_status=HAL_GPIO_ReadPin(GPIO_EXTI14_PORT,GPIO_EXTI14_PIN);
 		chameleon_sample_t cs = *bsp_chameleon_last_sample();
 		uint8_t mod3_status;
 		mod3_status = (switch_status<<7)|(sensor_data.in1<<1)|0x08|(exit_temp&0x01);
@@ -686,7 +718,7 @@ static void Send( void )
 
 		if(exit_temp==0)
 		{
-			switch_status=PB14_DIGITAL_READ();
+			switch_status=HAL_GPIO_ReadPin(GPIO_EXTI14_PORT,GPIO_EXTI14_PIN);
 		}
 		AppData.Buff[i++]=(switch_status<<7)|(sensor_data.in1<<1)|0x08|(exit_temp&0x01);
 
@@ -724,7 +756,7 @@ static void Send( void )
 
 		if(exit_temp==0)
 		{
-			switch_status=PB14_DIGITAL_READ();
+			switch_status=HAL_GPIO_ReadPin(GPIO_EXTI14_PORT,GPIO_EXTI14_PIN);
 		}
 		AppData.Buff[i++]=(switch_status<<7)|(sensor_data.in1<<1)|0x0C|(exit_temp&0x01);
 
@@ -748,7 +780,7 @@ static void Send( void )
 
 		if(exit_temp==0)
 		{
-			switch_status=PB14_DIGITAL_READ();
+			switch_status=HAL_GPIO_ReadPin(GPIO_EXTI14_PORT,GPIO_EXTI14_PIN);
 		}
 		AppData.Buff[i++]=(switch_status<<7)|(sensor_data.in1<<1)|0x10|(exit_temp&0x01);
 
@@ -790,7 +822,7 @@ static void Send( void )
 
 		if(exit_temp==0)
 		{
-			switch_status=PB14_DIGITAL_READ();
+			switch_status=HAL_GPIO_ReadPin(GPIO_EXTI14_PORT,GPIO_EXTI14_PIN);
 		}
 		if(exit2_temp==0)
 		{
@@ -822,7 +854,7 @@ static void Send( void )
 
 		if(exit_temp==0)
 		{
-			switch_status=PB14_DIGITAL_READ();
+			switch_status=HAL_GPIO_ReadPin(GPIO_EXTI14_PORT,GPIO_EXTI14_PIN);
 		}
 		AppData.Buff[i++]=(switch_status<<7)|(sensor_data.in1<<1)|0x1C|(exit_temp&0x01);
 	
@@ -1069,9 +1101,7 @@ static void LORA_RxData( lora_AppData_t *AppData )
 			  if((AppData->Buff[1]==0x00)&&(AppData->Buff[2]==0x00)&&(AppData->Buff[3]<=0x03))   		  //---->AT+INTMOD1
 				{
 					inmode=AppData->Buff[3];
-#ifndef USE_CHAMELEON
 					GPIO_EXTI14_IoInit(inmode);
-#endif
 					EEPROM_Store_Config();
 					rxpr_flags=1;		
 				}	

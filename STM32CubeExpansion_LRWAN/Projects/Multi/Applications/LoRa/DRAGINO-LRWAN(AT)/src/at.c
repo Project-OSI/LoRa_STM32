@@ -1622,9 +1622,7 @@ ATEerror_t at_INTMOD1_set(const char *param)
     return AT_PARAM_ERROR;
 	}
 	
-#ifndef USE_CHAMELEON
 	GPIO_EXTI14_IoInit(inmode);
-#endif
 	
 	return AT_OK;
 }
@@ -1780,10 +1778,6 @@ ATEerror_t at_getsensorvaule_set(const char *param)
 		{
 			return AT_BUSY_ERROR;
 		}	
-#ifdef CHAMELEON_FIELD_DEBUG
-		chameleon_field_debug_set_stage(1U);
-		PPRINTF("[CHAM-DBG1] command-enter\r\n");
-#endif
 		sensor_t sensor_message;
 		BSP_sensor_Read(&sensor_message,1);
 	}
@@ -1792,12 +1786,6 @@ ATEerror_t at_getsensorvaule_set(const char *param)
 		message_flags=1;
 		uplink_data_status=1;
 	}
-#ifdef CHAMELEON_FIELD_DEBUG
-	else if(stus==2)
-	{
-		chameleon_field_debug_set_stage(77U);
-	}
-#endif
 	else
 	{
 		return AT_PARAM_ERROR;

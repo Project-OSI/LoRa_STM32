@@ -118,27 +118,11 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
 {	
  	#if defined(LoRa_Sensor_Node)
 
-#ifdef CHAMELEON_FIELD_DEBUG
-	chameleon_field_debug_set_stage(2U);
-	PPRINTF("[CHAM-DBG1] sensor-enter\r\n");
-	chameleon_field_debug_set_stage(3U);
-#endif
 	HW_GetBatteryLevel( );	
-#ifdef CHAMELEON_FIELD_DEBUG
-	chameleon_field_debug_set_stage(4U);
-	PPRINTF("[CHAM-DBG1] battery=%u\r\n", batteryLevel_mV);
-#endif
 	if(message==1)
 	{
-	#ifdef CHAMELEON_FIELD_DEBUG
-		chameleon_field_debug_set_stage(5U);
-	#endif
 		PPRINTF("\r\n");
 		PPRINTF("Bat:%.3f V\r\n",(batteryLevel_mV/1000.0));
-#ifdef CHAMELEON_FIELD_DEBUG
-		chameleon_field_debug_set_stage(6U);
-		PPRINTF("[CHAM-DBG1] battery-print-ok\r\n");
-#endif
 		if(mode==6)
 		{
 			PPRINTF("PB14_count1:%u\r\n",COUNT);
@@ -157,16 +141,7 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
 		}
 		else
 		{
-#ifdef USE_CHAMELEON
-			if(mode==3)
-			{
-				PPRINTF("PB14_status:I2C2_SDA\r\n");
-			}
-			else
-#endif
-			{
 			PPRINTF("PB14_status:%d\r\n",HAL_GPIO_ReadPin(GPIO_EXTI14_PORT,GPIO_EXTI14_PIN));
-			}
 		}
 	}
 	
@@ -346,9 +321,6 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
 	} 
 	else if((mode==3)||(mode==8))
 	{
-#ifdef CHAMELEON_FIELD_DEBUG
-		 chameleon_field_debug_set_stage(7U);
-#endif
 		 BSP_oil_float_Init();
 		 for(uint8_t w=0;w<6;w++)
 		 {
@@ -379,28 +351,10 @@ void BSP_sensor_Read( sensor_t *sensor_data, uint8_t message)
     if(mode==3)
     {
         chameleon_result_t chameleon_result;
-#ifdef CHAMELEON_FIELD_DEBUG
-        chameleon_probe_debug_t probe_debug;
-        chameleon_field_debug_set_stage(8U);
-        PPRINTF("[CHAM-DBG1] adc-ok\r\n");
-        chameleon_field_debug_set_stage(9U);
-#endif
         /* Keep stock MOD=3 ADC values in sensor_data, then append the
          * Chameleon I2C sample for main.c to encode in the same uplink. */
         chameleon_result = chameleon_lsn50_acquire(&g_chameleon_last_sample,
                                                    CHAMELEON_DEFAULT_TIMEOUT_MS);
-#ifdef CHAMELEON_FIELD_DEBUG
-        chameleon_field_debug_set_stage(10U);
-        PPRINTF("[CHAM-DBG1] acquire=%u\r\n", (unsigned)chameleon_result);
-        chameleon_field_debug_get_probe(&probe_debug);
-        PPRINTF("[CHAM-DBG4] probes=%lu hal=%lu err=0x%08lx state=0x%08lx isr=0x%08lx lines=0x%02lx\r\n",
-                (unsigned long)probe_debug.probe_calls,
-                (unsigned long)probe_debug.hal_status,
-                (unsigned long)probe_debug.hal_error,
-                (unsigned long)probe_debug.hal_state,
-                (unsigned long)probe_debug.i2c_isr,
-                (unsigned long)probe_debug.line_state);
-#endif
         if(message==1)
         {
             PPRINTF("Chameleon result:%s attempts:%u flags:0x%02x temp:%d comp:%lu/%lu/%lu raw:%lu/%lu/%lu\r\n",
@@ -521,24 +475,6 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
   GPIO_InitTypeDef  GPIO_InitStruct;
   RCC_PeriphCLKInitTypeDef  RCC_PeriphCLKInitStruct;
 
-#ifdef USE_CHAMELEON
-  if(hi2c->Instance == I2C2)
-  {
-    __HAL_RCC_GPIOB_CLK_ENABLE();
-    __HAL_RCC_I2C2_CLK_ENABLE();
-    __HAL_RCC_I2C2_FORCE_RESET();
-    __HAL_RCC_I2C2_RELEASE_RESET();
-
-    GPIO_InitStruct.Pin       = GPIO_PIN_13 | GPIO_PIN_14;
-    GPIO_InitStruct.Mode      = GPIO_MODE_AF_OD;
-    GPIO_InitStruct.Pull      = GPIO_NOPULL;
-    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF5_I2C2;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-    return;
-  }
-#endif
-  
   /*##-1- Configure the I2C clock source. The clock is derived from the SYSCLK #*/
   RCC_PeriphCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_I2Cx;
   RCC_PeriphCLKInitStruct.I2c1ClockSelection = RCC_I2CxCLKSOURCE_SYSCLK;
@@ -576,16 +512,6 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
   */
 void HAL_I2C_MspDeInit(I2C_HandleTypeDef *hi2c)
 {
-#ifdef USE_CHAMELEON
-  if(hi2c->Instance == I2C2)
-  {
-    __HAL_RCC_I2C2_FORCE_RESET();
-    __HAL_RCC_I2C2_RELEASE_RESET();
-    __HAL_RCC_I2C2_CLK_DISABLE();
-    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_13 | GPIO_PIN_14);
-    return;
-  }
-#endif
   /*##-1- Reset peripherals ##################################################*/
   I2Cx_FORCE_RESET();
   I2Cx_RELEASE_RESET();
@@ -674,15 +600,7 @@ void  BSP_sensor_Init( void  )
 	else if(mode==3)
 	{
 		chameleon_lsn50_prepare_sleep();
-#if defined(CHAMELEON_POWER_LSN50_5V)
-#ifdef CHAMELEON_FIELD_DEBUG
-			PRINTF("\r\nChameleon I2C2 acquisition enabled [5v-reg field-debug-7 100khz]\r\n");
-#else
-		PRINTF("\r\nChameleon I2C2 acquisition enabled [5v-reg]\r\n");
-#endif
-#elif defined(CHAMELEON_POWER_EXTERNAL_PMOS)
-		PRINTF("\r\nChameleon I2C2 acquisition enabled [vcc-pmos]\r\n");
-#endif
+		PRINTF("\r\nChameleon acquisition enabled [soft-i2c-5v]\r\n");
 	}
 #endif
 	 
@@ -750,9 +668,7 @@ void  BSP_sensor_Init( void  )
 		}
 	}
 	
-#ifndef USE_CHAMELEON
 	GPIO_EXTI14_IoInit(inmode);
-#endif
 	GPIO_INPUT_IoInit();
 
 	#endif

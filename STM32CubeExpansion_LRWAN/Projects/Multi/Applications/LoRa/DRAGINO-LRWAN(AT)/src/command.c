@@ -49,9 +49,6 @@
 #include "at.h"
 #include "hw.h"
 #include "command.h"
-#ifdef CHAMELEON_FIELD_DEBUG
-#include "chameleon_lsn50_hw.h"
-#endif
 #include "lora.h"
 #include "delay.h"
 
@@ -934,12 +931,6 @@ static void parse_cmd(const char *cmd)
             }
             else
             {
-#ifdef CHAMELEON_FIELD_DEBUG
-							if(strcmp(Current_ATCommand->string,AT_GETSENSORVALUE)==0)
-							{
-								chameleon_field_debug_set_stage(90U);
-							}
-#endif
               status = Current_ATCommand->set(cmd + 1);
 							cmd=Current_ATCommand->string;
 							
