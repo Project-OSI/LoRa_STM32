@@ -194,7 +194,10 @@ static void require_capture_timeout_guard(const char *source)
         if (condition_end == NULL ||
             !range_contains(condition_start, condition_end,
                             "TimerGetElapsedTime") ||
-            !range_contains(condition_start, condition_end, "captureStart")) {
+            !range_contains(condition_start, condition_end, "captureStart") ||
+            !range_contains(condition_start, condition_end, ">=") ||
+            !range_contains(condition_start, condition_end,
+                            "LSI_CAPTURE_TIMEOUT_MS")) {
             search += 2;
             continue;
         }
