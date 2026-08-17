@@ -47,14 +47,18 @@
   /* Includes ------------------------------------------------------------------*/
 #include "hw.h"
 #include "iwdg.h"
+#include "timeServer.h"
 
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
+#define LSI_FALLBACK_HZ          37000U
+#define LSI_CAPTURE_TIMEOUT_MS   100U
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
+static uint32_t GetLSIFrequency(void);
 /* Exported functions ---------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
@@ -158,8 +162,16 @@ static uint32_t GetLSIFrequency(void)
   }
 
   /* Wait until the TIM21 get 2 LSI edges */
-  while(uwCaptureNumber != 2)
+  uint32_t captureStart = TimerGetCurrentTime();
+  while(uwCaptureNumber != 2U)
   {
+    if(TimerGetElapsedTime(captureStart) >= LSI_CAPTURE_TIMEOUT_MS)
+    {
+      HAL_TIM_IC_Stop_IT(&Input_Handle, TIM_CHANNEL_1);
+      HAL_TIM_IC_DeInit(&Input_Handle);
+      uwCaptureNumber = 0U;
+      return LSI_FALLBACK_HZ;
+    }
   }
 
   /* Disable TIM21 CC1 Interrupt Request */
