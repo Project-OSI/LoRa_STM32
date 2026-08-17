@@ -1,5 +1,9 @@
 #include "chameleon_lsn50_hw.h"
+
 #ifndef CHAMELEON_HOST_TEST
+#include "chameleon_soft_i2c.h"
+#include "hw.h"
+#include "iwdg.h"
 #include "timeServer.h"
 #endif
 
@@ -40,75 +44,153 @@ static int ops_valid(const chameleon_lsn50_ops_t *ops)
         && ops->probe != 0
         && ops->wait_ready != 0
         && ops->measure != 0
+        && ops->bus_clear != 0
+        && ops->watchdog_refresh != 0
         && ops->battery_mv != 0;
 }
 
-static void clean_session(const chameleon_lsn50_ops_t *ops, int initialized)
+static void clean_session(const chameleon_lsn50_ops_t *ops)
 {
-    if (initialized) {
-        ops->i2c_deinit(ops->context);
-    }
+    ops->i2c_deinit(ops->context);
     ops->bus_isolate(ops->context);
     ops->rail_off(ops->context);
 }
 
-static chameleon_result_t bounded_probe(const chameleon_lsn50_ops_t *ops)
+static uint32_t min_u32(uint32_t a, uint32_t b)
 {
-    const uint32_t start = ops->millis(ops->context);
+    return a < b ? a : b;
+}
+
+static uint32_t remaining_ms(const chameleon_lsn50_ops_t *ops,
+                             uint32_t acquire_started)
+{
+    uint32_t elapsed = ops->millis(ops->context) - acquire_started;
+
+    if (elapsed >= CHAMELEON_ACQUIRE_TIMEOUT_MS) {
+        return 0U;
+    }
+    return CHAMELEON_ACQUIRE_TIMEOUT_MS - elapsed;
+}
+
+static void bounded_delay(const chameleon_lsn50_ops_t *ops, uint32_t delay_ms)
+{
+    while (delay_ms != 0U) {
+        uint32_t slice = min_u32(delay_ms, CHAMELEON_WATCHDOG_SLICE_MS);
+
+        ops->watchdog_refresh(ops->context);
+        ops->delay_ms(ops->context, slice);
+        ops->watchdog_refresh(ops->context);
+        delay_ms -= slice;
+    }
+}
+
+static chameleon_result_t bounded_probe(const chameleon_lsn50_ops_t *ops,
+                                        uint32_t acquire_started)
+{
+    uint32_t probe_started = ops->millis(ops->context);
     int first_probe = 1;
 
     for (;;) {
-        chameleon_result_t result;
-        uint32_t elapsed = ops->millis(ops->context) - start;
+        uint32_t probe_elapsed = ops->millis(ops->context) - probe_started;
+        uint32_t global_remaining = remaining_ms(ops, acquire_started);
+        uint32_t local_remaining;
         uint32_t delay;
+        chameleon_result_t result;
 
-        if (!first_probe && elapsed >= CHAMELEON_PROBE_TIMEOUT_MS) {
+        if ((!first_probe && probe_elapsed >= CHAMELEON_PROBE_TIMEOUT_MS)
+                || global_remaining <= 50U) {
             return CHAMELEON_RESULT_NO_DEVICE;
         }
         first_probe = 0;
+        ops->watchdog_refresh(ops->context);
         result = ops->probe(ops->context);
+        ops->watchdog_refresh(ops->context);
         if (result == CHAMELEON_RESULT_OK) {
             return result;
         }
-        elapsed = ops->millis(ops->context) - start;
-        if (elapsed >= CHAMELEON_PROBE_TIMEOUT_MS) {
+
+        probe_elapsed = ops->millis(ops->context) - probe_started;
+        global_remaining = remaining_ms(ops, acquire_started);
+        if (probe_elapsed >= CHAMELEON_PROBE_TIMEOUT_MS
+                || global_remaining <= 50U) {
             return CHAMELEON_RESULT_NO_DEVICE;
         }
-        delay = CHAMELEON_PROBE_TIMEOUT_MS - elapsed;
-        if (delay > CHAMELEON_PROBE_INTERVAL_MS) {
-            delay = CHAMELEON_PROBE_INTERVAL_MS;
+        local_remaining = CHAMELEON_PROBE_TIMEOUT_MS - probe_elapsed;
+        delay = min_u32(CHAMELEON_PROBE_INTERVAL_MS, local_remaining);
+        delay = min_u32(delay, global_remaining - 50U);
+        if (delay == 0U) {
+            return CHAMELEON_RESULT_NO_DEVICE;
         }
-        ops->delay_ms(ops->context, delay);
+        bounded_delay(ops, delay);
     }
+}
+
+static int needs_bus_clear(chameleon_result_t result)
+{
+    return result == CHAMELEON_RESULT_NO_DEVICE
+        || result == CHAMELEON_RESULT_TRIGGER_FAILED
+        || result == CHAMELEON_RESULT_STATUS_IO_FAILED
+        || result == CHAMELEON_RESULT_READ_FAILED
+        || result == CHAMELEON_RESULT_PARTIAL_SAMPLE;
 }
 
 static chameleon_result_t run_one_session(const chameleon_lsn50_ops_t *ops,
                                           chameleon_sample_t *sample,
-                                          uint32_t measurement_timeout_ms)
+                                          uint32_t measurement_timeout_ms,
+                                          uint32_t acquire_started)
 {
     chameleon_result_t result;
-    int initialized = 0;
+    uint32_t remaining;
+    uint32_t timeout;
 
-    ops->rail_off(ops->context);
-    ops->bus_isolate(ops->context);
+    clean_session(ops);
     ops->rail_on(ops->context);
-    ops->delay_ms(ops->context, CHAMELEON_POWER_STABILIZE_MS);
-
-    if (!ops->i2c_init(ops->context)) {
-        result = CHAMELEON_RESULT_I2C_INIT_FAILED;
-        clean_session(ops, initialized);
+    bounded_delay(ops, CHAMELEON_POWER_STABILIZE_MS);
+    if (remaining_ms(ops, acquire_started) == 0U) {
+        result = CHAMELEON_RESULT_MEASUREMENT_TIMEOUT;
+        clean_session(ops);
         return result;
     }
-    initialized = 1;
 
-    result = bounded_probe(ops);
+    ops->watchdog_refresh(ops->context);
+    if (!ops->i2c_init(ops->context)) {
+        ops->watchdog_refresh(ops->context);
+        clean_session(ops);
+        return CHAMELEON_RESULT_I2C_INIT_FAILED;
+    }
+    ops->watchdog_refresh(ops->context);
+
+    result = bounded_probe(ops, acquire_started);
     if (result == CHAMELEON_RESULT_OK) {
-        result = ops->wait_ready(ops->context, measurement_timeout_ms);
+        remaining = remaining_ms(ops, acquire_started);
+        timeout = remaining > 50U
+                ? min_u32(measurement_timeout_ms, remaining - 50U) : 0U;
+        if (timeout == 0U) {
+            result = CHAMELEON_RESULT_MEASUREMENT_TIMEOUT;
+        } else {
+            ops->watchdog_refresh(ops->context);
+            result = ops->wait_ready(ops->context, timeout);
+            ops->watchdog_refresh(ops->context);
+        }
     }
     if (result == CHAMELEON_RESULT_OK) {
-        result = ops->measure(ops->context, sample, measurement_timeout_ms);
+        remaining = remaining_ms(ops, acquire_started);
+        timeout = remaining > 500U
+                ? min_u32(measurement_timeout_ms, remaining - 500U) : 0U;
+        if (timeout == 0U) {
+            result = CHAMELEON_RESULT_MEASUREMENT_TIMEOUT;
+        } else {
+            ops->watchdog_refresh(ops->context);
+            result = ops->measure(ops->context, sample, timeout);
+            ops->watchdog_refresh(ops->context);
+        }
     }
-    clean_session(ops, initialized);
+    if (needs_bus_clear(result)) {
+        ops->watchdog_refresh(ops->context);
+        (void)ops->bus_clear(ops->context);
+        ops->watchdog_refresh(ops->context);
+    }
+    clean_session(ops);
     return result;
 }
 
@@ -129,7 +211,8 @@ chameleon_result_t chameleon_lsn50_run(const chameleon_lsn50_ops_t *ops,
                                        chameleon_sample_t *sample,
                                        uint32_t measurement_timeout_ms)
 {
-    chameleon_result_t result;
+    chameleon_result_t result = CHAMELEON_RESULT_I2C_INIT_FAILED;
+    uint32_t acquire_started;
     unsigned attempt;
 
     if (!ops_valid(ops) || sample == 0) {
@@ -137,16 +220,23 @@ chameleon_result_t chameleon_lsn50_run(const chameleon_lsn50_ops_t *ops,
         return CHAMELEON_RESULT_I2C_INIT_FAILED;
     }
 
+    acquire_started = ops->millis(ops->context);
     last_attempts = 0U;
-    for (attempt = 0U; attempt < 2U; ++attempt) {
+    for (attempt = 0U; attempt < 1U + CHAMELEON_COLD_RETRY_ENABLED; ++attempt) {
         last_attempts = (uint8_t)(attempt + 1U);
         memset(sample, 0, sizeof(*sample));
-        result = run_one_session(ops, sample, measurement_timeout_ms);
+        result = run_one_session(ops, sample, measurement_timeout_ms,
+                                 acquire_started);
         if (result == CHAMELEON_RESULT_OK) {
             break;
         }
-        if (attempt == 0U) {
-            ops->delay_ms(ops->context, CHAMELEON_COLD_RETRY_OFF_MS);
+        if (attempt == 0U
+                && remaining_ms(ops, acquire_started)
+                    >= CHAMELEON_COLD_RETRY_OFF_MS
+                    + CHAMELEON_RETRY_SESSION_RESERVE_MS) {
+            bounded_delay(ops, CHAMELEON_COLD_RETRY_OFF_MS);
+        } else {
+            break;
         }
     }
 
@@ -157,82 +247,43 @@ chameleon_result_t chameleon_lsn50_run(const chameleon_lsn50_ops_t *ops,
 
 #ifndef CHAMELEON_HOST_TEST
 
-#include "hw.h"
-
-#if defined(CHAMELEON_POWER_EXTERNAL_PMOS) == defined(CHAMELEON_POWER_LSN50_5V)
-#error "Select exactly one Chameleon power backend"
+#if defined(DEBUG) && defined(USE_CHAMELEON)
+#error "DEBUG drives PB12/PB13 push-pull and is incompatible with Chameleon"
+#endif
+#if !defined(CHAMELEON_POWER_LSN50_5V)
+#error "This branch requires the stock PB5-switched +5 V backend"
+#endif
+#if !defined(CHAMELEON_SOFT_I2C_PB12_PB13)
+#error "This branch requires PB12/PB13 software I2C"
+#endif
+#if (CHAMELEON_POLL_INTERVAL_MS * 1000U) >= 65536U
+#error "VIA poll interval can skip a complete TIM2 wrap"
+#endif
+#if (CHAMELEON_PROBE_INTERVAL_MS * 1000U) >= 65536U
+#error "Probe interval can skip a complete TIM2 wrap"
 #endif
 
-#define CHAMELEON_SCL_PIN          GPIO_PIN_13
-#define CHAMELEON_SDA_PIN          GPIO_PIN_14
-#define CHAMELEON_I2C_TIMING_100KHZ 0x10A13E56U
-#define CHAMELEON_I2C_TIMING_400KHZ 0x00B1112EU
-#ifdef CHAMELEON_FIELD_DEBUG
-#define CHAMELEON_I2C_TIMING CHAMELEON_I2C_TIMING_100KHZ
-#else
-#define CHAMELEON_I2C_TIMING CHAMELEON_I2C_TIMING_400KHZ
-#endif
-#define CHAMELEON_I2C_TXN_MS       1000U
-
-#ifdef CHAMELEON_FIELD_DEBUG
-#define CHAMELEON_FIELD_DEBUG_MAGIC 0x43480000UL
-#define CHAMELEON_FIELD_DEBUG_MASK  0xFFFF0000UL
-
-static chameleon_probe_debug_t chameleon_probe_debug;
-
-void chameleon_field_debug_set_stage(uint32_t stage)
-{
-    HAL_PWR_EnableBkUpAccess();
-    RTC->BKP4R = CHAMELEON_FIELD_DEBUG_MAGIC | stage;
-}
-
-uint32_t chameleon_field_debug_get_stage(void)
-{
-    uint32_t value = RTC->BKP4R;
-    if ((value & CHAMELEON_FIELD_DEBUG_MASK) != CHAMELEON_FIELD_DEBUG_MAGIC) {
-        return 0U;
-    }
-    return value & ~CHAMELEON_FIELD_DEBUG_MASK;
-}
-
-void chameleon_field_debug_clear_stage(void)
-{
-    HAL_PWR_EnableBkUpAccess();
-    RTC->BKP4R = 0U;
-}
-
-void chameleon_field_debug_get_probe(chameleon_probe_debug_t *debug)
-{
-    if (debug != 0) {
-        *debug = chameleon_probe_debug;
-    }
-}
-#endif
-
-#if defined(CHAMELEON_POWER_EXTERNAL_PMOS)
-#define CHAMELEON_POWER_PIN        GPIO_PIN_12
-#else
-#define CHAMELEON_POWER_PIN        GPIO_PIN_5
-#endif
+#define CHAMELEON_SCL_PIN GPIO_PIN_13
+#define CHAMELEON_SDA_PIN GPIO_PIN_12
 
 extern uint16_t batteryLevel_mV;
 
-static I2C_HandleTypeDef chameleon_i2c2;
+static chameleon_soft_i2c_t chameleon_bus;
+static chameleon_tim2_clock_t tim2_clock;
+static int tim2_active;
+
+static void stm32_i2c_deinit(void *context);
 
 static void stm32_rail_off(void *context)
 {
     GPIO_InitTypeDef gpio;
     (void)context;
     __HAL_RCC_GPIOB_CLK_ENABLE();
-    HAL_GPIO_WritePin(GPIOB, CHAMELEON_POWER_PIN, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
     memset(&gpio, 0, sizeof(gpio));
-    gpio.Pin = CHAMELEON_POWER_PIN;
+    gpio.Pin = GPIO_PIN_5;
     gpio.Mode = GPIO_MODE_OUTPUT_OD;
-#if defined(CHAMELEON_POWER_LSN50_5V)
     gpio.Pull = GPIO_PULLUP;
-#else
-    gpio.Pull = GPIO_NOPULL;
-#endif
     gpio.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOB, &gpio);
 }
@@ -240,7 +291,7 @@ static void stm32_rail_off(void *context)
 static void stm32_rail_on(void *context)
 {
     (void)context;
-    HAL_GPIO_WritePin(GPIOB, CHAMELEON_POWER_PIN, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
 }
 
 static void stm32_bus_isolate(void *context)
@@ -248,10 +299,6 @@ static void stm32_bus_isolate(void *context)
     GPIO_InitTypeDef gpio;
     (void)context;
     __HAL_RCC_GPIOB_CLK_ENABLE();
-    EXTI->IMR &= ~(uint32_t)CHAMELEON_SDA_PIN;
-    EXTI->RTSR &= ~(uint32_t)CHAMELEON_SDA_PIN;
-    EXTI->FTSR &= ~(uint32_t)CHAMELEON_SDA_PIN;
-    __HAL_GPIO_EXTI_CLEAR_IT(CHAMELEON_SDA_PIN);
     memset(&gpio, 0, sizeof(gpio));
     gpio.Pin = CHAMELEON_SCL_PIN | CHAMELEON_SDA_PIN;
     gpio.Mode = GPIO_MODE_ANALOG;
@@ -259,26 +306,145 @@ static void stm32_bus_isolate(void *context)
     HAL_GPIO_Init(GPIOB, &gpio);
 }
 
+static void stm32_bus_activate(void)
+{
+    GPIO_InitTypeDef gpio;
+
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    HAL_GPIO_WritePin(GPIOB, CHAMELEON_SCL_PIN | CHAMELEON_SDA_PIN, GPIO_PIN_SET);
+    memset(&gpio, 0, sizeof(gpio));
+    gpio.Pin = CHAMELEON_SCL_PIN | CHAMELEON_SDA_PIN;
+    gpio.Mode = GPIO_MODE_OUTPUT_OD;
+    gpio.Pull = GPIO_NOPULL;
+    gpio.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOB, &gpio);
+}
+
+static int stm32_timer_start(void)
+{
+    uint32_t pclk_hz = HAL_RCC_GetPCLK1Freq();
+
+    if (pclk_hz != 32000000U) {
+        return 0;
+    }
+    __HAL_RCC_TIM2_CLK_ENABLE();
+    __HAL_RCC_TIM2_FORCE_RESET();
+    __HAL_RCC_TIM2_RELEASE_RESET();
+    TIM2->PSC = (pclk_hz / 1000000U) - 1U;
+    TIM2->ARR = 0xffffU;
+    TIM2->EGR = TIM_EGR_UG;
+    TIM2->CNT = 0U;
+    chameleon_tim2_clock_reset(&tim2_clock, 0U);
+    TIM2->CR1 = TIM_CR1_CEN;
+    tim2_active = 1;
+    return 1;
+}
+
+static void stm32_timer_stop(void)
+{
+    if (tim2_active == 0) {
+        return;
+    }
+    TIM2->CR1 &= ~TIM_CR1_CEN;
+    __HAL_RCC_TIM2_FORCE_RESET();
+    __HAL_RCC_TIM2_RELEASE_RESET();
+    __HAL_RCC_TIM2_CLK_DISABLE();
+    tim2_active = 0;
+}
+
+static uint32_t stm32_micros(void *context)
+{
+    (void)context;
+    return chameleon_tim2_clock_update(&tim2_clock, (uint16_t)TIM2->CNT);
+}
+
+static void stm32_delay_us(void *context, uint32_t delay_us)
+{
+    uint32_t start = stm32_micros(context);
+
+    while ((uint32_t)(stm32_micros(context) - start) < delay_us) {
+    }
+}
+
+static void stm32_scl_low(void *context)
+{
+    (void)context;
+    HAL_GPIO_WritePin(GPIOB, CHAMELEON_SCL_PIN, GPIO_PIN_RESET);
+}
+
+static void stm32_scl_release(void *context)
+{
+    (void)context;
+    HAL_GPIO_WritePin(GPIOB, CHAMELEON_SCL_PIN, GPIO_PIN_SET);
+}
+
+static int stm32_scl_read(void *context)
+{
+    (void)context;
+    return HAL_GPIO_ReadPin(GPIOB, CHAMELEON_SCL_PIN) == GPIO_PIN_SET;
+}
+
+static void stm32_sda_low(void *context)
+{
+    (void)context;
+    HAL_GPIO_WritePin(GPIOB, CHAMELEON_SDA_PIN, GPIO_PIN_RESET);
+}
+
+static void stm32_sda_release(void *context)
+{
+    (void)context;
+    HAL_GPIO_WritePin(GPIOB, CHAMELEON_SDA_PIN, GPIO_PIN_SET);
+}
+
+static int stm32_sda_read(void *context)
+{
+    (void)context;
+    return HAL_GPIO_ReadPin(GPIOB, CHAMELEON_SDA_PIN) == GPIO_PIN_SET;
+}
+
+static const chameleon_soft_i2c_ops_t stm32_soft_i2c_ops = {
+    0,
+    stm32_scl_low,
+    stm32_scl_release,
+    stm32_scl_read,
+    stm32_sda_low,
+    stm32_sda_release,
+    stm32_sda_read,
+    stm32_delay_us,
+    stm32_micros
+};
+
 static int stm32_i2c_init(void *context)
 {
     (void)context;
-    memset(&chameleon_i2c2, 0, sizeof(chameleon_i2c2));
-    chameleon_i2c2.Instance = I2C2;
-    chameleon_i2c2.Init.Timing = CHAMELEON_I2C_TIMING;
-    chameleon_i2c2.Init.OwnAddress1 = 0U;
-    chameleon_i2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-    chameleon_i2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-    chameleon_i2c2.Init.OwnAddress2 = 0U;
-    chameleon_i2c2.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
-    chameleon_i2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-    chameleon_i2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-    return HAL_I2C_Init(&chameleon_i2c2) == HAL_OK;
+    if (!stm32_timer_start()) {
+        return 0;
+    }
+    stm32_bus_activate();
+    if (!chameleon_soft_i2c_init(&chameleon_bus, &stm32_soft_i2c_ops)) {
+        stm32_i2c_deinit(context);
+        return 0;
+    }
+    return 1;
 }
 
 static void stm32_i2c_deinit(void *context)
 {
     (void)context;
-    (void)HAL_I2C_DeInit(&chameleon_i2c2);
+    chameleon_soft_i2c_shutdown(&chameleon_bus);
+    stm32_timer_stop();
+}
+
+static chameleon_i2c_status_t stm32_bus_clear(void *context)
+{
+    (void)context;
+    return chameleon_soft_i2c_bus_clear(&chameleon_bus);
+}
+
+static void stm32_watchdog_refresh(void *context)
+{
+    (void)context;
+    IWDG_Refresh();
 }
 
 static void stm32_delay_ms(void *context, uint32_t ms)
@@ -331,6 +497,8 @@ static const chameleon_lsn50_ops_t stm32_ops = {
     stm32_probe,
     stm32_wait_ready,
     stm32_measure,
+    stm32_bus_clear,
+    stm32_watchdog_refresh,
     stm32_battery_mv
 };
 
@@ -338,33 +506,7 @@ chameleon_i2c_status_t chameleon_board_i2c_write(uint8_t addr7,
                                                  const uint8_t *data,
                                                  size_t len)
 {
-    HAL_StatusTypeDef status;
-    uint16_t address = (uint16_t)addr7 << 1;
-
-    if (len == 0U) {
-        status = HAL_I2C_IsDeviceReady(&chameleon_i2c2, address, 1U,
-                                       CHAMELEON_I2C_TXN_MS);
-#ifdef CHAMELEON_FIELD_DEBUG
-        chameleon_probe_debug.probe_calls++;
-        chameleon_probe_debug.hal_status = (uint32_t)status;
-        chameleon_probe_debug.hal_error = HAL_I2C_GetError(&chameleon_i2c2);
-        chameleon_probe_debug.hal_state = (uint32_t)HAL_I2C_GetState(&chameleon_i2c2);
-        chameleon_probe_debug.i2c_isr = I2C2->ISR;
-        chameleon_probe_debug.line_state =
-            ((GPIOB->IDR & CHAMELEON_SCL_PIN) != 0U ? 2U : 0U) |
-            ((GPIOB->IDR & CHAMELEON_SDA_PIN) != 0U ? 1U : 0U);
-#endif
-    } else {
-        status = HAL_I2C_Master_Transmit(&chameleon_i2c2, address,
-                                         (uint8_t *)data, (uint16_t)len,
-                                         CHAMELEON_I2C_TXN_MS);
-    }
-    if (status == HAL_OK) return CHAMELEON_I2C_OK;
-    if (status == HAL_TIMEOUT) return CHAMELEON_I2C_ERR_TIMEOUT;
-    if (HAL_I2C_GetError(&chameleon_i2c2) == HAL_I2C_ERROR_AF) {
-        return CHAMELEON_I2C_ERR_NACK;
-    }
-    return CHAMELEON_I2C_ERR_BUS;
+    return chameleon_soft_i2c_write(&chameleon_bus, addr7, data, len);
 }
 
 chameleon_i2c_status_t chameleon_board_i2c_write_read(uint8_t addr7,
@@ -373,20 +515,8 @@ chameleon_i2c_status_t chameleon_board_i2c_write_read(uint8_t addr7,
                                                       uint8_t *rdata,
                                                       size_t rlen)
 {
-    HAL_StatusTypeDef status;
-
-    if (wlen != 1U || rlen == 0U || rlen > UINT16_MAX) {
-        return CHAMELEON_I2C_ERR_BUS;
-    }
-    status = HAL_I2C_Mem_Read(&chameleon_i2c2, (uint16_t)addr7 << 1,
-                              wdata[0], I2C_MEMADD_SIZE_8BIT,
-                              rdata, (uint16_t)rlen, CHAMELEON_I2C_TXN_MS);
-    if (status == HAL_OK) return CHAMELEON_I2C_OK;
-    if (status == HAL_TIMEOUT) return CHAMELEON_I2C_ERR_TIMEOUT;
-    if (HAL_I2C_GetError(&chameleon_i2c2) == HAL_I2C_ERROR_AF) {
-        return CHAMELEON_I2C_ERR_NACK;
-    }
-    return CHAMELEON_I2C_ERR_BUS;
+    return chameleon_soft_i2c_write_read(&chameleon_bus, addr7,
+                                         wdata, wlen, rdata, rlen);
 }
 
 void chameleon_board_delay_ms(uint32_t ms) { HAL_Delay(ms); }
@@ -396,16 +526,12 @@ uint16_t chameleon_board_battery_mv(void) { return batteryLevel_mV; }
 chameleon_result_t chameleon_lsn50_acquire(chameleon_sample_t *sample,
                                            uint32_t measurement_timeout_ms)
 {
-#ifdef CHAMELEON_FIELD_DEBUG
-    memset(&chameleon_probe_debug, 0, sizeof(chameleon_probe_debug));
-#endif
     return chameleon_lsn50_run(&stm32_ops, sample, measurement_timeout_ms);
 }
 
 void chameleon_lsn50_prepare_sleep(void)
 {
-    stm32_rail_off(0);
-    stm32_bus_isolate(0);
+    clean_session(&stm32_ops);
 }
 
 #endif /* CHAMELEON_HOST_TEST */

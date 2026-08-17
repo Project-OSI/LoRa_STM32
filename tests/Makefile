@@ -14,7 +14,7 @@ CFLAGS  ?= -std=c99 -Wall -Wextra -Werror -O0 -g
 
 OBJDIR  := build
 
-TESTS := harness_smoke chameleon_payload chameleon_driver chameleon_dummy battery_level_typo chameleon_settle_and_retry chameleon_comp_pending chameleon_open_channel_no_retry chameleon_soft_i2c chameleon_lifecycle chameleon_integration_guards chameleon_build_script
+TESTS := harness_smoke chameleon_payload chameleon_driver chameleon_dummy battery_level_typo chameleon_settle_and_retry chameleon_comp_pending chameleon_open_channel_no_retry chameleon_soft_i2c chameleon_lifecycle chameleon_hw_binding chameleon_integration_guards chameleon_build_script
 
 .PHONY: all test clean
 all: test
@@ -92,6 +92,9 @@ $(OBJDIR)/test_chameleon_soft_i2c: test_chameleon_soft_i2c.c \
 	$(CC) $(CFLAGS) "-I$(PROJ_BASE)/inc" -o $@ \
 		test_chameleon_soft_i2c.c \
 		"$(PROJ_BASE)/src/chameleon_soft_i2c.c"
+
+$(OBJDIR)/test_chameleon_hw_binding: test_chameleon_hw_binding.c | $(OBJDIR)
+	$(CC) $(CFLAGS) "-I$(PROJ_BASE)/inc" -o $@ $<
 
 $(OBJDIR)/test_chameleon_integration_guards: test_chameleon_integration_guards.c | $(OBJDIR)
 	$(CC) $(CFLAGS) -o $@ $<

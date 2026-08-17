@@ -5,10 +5,34 @@
 
 #include "via_chameleon.h"
 
-#define CHAMELEON_POWER_STABILIZE_MS   25U
-#define CHAMELEON_PROBE_TIMEOUT_MS   1500U
+#define CHAMELEON_POWER_STABILIZE_MS   100U
+#define CHAMELEON_PROBE_TIMEOUT_MS     400U
 #define CHAMELEON_PROBE_INTERVAL_MS    50U
-#define CHAMELEON_COLD_RETRY_OFF_MS   200U
+#define CHAMELEON_COLD_RETRY_OFF_MS   1000U
+#define CHAMELEON_COLD_RETRY_ENABLED      1U
+#define CHAMELEON_RETRY_SESSION_RESERVE_MS 5150U
+#define CHAMELEON_ACQUIRE_TIMEOUT_MS  12000U
+#define CHAMELEON_WATCHDOG_SLICE_MS    1000U
+
+typedef struct {
+    uint16_t last_count;
+    uint32_t elapsed_us;
+} chameleon_tim2_clock_t;
+
+static inline void chameleon_tim2_clock_reset(
+    chameleon_tim2_clock_t *clock, uint16_t count)
+{
+    clock->last_count = count;
+    clock->elapsed_us = 0U;
+}
+
+static inline uint32_t chameleon_tim2_clock_update(
+    chameleon_tim2_clock_t *clock, uint16_t count)
+{
+    clock->elapsed_us += (uint16_t)(count - clock->last_count);
+    clock->last_count = count;
+    return clock->elapsed_us;
+}
 
 typedef struct {
     void *context;
@@ -24,6 +48,8 @@ typedef struct {
     chameleon_result_t (*measure)(void *context,
                                   chameleon_sample_t *sample,
                                   uint32_t timeout_ms);
+    chameleon_i2c_status_t (*bus_clear)(void *context);
+    void (*watchdog_refresh)(void *context);
     uint16_t (*battery_mv)(void *context);
 } chameleon_lsn50_ops_t;
 

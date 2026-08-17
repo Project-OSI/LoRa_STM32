@@ -63,12 +63,12 @@ void pwr_control_IoInit(void)
 {
 	GPIO_InitTypeDef GPIO_InitStruct={0};
 	__HAL_RCC_GPIOB_CLK_ENABLE();
+	HAL_GPIO_WritePin(PWR_OUT_PORT,PWR_OUT_PIN,GPIO_PIN_SET);	//Disable 5v power supply
 	GPIO_InitStruct.Pin = PWR_OUT_PIN;
   GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_OD;
   GPIO_InitStruct.Pull  = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(PWR_OUT_PORT, &GPIO_InitStruct);
-	HAL_GPIO_WritePin(PWR_OUT_PORT,PWR_OUT_PIN,GPIO_PIN_SET);	//Disable 5v power supply
 }
 
 void pwr_control_IoDeInit(void)
