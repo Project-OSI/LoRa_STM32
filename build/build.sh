@@ -8,37 +8,21 @@ cd "${REPO_ROOT}"
 TARGET_VARIANT="${1:-}"
 case "$TARGET_VARIANT" in
   clean)
-    rm -rf "./build/obj/chameleon-i2c2-vcc-pmos" \
-           "./build/obj/chameleon-i2c2-5v-reg" \
-           "./build/obj/chameleon-i2c2-5v-reg-field-debug"
-    rm -f ./build/LSN50-chameleon-i2c2-vcc-pmos.elf \
-          ./build/LSN50-chameleon-i2c2-vcc-pmos.map \
-          ./build/LSN50-chameleon-i2c2-vcc-pmos.hex \
-          ./build/LSN50-chameleon-i2c2-vcc-pmos.bin \
-          ./build/LSN50-chameleon-i2c2-5v-reg.elf \
-          ./build/LSN50-chameleon-i2c2-5v-reg.map \
-          ./build/LSN50-chameleon-i2c2-5v-reg.hex \
-          ./build/LSN50-chameleon-i2c2-5v-reg.bin \
-          ./build/LSN50-chameleon-i2c2-5v-reg-field-debug.elf \
-          ./build/LSN50-chameleon-i2c2-5v-reg-field-debug.map \
-          ./build/LSN50-chameleon-i2c2-5v-reg-field-debug.hex \
-          ./build/LSN50-chameleon-i2c2-5v-reg-field-debug.bin
+    rm -rf "./build/obj/chameleon-soft-i2c-5v"
+    rm -f ./build/LSN50-chameleon-soft-i2c-5v.elf \
+          ./build/LSN50-chameleon-soft-i2c-5v.map \
+          ./build/LSN50-chameleon-soft-i2c-5v.hex \
+          ./build/LSN50-chameleon-soft-i2c-5v.bin
     exit 0
     ;;
-  chameleon-i2c2-vcc-pmos)
-    TARGET_BASENAME="LSN50-chameleon-i2c2-vcc-pmos"
-    EXTRA_CFLAGS=(-UUSE_SHT -DUSE_CHAMELEON -DCHAMELEON_POWER_EXTERNAL_PMOS)
-    ;;
-  chameleon-i2c2-5v-reg)
-    TARGET_BASENAME="LSN50-chameleon-i2c2-5v-reg"
-    EXTRA_CFLAGS=(-UUSE_SHT -DUSE_CHAMELEON -DCHAMELEON_POWER_LSN50_5V)
-    ;;
-  chameleon-i2c2-5v-reg-field-debug)
-    TARGET_BASENAME="LSN50-chameleon-i2c2-5v-reg-field-debug"
-    EXTRA_CFLAGS=(-UUSE_SHT -DUSE_CHAMELEON -DCHAMELEON_POWER_LSN50_5V -DCHAMELEON_FIELD_DEBUG)
+  chameleon-soft-i2c-5v)
+    TARGET_BASENAME="LSN50-chameleon-soft-i2c-5v"
+    EXTRA_CFLAGS=(-UUSE_SHT -DUSE_CHAMELEON \
+                  -DCHAMELEON_POWER_LSN50_5V \
+                  -DCHAMELEON_SOFT_I2C_PB12_PB13)
     ;;
   *)
-    echo "usage: $0 {clean|chameleon-i2c2-vcc-pmos|chameleon-i2c2-5v-reg|chameleon-i2c2-5v-reg-field-debug}" >&2
+    echo "usage: $0 {clean|chameleon-soft-i2c-5v}" >&2
     exit 2
     ;;
 esac
@@ -294,6 +278,9 @@ OBJS="$OBJS ${OBJDIR}/via_chameleon.o"
 echo "CC chameleon_payload.c"
 arm-none-eabi-gcc @build/cflags.rsp "${EXTRA_CFLAGS[@]}" -c './STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/src/chameleon_payload.c' -o "${OBJDIR}/chameleon_payload.o"
 OBJS="$OBJS ${OBJDIR}/chameleon_payload.o"
+echo "CC chameleon_soft_i2c.c"
+arm-none-eabi-gcc @build/cflags.rsp "${EXTRA_CFLAGS[@]}" -c './STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/src/chameleon_soft_i2c.c' -o "${OBJDIR}/chameleon_soft_i2c.o"
+OBJS="$OBJS ${OBJDIR}/chameleon_soft_i2c.o"
 echo "CC chameleon_lsn50_hw.c"
 arm-none-eabi-gcc @build/cflags.rsp "${EXTRA_CFLAGS[@]}" -c './STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/DRAGINO-LRWAN(AT)/src/chameleon_lsn50_hw.c' -o "${OBJDIR}/chameleon_lsn50_hw.o"
 OBJS="$OBJS ${OBJDIR}/chameleon_lsn50_hw.o"

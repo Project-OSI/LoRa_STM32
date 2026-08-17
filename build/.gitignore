@@ -5,11 +5,5 @@ LSN50-*.elf
 LSN50-*.bin
 LSN50-*.hex
 LSN50-*.map
-!LSN50-chameleon-i2c2-vcc-pmos.elf
-!LSN50-chameleon-i2c2-vcc-pmos.bin
-!LSN50-chameleon-i2c2-vcc-pmos.hex
-!LSN50-chameleon-i2c2-vcc-pmos.map
-!LSN50-chameleon-i2c2-5v-reg.elf
-!LSN50-chameleon-i2c2-5v-reg.bin
-!LSN50-chameleon-i2c2-5v-reg.hex
-!LSN50-chameleon-i2c2-5v-reg.map
+!LSN50-chameleon-soft-i2c-5v.bin
+!LSN50-chameleon-soft-i2c-5v.hex

@@ -27,10 +27,19 @@ static void require(const char *data, const char *text)
     }
 }
 
+static void forbid(const char *data, const char *text)
+{
+    if (strstr(data, text) != 0) {
+        fprintf(stderr, "FAIL build script contains forbidden text: %s\n", text);
+        exit(1);
+    }
+}
+
 int main(void)
 {
     char *script = read_file("../build/build.sh");
     char *flags = read_file("../build/cflags.rsp");
+    char *ignore = read_file("../build/.gitignore");
     char *hardware = read_file(
         "../STM32CubeExpansion_LRWAN/Projects/Multi/Applications/LoRa/"
         "DRAGINO-LRWAN(AT)/src/chameleon_lsn50_hw.c");
@@ -39,26 +48,33 @@ int main(void)
         fprintf(stderr, "FAIL build inputs contain absolute checkout paths\n");
         return 1;
     }
-    require(script, "chameleon-i2c2-vcc-pmos)");
-    require(script, "CHAMELEON_POWER_EXTERNAL_PMOS");
-    require(script, "LSN50-chameleon-i2c2-vcc-pmos");
-    require(script, "chameleon-i2c2-5v-reg)");
+    require(script, "chameleon-soft-i2c-5v)");
+    require(script, "LSN50-chameleon-soft-i2c-5v");
+    require(script, "-DUSE_CHAMELEON");
     require(script, "CHAMELEON_POWER_LSN50_5V");
-    require(script, "LSN50-chameleon-i2c2-5v-reg");
-    require(script, "chameleon-i2c2-5v-reg-field-debug)");
-    require(script, "CHAMELEON_FIELD_DEBUG");
-    require(script, "LSN50-chameleon-i2c2-5v-reg-field-debug");
+    require(script, "CHAMELEON_SOFT_I2C_PB12_PB13");
     require(script, "OBJDIR=\"./build/obj/${TARGET_VARIANT}\"");
+    require(script, "src/chameleon_soft_i2c.c");
     require(script, "src/chameleon_lsn50_hw.c");
+    forbid(script, "chameleon-i2c2-vcc-pmos)");
+    forbid(script, "chameleon-i2c2-5v-reg)");
+    forbid(script, "chameleon-i2c2-5v-reg-field-debug)");
+    forbid(script, "CHAMELEON_POWER_EXTERNAL_PMOS");
+    forbid(script, "CHAMELEON_FIELD_DEBUG");
     if (strstr(hardware, "GPIO_MODE_OUTPUT_PP") != 0) {
         fprintf(stderr, "FAIL PB5 must not use push-pull drive\n");
         return 1;
     }
     require(hardware, "gpio.Mode = GPIO_MODE_OUTPUT_OD;");
     require(hardware, "gpio.Pull = GPIO_PULLUP;");
+    require(hardware, "#if defined(DEBUG) && defined(USE_CHAMELEON)");
+    require(hardware, "#error \"DEBUG drives PB12/PB13 push-pull and is incompatible with Chameleon\"");
+    require(ignore, "!LSN50-chameleon-soft-i2c-5v.bin");
+    require(ignore, "!LSN50-chameleon-soft-i2c-5v.hex");
 
     free(script);
     free(flags);
+    free(ignore);
     free(hardware);
     puts("test_chameleon_build_script OK");
     return 0;
