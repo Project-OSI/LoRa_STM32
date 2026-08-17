@@ -7,6 +7,9 @@
 
 #define MAX_EDGES 4096U
 #define MAX_SAMPLES 512U
+#define SDA_TRANSITION_DATA  0U
+#define SDA_TRANSITION_START 1U
+#define SDA_TRANSITION_STOP  2U
 
 #define ASSERT_TRUE(value, label) do {                                         \
     if (!(value)) {                                                             \
@@ -56,6 +59,8 @@ typedef struct {
     size_t start_count;
     size_t stop_count;
     uint32_t master_sda_change_at[MAX_EDGES];
+    uint8_t master_sda_scl_high[MAX_EDGES];
+    uint8_t master_sda_transition_kind[MAX_EDGES];
     size_t master_sda_change_count;
 } fake_bus_t;
 
@@ -124,13 +129,30 @@ static int scl_read(void *context)
     return physical_scl(fake);
 }
 
+static size_t record_master_sda_transition(fake_bus_t *fake)
+{
+    size_t index = fake->master_sda_change_count;
+
+    ASSERT_TRUE(index < MAX_EDGES, "SDA transition capacity");
+    fake->master_sda_change_at[index] = fake->now_us;
+    fake->master_sda_scl_high[index] = (uint8_t)physical_scl(fake);
+    fake->master_sda_transition_kind[index] = SDA_TRANSITION_DATA;
+    ++fake->master_sda_change_count;
+    return index;
+}
+
 static void sda_low(void *context)
 {
     fake_bus_t *fake = context;
+    size_t index;
+
     if (!fake->master_sda_low) {
-        fake->master_sda_change_at[fake->master_sda_change_count++] = fake->now_us;
+        index = record_master_sda_transition(fake);
+        fake->master_sda_low = 1;
+        if (fake->master_sda_scl_high[index] && !physical_sda(fake)) {
+            fake->master_sda_transition_kind[index] = SDA_TRANSITION_START;
+        }
     }
-    fake->master_sda_low = 1;
     ++fake->sda_low_calls;
     observe_lines(fake);
 }
@@ -138,10 +160,15 @@ static void sda_low(void *context)
 static void sda_release(void *context)
 {
     fake_bus_t *fake = context;
+    size_t index;
+
     if (fake->master_sda_low) {
-        fake->master_sda_change_at[fake->master_sda_change_count++] = fake->now_us;
+        index = record_master_sda_transition(fake);
+        fake->master_sda_low = 0;
+        if (fake->master_sda_scl_high[index] && physical_sda(fake)) {
+            fake->master_sda_transition_kind[index] = SDA_TRANSITION_STOP;
+        }
     }
-    fake->master_sda_low = 0;
     ++fake->sda_release_calls;
     observe_lines(fake);
 }
@@ -448,11 +475,12 @@ static void test_start_stop_timing_meets_standard_mode(void)
 {
     fake_bus_t fake;
     chameleon_soft_i2c_t bus;
-    static const uint8_t samples[] = { 1U, 1U, 0U };
+    uint8_t byte = 0xa5U;
+    static const uint8_t samples[] = { 1U, 1U, 0U, 1U, 1U, 1U, 1U, 0U };
 
     initialize(&fake, &bus);
     load_samples(&fake, samples, sizeof(samples));
-    ASSERT_EQ(chameleon_soft_i2c_write(&bus, 0x08U, NULL, 0U),
+    ASSERT_EQ(chameleon_soft_i2c_write(&bus, 0x08U, &byte, 1U),
               CHAMELEON_I2C_OK, "timing transaction");
     size_t index;
     size_t release;
@@ -481,19 +509,39 @@ static void test_start_stop_timing_meets_standard_mode(void)
     ASSERT_TRUE(fake.now_us - fake.stop_at[0] >= 5U,
                 "bus free >= 4.7us");
     for (index = 0U; index < fake.master_sda_change_count; ++index) {
-        size_t edge;
+        size_t fall;
+        size_t rise;
+        uint32_t preceding_fall = 0U;
+        uint32_t following_rise = 0U;
+        int have_fall = 0;
+        int have_rise = 0;
 
-        for (edge = 0U; edge + 1U < fake.scl_rise_count; ++edge) {
-            if (fake.scl_fall_at[edge] <= fake.master_sda_change_at[index]
-                    && fake.master_sda_change_at[index]
-                        < fake.scl_rise_at[edge + 1U]
-                    && fake.master_sda_change_at[index] - fake.scl_fall_at[edge]
-                        <= 3U) {
-                prompt_data = 1;
+        if (fake.master_sda_transition_kind[index] != SDA_TRANSITION_DATA) {
+            continue;
+        }
+        ++prompt_data;
+        ASSERT_EQ(fake.master_sda_scl_high[index], 0U,
+                  "data changes while SCL low");
+        for (fall = 0U; fall < fake.scl_fall_count; ++fall) {
+            if (fake.scl_fall_at[fall] <= fake.master_sda_change_at[index]) {
+                preceding_fall = fake.scl_fall_at[fall];
+                have_fall = 1;
             }
         }
+        for (rise = 0U; rise < fake.scl_rise_count; ++rise) {
+            if (fake.scl_rise_at[rise] > fake.master_sda_change_at[index]) {
+                following_rise = fake.scl_rise_at[rise];
+                have_rise = 1;
+                break;
+            }
+        }
+        ASSERT_TRUE(have_fall && have_rise, "data transition has one low phase");
+        ASSERT_TRUE(fake.master_sda_change_at[index] - preceding_fall <= 3U,
+                    "data changes within 3us of SCL fall");
+        ASSERT_TRUE(fake.master_sda_change_at[index] < following_rise,
+                    "data changes before next SCL rise");
     }
-    ASSERT_TRUE(prompt_data, "data changes promptly after SCL fall");
+    ASSERT_TRUE(prompt_data >= 6, "exercise multiple data transitions");
 }
 
 static void test_bus_clear_clocks_nine_times_then_stops(void)
