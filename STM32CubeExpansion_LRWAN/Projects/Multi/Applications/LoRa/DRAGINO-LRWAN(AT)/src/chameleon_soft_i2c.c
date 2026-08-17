@@ -15,6 +15,20 @@ static int ops_valid(const chameleon_soft_i2c_ops_t *ops)
         && ops->delay_us != NULL && ops->micros != NULL;
 }
 
+static chameleon_i2c_status_t delay_within_transaction(
+    chameleon_soft_i2c_t *bus, uint32_t transaction_start, uint32_t delay_us)
+{
+    uint32_t now = bus->ops.micros(bus->ops.context);
+    uint32_t elapsed = (uint32_t)(now - transaction_start);
+
+    if (elapsed >= CHAMELEON_SOFT_I2C_TXN_TIMEOUT_US
+            || delay_us > CHAMELEON_SOFT_I2C_TXN_TIMEOUT_US - elapsed) {
+        return CHAMELEON_I2C_ERR_TIMEOUT;
+    }
+    bus->ops.delay_us(bus->ops.context, delay_us);
+    return CHAMELEON_I2C_OK;
+}
+
 static chameleon_i2c_status_t release_scl_and_wait(
     chameleon_soft_i2c_t *bus, uint32_t byte_start, uint32_t transaction_start)
 {
@@ -52,39 +66,64 @@ static chameleon_i2c_status_t start_condition(
     if (status != CHAMELEON_I2C_OK) {
         return status;
     }
-    bus->ops.delay_us(bus->ops.context, CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    status = delay_within_transaction(bus, transaction_start,
+                                      CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    if (status != CHAMELEON_I2C_OK) {
+        return status;
+    }
     bus->ops.sda_low(bus->ops.context);
-    bus->ops.delay_us(bus->ops.context, CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    status = delay_within_transaction(bus, transaction_start,
+                                      CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    if (status != CHAMELEON_I2C_OK) {
+        return status;
+    }
     bus->ops.scl_low(bus->ops.context);
     return CHAMELEON_I2C_OK;
 }
 
-static chameleon_i2c_status_t stop_condition(chameleon_soft_i2c_t *bus)
+static chameleon_i2c_status_t stop_condition(chameleon_soft_i2c_t *bus,
+                                             uint32_t transaction_start)
 {
     uint32_t stop_start = bus->ops.micros(bus->ops.context);
+    chameleon_i2c_status_t status;
 
     bus->ops.sda_low(bus->ops.context);
-    bus->ops.delay_us(bus->ops.context, CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    status = delay_within_transaction(bus, transaction_start,
+                                      CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    if (status != CHAMELEON_I2C_OK) {
+        goto release_lines;
+    }
     bus->ops.scl_release(bus->ops.context);
     while (!bus->ops.scl_read(bus->ops.context)) {
         if (expired(stop_start, bus->ops.micros(bus->ops.context),
-                    CHAMELEON_SOFT_I2C_SCL_HIGH_TIMEOUT_US)) {
-            bus->ops.scl_release(bus->ops.context);
-            bus->ops.sda_release(bus->ops.context);
-            return CHAMELEON_I2C_ERR_TIMEOUT;
+                    CHAMELEON_SOFT_I2C_SCL_HIGH_TIMEOUT_US)
+                || expired(transaction_start, bus->ops.micros(bus->ops.context),
+                           CHAMELEON_SOFT_I2C_TXN_TIMEOUT_US)) {
+            status = CHAMELEON_I2C_ERR_TIMEOUT;
+            goto release_lines;
         }
         bus->ops.delay_us(bus->ops.context, 1U);
     }
-    bus->ops.delay_us(bus->ops.context, CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    status = delay_within_transaction(bus, transaction_start,
+                                      CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    if (status != CHAMELEON_I2C_OK) {
+        goto release_lines;
+    }
     bus->ops.sda_release(bus->ops.context);
-    bus->ops.delay_us(bus->ops.context, CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
-    return CHAMELEON_I2C_OK;
+    status = delay_within_transaction(bus, transaction_start,
+                                      CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+
+release_lines:
+    bus->ops.scl_release(bus->ops.context);
+    bus->ops.sda_release(bus->ops.context);
+    return status;
 }
 
 static chameleon_i2c_status_t finish_transaction(chameleon_soft_i2c_t *bus,
-                                                  chameleon_i2c_status_t status)
+                                                  chameleon_i2c_status_t status,
+                                                  uint32_t transaction_start)
 {
-    chameleon_i2c_status_t stop_status = stop_condition(bus);
+    chameleon_i2c_status_t stop_status = stop_condition(bus, transaction_start);
 
     bus->ops.scl_release(bus->ops.context);
     bus->ops.sda_release(bus->ops.context);
@@ -102,7 +141,11 @@ static chameleon_i2c_status_t write_bit(
     } else {
         bus->ops.sda_low(bus->ops.context);
     }
-    bus->ops.delay_us(bus->ops.context, CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    status = delay_within_transaction(bus, transaction_start,
+                                      CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    if (status != CHAMELEON_I2C_OK) {
+        return status;
+    }
     status = release_scl_and_wait(bus, byte_start, transaction_start);
     if (status != CHAMELEON_I2C_OK) {
         return status;
@@ -111,7 +154,11 @@ static chameleon_i2c_status_t write_bit(
         bus->ops.scl_low(bus->ops.context);
         return CHAMELEON_I2C_ERR_BUS;
     }
-    bus->ops.delay_us(bus->ops.context, CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    status = delay_within_transaction(bus, transaction_start,
+                                      CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    if (status != CHAMELEON_I2C_OK) {
+        return status;
+    }
     bus->ops.scl_low(bus->ops.context);
     return CHAMELEON_I2C_OK;
 }
@@ -123,13 +170,21 @@ static chameleon_i2c_status_t read_bit(
     chameleon_i2c_status_t status;
 
     bus->ops.sda_release(bus->ops.context);
-    bus->ops.delay_us(bus->ops.context, CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    status = delay_within_transaction(bus, transaction_start,
+                                      CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    if (status != CHAMELEON_I2C_OK) {
+        return status;
+    }
     status = release_scl_and_wait(bus, byte_start, transaction_start);
     if (status != CHAMELEON_I2C_OK) {
         return status;
     }
     *bit = (uint8_t)(bus->ops.sda_read(bus->ops.context) != 0);
-    bus->ops.delay_us(bus->ops.context, CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    status = delay_within_transaction(bus, transaction_start,
+                                      CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    if (status != CHAMELEON_I2C_OK) {
+        return status;
+    }
     bus->ops.scl_low(bus->ops.context);
     return CHAMELEON_I2C_OK;
 }
@@ -226,7 +281,7 @@ chameleon_i2c_status_t chameleon_soft_i2c_write(
     for (index = 0U; status == CHAMELEON_I2C_OK && index < len; ++index) {
         status = write_byte(bus, data[index], transaction_start);
     }
-    return finish_transaction(bus, status);
+    return finish_transaction(bus, status, transaction_start);
 }
 
 chameleon_i2c_status_t chameleon_soft_i2c_write_read(
@@ -265,7 +320,7 @@ chameleon_i2c_status_t chameleon_soft_i2c_write_read(
         status = read_byte(bus, &rdata[index], index + 1U == rlen,
                            transaction_start);
     }
-    return finish_transaction(bus, status);
+    return finish_transaction(bus, status, transaction_start);
 }
 
 chameleon_i2c_status_t chameleon_soft_i2c_bus_clear(chameleon_soft_i2c_t *bus)
@@ -286,16 +341,24 @@ chameleon_i2c_status_t chameleon_soft_i2c_bus_clear(chameleon_soft_i2c_t *bus)
             break;
         }
         bus->ops.scl_low(bus->ops.context);
-        bus->ops.delay_us(bus->ops.context, CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+        status = delay_within_transaction(bus, transaction_start,
+                                          CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+        if (status != CHAMELEON_I2C_OK) {
+            break;
+        }
         byte_start = bus->ops.micros(bus->ops.context);
         status = release_scl_and_wait(bus, byte_start, transaction_start);
         if (status != CHAMELEON_I2C_OK) {
             break;
         }
-        bus->ops.delay_us(bus->ops.context, CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+        status = delay_within_transaction(bus, transaction_start,
+                                          CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+        if (status != CHAMELEON_I2C_OK) {
+            break;
+        }
     }
     if (status == CHAMELEON_I2C_OK && !bus->ops.sda_read(bus->ops.context)) {
         status = CHAMELEON_I2C_ERR_BUS;
     }
-    return finish_transaction(bus, status);
+    return finish_transaction(bus, status, transaction_start);
 }

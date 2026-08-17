@@ -27,12 +27,16 @@
 typedef struct {
     uint32_t now_us;
     uint32_t delay_scale;
+    uint32_t advance_on_sda_read_us;
     uint32_t scl_stretch_until;
     int scl_stretch_active;
     int master_scl_low;
     int master_sda_low;
     int slave_sda_low;
+    int slave_sda_stuck_low;
     int scl_stuck_low;
+    uint32_t scl_stuck_after_us;
+    int scl_stuck_after_active;
     int previous_scl;
     int previous_sda;
     size_t sda_low_calls;
@@ -40,27 +44,34 @@ typedef struct {
     uint8_t samples[MAX_SAMPLES];
     size_t sample_count;
     size_t sample_index;
-    uint8_t sda_on_rise[MAX_EDGES];
+    uint8_t master_sda_on_rise[MAX_EDGES];
     uint32_t scl_rise_at[MAX_EDGES];
     uint32_t scl_fall_at[MAX_EDGES];
+    uint32_t scl_release_at[MAX_EDGES];
     size_t scl_rise_count;
     size_t scl_fall_count;
+    size_t scl_release_count;
     uint32_t start_at[MAX_EDGES];
     uint32_t stop_at[MAX_EDGES];
     size_t start_count;
     size_t stop_count;
+    uint32_t master_sda_change_at[MAX_EDGES];
+    size_t master_sda_change_count;
 } fake_bus_t;
 
 static int physical_scl(const fake_bus_t *fake)
 {
     return !fake->master_scl_low && !fake->scl_stuck_low
+        && (!fake->scl_stuck_after_active
+            || (int32_t)(fake->now_us - fake->scl_stuck_after_us) < 0)
         && (!fake->scl_stretch_active
             || (int32_t)(fake->now_us - fake->scl_stretch_until) >= 0);
 }
 
 static int physical_sda(const fake_bus_t *fake)
 {
-    return !fake->master_sda_low && !fake->slave_sda_low;
+    return !fake->master_sda_low && !fake->slave_sda_low
+        && !fake->slave_sda_stuck_low;
 }
 
 static void observe_lines(fake_bus_t *fake)
@@ -71,17 +82,18 @@ static void observe_lines(fake_bus_t *fake)
     if (!fake->previous_scl && scl) {
         ASSERT_TRUE(fake->scl_rise_count < MAX_EDGES, "rise capacity");
         fake->scl_rise_at[fake->scl_rise_count] = fake->now_us;
-        fake->sda_on_rise[fake->scl_rise_count++] = (uint8_t)sda;
+        fake->master_sda_on_rise[fake->scl_rise_count++] =
+            (uint8_t)!fake->master_sda_low;
     }
     if (fake->previous_scl && !scl) {
         ASSERT_TRUE(fake->scl_fall_count < MAX_EDGES, "fall capacity");
         fake->scl_fall_at[fake->scl_fall_count++] = fake->now_us;
     }
-    if (fake->previous_scl && !fake->previous_sda && sda) {
+    if (scl && fake->previous_scl && !fake->previous_sda && sda) {
         ASSERT_TRUE(fake->stop_count < MAX_EDGES, "stop capacity");
         fake->stop_at[fake->stop_count++] = fake->now_us;
     }
-    if (fake->previous_scl && fake->previous_sda && !sda) {
+    if (scl && fake->previous_scl && fake->previous_sda && !sda) {
         ASSERT_TRUE(fake->start_count < MAX_EDGES, "start capacity");
         fake->start_at[fake->start_count++] = fake->now_us;
     }
@@ -93,6 +105,7 @@ static void scl_low(void *context)
 {
     fake_bus_t *fake = context;
     fake->master_scl_low = 1;
+    fake->slave_sda_low = 0;
     observe_lines(fake);
 }
 
@@ -100,6 +113,7 @@ static void scl_release(void *context)
 {
     fake_bus_t *fake = context;
     fake->master_scl_low = 0;
+    fake->scl_release_at[fake->scl_release_count++] = fake->now_us;
     observe_lines(fake);
 }
 
@@ -113,6 +127,9 @@ static int scl_read(void *context)
 static void sda_low(void *context)
 {
     fake_bus_t *fake = context;
+    if (!fake->master_sda_low) {
+        fake->master_sda_change_at[fake->master_sda_change_count++] = fake->now_us;
+    }
     fake->master_sda_low = 1;
     ++fake->sda_low_calls;
     observe_lines(fake);
@@ -121,6 +138,9 @@ static void sda_low(void *context)
 static void sda_release(void *context)
 {
     fake_bus_t *fake = context;
+    if (fake->master_sda_low) {
+        fake->master_sda_change_at[fake->master_sda_change_count++] = fake->now_us;
+    }
     fake->master_sda_low = 0;
     ++fake->sda_release_calls;
     observe_lines(fake);
@@ -129,14 +149,14 @@ static void sda_release(void *context)
 static int sda_read(void *context)
 {
     fake_bus_t *fake = context;
-    int value;
 
+    fake->now_us += fake->advance_on_sda_read_us;
+    fake->advance_on_sda_read_us = 0U;
     if (fake->sample_index < fake->sample_count) {
-        value = fake->samples[fake->sample_index++] != 0U;
-    } else {
-        value = physical_sda(fake);
+        fake->slave_sda_low = fake->samples[fake->sample_index++] == 0U;
+        fake->previous_sda = physical_sda(fake);
     }
-    return value;
+    return physical_sda(fake);
 }
 
 static void delay_us(void *context, uint32_t us)
@@ -201,7 +221,7 @@ static void assert_rise_sequence(const fake_bus_t *fake, const uint8_t *bits,
 
     for (first = 0U; first + bit_count <= fake->scl_rise_count; ++first) {
         for (bit = 0U; bit < bit_count; ++bit) {
-            if (fake->sda_on_rise[first + bit] != bits[bit]) {
+            if (fake->master_sda_on_rise[first + bit] != bits[bit]) {
                 break;
             }
         }
@@ -296,9 +316,9 @@ static void test_read_acks_intermediate_and_nacks_final_byte(void)
     ASSERT_EQ(chameleon_soft_i2c_write_read(&bus, 0x08U, &command, 1U,
                                              result, sizeof(result)),
               CHAMELEON_I2C_OK, "read ACK/NACK");
-    ASSERT_EQ(fake.sda_on_rise[fake.scl_rise_count - 11U], 0U,
+    ASSERT_EQ(fake.master_sda_on_rise[fake.scl_rise_count - 11U], 0U,
               "ACK after first read");
-    ASSERT_EQ(fake.sda_on_rise[fake.scl_rise_count - 2U], 1U,
+    ASSERT_EQ(fake.master_sda_on_rise[fake.scl_rise_count - 2U], 1U,
               "NACK after final read");
 }
 
@@ -340,7 +360,7 @@ static void test_sda_held_low_is_bus_fault(void)
     chameleon_soft_i2c_t bus;
 
     initialize(&fake, &bus);
-    fake.slave_sda_low = 1;
+    fake.slave_sda_stuck_low = 1;
     ASSERT_EQ(chameleon_soft_i2c_write(&bus, 0x08U, NULL, 0U),
               CHAMELEON_I2C_ERR_BUS, "SDA held low");
     assert_released(&fake);
@@ -374,8 +394,40 @@ static void test_transaction_deadline_is_fifty_ms(void)
     load_samples(&fake, samples, sizeof(samples));
     ASSERT_EQ(chameleon_soft_i2c_write(&bus, 0x08U, data, sizeof(data)),
               CHAMELEON_I2C_ERR_TIMEOUT, "transaction timeout");
-    ASSERT_TRUE(fake.now_us >= CHAMELEON_SOFT_I2C_TXN_TIMEOUT_US,
-                "fifty ms reached");
+    ASSERT_EQ(fake.now_us, CHAMELEON_SOFT_I2C_TXN_TIMEOUT_US,
+              "fifty ms exact");
+    assert_released(&fake);
+}
+
+static void test_cleanup_cannot_extend_transaction_deadline(void)
+{
+    fake_bus_t fake;
+    chameleon_soft_i2c_t bus;
+
+    initialize(&fake, &bus);
+    fake.slave_sda_stuck_low = 1;
+    fake.advance_on_sda_read_us = CHAMELEON_SOFT_I2C_TXN_TIMEOUT_US - 20U;
+    fake.scl_stuck_after_active = 1;
+    fake.scl_stuck_after_us = CHAMELEON_SOFT_I2C_TXN_TIMEOUT_US - 10U;
+    ASSERT_EQ(chameleon_soft_i2c_write(&bus, 0x08U, NULL, 0U),
+              CHAMELEON_I2C_ERR_BUS, "bus fault before stuck cleanup");
+    ASSERT_EQ(fake.now_us, CHAMELEON_SOFT_I2C_TXN_TIMEOUT_US,
+              "cleanup shares transaction deadline");
+    assert_released(&fake);
+}
+
+static void test_cleanup_near_deadline_does_not_overshoot(void)
+{
+    fake_bus_t fake;
+    chameleon_soft_i2c_t bus;
+
+    initialize(&fake, &bus);
+    fake.slave_sda_stuck_low = 1;
+    fake.advance_on_sda_read_us = CHAMELEON_SOFT_I2C_TXN_TIMEOUT_US - 5U;
+    ASSERT_EQ(chameleon_soft_i2c_write(&bus, 0x08U, NULL, 0U),
+              CHAMELEON_I2C_ERR_BUS, "near-deadline bus fault");
+    ASSERT_EQ(fake.now_us, CHAMELEON_SOFT_I2C_TXN_TIMEOUT_US - 5U,
+              "cleanup skips fixed delay without budget");
     assert_released(&fake);
 }
 
@@ -402,14 +454,46 @@ static void test_start_stop_timing_meets_standard_mode(void)
     load_samples(&fake, samples, sizeof(samples));
     ASSERT_EQ(chameleon_soft_i2c_write(&bus, 0x08U, NULL, 0U),
               CHAMELEON_I2C_OK, "timing transaction");
-    ASSERT_TRUE(fake.start_at[0] - fake.scl_rise_at[0] >= 5U,
+    size_t index;
+    size_t release;
+    int prompt_data = 0;
+    int start_setup = 0;
+    uint32_t start_scl_release_at = 0U;
+
+    ASSERT_TRUE(fake.start_count == 1U && fake.stop_count == 1U,
+                "one START and STOP");
+    for (release = 0U; release < fake.scl_release_count; ++release) {
+        if (fake.scl_release_at[release] < fake.start_at[0]) {
+            start_scl_release_at = fake.scl_release_at[release];
+            start_setup = 1;
+        }
+    }
+    ASSERT_TRUE(start_setup
+                    && fake.start_at[0] - start_scl_release_at >= 5U,
                 "START setup >= 4.7us");
+    ASSERT_TRUE(fake.scl_fall_at[0] > fake.start_at[0], "SCL falls after START");
     ASSERT_TRUE(fake.scl_fall_at[0] - fake.start_at[0] >= 4U,
                 "START hold >= 4.0us");
+    ASSERT_TRUE(fake.stop_at[0] > fake.scl_rise_at[fake.scl_rise_count - 1U],
+                "STOP follows SCL high");
     ASSERT_TRUE(fake.stop_at[0] - fake.scl_rise_at[fake.scl_rise_count - 1U] >= 4U,
                 "STOP setup >= 4.0us");
     ASSERT_TRUE(fake.now_us - fake.stop_at[0] >= 5U,
                 "bus free >= 4.7us");
+    for (index = 0U; index < fake.master_sda_change_count; ++index) {
+        size_t edge;
+
+        for (edge = 0U; edge + 1U < fake.scl_rise_count; ++edge) {
+            if (fake.scl_fall_at[edge] <= fake.master_sda_change_at[index]
+                    && fake.master_sda_change_at[index]
+                        < fake.scl_rise_at[edge + 1U]
+                    && fake.master_sda_change_at[index] - fake.scl_fall_at[edge]
+                        <= 3U) {
+                prompt_data = 1;
+            }
+        }
+    }
+    ASSERT_TRUE(prompt_data, "data changes promptly after SCL fall");
 }
 
 static void test_bus_clear_clocks_nine_times_then_stops(void)
@@ -419,7 +503,7 @@ static void test_bus_clear_clocks_nine_times_then_stops(void)
     static const uint8_t samples[] = { 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U };
 
     initialize(&fake, &bus);
-    fake.slave_sda_low = 1;
+    fake.slave_sda_stuck_low = 1;
     load_samples(&fake, samples, sizeof(samples));
     ASSERT_EQ(chameleon_soft_i2c_bus_clear(&bus), CHAMELEON_I2C_ERR_BUS,
               "clear reports held SDA");
@@ -441,6 +525,8 @@ int main(void)
     test_sda_held_low_is_bus_fault();
     test_sda_forced_low_during_transmitted_high_is_bus_fault();
     test_transaction_deadline_is_fifty_ms();
+    test_cleanup_cannot_extend_transaction_deadline();
+    test_cleanup_near_deadline_does_not_overshoot();
     test_deadlines_wrap_across_uint32_max();
     test_start_stop_timing_meets_standard_mode();
     test_bus_clear_clocks_nine_times_then_stops();
