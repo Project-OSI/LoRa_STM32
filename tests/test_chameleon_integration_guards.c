@@ -95,6 +95,9 @@ int main(void)
                  "MOD3 lifecycle acquisition");
     require_text(bsp, "Chameleon result:%s attempts:%u flags:0x%02x",
                  "exact serial result and attempt diagnostics");
+    require_text(bsp,
+                 "#ifdef USE_CHAMELEON\n\tif((mode!=3)&&(power_time!=0))",
+                 "MOD3-only vendor +5V pulse guard");
     require_text(at,
                  "ATEerror_t at_getsensorvaule_set(const char *param)\n{\n\tint stus;",
                  "GETSENSORVALUE percent-d destination type");
