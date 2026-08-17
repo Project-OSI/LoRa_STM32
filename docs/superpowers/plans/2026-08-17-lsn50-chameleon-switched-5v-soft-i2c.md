@@ -11,10 +11,10 @@ on PB13/PB12 without added interface components.
 
 **Architecture:** Keep `via_chameleon.c` as the protocol authority. Add a
 portable open-drain software-I2C transport, bind it to PB13 SCL and PB12 SDA
-with a session-local TIM2 microsecond clock, and let `chameleon_lsn50_hw.c` own
-power, deadlines, one configurable cold retry, watchdog service, and cleanup.
-Restore PB14 to the vendor digital-input path because it is no longer part of
-the Chameleon bus.
+with a session-local, software-extended 16-bit TIM2 microsecond clock, and let
+`chameleon_lsn50_hw.c` own power, deadlines, one configurable cold retry,
+watchdog service, and cleanup. Restore PB14 to the vendor digital-input path
+because it is no longer part of the Chameleon bus.
 
 **Tech stack:** C99 host tests, STM32L072 HAL/CMSIS, TIM2 at 1 MHz, shell ARM
 GNU build, EU868 LoRaWAN firmware.
@@ -44,6 +44,8 @@ GNU build, EU868 LoRaWAN firmware.
 - Bound one SCL-high wait to 2 ms, one byte to 10 ms, one transaction to 50 ms,
   startup probing to 400 ms, VIA readiness to 2000 ms, and the full acquisition
   to 12 s.
+- Treat TIM2 as the STM32L072's 16-bit timer. Reset its software extension at
+  each session and never leave it unobserved for its 65.536 ms wrap period.
 - Initial bench constants are 100 ms reader startup and 1000 ms cold-off retry.
   Bench discharge and settling measurements may change those constants before
   field release under the rules in the spec.
@@ -144,6 +146,7 @@ static void test_sda_held_low_is_bus_fault(void);
 static void test_sda_forced_low_during_transmitted_high_is_bus_fault(void);
 static void test_transaction_deadline_is_fifty_ms(void);
 static void test_deadlines_wrap_across_uint32_max(void);
+static void test_start_stop_timing_meets_standard_mode(void);
 static void test_bus_clear_clocks_nine_times_then_stops(void);
 ```
 
@@ -187,17 +190,22 @@ static int expired(uint32_t start, uint32_t now, uint32_t limit_us)
 
 Implement `release_scl_and_wait()` so it releases SCL, polls the physical line,
 and returns `CHAMELEON_I2C_ERR_TIMEOUT` after 2 ms or when the enclosing byte or
-transaction deadline expires. A logical high always calls the release callback;
-only a logical low calls the drive-low callback.
+transaction deadline expires. The polling loop must call `delay_us(..., 1U)`
+between samples so target code does not busy-spin and the fake clock advances
+in held-low tests. A logical high always calls the release callback; only a
+logical low calls the drive-low callback.
 
 - [ ] **Step 6: Implement START, repeated START, STOP, and byte transfers**
 
 Use these sequences:
 
 ```text
-START:          release SDA -> release/wait SCL -> SDA low -> SCL low
-repeated START: release SDA -> release/wait SCL -> SDA low -> SCL low
-STOP:           SDA low -> release/wait SCL -> release SDA
+START:          release SDA -> release/wait SCL -> half delay -> SDA low
+                -> half delay -> SCL low
+repeated START: release SDA -> release/wait SCL -> half delay -> SDA low
+                -> half delay -> SCL low
+STOP:           SDA low -> half delay -> release/wait SCL -> half delay
+                -> release SDA -> half delay
 write bit:      set/release SDA -> half delay -> release/wait SCL
                 -> half delay -> SCL low
 read bit:       release SDA -> half delay -> release/wait SCL
@@ -211,6 +219,13 @@ for NACK. Apply the 10 ms byte deadline to address, data, and received bytes.
 When transmitting a logical one, sample SDA while SCL is high and return BUS if
 the physical line is low. This detects a short or another active driver without
 claiming a NACK.
+
+The condition delays provide tSU;STA, tHD;STA, tSU;STO, and tBUF margin at
+Standard-mode speed. After each SCL falling edge, change SDA without an added
+half-period delay, then give the new data a full half-period before releasing
+SCL. UM10204 permits zero data-hold time for I2C devices and limits tVD;DAT to
+3.45 us, so a 10 us low-to-data delay would be non-compliant. The timing test
+must inspect recorded edge timestamps, not only event order.
 
 - [ ] **Step 7: Implement public transactions and bus clear**
 
@@ -284,6 +299,7 @@ these constants in the header:
 #define CHAMELEON_PROBE_INTERVAL_MS     50U
 #define CHAMELEON_COLD_RETRY_OFF_MS   1000U
 #define CHAMELEON_COLD_RETRY_ENABLED      1U
+#define CHAMELEON_RETRY_SESSION_RESERVE_MS 5150U
 #define CHAMELEON_ACQUIRE_TIMEOUT_MS  12000U
 #define CHAMELEON_WATCHDOG_SLICE_MS    1000U
 ```
@@ -298,6 +314,8 @@ Update the success trace to begin
 - readiness timeout cleans up without an unnecessary bus clear;
 - a first failed session waits exactly 1000 ms and starts at most one second
   session;
+- a retry is skipped unless the remaining global budget covers the cold-off
+  delay plus the 5150 ms worst-case second session;
 - long waits refresh the watchdog at intervals no greater than 1000 ms;
 - simulated slow protocol operations stop at the 12 s acquisition deadline;
 - success and sentinel-bearing valid samples do not retry.
@@ -374,6 +392,9 @@ measure_timeout = remaining_ms > 500U
 Return `CHAMELEON_RESULT_MEASUREMENT_TIMEOUT` instead of starting the call when
 its timeout is zero. These reservations make the 12 s wall-clock limit hold
 even when the final I2C transaction consumes its complete 50 ms allowance.
+The nominal two-session worst case is about 11.3 s, but this estimate is not
+the safety mechanism. Every phase must clamp itself to the runtime remaining
+budget so later constant changes cannot exceed the 12 s cap.
 
 Make `bounded_probe()` stop at 400 ms or the remaining global budget minus one
 50 ms transaction allowance, whichever comes first. This function may issue an
@@ -401,11 +422,14 @@ bus for a valid sentinel sample or reader-busy timeout.
 - [ ] **Step 7: Keep one compile-time cold retry**
 
 Run a maximum of `1U + CHAMELEON_COLD_RETRY_ENABLED` sessions. Retry only when
-the remaining global budget is greater than the configured cold-off delay plus
-the 500 ms protocol reserve. Call the bounded cold-off delay, then let the
-second session enforce the same remaining-time checks. Before field release,
-gate any constant change on the measured discharge curve; do not introduce an
-AT setting or EEPROM field.
+the remaining global budget is at least the configured cold-off delay plus
+`CHAMELEON_RETRY_SESSION_RESERVE_MS`. The initial 5150 ms reserve covers 100 ms
+startup, a probe with its final transaction, two readiness phases with their
+final transactions, trigger, register reads, and failure-path bus clear. Call
+the bounded cold-off delay, then let the second session enforce the same
+remaining-time checks. Before field release, gate any constant change on the
+measured discharge curve and recompute the reserve when its constituent limits
+change; do not introduce an AT setting or EEPROM field.
 
 - [ ] **Step 8: Run lifecycle and regression tests**
 
@@ -444,14 +468,32 @@ git commit -m "fix: bound Chameleon power lifecycle"
 - Produces the unchanged VIA board callbacks
   `chameleon_board_i2c_write()` and `chameleon_board_i2c_write_read()` backed by
   one static `chameleon_soft_i2c_t`.
+- Produces a small host-testable `chameleon_tim2_clock_t` helper in
+  `chameleon_lsn50_hw.h` that extends successive 16-bit TIM2 samples into
+  session-local 32-bit elapsed microseconds.
 - Owns TIM2 only while a Chameleon acquisition session is active. TIM21 remains
   owned by the watchdog LSI measurement.
 
 - [ ] **Step 1: Add a red source-contract test**
 
-Create `test_chameleon_hw_binding.c` using the same `read_file`, `require_text`,
-and `forbid_text` pattern as the existing integration guards. Assert the final
-source contains:
+Create `test_chameleon_hw_binding.c` using the same `read_source`,
+`require_text`, and `forbid_text` pattern as the existing integration guards.
+Include `<assert.h>` and `chameleon_lsn50_hw.h`, then add this functional test
+before the source checks:
+
+```c
+static void test_tim2_clock_extends_ffff_wrap(void)
+{
+    chameleon_tim2_clock_t clock;
+
+    chameleon_tim2_clock_reset(&clock, 0xfff0U);
+    assert(chameleon_tim2_clock_update(&clock, 0xfffeU) == 14U);
+    assert(chameleon_tim2_clock_update(&clock, 0x0008U) == 24U);
+}
+```
+
+The test calls the production inline helper; do not duplicate its arithmetic
+inside the test. Assert the final source also contains:
 
 ```text
 #define CHAMELEON_SCL_PIN GPIO_PIN_13
@@ -461,13 +503,15 @@ GPIO_NOPULL
 GPIO_MODE_ANALOG
 TIM2->PSC
 TIM2->CNT
+TIM2->ARR = 0xffffU;
 chameleon_soft_i2c_write(
 chameleon_soft_i2c_write_read(
 #if defined(DEBUG) && defined(USE_CHAMELEON)
 ```
 
 Forbid `I2C2`, `HAL_I2C_`, `GPIO_AF5_I2C2`, `GPIO_PIN_14`,
-`CHAMELEON_POWER_EXTERNAL_PMOS`, and `GPIO_MODE_OUTPUT_PP` in
+`TIM2->ARR = 0xffffffffU`, `CHAMELEON_POWER_EXTERNAL_PMOS`, and
+`GPIO_MODE_OUTPUT_PP` in
 `chameleon_lsn50_hw.c`. Register and run the test.
 
 Read `stm32l0xx_hw.c` in the same test and require
@@ -495,6 +539,12 @@ At the production boundary in `chameleon_lsn50_hw.c`, add:
 #if !defined(CHAMELEON_SOFT_I2C_PB12_PB13)
 #error "This branch requires PB12/PB13 software I2C"
 #endif
+#if (CHAMELEON_POLL_INTERVAL_MS * 1000U) >= 65536U
+#error "VIA poll interval can skip a complete TIM2 wrap"
+#endif
+#if (CHAMELEON_PROBE_INTERVAL_MS * 1000U) >= 65536U
+#error "Probe interval can skip a complete TIM2 wrap"
+#endif
 ```
 
 Remove the external-PMOS selection and all private I2C2 handle, timing-word,
@@ -517,7 +567,31 @@ HAL_GPIO_Init(GPIOB, &gpio);
 `stm32_rail_on()` writes RESET; `stm32_rail_off()` writes SET. Do not replace
 the vendor's open-drain behavior with push-pull.
 
-- [ ] **Step 4: Configure a session-local 1 MHz TIM2 clock**
+- [ ] **Step 4: Configure and extend the session-local 16-bit TIM2 clock**
+
+Add the testable extension to `chameleon_lsn50_hw.h`:
+
+```c
+typedef struct {
+    uint16_t last_count;
+    uint32_t elapsed_us;
+} chameleon_tim2_clock_t;
+
+static inline void chameleon_tim2_clock_reset(
+    chameleon_tim2_clock_t *clock, uint16_t count)
+{
+    clock->last_count = count;
+    clock->elapsed_us = 0U;
+}
+
+static inline uint32_t chameleon_tim2_clock_update(
+    chameleon_tim2_clock_t *clock, uint16_t count)
+{
+    clock->elapsed_us += (uint16_t)(count - clock->last_count);
+    clock->last_count = count;
+    return clock->elapsed_us;
+}
+```
 
 Implement `stm32_timer_start()` with direct CMSIS registers so it has no IRQ or
 MSP dependency:
@@ -529,16 +603,21 @@ __HAL_RCC_TIM2_CLK_ENABLE();
 __HAL_RCC_TIM2_FORCE_RESET();
 __HAL_RCC_TIM2_RELEASE_RESET();
 TIM2->PSC = (pclk_hz / 1000000U) - 1U;
-TIM2->ARR = 0xffffffffU;
+TIM2->ARR = 0xffffU;
 TIM2->EGR = TIM_EGR_UG;
 TIM2->CNT = 0U;
+chameleon_tim2_clock_reset(&tim2_clock, 0U);
 TIM2->CR1 = TIM_CR1_CEN;
 ```
 
-`stm32_micros()` returns `TIM2->CNT`. `stm32_delay_us()` polls unsigned elapsed
-microseconds. `stm32_timer_stop()` clears CEN, resets TIM2, and disables its
-clock. The current firmware fixes APB1 to HCLK/1 at 32 MHz; add a source guard
-for that clock assumption rather than generalizing to unused clock trees.
+`stm32_micros()` passes `(uint16_t)TIM2->CNT` through
+`chameleon_tim2_clock_update()`. `stm32_delay_us()` polls unsigned elapsed
+microseconds. The extension is valid because the 50 ms VIA poll delay is the
+longest interval without a timer sample while the session-local timer runs,
+below the 65.536 ms wrap. `stm32_timer_stop()` clears CEN, resets TIM2, and
+disables its clock. The current firmware fixes APB1 to HCLK/1 at 32 MHz; add a
+source guard for that clock assumption rather than generalizing to unused
+clock trees.
 
 - [ ] **Step 5: Bind PB12/PB13 as open-drain lines**
 
@@ -650,6 +729,11 @@ Replace assertions for disabled PB14/I2C2 diagnostics with assertions that:
 - `stm32l0xx_it.c` handles and clears `GPIO_PIN_14` without a Chameleon guard;
 - the source tree has no `[CHAM-DBG` strings, I2C2 timing words, or old
   `[5v-reg]`/`[vcc-pmos]` banners;
+- `main.c` prints `Chameleon reset:%s flags:0x%08lx` from `RCC->CSR` once at
+  boot and clears the reset flags afterward;
+- the existing `USE_CHAMELEON` branch around the vendor +5 V pulse still
+  requires `(mode!=3)&&(power_time!=0)`, so the Chameleon lifecycle is the only
+  PB5 owner in MOD3;
 - the mode-3 lock, payload encoder call, exact result line, and 44-byte payload
   tests remain.
 
@@ -677,6 +761,20 @@ line to exactly:
 PRINTF("\r\nChameleon acquisition enabled [soft-i2c-5v]\r\n");
 ```
 
+Before `iwdg_init()`, retain one compact reset report outside
+`CHAMELEON_FIELD_DEBUG`. Read `RCC->CSR` once, classify IWDG, WWDG, software,
+low-power, POR/PDR, pin, option-byte, and firewall resets in that priority
+order, print the classification and raw flags, then call
+`__HAL_RCC_CLEAR_RESET_FLAGS()`. Use this format:
+
+```c
+PPRINTF("Chameleon reset:%s flags:0x%08lx\r\n",
+        chameleon_reset_cause(chameleon_reset_flags),
+        (unsigned long)chameleon_reset_flags);
+```
+
+The raw flags resolve combinations that the one-word classification cannot.
+
 - [ ] **Step 4: Restore PB14 reads and reconfiguration in main/AT/IRQ paths**
 
 Use the vendor expression directly wherever the status is sampled:
@@ -696,7 +794,8 @@ Delete `CHAMELEON_FIELD_DEBUG`-only retained-stage and I2C2-register reporting
 from `bsp.c`, `main.c`, `at.c`, `command.c`, `stm32l0xx_it.c`, and the Chameleon
 hardware header/source. These probes described the failed PB13/PB14 HAL path
 and have no valid register meaning for software I2C. Do not remove the normal
-one-line `Chameleon result:%s attempts:%u flags:0x%02x` report.
+one-line `Chameleon result:%s attempts:%u flags:0x%02x` report or the new
+reset-flags boot line.
 
 - [ ] **Step 6: Preserve the dedicated MOD3 behavior**
 
@@ -707,6 +806,8 @@ EEPROM_Read_Config forces mode=3 under USE_CHAMELEON.
 AT+MOD accepts 3 and rejects 1, 2, and 4-9.
 The MOD command skips EEPROM storage in the dedicated image.
 Downlink mode selection accepts only mode 3.
+The vendor +5 V pulse remains suppressed when `mode==3`; only
+`chameleon_lsn50_hw.c` owns PB5 during a Chameleon acquisition.
 ```
 
 Do not change `via_chameleon.c`, `chameleon_payload.c`, or payload field order.
@@ -995,6 +1096,7 @@ Build and artifact verification
 Flash and UART smoke test
 Off-state and enable-transient measurements
 Protocol endurance and fault injection
+Power-consumption logging
 Four-week field gate
 Known rejected wiring
 ```
@@ -1003,6 +1105,11 @@ The wiring table must say terminal 14/+5 V to reader VCC, terminal 15 or another
 verified GND to reader GND, terminal 20/PB12 to SDA, and terminal 21/PB13 to
 SCL. State that the USB-I2C adapter, PB6, PB7, and PB14 remain disconnected
 from the reader. State that neither internal nor external pull-downs are fitted.
+The known-hazards section must note that removing the LSN50 battery while +5 V
+is charged is outside the supported sequence because MCU VDD can collapse
+before the reader rail. It must also leave an explicit enclosure-level ESD/TVS
+decision before permanent outdoor-cable deployment; this is not a bench-build
+gate.
 
 - [ ] **Step 2: Document the operator smoke test**
 
@@ -1019,25 +1126,46 @@ Do not describe the software build as field-ready. Label it a bench candidate
 until every spec gate has evidence.
 
 The guide must include the numerical gates: measured bus rate no more than
-100 kHz and rise time no more than 1 us; reader VCC inside its specified supply
-range; SDA/SCL no higher than 5.5 V; and MCU VDD no lower than 2.0 V during the
-enable transient, including with a cold or passivated cell. Require at least
-500 one-minute sessions with zero resets, no acquisition over 12 s, and at
-least 99% clean samples. Run 20 cycles each with SDA open, SCL grounded, SDA
-grounded, reader VCC disconnected, reader absent, and reader hot-plugged. Two
+100 kHz and rise time no more than 1 us; VCC/SDA/SCL no higher than 5.5 V;
+reader VCC no lower than 3.0 V during measurement; and MCU VDD no lower than
+2.0 V during the enable transient, including with a cold or passivated cell.
+A loaded +5 V rail below 4.5 V triggers diagnosis but is not an automatic
+rejection when it remains above 3.0 V and every protocol gate passes. Capture
++5 V, SDA, and SCL at enable on a single-shot scope at 10 MS/s or faster when
+available, with 1 MS/s as the minimum. Archive a verified RT9266 datasheet with
+the other hardware sources before using converter-specific limits or expected
+waveforms in the bench verdict.
+
+Require at least 500 one-minute sessions with zero resets, no acquisition over
+12 s, and at least 99% clean samples. Confirm the reset-cause boot line by
+causing one pin reset and one watchdog reset under controlled bench conditions.
+Run 20 cycles each with SDA open, SCL grounded, SDA grounded, reader VCC
+disconnected, reader absent, reader hot-plugged, the maximum intended cable,
+and forced pre-sleep cleanup during a session. Log current for at least 24
+hours; target added average current is at most 250 uA at a 5-minute interval or
+60 uA at a 20-minute interval, with at most 5 uA steady off-state increment.
+Any target exceedance needs a battery-life calculation; more than five times
+the average target or more than 5 uA off-state increment rejects the build. Two
 units then run four weeks with `i2c_missing` below 0.5%, no fault block over
-30 minutes, and no unexplained frame-counter reset.
+30 minutes, no unexplained frame-counter reset, no sustained battery decline,
+stable array IDs, and plausible Chameleon values against the known-good range
+or a co-located reference.
 
 - [ ] **Step 3: Copy the adaptive electrical decision table from the spec**
 
-The guide must distinguish these outcomes:
+The guide must record natural VCC/SDA/SCL decay through at least 300 s or until
+all nodes stay below 0.1 V. To separate stored charge from a live source, it
+then uses a temporary current-limited load to bring +5 V below 0.1 V, removes
+that load with PB5 off and both bus pins analog, and watches for rebound or
+sourced current for another 5 minutes. It must distinguish these outcomes:
 
 | Observation | Action |
 |---|---|
 | VCC/SDA/SCL cross below 0.1 V soon enough that 150% of the time is at most 5 s | Set the retry delay to that value, with a 1 s minimum |
-| Monotonic discharge reaches below 0.1 V by 30 s but exceeds the retry cap | Disable same-cycle retry; retry at the next scheduled sample |
-| Residual node is 0.1-0.3 V and still falling at 30 s | Extend characterization before field use |
-| A node plateaus at or above 0.3 V or reader-branch off-current exceeds 5 uA | Stop and investigate leakage/back-power before adding hardware |
+| Natural decay takes more than 5 s but reaches below 0.1 V before the shortest deployed interval | Disable same-cycle retry; retry at the next scheduled sample |
+| Natural decay does not reach below 0.1 V before the shortest deployed interval | Do not field-release the passive-discharge build; specify and validate active discharge or add hardware |
+| After temporary discharge below 0.1 V, a node rebounds to at least 0.3 V or sourced current exceeds 5 uA | Stop and investigate leakage/back-power before adding hardware |
+| A residual node remains above 0.3 V before forced discharge but continues falling | Treat it as stored charge; continue the natural-decay observation to at least 5 minutes |
 | VDD stays at least 2.0 V, rail settles, and no reset/corruption occurs | Keep the stock +5 V design; use measured startup delay with margin |
 | VDD falls below 2.0 V, rail does not settle, MCU resets, or data corrupts | Reject direct +5 V for this hardware/cell condition |
 
@@ -1089,5 +1217,5 @@ git commit -m "docs: add Chameleon soft-I2C bench guide"
 Report the BIN/HEX paths, SHA-256 hashes, build size, host/codec results, and
 the fact that software verification is complete. Stop before field-release
 claims. The next work item is the spec's bench sequence: waveform/rate,
-off-state discharge, enable sag, 500-cycle endurance, fault injection, then two
-units for four weeks.
+stored-charge and back-power separation, enable sag, 500-cycle endurance,
+fault injection, 24-hour energy logging, then two units for four weeks.

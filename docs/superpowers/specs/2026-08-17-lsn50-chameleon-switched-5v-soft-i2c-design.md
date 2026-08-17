@@ -1,6 +1,7 @@
 # LSN50 Chameleon switched-5 V software-I2C design
 
 **Date:** 2026-08-17  
+**Review revision:** 2026-08-18
 **Status:** Approved architecture; implementation has not started  
 **Branch:** `feature/chameleon-v1.7-switched-5v-soft-i2c`  
 **Hardware:** Dragino LSN50v2 rev 2.3a and VIA Chameleon I2C reader
@@ -36,6 +37,13 @@ PB5 enables it before sampling and disables it afterward. The previous field
 installation also proved that this supply could operate the Chameleon reader
 for days. Its recorded failure matches bus back-powering; it did not establish
 a boost-converter or load-start failure.
+
+The v2.3 schematic fits roughly 110 uF on the +5 V output (C4 and C11, plus
+local converter decoupling) and uses a 4 MOhm feedback-divider path to ground.
+Stored charge can therefore
+leave a harmless voltage tail after PB5 switches the boost off. Off-state
+voltage alone does not prove back-powering; a rebound after the rail has first
+been discharged, or continuing sourced current, does.
 
 These facts justify a controlled prototype. They do not waive the discharge,
 supply-sag, endurance, or field gates in this specification.
@@ -130,6 +138,20 @@ configured same-cycle cold retry, the transport issues up to nine SCL pulses
 followed by STOP. Bus clear itself is bounded and may fail without delaying the
 scheduled uplink.
 
+The transport meets the Standard-mode condition timing from UM10204. After SCL
+has risen, START and repeated START wait at least 4.7 us before SDA falls and
+hold SDA low for at least 4.0 us before SCL falls. STOP holds SDA low, waits for
+SCL high, waits at least 4.0 us, releases SDA, and leaves at least 4.7 us of bus
+free time. Normal data changes occur promptly after SCL falls and are stable
+before the next SCL rise; the implementation must not add a 10 us data-valid
+delay because Standard-mode tVD;DAT is at most 3.45 us.
+
+TIM2 on STM32L072 is a 16-bit timer. The target binding may expose a monotonic
+32-bit microsecond value only by extending the 16-bit counter in software,
+resetting the extension at each session, and sampling it more often than the
+65.536 ms hardware wrap. The existing 50 ms VIA poll interval is the largest
+permitted unobserved interval while TIM2 is active.
+
 ### LSN50 lifecycle
 
 `chameleon_lsn50_hw.c` adapts PB5, PB12, and PB13 to the transport and owns
@@ -161,6 +183,15 @@ Normal cleanup, error cleanup, boot preparation, and pre-sleep preparation use
 one idempotent shutdown function. Bus isolation always precedes rail-off. A
 full acquisition, including any configured cold retry, has a 12 s wall-clock
 cap. There are no retry storms between scheduled uplinks.
+
+The initial firmware uses passive discharge. If the rail does not fall below
+0.1 V before the next scheduled acquisition, that firmware is not eligible for
+field use. A later revision may actively discharge the rail by switching PB5
+off, driving both open-drain bus pins low for a measured bounded interval, then
+returning them to analog mode. That sequence sinks charge through the reader's
+pull-ups and does not drive either bus line high, but it changes the cleanup
+contract and must receive its own scope, current, timeout, and fault tests
+before use.
 
 The acquisition path refreshes the independent watchdog during bounded wait
 points at intervals no longer than 5 s. The existing fix that bounds
@@ -228,6 +259,8 @@ The software-I2C tests drive a fake wired-AND bus and verify:
 - SCL clock stretching within the deadline;
 - SCL held low, SDA held low, and missing-reader exits;
 - nine-clock bus clear plus STOP;
+- Standard-mode START, repeated-START, STOP, and bus-free timing;
+- the STM32 16-bit TIM2 counter extending correctly across `0xffff`;
 - released lines after every success and failure.
 
 Lifecycle tests verify the exact power/bus ordering, configured startup delay,
@@ -246,46 +279,64 @@ PB5 software-I2C image rather than either v1.6 power backend.
 Tests use the actual field binary, reader, array, cable, and battery type.
 
 1. **Off-state characterization:** record reader VCC, SDA, and SCL at rail-off
-   and after 0.1, 0.5, 1, 5, and 30 s. Measure when all three cross below 0.1 V.
-   Retain the same-cycle retry only if 150% of that discharge time fits within
-   the 5 s retry-delay cap; use at least a 1 s delay. Slower monotonic decay
-   below 0.1 V by 30 s does not reject the component-free design; it disables
-   the same-cycle retry, so recovery occurs at the next scheduled sample. A
-   node that plateaus at or above 0.3 V after 30 s, or reader-branch current
-   above 5 uA while off, indicates a leakage/back-power path and stops
-   progression. A node between 0.1 and 0.3 V that is still falling requires a
-   longer characterization before field use; it is not by itself an
-   architecture rejection. Repeat after a successful acquisition and after
-   every injected failure.
-2. **On state:** reader VCC stays within the reader's specified supply range
-   during acquisition; a loaded value below the nominal 5 V is not by itself a
-   failure. Idle SDA/SCL rise to the reader rail without exceeding 5.5 V, and
-   30-70% rise time at the reader end is no more than 1 us with the field
-   cable.
-3. **Enable transient:** record the MCU VDD minimum, the loaded steady-state
-   voltage, and the settling time when +5 V starts. VDD must remain at or above
-   2.0 V and produce no reset flag or corrupted acquisition. Set the reader
-   startup delay from the measured settling time with margin; VDD need not
-   return to its unloaded value while the reader is powered. The size of a
-   bounded sag is diagnostic and does not fail the design by itself. Test a
-   cold or passivated cell, not only a bench supply.
-4. **Protocol endurance:** at least 500 one-minute acquisition sessions give
+   and after 0.1, 0.5, 1, 5, 30, 60, and 300 s, or until all three remain below
+   0.1 V. Repeat after a successful acquisition and after every injected
+   failure. Then use a temporary current-limited load to discharge +5 V below
+   0.1 V, remove the load while PB5 remains off and PB12/PB13 remain analog,
+   and observe the rail for another 5 minutes. A rebound to 0.3 V or more, or
+   more than 5 uA sourced into the discharged reader branch, indicates a real
+   leakage/back-power path and stops progression. Natural residual voltage
+   before this forced-discharge check is stored-charge evidence, not a
+   back-power verdict.
+2. **Retry policy:** retain the same-cycle retry only if 150% of the measured
+   passive discharge time fits within the 5 s retry-delay cap; use at least a
+   1 s delay. Otherwise disable same-cycle retry. Passive discharge must still
+   reach below 0.1 V before the shortest deployed acquisition interval. If it
+   does not, add and validate the active-discharge sequence above or reject the
+   no-added-components firmware for field use.
+3. **On state:** the VIA board has no qualified supply specification in the
+   available files. Use 5.5 V as the hard maximum, including overshoot, and
+   require at least 3.0 V throughout a measurement for the DS18B20. A loaded
+   rail below 4.5 V is a boost/load diagnostic, not an automatic rejection when
+   it stays above 3.0 V and the reader remains correct. Idle SDA/SCL rise to the
+   reader rail without exceeding 5.5 V. The measured rate is no more than
+   100 kHz, and 30-70% rise time at the reader end is no more than 1 us with the
+   longest intended field cable.
+4. **Enable transient:** use a single-shot scope capture of +5 V, SDA, and SCL
+   at 10 MS/s or faster where available, with 1 MS/s as the minimum. Record the
+   MCU VDD minimum, loaded steady-state voltage, overshoot, and settling time.
+   VDD must remain at or above 2.0 V and produce no reset flag or corrupted
+   acquisition. Set the startup delay from the measured settling time with
+   margin. Test a cold or passivated cell, not only a bench supply, and archive
+   the verified RT9266 datasheet before interpreting converter behavior.
+5. **Protocol endurance:** at least 500 one-minute acquisition sessions give
    zero MCU resets, no session beyond 12 s, at least 99% clean samples, and the
-   correct flag on every failure.
-5. **Fault injection:** for 20 cycles each, test SDA open, SCL grounded, SDA
-   grounded, reader VCC disconnected, reader absent, and reader hot-plugged.
-   The node must uplink every cycle and recover within one cycle after the
-   fault is removed.
-6. **Field soak:** two units run for at least four continuous weeks. Pass means
-   `i2c_missing` below 0.5%, no fault block over 30 minutes, and no unexplained
-   frame-counter reset.
+   correct flag on every failure. The image prints and clears the RCC reset
+   flags once at boot; the normal result line retains the per-acquisition
+   attempts count.
+6. **Fault injection:** for 20 cycles each, test SDA open, SCL grounded, SDA
+   grounded, reader VCC disconnected, reader absent, reader hot-plugged, the
+   maximum intended cable, and a forced pre-sleep cleanup during an active
+   session. The node must uplink every cycle, recover within one cycle after
+   the fault is removed, and keep the rail off throughout sleep.
+7. **Power:** log current for at least 24 hours against the same unit's firmware
+   baseline. Target added average current is at most 250 uA at a 5-minute
+   interval or 60 uA at a 20-minute interval; the steady off-state increment is
+   at most 5 uA after stored charge has dissipated. Any average-current target
+   exceedance needs a written battery-life calculation before field testing. A
+   result above five times target, or an off-state increment above 5 uA,
+   rejects the build.
+8. **Field soak:** two units run for at least four continuous weeks. Pass means
+   `i2c_missing` below 0.5%, no fault block over 30 minutes, no unexplained
+   frame-counter reset, no sustained downward battery-voltage trend, stable
+   array IDs, and Chameleon values consistent with the known-good range or a
+   co-located reference.
 
-An off-state plateau or continuing branch current in gate 1 rejects the
-no-added-components assumption. Slow decay alone changes the retry policy.
-Gate 3 rejects the stock +5 V choice only when VDD leaves the stated operating
-range, the switched rail cannot settle before communication, the MCU resets,
-or acquisition is corrupted. Firmware timing may accommodate bounded settling;
-it cannot waive those electrical failures.
+Gate 1 separates stored energy from a powered-off source. Gate 4 rejects the
+stock +5 V choice only when VDD leaves the stated operating range, the switched
+rail cannot settle before communication, the MCU resets, or acquisition is
+corrupted. Firmware timing may accommodate bounded settling; it cannot waive
+those electrical failures.
 
 ## Files expected to change during implementation
 
