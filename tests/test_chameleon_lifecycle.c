@@ -37,6 +37,7 @@ typedef struct {
     uint32_t probe_cost_ms;
     uint32_t ready_cost_ms;
     uint32_t measure_cost_ms;
+    uint32_t bus_clear_cost_ms;
     uint32_t extra_after_probe_ms;
     uint32_t extra_after_ready_ms;
     uint32_t extra_after_first_measure_ms;
@@ -105,6 +106,8 @@ static chameleon_i2c_status_t bus_clear(void *context)
 {
     fake_hw_t *fake = context;
     fake->bus_clear_calls++;
+    add_cost(fake, fake->bus_clear_cost_ms,
+             CHAMELEON_LIFECYCLE_TXN_RESERVE_MS);
     event(fake, "clear");
     return CHAMELEON_I2C_OK;
 }
@@ -250,6 +253,39 @@ static void test_transport_failures_clear_once_before_cleanup(void)
         ASSERT_TRUE(strstr(fake.trace, "clear,deinit,isolate,off") != 0,
                     "clear before cleanup");
     }
+}
+
+static void test_late_transport_failure_skips_bus_clear_below_transaction_reserve(void)
+{
+    fake_hw_t fake = make_fake();
+    chameleon_lsn50_ops_t ops = make_ops(&fake);
+    chameleon_sample_t sample;
+    fake.first_measure = CHAMELEON_RESULT_STATUS_IO_FAILED;
+    fake.extra_after_first_measure_ms = 11851U;
+    fake.bus_clear_cost_ms = CHAMELEON_LIFECYCLE_TXN_RESERVE_MS;
+
+    ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
+              CHAMELEON_RESULT_STATUS_IO_FAILED, "late transport failure returned");
+    ASSERT_EQ(fake.bus_clear_calls, 0U, "49ms remaining skips bus clear");
+    ASSERT_EQ(fake.now_ms, 11951U, "49ms remains under acquisition cap");
+    ASSERT_TRUE(fake.now_ms <= CHAMELEON_ACQUIRE_TIMEOUT_MS,
+                "late cleanup stays within acquisition cap");
+}
+
+static void test_exact_transaction_reserve_runs_bus_clear_without_exceeding_cap(void)
+{
+    fake_hw_t fake = make_fake();
+    chameleon_lsn50_ops_t ops = make_ops(&fake);
+    chameleon_sample_t sample;
+    fake.first_measure = CHAMELEON_RESULT_STATUS_IO_FAILED;
+    fake.extra_after_first_measure_ms = 11850U;
+    fake.bus_clear_cost_ms = CHAMELEON_LIFECYCLE_TXN_RESERVE_MS;
+
+    ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
+              CHAMELEON_RESULT_STATUS_IO_FAILED, "boundary transport failure returned");
+    ASSERT_EQ(fake.bus_clear_calls, 1U, "50ms remaining runs bus clear");
+    ASSERT_EQ(fake.now_ms, CHAMELEON_ACQUIRE_TIMEOUT_MS,
+              "bus clear exactly consumes acquisition reserve");
 }
 
 static void test_readiness_timeout_does_not_clear_bus(void)
@@ -426,6 +462,8 @@ int main(void)
     test_success_starts_and_ends_with_idempotent_cleanup();
     test_init_failure_uses_complete_cleanup();
     test_transport_failures_clear_once_before_cleanup();
+    test_late_transport_failure_skips_bus_clear_below_transaction_reserve();
+    test_exact_transaction_reserve_runs_bus_clear_without_exceeding_cap();
     test_readiness_timeout_does_not_clear_bus();
     test_probe_window_is_four_hundred_ms_with_fifty_ms_intervals();
     test_cold_retry_is_exactly_one_second_when_budget_allows();

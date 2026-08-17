@@ -189,7 +189,9 @@ static chameleon_result_t run_one_session(const chameleon_lsn50_ops_t *ops,
             ops->watchdog_refresh(ops->context);
         }
     }
-    if (needs_bus_clear(result)) {
+    if (needs_bus_clear(result)
+            && remaining_ms(ops, acquire_started)
+                >= CHAMELEON_LIFECYCLE_TXN_RESERVE_MS) {
         ops->watchdog_refresh(ops->context);
         (void)ops->bus_clear(ops->context);
         ops->watchdog_refresh(ops->context);

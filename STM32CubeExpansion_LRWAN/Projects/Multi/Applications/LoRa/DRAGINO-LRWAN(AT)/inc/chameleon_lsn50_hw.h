@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+#include "chameleon_soft_i2c.h"
 #include "via_chameleon.h"
 
 #define CHAMELEON_POWER_STABILIZE_MS   100U
@@ -13,6 +14,12 @@
 #define CHAMELEON_RETRY_SESSION_RESERVE_MS 5150U
 #define CHAMELEON_ACQUIRE_TIMEOUT_MS  12000U
 #define CHAMELEON_WATCHDOG_SLICE_MS    1000U
+#define CHAMELEON_LIFECYCLE_TXN_RESERVE_MS \
+    (CHAMELEON_SOFT_I2C_TXN_TIMEOUT_US / 1000U)
+
+#if (CHAMELEON_SOFT_I2C_TXN_TIMEOUT_US % 1000U) != 0U
+#error "Software I2C transaction reserve must use whole milliseconds"
+#endif
 
 typedef struct {
     uint16_t last_count;
