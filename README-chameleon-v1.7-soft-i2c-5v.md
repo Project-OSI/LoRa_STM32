@@ -35,9 +35,11 @@ conflicting terminal and SDA/SCL labels.
 | 21 | PB13 | SCL |
 
 Connect only this harness during LSN50 operation. Disconnect the USB-I2C
-adapter, PB6, PB7, and PB14 from the reader. The reader and LSN50 need a common
-ground; another LSN50 terminal is acceptable only after continuity verifies it
-is GND.
+adapter, PB6, PB7, and PB14 from the reader. A combined USB adapter may remain
+connected for UART only: retain TX, RX, and one verified GND, but physically
+disconnect its VCC, 3.3 V, 5 V, SDA, and SCL leads. Do not connect an external
+supply to reader VCC or terminal 14. The reader and LSN50 need a common ground;
+another LSN50 terminal is acceptable only after continuity verifies it is GND.
 
 ## Electrical states and no-pulldown rule
 
@@ -123,16 +125,23 @@ authorizes the following bench tests.
 
 Measure reader VCC, SDA, and SCL at rail-off and after 0.1, 0.5, 1, 5, 30, 60,
 and 300 seconds, or until all three nodes stay below 0.1 V. Repeat after a
-successful acquisition and after each injected failure. Then connect a
-temporary current-limited load to bring +5 V below 0.1 V. Remove the load with
-PB5 off and PB12/PB13 analog, then watch for voltage rebound and sourced
-current for another 5 minutes.
+successful acquisition and after each injected failure. With no sample
+scheduled and only after acquisition cleanup, attach a sink-only,
+current-limited load from terminal 14 to verified GND to bring +5 V below 0.1
+V. Remove that load before the next sample, while PB5 remains off and
+PB12/PB13 are analog. Never drive terminal 14 from a bench supply. Watch for
+voltage rebound and sourced current for another 5 minutes.
 
 Capture +5 V, SDA, and SCL at enable with a single-shot scope. Use at least
-1 MS/s, or 10 MS/s or faster when available. Record VDD minimum, +5 V
-overshoot, loaded rail voltage, and settling time with a cold or passivated
-cell as well as with a bench supply. Archive a verified RT9266 datasheet before
-using converter-specific limits or expected waveforms in the verdict.
+1 MS/s, or 10 MS/s or faster when available. Attach every single-ended ground
+clip to one verified LSN50 GND, never to a signal or rail. Use a proper
+isolated or differential measurement method where that connection is not safe.
+Identify each probe tip in the record: terminal 14 for +5 V, terminal 20 for
+SDA, terminal 21 for SCL, and the LSN50 VDD terminal or test point for MCU VDD.
+Record VDD minimum, +5 V overshoot, loaded rail voltage, and settling time with
+a cold or passivated cell as well as with a bench supply. Archive a verified
+RT9266 datasheet before using converter-specific limits or expected waveforms
+in the verdict.
 
 | Observation | Required action |
 |---|---|
@@ -156,14 +165,30 @@ least 3.0 V and every protocol gate passes.
 
 Run at least 500 one-minute acquisition sessions with the intended reader,
 array, cable, and battery type. Pass requires zero resets, no acquisition over
-12 s, and at least 99% clean samples. Cause one controlled pin reset and one
-controlled watchdog reset; after each, verify the reset-cause boot line.
+12 s, and at least 99% clean samples. For the controlled pin reset, wait for
+cleanup with no foreign power connected, then momentarily connect terminal
+25/NRST to verified GND. `ATZ` is a software reset and is not a substitute.
+Do not induce an independent-watchdog reset by grounding a bus or rail, or by
+removing the battery.
+
+The controlled watchdog reset and forced mid-session pre-sleep cleanup require
+a separate controlled fixture or an instrumented non-DEBUG validation image.
+The production artifact cannot provide the DEBUG instrumentation because
+`DEBUG` together with `USE_CHAMELEON` intentionally fails compilation. Record
+those fixture-only cases separately; they are not performed with this production
+artifact. After one fixture-controlled watchdog reset, verify the reset-cause
+boot line.
 
 Run 20 cycles each of the following cases: SDA open, SCL grounded, SDA
 grounded, reader VCC disconnected, reader absent, reader hot-plugged, maximum
-intended cable, and forced pre-sleep cleanup during an active session. Each
-cycle must uplink, recover within one scheduled sample after the fault is
-removed, and leave the rail off during sleep.
+intended cable, and forced pre-sleep cleanup during an active session. Install
+or remove an SDA/SCL-to-GND jumper only after the reader rail is confirmed off;
+use terminal 20 or terminal 21 only, never terminal 14. Start a manual
+acquisition, then remove the jumper after cleanup. Disconnect or hot-plug VCC
+at a reader-side inline connector, not at a live screw terminal. Connect GND
+first and disconnect it last. Each cycle must uplink, recover within one
+scheduled sample after the fault is removed, and leave the rail off during
+sleep.
 
 ## Power-consumption logging
 
