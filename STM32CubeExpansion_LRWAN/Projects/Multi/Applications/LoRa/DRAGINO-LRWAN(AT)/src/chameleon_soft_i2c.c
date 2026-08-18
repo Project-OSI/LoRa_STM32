@@ -15,8 +15,9 @@ static int ops_valid(const chameleon_soft_i2c_ops_t *ops)
         && ops->delay_us != NULL && ops->micros != NULL;
 }
 
-static chameleon_i2c_status_t delay_within_transaction(
-    chameleon_soft_i2c_t *bus, uint32_t transaction_start, uint32_t delay_us)
+static chameleon_i2c_status_t delay_within_deadlines(
+    chameleon_soft_i2c_t *bus, uint32_t transaction_start,
+    uint32_t byte_start, int byte_limited, uint32_t delay_us)
 {
     uint32_t now = bus->ops.micros(bus->ops.context);
     uint32_t elapsed = (uint32_t)(now - transaction_start);
@@ -25,7 +26,47 @@ static chameleon_i2c_status_t delay_within_transaction(
             || delay_us > CHAMELEON_SOFT_I2C_TXN_TIMEOUT_US - elapsed) {
         return CHAMELEON_I2C_ERR_TIMEOUT;
     }
+    if (byte_limited) {
+        elapsed = (uint32_t)(now - byte_start);
+        if (elapsed >= CHAMELEON_SOFT_I2C_BYTE_TIMEOUT_US
+                || delay_us > CHAMELEON_SOFT_I2C_BYTE_TIMEOUT_US - elapsed) {
+            return CHAMELEON_I2C_ERR_TIMEOUT;
+        }
+    }
     bus->ops.delay_us(bus->ops.context, delay_us);
+    now = bus->ops.micros(bus->ops.context);
+    if (expired(transaction_start, now, CHAMELEON_SOFT_I2C_TXN_TIMEOUT_US)
+            || (byte_limited && expired(byte_start, now,
+                                        CHAMELEON_SOFT_I2C_BYTE_TIMEOUT_US))) {
+        return CHAMELEON_I2C_ERR_TIMEOUT;
+    }
+    return CHAMELEON_I2C_OK;
+}
+
+static chameleon_i2c_status_t delay_within_transaction(
+    chameleon_soft_i2c_t *bus, uint32_t transaction_start, uint32_t delay_us)
+{
+    return delay_within_deadlines(bus, transaction_start, 0U, 0, delay_us);
+}
+
+static chameleon_i2c_status_t delay_within_byte_and_transaction(
+    chameleon_soft_i2c_t *bus, uint32_t byte_start, uint32_t transaction_start,
+    uint32_t delay_us)
+{
+    return delay_within_deadlines(bus, transaction_start, byte_start, 1,
+                                  delay_us);
+}
+
+static chameleon_i2c_status_t byte_and_transaction_active(
+    chameleon_soft_i2c_t *bus, uint32_t byte_start, uint32_t transaction_start)
+{
+    uint32_t now = bus->ops.micros(bus->ops.context);
+
+    if (expired(byte_start, now, CHAMELEON_SOFT_I2C_BYTE_TIMEOUT_US)
+            || expired(transaction_start, now,
+                       CHAMELEON_SOFT_I2C_TXN_TIMEOUT_US)) {
+        return CHAMELEON_I2C_ERR_TIMEOUT;
+    }
     return CHAMELEON_I2C_OK;
 }
 
@@ -51,6 +92,10 @@ static chameleon_i2c_status_t release_scl_and_wait(
             return CHAMELEON_I2C_ERR_TIMEOUT;
         }
         bus->ops.delay_us(bus->ops.context, 1U);
+    }
+    if (byte_and_transaction_active(bus, byte_start, transaction_start)
+            != CHAMELEON_I2C_OK) {
+        return CHAMELEON_I2C_ERR_TIMEOUT;
     }
     return CHAMELEON_I2C_OK;
 }
@@ -141,8 +186,8 @@ static chameleon_i2c_status_t write_bit(
     } else {
         bus->ops.sda_low(bus->ops.context);
     }
-    status = delay_within_transaction(bus, transaction_start,
-                                      CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    status = delay_within_byte_and_transaction(
+        bus, byte_start, transaction_start, CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
     if (status != CHAMELEON_I2C_OK) {
         return status;
     }
@@ -150,12 +195,20 @@ static chameleon_i2c_status_t write_bit(
     if (status != CHAMELEON_I2C_OK) {
         return status;
     }
-    if (bit != 0U && !bus->ops.sda_read(bus->ops.context)) {
-        bus->ops.scl_low(bus->ops.context);
-        return CHAMELEON_I2C_ERR_BUS;
+    if (bit != 0U) {
+        int sda_high = bus->ops.sda_read(bus->ops.context);
+
+        if (byte_and_transaction_active(bus, byte_start, transaction_start)
+                != CHAMELEON_I2C_OK) {
+            return CHAMELEON_I2C_ERR_TIMEOUT;
+        }
+        if (!sda_high) {
+            bus->ops.scl_low(bus->ops.context);
+            return CHAMELEON_I2C_ERR_BUS;
+        }
     }
-    status = delay_within_transaction(bus, transaction_start,
-                                      CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    status = delay_within_byte_and_transaction(
+        bus, byte_start, transaction_start, CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
     if (status != CHAMELEON_I2C_OK) {
         return status;
     }
@@ -170,8 +223,8 @@ static chameleon_i2c_status_t read_bit(
     chameleon_i2c_status_t status;
 
     bus->ops.sda_release(bus->ops.context);
-    status = delay_within_transaction(bus, transaction_start,
-                                      CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    status = delay_within_byte_and_transaction(
+        bus, byte_start, transaction_start, CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
     if (status != CHAMELEON_I2C_OK) {
         return status;
     }
@@ -180,8 +233,12 @@ static chameleon_i2c_status_t read_bit(
         return status;
     }
     *bit = (uint8_t)(bus->ops.sda_read(bus->ops.context) != 0);
-    status = delay_within_transaction(bus, transaction_start,
-                                      CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
+    if (byte_and_transaction_active(bus, byte_start, transaction_start)
+            != CHAMELEON_I2C_OK) {
+        return CHAMELEON_I2C_ERR_TIMEOUT;
+    }
+    status = delay_within_byte_and_transaction(
+        bus, byte_start, transaction_start, CHAMELEON_SOFT_I2C_HALF_PERIOD_US);
     if (status != CHAMELEON_I2C_OK) {
         return status;
     }

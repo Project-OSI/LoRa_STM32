@@ -65,6 +65,9 @@ Maintainer: Miguel Luis and Gregory Cristian
 #include "pwr_out.h"
 #include "lora.h"
 #include "timeServer.h"
+#ifdef USE_CHAMELEON
+#include "chameleon_lsn50_hw.h"
+#endif
 /*!
  *  \brief Unique Devices IDs register set ( STM32L0xxx )
  */
@@ -498,6 +501,9 @@ void LPM_EnterStopMode( void)
 
   DISABLE_IRQ( );
 
+#ifdef USE_CHAMELEON
+  chameleon_lsn50_prepare_sleep( );
+#endif
   HW_IoDeInit( );
   
   /*clear wake up flag*/

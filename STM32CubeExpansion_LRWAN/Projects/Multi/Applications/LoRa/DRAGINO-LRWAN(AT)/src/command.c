@@ -643,6 +643,7 @@ static const struct ATCommand_s ATCommand[] =
     .run = at_return_error,
 	},
 
+#ifndef USE_CHAMELEON
 		{
 	  .string = AT_WEIGRE,
     .size_string = sizeof(AT_WEIGRE) - 1,
@@ -664,6 +665,7 @@ static const struct ATCommand_s ATCommand[] =
     .set = at_weight_GapValue_set,
     .run = at_return_error,
 	},
+#endif
 
 		{
 	  .string = AT_5VT,

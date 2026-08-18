@@ -30,6 +30,9 @@
 typedef struct {
     uint32_t now_us;
     uint32_t delay_scale;
+    uint32_t delay_extra_us;
+    size_t delay_extra_at_call;
+    size_t delay_calls;
     uint32_t advance_on_sda_read_us;
     uint32_t scl_stretch_until;
     int scl_stretch_active;
@@ -44,6 +47,8 @@ typedef struct {
     int previous_sda;
     size_t sda_low_calls;
     size_t sda_release_calls;
+    uint32_t scl_low_late_threshold_us;
+    size_t scl_low_late_calls;
     uint8_t samples[MAX_SAMPLES];
     size_t sample_count;
     size_t sample_index;
@@ -109,6 +114,11 @@ static void observe_lines(fake_bus_t *fake)
 static void scl_low(void *context)
 {
     fake_bus_t *fake = context;
+
+    if (fake->now_us >= fake->scl_low_late_threshold_us
+            && fake->scl_low_late_threshold_us != 0U) {
+        ++fake->scl_low_late_calls;
+    }
     fake->master_scl_low = 1;
     fake->slave_sda_low = 0;
     observe_lines(fake);
@@ -190,7 +200,11 @@ static void delay_us(void *context, uint32_t us)
 {
     fake_bus_t *fake = context;
     uint32_t scale = fake->delay_scale == 0U ? 1U : fake->delay_scale;
+    ++fake->delay_calls;
     fake->now_us += us * scale;
+    if (fake->delay_calls == fake->delay_extra_at_call) {
+        fake->now_us += fake->delay_extra_us;
+    }
     observe_lines(fake);
 }
 
@@ -285,6 +299,21 @@ static void test_address_nack_is_reported_and_lines_release(void)
     ASSERT_EQ(chameleon_soft_i2c_write(&bus, 0x08U, NULL, 0U),
               CHAMELEON_I2C_ERR_NACK, "address NACK");
     ASSERT_EQ(fake.stop_count, 1U, "STOP after NACK");
+    assert_released(&fake);
+}
+
+static void test_data_byte_nack_is_reported_and_lines_release(void)
+{
+    fake_bus_t fake;
+    chameleon_soft_i2c_t bus;
+    uint8_t byte = 0x40U;
+    static const uint8_t samples[] = { 1U, 1U, 0U, 1U };
+
+    initialize(&fake, &bus);
+    load_samples(&fake, samples, sizeof(samples));
+    ASSERT_EQ(chameleon_soft_i2c_write(&bus, 0x08U, &byte, 1U),
+              CHAMELEON_I2C_ERR_NACK, "data byte NACK");
+    ASSERT_EQ(fake.stop_count, 1U, "STOP after data NACK");
     assert_released(&fake);
 }
 
@@ -458,6 +487,24 @@ static void test_cleanup_near_deadline_does_not_overshoot(void)
     assert_released(&fake);
 }
 
+static void test_byte_deadline_covers_fixed_high_delay_before_next_scl_fall(void)
+{
+    fake_bus_t fake;
+    chameleon_soft_i2c_t bus;
+    static const uint8_t samples[] = { 1U, 1U, 0U };
+
+    initialize(&fake, &bus);
+    load_samples(&fake, samples, sizeof(samples));
+    fake.delay_extra_at_call = 4U;
+    fake.delay_extra_us = 9990U;
+    fake.scl_low_late_threshold_us = 10020U;
+    ASSERT_EQ(chameleon_soft_i2c_write(&bus, 0x08U, NULL, 0U),
+              CHAMELEON_I2C_ERR_TIMEOUT, "byte timeout after fixed high delay");
+    ASSERT_EQ(fake.scl_low_late_calls, 0U,
+              "no byte SCL fall after its ten millisecond deadline");
+    assert_released(&fake);
+}
+
 static void test_deadlines_wrap_across_uint32_max(void)
 {
     fake_bus_t fake;
@@ -561,10 +608,24 @@ static void test_bus_clear_clocks_nine_times_then_stops(void)
     assert_released(&fake);
 }
 
+static void test_bus_clear_on_high_sda_emits_only_bounded_cleanup_stop(void)
+{
+    fake_bus_t fake;
+    chameleon_soft_i2c_t bus;
+
+    initialize(&fake, &bus);
+    ASSERT_EQ(chameleon_soft_i2c_bus_clear(&bus), CHAMELEON_I2C_OK,
+              "clear succeeds on idle bus");
+    ASSERT_EQ(fake.scl_rise_count, 0U, "idle bus needs no clear clocks");
+    ASSERT_EQ(fake.stop_count, 1U, "bounded cleanup emits one STOP");
+    assert_released(&fake);
+}
+
 int main(void)
 {
     test_probe_sends_shifted_write_address();
     test_address_nack_is_reported_and_lines_release();
+    test_data_byte_nack_is_reported_and_lines_release();
     test_write_is_msb_first();
     test_write_read_uses_repeated_start();
     test_read_acks_intermediate_and_nacks_final_byte();
@@ -575,9 +636,11 @@ int main(void)
     test_transaction_deadline_is_fifty_ms();
     test_cleanup_cannot_extend_transaction_deadline();
     test_cleanup_near_deadline_does_not_overshoot();
+    test_byte_deadline_covers_fixed_high_delay_before_next_scl_fall();
     test_deadlines_wrap_across_uint32_max();
     test_start_stop_timing_meets_standard_mode();
     test_bus_clear_clocks_nine_times_then_stops();
+    test_bus_clear_on_high_sda_emits_only_bounded_cleanup_stop();
     printf("test_chameleon_soft_i2c OK\n");
     return 0;
 }

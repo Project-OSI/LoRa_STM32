@@ -55,6 +55,9 @@ draw current while the reader is active and reduce the logic-high voltage.
 
 Do not remove the LSN50 battery while the +5 V output is charged. That sequence
 is unsupported because the MCU VDD rail can collapse before the reader rail.
+For bench testing, a current-limited supply may replace the LSN50 battery only
+through the supported LSN50 battery/input connection. It must never feed reader
+VCC or terminal 14.
 For a permanent outdoor cable, decide and document enclosure-level ESD/TVS
 protection before deployment. It is not a bench-build gate.
 
@@ -67,10 +70,12 @@ status `0x41`, 50 ms readiness polls, repeated-start register reads, and the
 existing V1 payload layout.
 
 The transport has a 50 ms transaction limit. The full acquisition, including a
-single cold retry, has a 12 s wall-clock cap. On a transport fault it attempts
-a bounded bus clear, isolates PB12/PB13, switches off +5 V, waits 1000 ms, and
-can retry once only if sufficient time remains. A final failure carries the
-existing Chameleon fault flags and still permits the normal LoRa uplink.
+single cold retry, has a 12 s wall-clock cap. An outer-deadline reserve covers
+the final control and cleanup operations; the firmware does not compose phase
+maxima exactly to 12 s. It caps the probe at 400 ms. On a transport fault it
+attempts a bounded bus clear, isolates PB12/PB13, switches off +5 V, waits 1000
+ms, and can retry once only if sufficient time remains. A final failure carries
+the existing Chameleon fault flags and still permits the normal LoRa uplink.
 
 The result line records the acquisition result and attempts count. The boot
 output also records one classified reset cause, for example `Chameleon

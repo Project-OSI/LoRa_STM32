@@ -299,9 +299,10 @@ these constants in the header:
 #define CHAMELEON_PROBE_INTERVAL_MS     50U
 #define CHAMELEON_COLD_RETRY_OFF_MS   1000U
 #define CHAMELEON_COLD_RETRY_ENABLED      1U
-#define CHAMELEON_RETRY_SESSION_RESERVE_MS 5150U
+#define CHAMELEON_RETRY_SESSION_RESERVE_MS 5200U
 #define CHAMELEON_ACQUIRE_TIMEOUT_MS  12000U
 #define CHAMELEON_WATCHDOG_SLICE_MS    1000U
+#define CHAMELEON_LIFECYCLE_CONTROL_MARGIN_MS 50U
 ```
 
 Update the success trace to begin
@@ -315,7 +316,7 @@ Update the success trace to begin
 - a first failed session waits exactly 1000 ms and starts at most one second
   session;
 - a retry is skipped unless the remaining global budget covers the cold-off
-  delay plus the 5150 ms worst-case second session;
+  delay plus the 5200 ms worst-case second session and control margin;
 - long waits refresh the watchdog at intervals no greater than 1000 ms;
 - simulated slow protocol operations stop at the 12 s acquisition deadline;
 - success and sentinel-bearing valid samples do not retry.
@@ -372,10 +373,11 @@ waits remain at or below 2 s, under the 5 s watchdog-service requirement.
 
 Record `acquire_started = ops->millis(...)` once. Before probe, readiness, and
 measurement calls, compute remaining time by unsigned subtraction. Reserve
-50 ms for the final status transaction around a readiness deadline. Reserve
-500 ms around `via_chameleon_measure()`: one trigger transaction, one possible
-final status transaction, and eight register reads, each bounded to 50 ms.
-Pass these budgets:
+100 ms around readiness: 50 ms for the final status transaction and 50 ms for
+lifecycle control and cleanup. Reserve 550 ms around
+`via_chameleon_measure()`: 500 ms for one trigger transaction, one possible
+final status transaction, and eight register reads, plus the same 50 ms
+lifecycle margin. Pass these budgets:
 
 ```c
 static uint32_t min_u32(uint32_t a, uint32_t b)
@@ -383,22 +385,27 @@ static uint32_t min_u32(uint32_t a, uint32_t b)
     return a < b ? a : b;
 }
 
-ready_timeout = remaining_ms > 50U
-              ? min_u32(requested_timeout_ms, remaining_ms - 50U) : 0U;
-measure_timeout = remaining_ms > 500U
-                ? min_u32(requested_timeout_ms, remaining_ms - 500U) : 0U;
+ready_timeout = remaining_ms > 100U
+              ? min_u32(requested_timeout_ms, remaining_ms - 100U) : 0U;
+measure_timeout = remaining_ms > 550U
+                ? min_u32(requested_timeout_ms, remaining_ms - 550U) : 0U;
 ```
 
 Return `CHAMELEON_RESULT_MEASUREMENT_TIMEOUT` instead of starting the call when
-its timeout is zero. These reservations make the 12 s wall-clock limit hold
-even when the final I2C transaction consumes its complete 50 ms allowance.
-The nominal two-session worst case is about 11.3 s, but this estimate is not
-the safety mechanism. Every phase must clamp itself to the runtime remaining
-budget so later constant changes cannot exceed the 12 s cap.
+its timeout is zero. The reserves above include a 50 ms lifecycle control
+margin for watchdog calls, GPIO transitions, timer shutdown, and final cleanup. Opaque
+synchronous callbacks must honor the timeout or single-transaction contract
+documented by `chameleon_lsn50_ops_t`. Tests must charge nonzero time for those
+control operations instead of treating them as free. These reservations keep
+the complete return path inside the 12 s wall-clock limit when callbacks honor
+their contracts. The nominal two-session estimate is not the safety mechanism.
+Every phase must clamp itself to the runtime remaining budget so later constant
+changes cannot exceed the cap.
 
-Make `bounded_probe()` stop at 400 ms or the remaining global budget minus one
-50 ms transaction allowance, whichever comes first. This function may issue an
-immediate first probe, then wait no more than 50 ms between attempts.
+Make `bounded_probe()` stop at 400 ms or the remaining global budget, whichever
+comes first. It may issue an immediate first probe, then wait no more than 50 ms
+between attempts, but it must not start a probe unless one 50 ms transaction
+and the 50 ms lifecycle control margin fit both enclosing deadlines.
 
 - [ ] **Step 6: Clear the bus before cleanup after transport failures**
 
@@ -415,7 +422,8 @@ static int needs_bus_clear(chameleon_result_t result)
 }
 ```
 
-Call `ops->bus_clear()` once while the bus and reader are still active, ignore
+Call `ops->bus_clear()` once while the bus and reader are still active only when
+one 50 ms transaction plus the 50 ms lifecycle control margin remains. Ignore
 its result for payload mapping, then run unconditional cleanup. Do not clear the
 bus for a valid sentinel sample or reader-busy timeout.
 
@@ -423,9 +431,10 @@ bus for a valid sentinel sample or reader-busy timeout.
 
 Run a maximum of `1U + CHAMELEON_COLD_RETRY_ENABLED` sessions. Retry only when
 the remaining global budget is at least the configured cold-off delay plus
-`CHAMELEON_RETRY_SESSION_RESERVE_MS`. The initial 5150 ms reserve covers 100 ms
+`CHAMELEON_RETRY_SESSION_RESERVE_MS`. The initial 5200 ms reserve covers 100 ms
 startup, a probe with its final transaction, two readiness phases with their
-final transactions, trigger, register reads, and failure-path bus clear. Call
+final transactions, trigger, register reads, failure-path bus clear, and the
+50 ms lifecycle control margin. Call
 the bounded cold-off delay, then let the second session enforce the same
 remaining-time checks. Before field release, gate any constant change on the
 measured discharge curve and recompute the reserve when its constituent limits

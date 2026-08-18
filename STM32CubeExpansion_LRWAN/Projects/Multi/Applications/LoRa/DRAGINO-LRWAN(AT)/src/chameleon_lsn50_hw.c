@@ -97,8 +97,10 @@ static chameleon_result_t bounded_probe(const chameleon_lsn50_ops_t *ops,
         uint32_t delay;
         chameleon_result_t result;
 
-        if ((!first_probe && probe_elapsed >= CHAMELEON_PROBE_TIMEOUT_MS)
-                || global_remaining <= 50U) {
+        if ((!first_probe
+                && probe_elapsed > CHAMELEON_PROBE_TIMEOUT_MS
+                    - CHAMELEON_PROBE_CALL_RESERVE_MS)
+                || global_remaining < CHAMELEON_PROBE_CALL_RESERVE_MS) {
             return CHAMELEON_RESULT_NO_DEVICE;
         }
         first_probe = 0;
@@ -112,12 +114,17 @@ static chameleon_result_t bounded_probe(const chameleon_lsn50_ops_t *ops,
         probe_elapsed = ops->millis(ops->context) - probe_started;
         global_remaining = remaining_ms(ops, acquire_started);
         if (probe_elapsed >= CHAMELEON_PROBE_TIMEOUT_MS
-                || global_remaining <= 50U) {
+                || global_remaining <= CHAMELEON_LIFECYCLE_CONTROL_MARGIN_MS) {
             return CHAMELEON_RESULT_NO_DEVICE;
         }
         local_remaining = CHAMELEON_PROBE_TIMEOUT_MS - probe_elapsed;
-        delay = min_u32(CHAMELEON_PROBE_INTERVAL_MS, local_remaining);
-        delay = min_u32(delay, global_remaining - 50U);
+        if (local_remaining <= CHAMELEON_LIFECYCLE_CONTROL_MARGIN_MS) {
+            return CHAMELEON_RESULT_NO_DEVICE;
+        }
+        delay = min_u32(CHAMELEON_PROBE_INTERVAL_MS,
+                        local_remaining - CHAMELEON_LIFECYCLE_CONTROL_MARGIN_MS);
+        delay = min_u32(delay, global_remaining
+                        - CHAMELEON_LIFECYCLE_CONTROL_MARGIN_MS);
         if (delay == 0U) {
             return CHAMELEON_RESULT_NO_DEVICE;
         }
@@ -163,9 +170,10 @@ static chameleon_result_t run_one_session(const chameleon_lsn50_ops_t *ops,
     result = bounded_probe(ops, acquire_started);
     if (result == CHAMELEON_RESULT_OK) {
         remaining = remaining_ms(ops, acquire_started);
-        timeout = remaining > 50U
+        timeout = remaining > CHAMELEON_READY_RESERVE_MS
                 ? min_u32(CHAMELEON_DEFAULT_TIMEOUT_MS,
-                          min_u32(measurement_timeout_ms, remaining - 50U))
+                          min_u32(measurement_timeout_ms, remaining
+                                  - CHAMELEON_READY_RESERVE_MS))
                 : 0U;
         if (timeout == 0U) {
             result = CHAMELEON_RESULT_MEASUREMENT_TIMEOUT;
@@ -177,9 +185,10 @@ static chameleon_result_t run_one_session(const chameleon_lsn50_ops_t *ops,
     }
     if (result == CHAMELEON_RESULT_OK) {
         remaining = remaining_ms(ops, acquire_started);
-        timeout = remaining > 500U
+        timeout = remaining > CHAMELEON_MEASURE_RESERVE_MS
                 ? min_u32(CHAMELEON_DEFAULT_TIMEOUT_MS,
-                          min_u32(measurement_timeout_ms, remaining - 500U))
+                          min_u32(measurement_timeout_ms, remaining
+                                  - CHAMELEON_MEASURE_RESERVE_MS))
                 : 0U;
         if (timeout == 0U) {
             result = CHAMELEON_RESULT_MEASUREMENT_TIMEOUT;
@@ -191,7 +200,7 @@ static chameleon_result_t run_one_session(const chameleon_lsn50_ops_t *ops,
     }
     if (needs_bus_clear(result)
             && remaining_ms(ops, acquire_started)
-                >= CHAMELEON_LIFECYCLE_TXN_RESERVE_MS) {
+                >= CHAMELEON_BUS_CLEAR_RESERVE_MS) {
         ops->watchdog_refresh(ops->context);
         (void)ops->bus_clear(ops->context);
         ops->watchdog_refresh(ops->context);

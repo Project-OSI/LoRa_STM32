@@ -78,6 +78,27 @@ static void require_function_without(const char *source, const char *function,
     }
 }
 
+static void require_function_text(const char *source, const char *function,
+                                  const char *needle, const char *label)
+{
+    const char *start = strstr(source, function);
+    const char *end;
+    const char *found;
+    size_t length;
+
+    if (start == 0) {
+        fprintf(stderr, "FAIL missing function for %s\n", label);
+        exit(1);
+    }
+    end = strstr(start + strlen(function), "\nvoid ");
+    length = end == 0 ? strlen(start) : (size_t)(end - start);
+    found = strstr(start, needle);
+    if (found == 0 || (size_t)(found - start) >= length) {
+        fprintf(stderr, "FAIL missing %s\n", label);
+        exit(1);
+    }
+}
+
 int main(void)
 {
     char *bsp = read_source("bsp.c");
@@ -130,6 +151,14 @@ int main(void)
     require_text(command,
                  "#ifdef USE_CHAMELEON\n\t\t\t\t\t\t\tif(strcmp(cmd,AT_MOD)==0)\n\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\tstore_config_status=0;\n\t\t\t\t\t\t\t}\n#endif",
                  "dedicated MOD3 command skips EEPROM storage");
+    require_text(command,
+                 "#ifndef USE_CHAMELEON\n\t\t{\n\t  .string = AT_WEIGRE,",
+                 "WEIGRE entry excluded from Chameleon image");
+    require_text(command,
+                 ".run = at_return_error,\n\t},\n#endif\n\n\t\t{\n\t  .string = AT_5VT,",
+                 "WEIGAP entry exclusion closes before next command");
+    require_before(command, "AT_WEIGRE", "AT_WEIGAP",
+                   "weight-command inventory order");
     require_text(irq, "if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_14) != RESET)",
                  "IRQ EXTI14 handling");
     require_text(irq, "__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_14);",
@@ -150,6 +179,12 @@ int main(void)
     require_text(hw,
                  "TimerGetElapsedTime(adc_wait_started) >= HW_ADC_TIMEOUT_MS",
                  "finite VREFINT wait");
+    require_text(hw,
+                 "#ifdef USE_CHAMELEON\n#include \"chameleon_lsn50_hw.h\"\n#endif",
+                 "conditional Chameleon sleep header");
+    require_function_text(hw, "void LPM_EnterStopMode( void)",
+                          "#ifdef USE_CHAMELEON\n  chameleon_lsn50_prepare_sleep( );\n#endif\n  HW_IoDeInit( );",
+                          "Chameleon cleanup immediately before STOP IO deinit");
     forbid_text(hw, "HAL_ADC_PollForConversion( &hadc, HAL_MAX_DELAY )",
                 "infinite ADC conversion wait");
     forbid_text(chameleon_hw, "return HAL_GetTick();",

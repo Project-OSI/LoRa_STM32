@@ -1,9 +1,13 @@
 # LSN50 Chameleon switched-5 V software-I2C design
 
-**Date:** 2026-08-17  
+**Date:** 2026-08-17
+
 **Review revision:** 2026-08-18
-**Status:** Approved architecture; implementation has not started  
-**Branch:** `feature/chameleon-v1.7-switched-5v-soft-i2c`  
+
+**Status:** Implemented bench candidate; documented hardware gates remain before field release
+
+**Branch:** `feature/chameleon-v1.7-switched-5v-soft-i2c`
+
 **Hardware:** Dragino LSN50v2 rev 2.3a and VIA Chameleon I2C reader
 
 ## Goal
@@ -66,6 +70,10 @@ The initial prototype adds no discharge component. If the measured +5 V,
 SDA, or SCL off-state fails the gate below, stop. Do not compensate with
 unbounded firmware delay. A discharge circuit or the switched-raw-VDD design
 then requires a separate hardware decision.
+
+For bench testing, a current-limited supply may replace the LSN50 battery only
+through the supported LSN50 battery/input connection. It must never feed reader
+VCC or terminal 14.
 
 ## Pull-resistor decision
 
@@ -182,7 +190,10 @@ the acquisition session. The lifecycle is:
 Normal cleanup, error cleanup, boot preparation, and pre-sleep preparation use
 one idempotent shutdown function. Bus isolation always precedes rail-off. A
 full acquisition, including any configured cold retry, has a 12 s wall-clock
-cap. There are no retry storms between scheduled uplinks.
+cap. The lifecycle must hold an explicit, documented and tested outer-deadline
+reserve for final control and cleanup, rather than composing phase maxima to
+exactly 12 s. It must cap the startup probe at 400 ms. There are no retry storms
+between scheduled uplinks.
 
 The initial firmware uses passive discharge. If the rail does not fall below
 0.1 V before the next scheduled acquisition, that firmware is not eligible for
@@ -202,7 +213,11 @@ exists.
 ## Vendor behavior retained and restored
 
 The image remains dedicated to MOD3, as the prior Chameleon images are. This
-prevents PB12 from being claimed by the ultrasonic and HX711 modes.
+prevents PB12 from being claimed by the ultrasonic and HX711 modes selected by
+normal mode dispatch. MOD3 locking alone does not protect PB12/PB13 from
+mode-independent code. The dedicated build must compile out or deny HX711 AT
+handlers and audit diagnostic, wake, and interrupt paths for ownership of those
+pins.
 
 PB14 is no longer an I2C pin. Restore its stock digital-interrupt
 initialization, downlink configuration, interrupt handling, and MOD3 payload

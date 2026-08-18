@@ -11,11 +11,34 @@
 #define CHAMELEON_PROBE_INTERVAL_MS    50U
 #define CHAMELEON_COLD_RETRY_OFF_MS   1000U
 #define CHAMELEON_COLD_RETRY_ENABLED      1U
-#define CHAMELEON_RETRY_SESSION_RESERVE_MS 5150U
+/* 100 power + 400 probe + 2050 ready + 2500 measure + 100 cleanup = 5150. */
+#define CHAMELEON_RETRY_SESSION_RESERVE_MS 5200U
 #define CHAMELEON_ACQUIRE_TIMEOUT_MS  12000U
 #define CHAMELEON_WATCHDOG_SLICE_MS    1000U
 #define CHAMELEON_LIFECYCLE_TXN_RESERVE_MS \
     (CHAMELEON_SOFT_I2C_TXN_TIMEOUT_US / 1000U)
+
+/*
+ * Operations supplied through chameleon_lsn50_ops_t are synchronous and
+ * cannot be preempted.  They must honour their documented timeout (and probe
+ * must remain within one soft-I2C transaction).  This margin covers the
+ * surrounding watchdog calls and GPIO cleanup, so no operation is started
+ * when only its nominal duration fits the enclosing deadline.
+ */
+#define CHAMELEON_LIFECYCLE_CONTROL_MARGIN_MS 50U
+#define CHAMELEON_PROBE_CALL_RESERVE_MS \
+    (CHAMELEON_LIFECYCLE_TXN_RESERVE_MS + \
+     CHAMELEON_LIFECYCLE_CONTROL_MARGIN_MS)
+#define CHAMELEON_BUS_CLEAR_RESERVE_MS \
+    (CHAMELEON_LIFECYCLE_TXN_RESERVE_MS + \
+     CHAMELEON_LIFECYCLE_CONTROL_MARGIN_MS)
+#define CHAMELEON_READY_RESERVE_MS \
+    (CHAMELEON_LIFECYCLE_TXN_RESERVE_MS + \
+     CHAMELEON_LIFECYCLE_CONTROL_MARGIN_MS)
+#define CHAMELEON_MEASURE_PROTOCOL_TAIL_MS 500U
+#define CHAMELEON_MEASURE_RESERVE_MS \
+    (CHAMELEON_MEASURE_PROTOCOL_TAIL_MS + \
+     CHAMELEON_LIFECYCLE_CONTROL_MARGIN_MS)
 
 #if (CHAMELEON_SOFT_I2C_TXN_TIMEOUT_US % 1000U) != 0U
 #error "Software I2C transaction reserve must use whole milliseconds"

@@ -1,5 +1,6 @@
 #include "chameleon_lsn50_hw.h"
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,9 +39,14 @@ typedef struct {
     uint32_t ready_cost_ms;
     uint32_t measure_cost_ms;
     uint32_t bus_clear_cost_ms;
+    uint32_t ready_tail_ms;
+    uint32_t measure_tail_ms;
     uint32_t extra_after_probe_ms;
     uint32_t extra_after_ready_ms;
     uint32_t extra_after_first_measure_ms;
+    uint32_t gpio_cost_ms;
+    uint32_t watchdog_cost_ms;
+    uint32_t callback_overhead_ms;
     uint32_t ready_timeout_seen;
     uint32_t measure_timeout_seen;
     unsigned probe_calls;
@@ -58,6 +64,7 @@ typedef struct {
     chameleon_result_t second_measure;
     uint8_t measure_flags;
     int probe_always_fails;
+    int probe_cost_unclamped;
 } fake_hw_t;
 
 static void event(fake_hw_t *fake, const char *name)
@@ -75,16 +82,37 @@ static void add_cost(fake_hw_t *fake, uint32_t cost_ms, uint32_t budget_ms)
     fake->now_ms += cost_ms > budget_ms ? budget_ms : cost_ms;
 }
 
-static void rail_off(void *context) { event(context, "off"); }
-static void bus_isolate(void *context) { event(context, "isolate"); }
-static void rail_on(void *context) { event(context, "on"); }
+static void rail_off(void *context)
+{
+    fake_hw_t *fake = context;
+    fake->now_ms += fake->gpio_cost_ms;
+    event(fake, "off");
+}
+static void bus_isolate(void *context)
+{
+    fake_hw_t *fake = context;
+    fake->now_ms += fake->gpio_cost_ms;
+    event(fake, "isolate");
+}
+static void rail_on(void *context)
+{
+    fake_hw_t *fake = context;
+    fake->now_ms += fake->gpio_cost_ms;
+    event(fake, "on");
+}
 static int i2c_init(void *context)
 {
     fake_hw_t *fake = context;
+    fake->now_ms += fake->gpio_cost_ms;
     event(fake, "init");
     return fake->init_ok;
 }
-static void i2c_deinit(void *context) { event(context, "deinit"); }
+static void i2c_deinit(void *context)
+{
+    fake_hw_t *fake = context;
+    fake->now_ms += fake->gpio_cost_ms;
+    event(fake, "deinit");
+}
 static void delay_ms(void *context, uint32_t ms)
 {
     fake_hw_t *fake = context;
@@ -95,6 +123,7 @@ static uint32_t millis(void *context) { return ((fake_hw_t *)context)->now_ms; }
 static void watchdog_refresh(void *context)
 {
     fake_hw_t *fake = context;
+    fake->now_ms += fake->watchdog_cost_ms;
     uint32_t gap = fake->now_ms - fake->last_watchdog_ms;
     if (gap > fake->max_watchdog_gap_ms) {
         fake->max_watchdog_gap_ms = gap;
@@ -120,7 +149,12 @@ static chameleon_result_t probe(void *context)
             ? CHAMELEON_RESULT_NO_DEVICE
             : (fake->probe_calls == 0U ? fake->first_probe : fake->second_probe));
     fake->probe_calls++;
-    add_cost(fake, fake->probe_cost_ms, 50U);
+    if (fake->probe_cost_unclamped) {
+        fake->now_ms += fake->probe_cost_ms;
+    } else {
+        add_cost(fake, fake->probe_cost_ms, 50U);
+    }
+    fake->now_ms += fake->callback_overhead_ms;
     fake->now_ms += fake->extra_after_probe_ms;
     event(fake, "probe");
     return result;
@@ -134,6 +168,8 @@ static chameleon_result_t measure(void *context, chameleon_sample_t *sample,
     fake->measure_timeout_seen = timeout_ms;
     fake->measure_calls++;
     add_cost(fake, fake->measure_cost_ms, timeout_ms);
+    fake->now_ms += fake->measure_tail_ms;
+    fake->now_ms += fake->callback_overhead_ms;
     if (fake->measure_calls == 1U) {
         fake->now_ms += fake->extra_after_first_measure_ms;
     }
@@ -149,6 +185,8 @@ static chameleon_result_t wait_ready(void *context, uint32_t timeout_ms)
     fake->ready_timeout_seen = timeout_ms;
     fake->wait_ready_calls++;
     add_cost(fake, fake->ready_cost_ms, timeout_ms);
+    fake->now_ms += fake->ready_tail_ms;
+    fake->now_ms += fake->callback_overhead_ms;
     fake->now_ms += fake->extra_after_ready_ms;
     event(fake, "boot-ready");
     return result;
@@ -272,20 +310,20 @@ static void test_late_transport_failure_skips_bus_clear_below_transaction_reserv
                 "late cleanup stays within acquisition cap");
 }
 
-static void test_exact_transaction_reserve_runs_bus_clear_without_exceeding_cap(void)
+static void test_exact_transaction_plus_cleanup_reserve_runs_bus_clear(void)
 {
     fake_hw_t fake = make_fake();
     chameleon_lsn50_ops_t ops = make_ops(&fake);
     chameleon_sample_t sample;
     fake.first_measure = CHAMELEON_RESULT_STATUS_IO_FAILED;
-    fake.extra_after_first_measure_ms = 11850U;
+    fake.extra_after_first_measure_ms = 11800U;
     fake.bus_clear_cost_ms = CHAMELEON_LIFECYCLE_TXN_RESERVE_MS;
 
     ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
               CHAMELEON_RESULT_STATUS_IO_FAILED, "boundary transport failure returned");
-    ASSERT_EQ(fake.bus_clear_calls, 1U, "50ms remaining runs bus clear");
-    ASSERT_EQ(fake.now_ms, CHAMELEON_ACQUIRE_TIMEOUT_MS,
-              "bus clear exactly consumes acquisition reserve");
+    ASSERT_EQ(fake.bus_clear_calls, 1U, "100ms remaining runs bus clear");
+    ASSERT_TRUE(fake.now_ms <= CHAMELEON_ACQUIRE_TIMEOUT_MS,
+                "bus clear leaves cleanup reserve");
 }
 
 static void test_readiness_timeout_does_not_clear_bus(void)
@@ -300,7 +338,7 @@ static void test_readiness_timeout_does_not_clear_bus(void)
     ASSERT_EQ(fake.bus_clear_calls, 0U, "readiness timeout no bus clear");
 }
 
-static void test_probe_window_is_four_hundred_ms_with_fifty_ms_intervals(void)
+static void test_probe_window_reserves_the_last_transaction(void)
 {
     fake_hw_t fake = make_fake();
     chameleon_lsn50_ops_t ops = make_ops(&fake);
@@ -309,8 +347,8 @@ static void test_probe_window_is_four_hundred_ms_with_fifty_ms_intervals(void)
 
     ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
               CHAMELEON_RESULT_NO_DEVICE, "missing reader result");
-    ASSERT_EQ(fake.probe_calls, 16U, "eight probes per session");
-    ASSERT_EQ(fake.now_ms, 2000U, "two 400ms windows plus cold off");
+    ASSERT_EQ(fake.probe_calls, 14U, "seven probes per session");
+    ASSERT_EQ(fake.now_ms, 1900U, "two bounded probe windows plus cold off");
 }
 
 static void test_cold_retry_is_exactly_one_second_when_budget_allows(void)
@@ -328,18 +366,18 @@ static void test_cold_retry_is_exactly_one_second_when_budget_allows(void)
     ASSERT_EQ(chameleon_lsn50_last_attempts(), 2U, "one retry only");
 }
 
-static void test_retry_skips_at_six_point_one_four_nine_second_reserve(void)
+static void test_retry_skips_at_six_point_one_nine_nine_second_reserve(void)
 {
     fake_hw_t fake = make_fake();
     chameleon_lsn50_ops_t ops = make_ops(&fake);
     chameleon_sample_t sample;
     fake.first_measure = CHAMELEON_RESULT_STATUS_IO_FAILED;
-    fake.extra_after_first_measure_ms = 5751U;
+    fake.extra_after_first_measure_ms = 5701U;
 
     ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
               CHAMELEON_RESULT_STATUS_IO_FAILED, "retry skipped at reserve boundary");
     ASSERT_EQ(chameleon_lsn50_last_attempts(), 1U, "no second session");
-    ASSERT_EQ(fake.now_ms, 5851U, "first session leaves 6149ms");
+    ASSERT_EQ(fake.now_ms, 5801U, "first session leaves 6199ms");
 }
 
 static void test_ready_and_measure_reserves_prevent_late_calls(void)
@@ -359,12 +397,12 @@ static void test_ready_and_measure_reserves_prevent_late_calls(void)
                 "normal operation below global cap");
 }
 
-static void test_ready_reserve_skips_call_with_fifty_ms_or_less_remaining(void)
+static void test_ready_reserve_skips_call_with_one_hundred_ms_remaining(void)
 {
     fake_hw_t fake = make_fake();
     chameleon_lsn50_ops_t ops = make_ops(&fake);
     chameleon_sample_t sample;
-    fake.extra_after_probe_ms = 11850U;
+    fake.extra_after_probe_ms = 11800U;
 
     ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
               CHAMELEON_RESULT_MEASUREMENT_TIMEOUT, "ready reserve timeout");
@@ -372,12 +410,12 @@ static void test_ready_reserve_skips_call_with_fifty_ms_or_less_remaining(void)
     ASSERT_EQ(fake.measure_calls, 0U, "measure not started after ready reserve");
 }
 
-static void test_measure_reserve_skips_call_with_five_hundred_ms_or_less_remaining(void)
+static void test_measure_reserve_skips_call_with_five_hundred_fifty_ms_remaining(void)
 {
     fake_hw_t fake = make_fake();
     chameleon_lsn50_ops_t ops = make_ops(&fake);
     chameleon_sample_t sample;
-    fake.extra_after_ready_ms = 11400U;
+    fake.extra_after_ready_ms = 11350U;
 
     ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
               CHAMELEON_RESULT_MEASUREMENT_TIMEOUT, "measure reserve timeout");
@@ -385,13 +423,13 @@ static void test_measure_reserve_skips_call_with_five_hundred_ms_or_less_remaini
     ASSERT_EQ(fake.measure_calls, 0U, "measure not started without reserve");
 }
 
-static void test_retry_runs_at_exact_six_point_one_five_second_reserve(void)
+static void test_retry_runs_at_exact_six_point_two_second_reserve(void)
 {
     fake_hw_t fake = make_fake();
     chameleon_lsn50_ops_t ops = make_ops(&fake);
     chameleon_sample_t sample;
     fake.first_measure = CHAMELEON_RESULT_STATUS_IO_FAILED;
-    fake.extra_after_first_measure_ms = 5750U;
+    fake.extra_after_first_measure_ms = 5700U;
 
     ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
               CHAMELEON_RESULT_OK, "retry allowed at exact reserve");
@@ -457,25 +495,165 @@ static void test_valid_sentinel_sample_does_not_retry(void)
     ASSERT_EQ(chameleon_lsn50_last_attempts(), 1U, "sentinel no retry");
 }
 
+static void test_probe_window_keeps_a_full_probe_and_control_inside_four_hundred_ms(void)
+{
+    fake_hw_t fake = make_fake();
+    chameleon_lsn50_ops_t ops = make_ops(&fake);
+    chameleon_sample_t sample;
+
+    fake.probe_always_fails = 1;
+    fake.probe_cost_ms = 50U;
+    fake.probe_cost_unclamped = 1;
+    fake.callback_overhead_ms = 1U;
+    fake.watchdog_cost_ms = 1U;
+
+    ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
+              CHAMELEON_RESULT_NO_DEVICE, "missing reader result");
+    ASSERT_EQ(fake.probe_calls, 6U,
+              "each probe window leaves room for final transaction and control");
+    ASSERT_TRUE(fake.now_ms < 2000U,
+                "two bounded probe windows and retry stay below global cap");
+}
+
+static void test_bus_clear_requires_transaction_and_cleanup_reserve(void)
+{
+    fake_hw_t fake = make_fake();
+    chameleon_lsn50_ops_t ops = make_ops(&fake);
+    chameleon_sample_t sample;
+
+    fake.first_measure = CHAMELEON_RESULT_STATUS_IO_FAILED;
+    fake.extra_after_first_measure_ms = 11651U;
+    fake.bus_clear_cost_ms = CHAMELEON_LIFECYCLE_TXN_RESERVE_MS;
+    fake.gpio_cost_ms = 10U;
+    fake.watchdog_cost_ms = 10U;
+
+    ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
+              CHAMELEON_RESULT_STATUS_IO_FAILED, "late transport failure returned");
+    ASSERT_EQ(fake.bus_clear_calls, 0U,
+              "one millisecond below clear plus cleanup reserve skips clear");
+    ASSERT_TRUE((uint32_t)(fake.now_ms - 0U) <= CHAMELEON_ACQUIRE_TIMEOUT_MS,
+                "cleanup remains inside acquisition cap");
+}
+
+static void test_bus_clear_runs_at_exact_transaction_plus_cleanup_reserve(void)
+{
+    fake_hw_t fake = make_fake();
+    chameleon_lsn50_ops_t ops = make_ops(&fake);
+    chameleon_sample_t sample;
+
+    fake.first_measure = CHAMELEON_RESULT_STATUS_IO_FAILED;
+    fake.extra_after_first_measure_ms = 11650U;
+    fake.bus_clear_cost_ms = CHAMELEON_LIFECYCLE_TXN_RESERVE_MS;
+    fake.gpio_cost_ms = 10U;
+    fake.watchdog_cost_ms = 10U;
+
+    ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
+              CHAMELEON_RESULT_STATUS_IO_FAILED, "boundary transport failure returned");
+    ASSERT_EQ(fake.bus_clear_calls, 1U,
+              "one hundred milliseconds runs clear and retains cleanup reserve");
+    ASSERT_EQ(fake.now_ms, CHAMELEON_ACQUIRE_TIMEOUT_MS,
+              "clear, watchdog, and cleanup exactly consume reserve");
+}
+
+static void test_ready_reserve_includes_final_status_transaction_and_control_across_wrap(void)
+{
+    fake_hw_t fake = make_fake();
+    chameleon_lsn50_ops_t ops = make_ops(&fake);
+    chameleon_sample_t sample;
+    uint32_t started = UINT_MAX - 5000U;
+
+    fake.now_ms = started;
+    fake.last_watchdog_ms = started;
+    fake.gpio_cost_ms = 10U;
+    fake.watchdog_cost_ms = 1U;
+    fake.extra_after_probe_ms = 9794U;
+    fake.ready_cost_ms = UINT_MAX;
+    fake.ready_tail_ms = CHAMELEON_LIFECYCLE_TXN_RESERVE_MS;
+
+    ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
+              CHAMELEON_RESULT_MEASUREMENT_TIMEOUT,
+              "late ready completes before measure is rejected");
+    ASSERT_EQ(fake.ready_timeout_seen, 1950U,
+              "ready timeout leaves final status and control reserve");
+    ASSERT_EQ(fake.measure_calls, 0U, "measure not started after late ready");
+    ASSERT_TRUE((uint32_t)(fake.now_ms - started) <= CHAMELEON_ACQUIRE_TIMEOUT_MS,
+                "ready tail and cleanup remain inside wrapped global deadline");
+}
+
+static void test_measure_reserve_includes_protocol_tail_and_control_across_wrap(void)
+{
+    fake_hw_t fake = make_fake();
+    chameleon_lsn50_ops_t ops = make_ops(&fake);
+    chameleon_sample_t sample;
+    uint32_t started = UINT_MAX - 5000U;
+
+    fake.now_ms = started;
+    fake.last_watchdog_ms = started;
+    fake.gpio_cost_ms = 10U;
+    fake.watchdog_cost_ms = 1U;
+    fake.extra_after_ready_ms = 9322U;
+    fake.measure_cost_ms = UINT_MAX;
+    fake.measure_tail_ms = 500U;
+
+    ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
+              CHAMELEON_RESULT_OK, "late measurement succeeds");
+    ASSERT_EQ(fake.measure_timeout_seen, 1970U,
+              "measurement timeout leaves protocol tail and control reserve");
+    ASSERT_TRUE((uint32_t)(fake.now_ms - started) <= CHAMELEON_ACQUIRE_TIMEOUT_MS,
+                "measurement tail and cleanup stay inside wrapped deadline");
+}
+
+static void test_full_recovery_including_cleanup_stays_inside_acquisition_cap_across_wrap(void)
+{
+    fake_hw_t fake = make_fake();
+    chameleon_lsn50_ops_t ops = make_ops(&fake);
+    chameleon_sample_t sample;
+    uint32_t started = UINT_MAX - 9000U;
+
+    fake.now_ms = started;
+    fake.last_watchdog_ms = started;
+    fake.first_measure = CHAMELEON_RESULT_STATUS_IO_FAILED;
+    fake.probe_cost_ms = 50U;
+    fake.probe_cost_unclamped = 1;
+    fake.ready_cost_ms = CHAMELEON_DEFAULT_TIMEOUT_MS;
+    fake.measure_cost_ms = CHAMELEON_DEFAULT_TIMEOUT_MS;
+    fake.bus_clear_cost_ms = CHAMELEON_LIFECYCLE_TXN_RESERVE_MS;
+    fake.callback_overhead_ms = 1U;
+    fake.watchdog_cost_ms = 1U;
+    fake.gpio_cost_ms = 1U;
+
+    ASSERT_EQ(chameleon_lsn50_run(&ops, &sample, 2000U),
+              CHAMELEON_RESULT_OK, "recovery succeeds after wrap");
+    ASSERT_EQ(chameleon_lsn50_last_attempts(), 2U, "one cold retry occurs");
+    ASSERT_TRUE((uint32_t)(fake.now_ms - started) <= CHAMELEON_ACQUIRE_TIMEOUT_MS,
+                "callbacks, recovery, and cleanup stay inside global cap");
+}
+
 int main(void)
 {
     test_success_starts_and_ends_with_idempotent_cleanup();
     test_init_failure_uses_complete_cleanup();
     test_transport_failures_clear_once_before_cleanup();
     test_late_transport_failure_skips_bus_clear_below_transaction_reserve();
-    test_exact_transaction_reserve_runs_bus_clear_without_exceeding_cap();
+    test_exact_transaction_plus_cleanup_reserve_runs_bus_clear();
     test_readiness_timeout_does_not_clear_bus();
-    test_probe_window_is_four_hundred_ms_with_fifty_ms_intervals();
+    test_probe_window_reserves_the_last_transaction();
     test_cold_retry_is_exactly_one_second_when_budget_allows();
-    test_retry_skips_at_six_point_one_four_nine_second_reserve();
+    test_retry_skips_at_six_point_one_nine_nine_second_reserve();
     test_ready_and_measure_reserves_prevent_late_calls();
-    test_ready_reserve_skips_call_with_fifty_ms_or_less_remaining();
-    test_measure_reserve_skips_call_with_five_hundred_ms_or_less_remaining();
-    test_retry_runs_at_exact_six_point_one_five_second_reserve();
+    test_ready_reserve_skips_call_with_one_hundred_ms_remaining();
+    test_measure_reserve_skips_call_with_five_hundred_fifty_ms_remaining();
+    test_retry_runs_at_exact_six_point_two_second_reserve();
     test_watchdog_delay_slices_are_no_more_than_one_second();
     test_watchdog_is_refreshed_around_bounded_opaque_calls();
     test_caller_timeout_cannot_extend_an_opaque_via_call();
     test_valid_sentinel_sample_does_not_retry();
+    test_probe_window_keeps_a_full_probe_and_control_inside_four_hundred_ms();
+    test_bus_clear_requires_transaction_and_cleanup_reserve();
+    test_bus_clear_runs_at_exact_transaction_plus_cleanup_reserve();
+    test_measure_reserve_includes_protocol_tail_and_control_across_wrap();
+    test_ready_reserve_includes_final_status_transaction_and_control_across_wrap();
+    test_full_recovery_including_cleanup_stays_inside_acquisition_cap_across_wrap();
     puts("test_chameleon_lifecycle OK");
     return 0;
 }
